@@ -297,106 +297,103 @@ func EnrichMetadataFromHuggingFace() error {
 				}
 			}
 
-			// Try to fetch HuggingFace README for provider, date, and YAML frontmatter information
+			// Always fetch HuggingFace README to check for YAML frontmatter (highest priority)
+			// Also extract release date and other metadata information as needed
 			needsProvider := enriched.Provider.Source == "null"
 			// Extract release date if we don't have a valid date yet (even from modelcard.regex with null value)
 			needsReleaseDate := enriched.LastModified.Source == "null" ||
 				(enriched.LastModified.Source == "modelcard.regex" && enriched.LastModified.Value == nil)
-			needsLanguageFromYAML := enriched.Language.Source == "null"
 
 			log.Printf("  DEBUG: LastModified source='%s', value=%v, needsReleaseDate=%v",
 				enriched.LastModified.Source, enriched.LastModified.Value, needsReleaseDate)
+			log.Printf("  Fetching HuggingFace README for additional metadata: %s", bestMatch.Name)
+			hfReadme, err := huggingface.FetchReadme(bestMatch.Name)
+			if err != nil {
+				log.Printf("  Warning: Failed to fetch HF README: %v", err)
+			} else {
+				// Try to extract YAML frontmatter first
+				frontmatter, err := huggingface.ExtractYAMLFrontmatter(hfReadme)
+				if err == nil {
+					log.Printf("  Successfully extracted YAML frontmatter from HF README")
 
-			if needsProvider || needsReleaseDate || needsLanguageFromYAML {
-				log.Printf("  Fetching HuggingFace README for additional metadata: %s", bestMatch.Name)
-				hfReadme, err := huggingface.FetchReadme(bestMatch.Name)
-				if err != nil {
-					log.Printf("  Warning: Failed to fetch HF README: %v", err)
+					// Always use name from HuggingFace YAML (highest priority)
+					if frontmatter.Name != "" {
+						enriched.Name = metadata.CreateMetadataSource(frontmatter.Name, "huggingface.yaml")
+						log.Printf("  Found name in YAML frontmatter: %s", frontmatter.Name)
+					}
+
+					// Always use provider from HuggingFace YAML (highest priority)
+					if frontmatter.Provider != "" {
+						enriched.Provider = metadata.CreateMetadataSource(frontmatter.Provider, "huggingface.yaml")
+						log.Printf("  Found provider in YAML frontmatter: %s", frontmatter.Provider)
+					}
+
+					// Always use description from HuggingFace YAML (highest priority)
+					if frontmatter.Description != "" {
+						enriched.Description = metadata.CreateMetadataSource(frontmatter.Description, "huggingface.yaml")
+						log.Printf("  Found description in YAML frontmatter: %s", frontmatter.Description)
+					}
+
+					// Always use language from HuggingFace YAML frontmatter (highest priority)
+					if len(frontmatter.Language) > 0 {
+						enriched.Language = metadata.CreateMetadataSource(frontmatter.Language, "huggingface.yaml")
+						log.Printf("  Found languages in YAML frontmatter: %v", frontmatter.Language)
+					}
+
+					// Always use tags from HuggingFace YAML frontmatter (highest priority)
+					if len(frontmatter.Tags) > 0 {
+						enriched.Tags = metadata.CreateMetadataSource(frontmatter.Tags, "huggingface.yaml")
+						log.Printf("  Found tags in YAML frontmatter: %v", frontmatter.Tags)
+					}
+
+					// Always use license from HuggingFace YAML frontmatter (highest priority)
+					if frontmatter.License != "" {
+						enriched.License = metadata.CreateMetadataSource(frontmatter.License, "huggingface.yaml")
+						log.Printf("  Extracted license from YAML frontmatter: %s", frontmatter.License)
+					}
+
+					// Always use license_name if available and more specific (highest priority)
+					if frontmatter.LicenseName != "" {
+						enriched.License = metadata.CreateMetadataSource(frontmatter.LicenseName, "huggingface.yaml")
+						log.Printf("  Extracted license_name from YAML frontmatter: %s", frontmatter.LicenseName)
+					}
+
+					// Always use tasks from HuggingFace YAML (highest priority)
+					if len(frontmatter.Tasks) > 0 {
+						enriched.Tasks = metadata.CreateMetadataSource(frontmatter.Tasks, "huggingface.yaml")
+						log.Printf("  Extracted tasks from YAML frontmatter: %v", frontmatter.Tasks)
+					} else if frontmatter.PipelineTag != "" {
+						// Fallback to pipeline_tag for tasks if tasks field is not available
+						tasks := []string{frontmatter.PipelineTag}
+						enriched.Tasks = metadata.CreateMetadataSource(tasks, "huggingface.yaml")
+						log.Printf("  Extracted pipeline_tag from YAML frontmatter: %s", frontmatter.PipelineTag)
+					}
 				} else {
-					// Try to extract YAML frontmatter first
-					frontmatter, err := huggingface.ExtractYAMLFrontmatter(hfReadme)
-					if err == nil {
-						log.Printf("  Successfully extracted YAML frontmatter from HF README")
+					log.Printf("  No valid YAML frontmatter found in HF README: %v", err)
+				}
 
-						// Always use name from HuggingFace YAML (highest priority)
-						if frontmatter.Name != "" {
-							enriched.Name = metadata.CreateMetadataSource(frontmatter.Name, "huggingface.yaml")
-							log.Printf("  Found name in YAML frontmatter: %s", frontmatter.Name)
-						}
-
-						// Always use provider from HuggingFace YAML (highest priority)
-						if frontmatter.Provider != "" {
-							enriched.Provider = metadata.CreateMetadataSource(frontmatter.Provider, "huggingface.yaml")
-							log.Printf("  Found provider in YAML frontmatter: %s", frontmatter.Provider)
-						}
-
-						// Always use description from HuggingFace YAML (highest priority)
-						if frontmatter.Description != "" {
-							enriched.Description = metadata.CreateMetadataSource(frontmatter.Description, "huggingface.yaml")
-							log.Printf("  Found description in YAML frontmatter: %s", frontmatter.Description)
-						}
-
-						// Always use language from HuggingFace YAML frontmatter (highest priority)
-						if len(frontmatter.Language) > 0 {
-							enriched.Language = metadata.CreateMetadataSource(frontmatter.Language, "huggingface.yaml")
-							log.Printf("  Found languages in YAML frontmatter: %v", frontmatter.Language)
-						}
-
-						// Always use tags from HuggingFace YAML frontmatter (highest priority)
-						if len(frontmatter.Tags) > 0 {
-							enriched.Tags = metadata.CreateMetadataSource(frontmatter.Tags, "huggingface.yaml")
-							log.Printf("  Found tags in YAML frontmatter: %v", frontmatter.Tags)
-						}
-
-						// Always use license from HuggingFace YAML frontmatter (highest priority)
-						if frontmatter.License != "" {
-							enriched.License = metadata.CreateMetadataSource(frontmatter.License, "huggingface.yaml")
-							log.Printf("  Extracted license from YAML frontmatter: %s", frontmatter.License)
-						}
-
-						// Always use license_name if available and more specific (highest priority)
-						if frontmatter.LicenseName != "" {
-							enriched.License = metadata.CreateMetadataSource(frontmatter.LicenseName, "huggingface.yaml")
-							log.Printf("  Extracted license_name from YAML frontmatter: %s", frontmatter.LicenseName)
-						}
-
-						// Always use tasks from HuggingFace YAML (highest priority)
-						if len(frontmatter.Tasks) > 0 {
-							enriched.Tasks = metadata.CreateMetadataSource(frontmatter.Tasks, "huggingface.yaml")
-							log.Printf("  Extracted tasks from YAML frontmatter: %v", frontmatter.Tasks)
-						} else if frontmatter.PipelineTag != "" {
-							// Fallback to pipeline_tag for tasks if tasks field is not available
-							tasks := []string{frontmatter.PipelineTag}
-							enriched.Tasks = metadata.CreateMetadataSource(tasks, "huggingface.yaml")
-							log.Printf("  Extracted pipeline_tag from YAML frontmatter: %s", frontmatter.PipelineTag)
-						}
-					} else {
-						log.Printf("  No valid YAML frontmatter found in HF README: %v", err)
+				// Fallback to text parsing for provider if needed
+				if needsProvider && enriched.Provider.Source == "null" {
+					provider := huggingface.ExtractProviderFromReadme(hfReadme)
+					if provider != "" {
+						enriched.Provider = metadata.CreateMetadataSource(provider, "huggingface.regex")
+						log.Printf("  Extracted provider from HF README text: %s", provider)
 					}
+				}
 
-					// Fallback to text parsing for provider if needed
-					if needsProvider && enriched.Provider.Source == "null" {
-						provider := huggingface.ExtractProviderFromReadme(hfReadme)
-						if provider != "" {
-							enriched.Provider = metadata.CreateMetadataSource(provider, "huggingface.regex")
-							log.Printf("  Extracted provider from HF README text: %s", provider)
+				// Try to extract explicit release date from README (high priority)
+				releaseDate := huggingface.ExtractReleaseDateFromReadme(hfReadme)
+				if releaseDate != "" {
+					if epoch := utils.ParseDateToEpoch(releaseDate); epoch != nil {
+						// Use this for createTimeSinceEpoch if we don't have it from modelcard
+						if enriched.CreateTimeSinceEpoch.Source == "null" {
+							enriched.CreateTimeSinceEpoch = metadata.CreateMetadataSource(*epoch, "huggingface.regex")
+							log.Printf("  Extracted createTimeSinceEpoch from HF README release date: %s (epoch: %d)", releaseDate, *epoch)
 						}
-					}
-
-					// Try to extract explicit release date from README (high priority)
-					releaseDate := huggingface.ExtractReleaseDateFromReadme(hfReadme)
-					if releaseDate != "" {
-						if epoch := utils.ParseDateToEpoch(releaseDate); epoch != nil {
-							// Use this for createTimeSinceEpoch if we don't have it from modelcard
-							if enriched.CreateTimeSinceEpoch.Source == "null" {
-								enriched.CreateTimeSinceEpoch = metadata.CreateMetadataSource(*epoch, "huggingface.regex")
-								log.Printf("  Extracted createTimeSinceEpoch from HF README release date: %s (epoch: %d)", releaseDate, *epoch)
-							}
-							// Also update lastModified if we don't have a more recent one
-							if needsReleaseDate {
-								enriched.LastModified = metadata.CreateMetadataSource(*epoch, "huggingface.regex")
-								log.Printf("  Extracted lastModified from HF README release date: %s (epoch: %d)", releaseDate, *epoch)
-							}
+						// Also update lastModified if we don't have a more recent one
+						if needsReleaseDate {
+							enriched.LastModified = metadata.CreateMetadataSource(*epoch, "huggingface.regex")
+							log.Printf("  Extracted lastModified from HF README release date: %s (epoch: %d)", releaseDate, *epoch)
 						}
 					}
 				}
