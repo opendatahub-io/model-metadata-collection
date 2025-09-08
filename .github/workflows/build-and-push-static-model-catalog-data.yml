@@ -48,12 +48,19 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # disable any implicit "latest"; we’ll add it explicitly below
+          flavor: |
+            latest=false
           tags: |
+            # branch and branch-<shortsha>
             type=ref,event=branch
+            type=ref,event=branch,suffix=-{{sha}}
+            # pull request tag (e.g. "pr-42")
             type=ref,event=pr
-            type=sha
+            # standalone sha tag with explicit prefix (e.g. "sha-90dd603")
+            type=sha,prefix=sha-
+            # latest only on main
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-
       - name: Build and push static model catalog data image
         uses: docker/build-push-action@v5
         with:
