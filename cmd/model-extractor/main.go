@@ -181,10 +181,9 @@ func loadModelsWithMetadata(modelsIndexPath string) ([]types.ModelEntry, error) 
 		var modelEntries []types.ModelEntry
 		for _, uri := range modelURIs {
 			modelEntries = append(modelEntries, types.ModelEntry{
-				Type:      "oci",
-				URI:       uri,
-				Validated: true,
-				Featured:  false,
+				Type:   "oci",
+				URI:    uri,
+				Labels: []string{"validated"},
 			})
 		}
 		return modelEntries, nil
@@ -275,19 +274,19 @@ func processModelsInParallelWithEntryMap(manifestRefs []string, uriToEntry map[s
 	return modelResults
 }
 
-// scanLayersForModelCardWithTags scans container layers for model card content and adds validated/featured tags
+// scanLayersForModelCardWithTags scans container layers for model card content and adds model labels as tags
 func scanLayersForModelCardWithTags(layers []containertypes.BlobInfo, src containertypes.ImageSource, manifestRef string, configBlob []byte, entry types.ModelEntry) (bool, types.ModelMetadata) {
 	modelCardFound, metadata := scanLayersForModelCard(layers, src, manifestRef, configBlob)
 
-	// Add validated and/or featured tags based on the model entry
+	// Add labels from the model entry as tags to the extracted metadata
 	// This works for both successful extractions and skeleton metadata
-	addValidatedAndFeaturedTags(manifestRef, entry)
+	addModelLabelTags(manifestRef, entry)
 
 	return modelCardFound, metadata
 }
 
-// addValidatedAndFeaturedTags adds validated and featured tags to the extracted metadata
-func addValidatedAndFeaturedTags(manifestRef string, entry types.ModelEntry) {
+// addModelLabelTags adds model labels as tags to the extracted metadata
+func addModelLabelTags(manifestRef string, entry types.ModelEntry) {
 	// Create sanitized directory name for the model
 	sanitizedName := utils.SanitizeManifestRef(manifestRef)
 	metadataPath := fmt.Sprintf("output/%s/models/metadata.yaml", sanitizedName)
@@ -315,18 +314,13 @@ func addValidatedAndFeaturedTags(manifestRef string, entry types.ModelEntry) {
 	// Track if we made changes
 	changed := false
 
-	// Add "validated" tag if model is validated and not already present
-	if entry.Validated && !contains(metadata.Tags, "validated") {
-		metadata.Tags = append(metadata.Tags, "validated")
-		changed = true
-		log.Printf("Added 'validated' tag to %s", manifestRef)
-	}
-
-	// Add "featured" tag if model is featured and not already present
-	if entry.Featured && !contains(metadata.Tags, "featured") {
-		metadata.Tags = append(metadata.Tags, "featured")
-		changed = true
-		log.Printf("Added 'featured' tag to %s", manifestRef)
+	// Add each label from the model entry as a tag if not already present
+	for _, label := range entry.Labels {
+		if label != "" && !contains(metadata.Tags, label) {
+			metadata.Tags = append(metadata.Tags, label)
+			changed = true
+			log.Printf("Added '%s' tag to %s", label, manifestRef)
+		}
 	}
 
 	// Write back the metadata if changes were made

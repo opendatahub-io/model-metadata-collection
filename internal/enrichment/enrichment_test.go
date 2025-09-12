@@ -344,8 +344,8 @@ func TestUpdateAllModelsWithOCIArtifacts(t *testing.T) {
 	// Create models config with test models
 	modelsConfig := types.ModelsConfig{
 		Models: []types.ModelEntry{
-			{Type: "oci", URI: "registry.example.com/test/model1:latest", Validated: true, Featured: false},
-			{Type: "oci", URI: "registry.example.com/test/model2:latest", Validated: true, Featured: false},
+			{Type: "oci", URI: "registry.example.com/test/model1:latest", Labels: []string{"validated"}},
+			{Type: "oci", URI: "registry.example.com/test/model2:latest", Labels: []string{"validated"}},
 		},
 	}
 

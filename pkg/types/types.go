@@ -4,10 +4,9 @@ import "time"
 
 // ModelEntry represents a single model entry in the models index
 type ModelEntry struct {
-	Type      string `yaml:"type"`      // "oci" for registry-based modelcar or "hf" for HuggingFace models
-	URI       string `yaml:"uri"`       // OCI link or HuggingFace link
-	Validated bool   `yaml:"validated"` // Whether the model has been validated
-	Featured  bool   `yaml:"featured"`  // Whether the model is featured
+	Type   string   `yaml:"type"`   // "oci" for registry-based modelcar or "hf" for HuggingFace models
+	URI    string   `yaml:"uri"`    // OCI link or HuggingFace link
+	Labels []string `yaml:"labels"` // Labels for the model (e.g., "validated", "featured", "lab-teacher", "lab-base")
 }
 
 // ModelsConfig represents the configuration of models to process
@@ -189,18 +188,18 @@ type CatalogOCIArtifact struct {
 
 // CatalogMetadata represents metadata for the catalog output without tags field
 type CatalogMetadata struct {
-	Name                     *string              `yaml:"name"`
-	Provider                 *string              `yaml:"provider"`
-	Description              *string              `yaml:"description"`
-	Readme                   *string              `yaml:"readme"`
-	Language                 []string             `yaml:"language"`
-	License                  *string              `yaml:"license"`
-	LicenseLink              *string              `yaml:"licenseLink"`
-	Tasks                    []string             `yaml:"tasks"`
-	CreateTimeSinceEpoch     *string              `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch *string              `yaml:"lastUpdateTimeSinceEpoch"`
+	Name                     *string                  `yaml:"name"`
+	Provider                 *string                  `yaml:"provider"`
+	Description              *string                  `yaml:"description"`
+	Readme                   *string                  `yaml:"readme"`
+	Language                 []string                 `yaml:"language"`
+	License                  *string                  `yaml:"license"`
+	LicenseLink              *string                  `yaml:"licenseLink"`
+	Tasks                    []string                 `yaml:"tasks"`
+	CreateTimeSinceEpoch     *string                  `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch *string                  `yaml:"lastUpdateTimeSinceEpoch"`
 	CustomProperties         map[string]MetadataValue `yaml:"customProperties,omitempty"`
-	Artifacts                []CatalogOCIArtifact `yaml:"artifacts"`
+	Artifacts                []CatalogOCIArtifact     `yaml:"artifacts"`
 }
 
 // ModelsCatalog represents the aggregated catalog of all models

@@ -151,7 +151,7 @@ func convertTimestampToString(timestamp *int64) *string {
 // convertTagsToCustomProperties converts all tags to customProperties format
 func convertTagsToCustomProperties(tags []string) map[string]types.MetadataValue {
 	customProps := make(map[string]types.MetadataValue)
-	
+
 	for _, tag := range tags {
 		if tag != "" { // Skip empty tags
 			customProps[tag] = types.MetadataValue{
@@ -160,6 +160,6 @@ func convertTagsToCustomProperties(tags []string) map[string]types.MetadataValue
 			}
 		}
 	}
-	
+
 	return customProps
 }

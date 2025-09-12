@@ -1176,6 +1176,9 @@ models:
         facebook:
             metadataType: MetadataStringValue
             string_value: ""
+        lab-teacher:
+            metadataType: MetadataStringValue
+            string_value: ""
         llama:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2120,6 +2123,9 @@ models:
             metadataType: MetadataStringValue
             string_value: ""
         featured:
+            metadataType: MetadataStringValue
+            string_value: ""
+        lab-teacher:
             metadataType: MetadataStringValue
             string_value: ""
         mistral:
@@ -4094,6 +4100,9 @@ models:
             metadataType: MetadataStringValue
             string_value: ""
         granite-3.1:
+            metadataType: MetadataStringValue
+            string_value: ""
+        lab-base:
             metadataType: MetadataStringValue
             string_value: ""
         language:

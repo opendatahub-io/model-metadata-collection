@@ -21,16 +21,13 @@ func TestLoadModelsFromYAML(t *testing.T) {
 			fileContent: `models:
   - type: "oci"
     uri: "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0"
-    validated: true
-    featured: false
+    labels: ["validated"]
   - type: "oci"
     uri: "registry.redhat.io/rhelai1/modelcar-llama-3-2-1b-instruct:1.0"
-    validated: true
-    featured: false
+    labels: ["validated"]
   - type: "hf"
     uri: "https://huggingface.co/microsoft/Phi-3.5-mini-instruct"
-    validated: true
-    featured: true`,
+    labels: ["validated", "featured"]`,
 			expected: []string{
 				"registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0",
 				"registry.redhat.io/rhelai1/modelcar-llama-3-2-1b-instruct:1.0",
@@ -49,8 +46,7 @@ func TestLoadModelsFromYAML(t *testing.T) {
 			fileContent: `models:
   - type: "oci"
     uri: "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0"
-    validated: true
-    featured: false`,
+    labels: ["validated"]`,
 			expected: []string{
 				"registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0",
 			},

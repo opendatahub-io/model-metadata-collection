@@ -7,7 +7,7 @@ A Go application for extracting, enriching, and cataloging metadata from Red Hat
 - **HuggingFace Collections Integration**: Automatically discovers and processes Red Hat AI validated model collections with version support (v1.0, v2.1, etc.)
 - **OCI Container Analysis**: Extracts model cards from container image layers with annotation-based detection; creates skeleton metadata when extraction fails to ensure enrichment continuity
 - **Metadata Enrichment**: Enriches model metadata with HuggingFace data including date-to-epoch conversion and quality validation, **with modelcard.md data taking priority over external sources**
-- **Automated Tagging**: Automatically adds "validated" and "featured" tags based on model configuration with intelligent tag merging
+- **Automated Tagging**: Automatically adds labels as tags based on model configuration with intelligent tag merging
 - **Registry Integration**: Fetches OCI artifact metadata from container registries
 - **Metadata Reporting**: Comprehensive analysis of metadata completeness, data source tracking, and quality metrics
 - **Flexible CLI**: Configurable input/output paths and processing options with skip flags for individual components
@@ -212,25 +212,22 @@ You can also provide a YAML file with structured model entries supporting both O
 models:
   - type: "oci"
     uri: "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base-quantized-w4a16:1.5"
-    validated: true
-    featured: false
+    labels: ["validated"]
   - type: "oci" 
     uri: "registry.redhat.io/rhelai1/modelcar-llama-3-3-70b-instruct:1.5"
-    validated: true
-    featured: true
+    labels: ["validated", "featured"]
   - type: "hf"
     uri: "https://huggingface.co/microsoft/Phi-3.5-mini-instruct"
-    validated: true
-    featured: false
+    labels: ["validated", "lab-teacher"]
 ```
 
 Each model entry supports the following fields:
 - **type**: `"oci"` for registry-based modelcar containers or `"hf"` for HuggingFace model links
 - **uri**: The OCI registry reference or HuggingFace model URL
-- **validated**: Boolean indicating whether the model has been validated (should be `true` for production models)
-  - Models with `validated: true` automatically receive a "validated" tag in their metadata
-- **featured**: Boolean indicating whether the model should be highlighted as featured (defaults to `false`)
-  - Models with `featured: true` automatically receive a "featured" tag in their metadata
+- **labels**: Array of labels that will be added as tags to the model metadata
+  - Common labels include: `"validated"`, `"featured"`, `"lab-teacher"`, `"lab-base"`
+  - Labels are automatically converted to customProperties in the final model catalog
+  - New labels can be added without code changes
 
 ### Version-Specific Index Files
 Generated automatically from HuggingFace collections:
@@ -275,8 +272,9 @@ language:
 license: apache-2.0
 licenseLink: https://www.apache.org/licenses/LICENSE-2.0
 tags:
-  - validated                    # Automatically added when validated: true
-  - featured                     # Automatically added when featured: true
+  - validated                    # From labels array in models-index.yaml
+  - featured                     # From labels array in models-index.yaml
+  - lab-teacher                  # Additional custom labels from models-index.yaml
   - granite                      # Tags from HuggingFace enrichment
   - language                     # Additional tags merged from various sources
 tasks:
@@ -443,7 +441,7 @@ The tool integrates with HuggingFace APIs to:
 4. **Skeleton Creation**: When modelcard extraction fails completely, creates minimal metadata structure for enrichment
 
 **Tag Management**: The tool implements intelligent tag merging:
-- "validated" and "featured" tags are automatically added based on model configuration
+- Labels from the models-index.yaml configuration are automatically added as tags
 - Existing modelcard tags are preserved and merged with HuggingFace enrichment tags
 - Duplicate tags are automatically deduplicated
 - Tag precedence follows the same hierarchy as data prioritization
