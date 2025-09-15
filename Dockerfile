@@ -14,8 +14,9 @@ COPY sample-data/ /app/benchmarks/
 
 # Set proper permissions
 RUN chmod 644 /app/data/models-catalog.yaml /app/data/models-index.yaml && \
-    chmod -R 644 /app/benchmarks && \
-    find /app/benchmarks -type d -exec chmod 755 {} \;
+    chmod -R 755 /app/benchmarks && \
+    chmod 644 /app/benchmarks/manifest.json && \
+    /bin/sh -c 'for f in /app/benchmarks/models/*/*/*/*; do [ -f "$f" ] && chmod 644 "$f" || true; done'
 
 # Create a non-root user for security
 RUN echo "catalog:x:1001:1001:Catalog User:/app:/sbin/nologin" >> /etc/passwd && \
