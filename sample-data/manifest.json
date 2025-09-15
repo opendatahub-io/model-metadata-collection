@@ -1,12 +1,7 @@
 {
   "version": "1.0.0",
   "generated_at": "2025-01-15T12:00:00Z",
-  "structure_type": "model_centric_unified",
   "description": "Sample model benchmark data organized by namespace/model/version",
-  "source_files": {
-    "model_accuracy": "sample-data/model-accuracy_sanitized.json",
-    "model_performance": "sample-data/model-performance-metrics_sanitized.json"
-  },
   "files": {
     "models/testcorp/sample-model/v1.0/model.ndjson": {
       "sha256": "a1b2c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789a",
