@@ -1,0 +1,4 @@
+# Global code owners for automatic review assignment
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @opendatahub-io/model-registry-maintainers

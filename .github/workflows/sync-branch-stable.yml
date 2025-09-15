@@ -15,7 +15,6 @@ jobs:
         id: pull
         uses: tretuna/sync-branches@1.4.0
         with:
-          TEAM_REVIEWERS: '["model-registry-maintainers"]'
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           FROM_BRANCH: "main"
           TO_BRANCH: "stable"
