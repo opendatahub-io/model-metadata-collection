@@ -2,15 +2,20 @@
 # Since models-catalog.yaml is now checked in by CI/CD, we only need to copy the files
 FROM registry.access.redhat.com/ubi9-micro:latest
 
-# Create directory for mounting by other applications
-RUN mkdir -p /app/data
+# Create directories for mounting by other applications
+RUN mkdir -p /app/data /app/benchmarks
 
 # Copy the pre-generated catalog and index files from the codebase
 COPY data/models-catalog.yaml /app/data/
 COPY data/models-index.yaml /app/data/
 
+# Copy sample data for benchmarks
+COPY sample-data/ /app/benchmarks/
+
 # Set proper permissions
-RUN chmod 644 /app/data/models-catalog.yaml /app/data/models-index.yaml
+RUN chmod 644 /app/data/models-catalog.yaml /app/data/models-index.yaml && \
+    chmod -R 644 /app/benchmarks && \
+    find /app/benchmarks -type d -exec chmod 755 {} \;
 
 # Create a non-root user for security
 RUN echo "catalog:x:1001:1001:Catalog User:/app:/sbin/nologin" >> /etc/passwd && \
@@ -23,8 +28,8 @@ USER 1001
 # Set working directory
 WORKDIR /app
 
-# Volume mount point for external applications
-VOLUME ["/app/data"]
+# Volume mount points for external applications
+VOLUME ["/app/data", "/app/benchmarks"]
 
 # Default command - just keep container running for data access
 CMD ["sleep", "infinity"]

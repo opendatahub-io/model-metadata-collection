@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2025-01-15T12:00:00Z",
+  "structure_type": "model_centric_unified",
+  "description": "Sample model benchmark data organized by namespace/model/version",
+  "source_files": {
+    "model_accuracy": "sample-data/model-accuracy_sanitized.json",
+    "model_performance": "sample-data/model-performance-metrics_sanitized.json"
+  },
+  "files": {
+    "models/testcorp/sample-model/v1.0/model.ndjson": {
+      "sha256": "a1b2c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789a",
+      "size": 256,
+      "last_modified": "2025-01-15T12:00:00Z",
+      "entity_type": "model_metadata"
+    },
+    "models/testcorp/sample-model/v1.0/performance-abc123def456.ndjson": {
+      "sha256": "b2c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789ab2",
+      "size": 512,
+      "last_modified": "2025-01-15T12:00:00Z",
+      "entity_type": "performance_metrics"
+    },
+    "models/testcorp/sample-model/v1.0/evaluations.ndjson": {
+      "sha256": "c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789abc3",
+      "size": 256,
+      "last_modified": "2025-01-15T12:00:00Z",
+      "entity_type": "model_evaluations"
+    },
+    "models/testcorp/sample-model/v1.0/validations.ndjson": {
+      "sha256": "d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789abcd4",
+      "size": 128,
+      "last_modified": "2025-01-15T12:00:00Z",
+      "entity_type": "model_validations"
+    }
+  },
+  "statistics": {
+    "total_files": 4,
+    "total_models": 1,
+    "total_namespaces": 1
+  },
+  "integrity": {
+    "checksum_algorithm": "sha256",
+    "verification_command": "find sample-data/model_benchmarks -name '*.ndjson' -exec sha256sum {} \\; | sort"
+  }
+}

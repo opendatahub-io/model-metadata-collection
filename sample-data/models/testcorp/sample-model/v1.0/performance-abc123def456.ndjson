@@ -1,0 +1,2 @@
+{"config_id": "abc123def456", "ttft_mean": 145.32, "ttft_p90": 168.75, "e2e_mean": 6850.42, "tps_mean": 3920.18, "hardware": "H100", "framework": "pytorch", "framework_version": "2.0.1", "docker_image": "testcorp/inference:2.0.1", "model_hf_repo_name": "testcorp/sample-model"}
+{"config_id": "def789ghi012", "ttft_mean": 132.18, "ttft_p90": 155.63, "e2e_mean": 7120.85, "tps_mean": 4156.92, "hardware": "A100", "framework": "pytorch", "framework_version": "2.0.1", "docker_image": "testcorp/inference:2.0.1", "model_hf_repo_name": "testcorp/sample-model"}

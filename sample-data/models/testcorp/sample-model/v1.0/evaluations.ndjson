@@ -1,0 +1,1 @@
+{"id": 1, "overall_average": 3.25, "arc_v1": 3.40, "mmlu_v1": 3.75, "gsm8k_v1": 2.60, "accelerator_type": "H100", "model_hf_repo_name": "testcorp/sample-model"}
