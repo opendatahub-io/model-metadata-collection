@@ -1,0 +1,2 @@
+{"metric": "accuracy", "value": 0.924, "dataset": "synthetic-text-v1", "evaluation_date": "2025-01-15T14:30:00Z"}
+{"metric": "f1_score", "value": 0.917, "dataset": "synthetic-text-v1", "evaluation_date": "2025-01-15T14:30:00Z"}

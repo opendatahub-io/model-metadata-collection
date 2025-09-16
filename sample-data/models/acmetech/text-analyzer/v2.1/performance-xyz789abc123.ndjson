@@ -1,0 +1,2 @@
+{"config_id": "xyz789abc123", "ttft_mean": 98.65, "ttft_p90": 112.34, "e2e_mean": 4230.18, "tps_mean": 5847.92, "hardware": "V100", "framework": "tensorflow", "framework_version": "2.8.0", "docker_image": "acmetech/inference:2.8.0", "model_hf_repo_name": "acmetech/text-analyzer"}
+{"config_id": "mno456pqr789", "ttft_mean": 87.42, "ttft_p90": 98.76, "e2e_mean": 3956.73, "tps_mean": 6102.45, "hardware": "T4", "framework": "tensorflow", "framework_version": "2.8.0", "docker_image": "acmetech/inference:2.8.0", "model_hf_repo_name": "acmetech/text-analyzer"}

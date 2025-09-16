@@ -26,12 +26,36 @@
       "size": 128,
       "last_modified": "2025-01-15T12:00:00Z",
       "entity_type": "model_validations"
+    },
+    "models/acmetech/text-analyzer/v2.1/model.ndjson": {
+      "sha256": "e5f6789abcdef0123456789abcdef0123456789abcdef0123456789abcde5",
+      "size": 312,
+      "last_modified": "2025-01-15T14:30:00Z",
+      "entity_type": "model_metadata"
+    },
+    "models/acmetech/text-analyzer/v2.1/performance-xyz789abc123.ndjson": {
+      "sha256": "f6789abcdef0123456789abcdef0123456789abcdef0123456789abcdef6",
+      "size": 648,
+      "last_modified": "2025-01-15T14:30:00Z",
+      "entity_type": "performance_metrics"
+    },
+    "models/acmetech/text-analyzer/v2.1/evaluations.ndjson": {
+      "sha256": "6789abcdef0123456789abcdef0123456789abcdef0123456789abcdef67",
+      "size": 278,
+      "last_modified": "2025-01-15T14:30:00Z",
+      "entity_type": "model_evaluations"
+    },
+    "models/acmetech/text-analyzer/v2.1/validations.ndjson": {
+      "sha256": "789abcdef0123456789abcdef0123456789abcdef0123456789abcdef678",
+      "size": 186,
+      "last_modified": "2025-01-15T14:30:00Z",
+      "entity_type": "model_validations"
     }
   },
   "statistics": {
-    "total_files": 4,
-    "total_models": 1,
-    "total_namespaces": 1
+    "total_files": 8,
+    "total_models": 2,
+    "total_namespaces": 2
   },
   "integrity": {
     "checksum_algorithm": "sha256",
