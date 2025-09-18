@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"embed"
 	"encoding/base64"
 	"fmt"
 	"log"
@@ -8,13 +9,26 @@ import (
 	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
 
-// LoadStaticCatalogs loads static catalog files and returns their models
+//go:embed assets/*.svg
+var assetsFS embed.FS
+
+// LoadStaticCatalogs loads and validates static catalog files from the provided file paths.
+// It reads YAML files containing pre-defined model metadata and returns a consolidated
+// slice of CatalogMetadata. Files that don't exist or fail validation are skipped with warnings.
+//
+// Parameters:
+//   - filePaths: slice of file paths to static catalog YAML files
+//
+// Returns:
+//   - []types.CatalogMetadata: consolidated models from all valid static catalogs
+//   - error: only returns error for critical failures, individual file errors are logged
 func LoadStaticCatalogs(filePaths []string) ([]types.CatalogMetadata, error) {
 	var allStaticModels []types.CatalogMetadata
 
@@ -57,7 +71,15 @@ func LoadStaticCatalogs(filePaths []string) ([]types.CatalogMetadata, error) {
 	return allStaticModels, nil
 }
 
-// validateStaticCatalog validates the structure of a static catalog
+// validateStaticCatalog validates the structural integrity of a static catalog.
+// It ensures required fields are present and properly formatted according to the
+// ModelsCatalog schema requirements.
+//
+// Parameters:
+//   - catalog: pointer to ModelsCatalog structure to validate
+//
+// Returns:
+//   - error: validation error if structure is invalid, nil if valid
 func validateStaticCatalog(catalog *types.ModelsCatalog) error {
 	if catalog.Source == "" {
 		return fmt.Errorf("static catalog missing required 'source' field")
@@ -83,7 +105,18 @@ func validateStaticCatalog(catalog *types.ModelsCatalog) error {
 	return nil
 }
 
-// CreateModelsCatalogWithStatic collects all metadata.yaml files, merges with static models, and creates a models-catalog.yaml
+// CreateModelsCatalogWithStatic generates a comprehensive models catalog by merging
+// dynamically extracted metadata with static model definitions. It walks the output
+// directory to find metadata.yaml files, converts them to catalog format, merges
+// static models (dynamic wins on name clashes), and emits a globally sorted catalog.
+//
+// Parameters:
+//   - outputDir: directory containing extracted model metadata files
+//   - catalogPath: output path for the generated models-catalog.yaml file
+//   - staticModels: pre-defined static model metadata to include in catalog
+//
+// Returns:
+//   - error: filesystem or marshaling errors, nil on success
 func CreateModelsCatalogWithStatic(outputDir, catalogPath string, staticModels []types.CatalogMetadata) error {
 	var allModels []types.ExtractedMetadata
 
@@ -135,15 +168,27 @@ func CreateModelsCatalogWithStatic(outputDir, catalogPath string, staticModels [
 		return nameI < nameJ
 	})
 
-	// Convert dynamic models to catalog metadata (excluding tags)
+	// Convert dynamic models to catalog metadata (tags mapped to customProperties)
 	var catalogModels []types.CatalogMetadata
 	for _, model := range allModels {
 		catalogModel := convertExtractedToCatalogMetadata(model)
 		catalogModels = append(catalogModels, catalogModel)
 	}
 
-	// Merge static models with dynamic models (static models are appended at the end)
-	catalogModels = append(catalogModels, staticModels...)
+	// Merge static models with dynamic models using deduplication
+	catalogModels = deduplicateModels(catalogModels, staticModels)
+
+	// Globally stable ordering after deduplication
+	sort.Slice(catalogModels, func(i, j int) bool {
+		var a, b string
+		if catalogModels[i].Name != nil {
+			a = *catalogModels[i].Name
+		}
+		if catalogModels[j].Name != nil {
+			b = *catalogModels[j].Name
+		}
+		return a < b
+	})
 
 	// Create the catalog structure
 	catalog := types.ModelsCatalog{
@@ -167,12 +212,29 @@ func CreateModelsCatalogWithStatic(outputDir, catalogPath string, staticModels [
 	return nil
 }
 
-// CreateModelsCatalog collects all metadata.yaml files and creates a models-catalog.yaml (backward compatibility)
+// CreateModelsCatalog generates a models catalog from dynamically extracted metadata only.
+// This function provides backward compatibility for workflows that don't use static catalogs.
+// It internally calls CreateModelsCatalogWithStatic with an empty static models slice.
+//
+// Parameters:
+//   - outputDir: directory containing extracted model metadata files
+//   - catalogPath: output path for the generated models-catalog.yaml file
+//
+// Returns:
+//   - error: filesystem or marshaling errors, nil on success
 func CreateModelsCatalog(outputDir, catalogPath string) error {
 	return CreateModelsCatalogWithStatic(outputDir, catalogPath, []types.CatalogMetadata{})
 }
 
-// convertExtractedToCatalogMetadata converts ExtractedMetadata to CatalogMetadata
+// convertExtractedToCatalogMetadata transforms ExtractedMetadata (internal format)
+// to CatalogMetadata (public catalog format). It handles timestamp conversions,
+// artifact format transformations, and tag-to-customProperties mapping.
+//
+// Parameters:
+//   - model: ExtractedMetadata structure from modelcard processing
+//
+// Returns:
+//   - types.CatalogMetadata: transformed metadata suitable for catalog output
 func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.CatalogMetadata {
 	// Convert timestamps to strings and use artifact values when model values are null
 	createTimeStr := convertTimestampToString(model.CreateTimeSinceEpoch)
@@ -222,7 +284,15 @@ func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.Cata
 	}
 }
 
-// convertTimestampToString converts an int64 timestamp to a string, returning nil if input is nil
+// convertTimestampToString safely converts Unix epoch timestamps to string format.
+// This function handles nil pointers gracefully and maintains type safety for
+// optional timestamp fields in the catalog format.
+//
+// Parameters:
+//   - timestamp: pointer to int64 Unix epoch timestamp, may be nil
+//
+// Returns:
+//   - *string: string representation of timestamp, nil if input is nil
 func convertTimestampToString(timestamp *int64) *string {
 	if timestamp == nil {
 		return nil
@@ -231,7 +301,15 @@ func convertTimestampToString(timestamp *int64) *string {
 	return &str
 }
 
-// convertTagsToCustomProperties converts all tags to customProperties format
+// convertTagsToCustomProperties transforms model tags into the catalog's customProperties
+// format. Each tag becomes a MetadataStringValue entry in the customProperties map.
+// Empty tags are filtered out to maintain data quality.
+//
+// Parameters:
+//   - tags: slice of string tags from model metadata
+//
+// Returns:
+//   - map[string]types.MetadataValue: customProperties map suitable for catalog format
 func convertTagsToCustomProperties(tags []string) map[string]types.MetadataValue {
 	customProps := make(map[string]types.MetadataValue)
 
@@ -247,12 +325,21 @@ func convertTagsToCustomProperties(tags []string) map[string]types.MetadataValue
 	return customProps
 }
 
-// determineLogo determines which logo to use based on model tags and returns base64-encoded data URI
+// determineLogo selects the appropriate logo based on model validation status.
+// Models with "validated" tag receive the validated model logo, while others
+// get the standard model logo. Returns a base64-encoded data URI for embedding.
+//
+// Parameters:
+//   - tags: slice of model tags to examine for validation status
+//
+// Returns:
+//   - *string: base64-encoded data URI of the selected logo, nil if encoding fails
 func determineLogo(tags []string) *string {
 	var svgPath string
 
 	// Check if the model has the "validated" label
-	for _, tag := range tags {
+	for _, raw := range tags {
+		tag := strings.TrimSpace(strings.ToLower(raw))
 		if tag == "validated" {
 			svgPath = "assets/catalog-validated_model.svg"
 			break
@@ -269,15 +356,23 @@ func determineLogo(tags []string) *string {
 	return dataUri
 }
 
-// encodeSVGToDataURI reads an SVG file and returns a base64-encoded data URI
+// encodeSVGToDataURI reads an SVG file from the embedded filesystem and converts it to
+// a base64-encoded data URI suitable for embedding in web contexts. Uses go:embed for
+// reliable asset access independent of working directory. Provides fallback logo if
+// embedded assets fail to load.
+//
+// Parameters:
+//   - svgPath: embedded filesystem path to the SVG file to encode
+//
+// Returns:
+//   - *string: base64-encoded data URI, never nil (provides fallback on failures)
 func encodeSVGToDataURI(svgPath string) *string {
-	// Read the SVG file
-	svgContent, err := os.ReadFile(svgPath)
+	// Read the SVG file from embedded filesystem
+	svgContent, err := assetsFS.ReadFile(svgPath)
 	if err != nil {
-		log.Printf("Warning: Failed to read SVG file %s: %v", svgPath, err)
-		// Return the file path as fallback
-		fallback := svgPath
-		return &fallback
+		log.Printf("Warning: Failed to read embedded SVG file %s: %v", svgPath, err)
+		log.Printf("Using fallback logo due to asset loading failure")
+		return getFallbackLogo()
 	}
 
 	// Encode to base64
@@ -286,4 +381,68 @@ func encodeSVGToDataURI(svgPath string) *string {
 	// Create data URI
 	dataUri := "data:image/svg+xml;base64," + base64Content
 	return &dataUri
+}
+
+// getFallbackLogo provides a minimal SVG logo when embedded assets fail to load.
+// This ensures logo field is never nil and maintains consistent catalog structure.
+//
+// Returns:
+//   - *string: base64-encoded fallback SVG data URI
+func getFallbackLogo() *string {
+	// Minimal fallback SVG - a simple gray circle with "M" text
+	fallbackSVG := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+		<circle cx="50" cy="50" r="40" fill="#888" stroke="#333" stroke-width="2"/>
+		<text x="50" y="60" font-family="Arial, sans-serif" font-size="36" font-weight="bold" 
+			  text-anchor="middle" fill="white">M</text>
+	</svg>`
+
+	base64Content := base64.StdEncoding.EncodeToString([]byte(fallbackSVG))
+	dataUri := "data:image/svg+xml;base64," + base64Content
+	return &dataUri
+}
+
+// deduplicateModels merges dynamic and static models while preventing duplicates.
+// Dynamic models take precedence over static models when names match. This ensures
+// that automatically extracted metadata is preferred over pre-defined static data.
+//
+// Parameters:
+//   - dynamicModels: models extracted from container registries (higher precedence)
+//   - staticModels: models from static catalog files (lower precedence)
+//
+// Returns:
+//   - []types.CatalogMetadata: deduplicated list with dynamic models first, unique static models appended
+func deduplicateModels(dynamicModels, staticModels []types.CatalogMetadata) []types.CatalogMetadata {
+	// Create map of normalized dynamic model names for efficient lookup
+	dynamicNameMap := make(map[string]bool)
+	for _, model := range dynamicModels {
+		if model.Name != nil {
+			k := strings.ToLower(strings.TrimSpace(*model.Name))
+			if k != "" {
+				dynamicNameMap[k] = true
+			}
+		}
+	}
+
+	// Start with all dynamic models
+	result := make([]types.CatalogMetadata, len(dynamicModels))
+	copy(result, dynamicModels)
+
+	// Add static models only if their name doesn't already exist in dynamic models
+	for _, staticModel := range staticModels {
+		if staticModel.Name != nil {
+			k := strings.ToLower(strings.TrimSpace(*staticModel.Name))
+			if k == "" {
+				continue
+			}
+			if !dynamicNameMap[k] {
+				result = append(result, staticModel)
+				// Track this name to prevent duplicates within static models
+				dynamicNameMap[k] = true
+			} else {
+				log.Printf("  Skipping duplicate static model: %s (dynamic version takes precedence)", *staticModel.Name)
+			}
+		}
+	}
+
+	return result
 }

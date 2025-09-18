@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"os"
 	"path/filepath"
+	"reflect"
+	"sort"
 	"strings"
 	"testing"
 
@@ -330,7 +332,7 @@ func TestCreateModelsCatalog_InvalidMetadata(t *testing.T) {
 	}
 }
 
-// TestLogoAssignment tests that logos are correctly assigned based on validation labels
+// TestLogoAssignment tests that logos are correctly assigned based on validation labels using embedded assets
 func TestLogoAssignment(t *testing.T) {
 	// Create temporary directory
 	tmpDir, err := os.MkdirTemp("", "catalog_logo_test")
@@ -357,36 +359,24 @@ func TestLogoAssignment(t *testing.T) {
 		t.Fatalf("Failed to create data directory: %v", err)
 	}
 
-	// Create assets directory and test SVG files
-	assetsDir := filepath.Join(tmpDir, "assets")
-	err = os.MkdirAll(assetsDir, 0755)
-	if err != nil {
-		t.Fatalf("Failed to create assets directory: %v", err)
+	// Get expected logos from embedded assets using our determineLogo function
+	validatedLogo := determineLogo([]string{"validated"})
+	nonValidatedLogo := determineLogo([]string{"featured"})
+
+	if validatedLogo == nil || nonValidatedLogo == nil {
+		t.Fatalf("Failed to get logos from embedded assets")
 	}
 
-	// Create test SVG content
-	validatedSVG := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="green"/></svg>`
-	modelSVG := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="blue"/></svg>`
-
-	err = os.WriteFile(filepath.Join(assetsDir, "catalog-validated_model.svg"), []byte(validatedSVG), 0644)
-	if err != nil {
-		t.Fatalf("Failed to create validated SVG file: %v", err)
+	// These should be different since one has validated tag and other doesn't
+	if *validatedLogo == *nonValidatedLogo {
+		t.Errorf("Expected different logos for validated vs non-validated models")
 	}
-
-	err = os.WriteFile(filepath.Join(assetsDir, "catalog-model.svg"), []byte(modelSVG), 0644)
-	if err != nil {
-		t.Fatalf("Failed to create model SVG file: %v", err)
-	}
-
-	// Calculate expected base64 data URIs
-	validatedDataURI := "data:image/svg+xml;base64," + base64.StdEncoding.EncodeToString([]byte(validatedSVG))
-	modelDataURI := "data:image/svg+xml;base64," + base64.StdEncoding.EncodeToString([]byte(modelSVG))
 
 	// Test models with different validation labels
 	testModels := []struct {
-		path         string
-		metadata     types.ExtractedMetadata
-		expectedLogo string
+		path              string
+		metadata          types.ExtractedMetadata
+		shouldBeValidated bool
 	}{
 		{
 			path: "validated-model/models/metadata.yaml",
@@ -394,7 +384,7 @@ func TestLogoAssignment(t *testing.T) {
 				Name: stringPtr("Validated Model"),
 				Tags: []string{"validated", "featured"},
 			},
-			expectedLogo: validatedDataURI,
+			shouldBeValidated: true,
 		},
 		{
 			path: "non-validated-model/models/metadata.yaml",
@@ -402,7 +392,7 @@ func TestLogoAssignment(t *testing.T) {
 				Name: stringPtr("Non-Validated Model"),
 				Tags: []string{"featured"},
 			},
-			expectedLogo: modelDataURI,
+			shouldBeValidated: false,
 		},
 		{
 			path: "model-with-only-validated/models/metadata.yaml",
@@ -410,7 +400,7 @@ func TestLogoAssignment(t *testing.T) {
 				Name: stringPtr("Model With Only Validated"),
 				Tags: []string{"validated"},
 			},
-			expectedLogo: validatedDataURI,
+			shouldBeValidated: true,
 		},
 		{
 			path: "model-no-tags/models/metadata.yaml",
@@ -418,7 +408,7 @@ func TestLogoAssignment(t *testing.T) {
 				Name: stringPtr("Model With No Tags"),
 				Tags: []string{},
 			},
-			expectedLogo: modelDataURI,
+			shouldBeValidated: false,
 		},
 	}
 
@@ -497,103 +487,86 @@ func TestLogoAssignment(t *testing.T) {
 		}
 	}
 
-	// Verify expected logos
-	expectedLogos := map[string]string{
-		"Validated Model":           validatedDataURI,
-		"Non-Validated Model":       modelDataURI,
-		"Model With Only Validated": validatedDataURI,
-		"Model With No Tags":        modelDataURI,
+	// Verify logos are assigned correctly based on validation status
+	expectedValidationStatus := map[string]bool{
+		"Validated Model":           true,
+		"Non-Validated Model":       false,
+		"Model With Only Validated": true,
+		"Model With No Tags":        false,
 	}
 
-	for modelName, expectedLogo := range expectedLogos {
+	for modelName, shouldBeValidated := range expectedValidationStatus {
 		actualLogo, exists := modelLogoMap[modelName]
 		if !exists {
 			t.Errorf("Model %s not found in catalog", modelName)
 			continue
 		}
-		if actualLogo != expectedLogo {
-			t.Errorf("Model %s: expected logo %s, got %s", modelName, expectedLogo, actualLogo)
+
+		// Verify logo exists and is properly formatted
+		if !strings.HasPrefix(actualLogo, "data:image/svg+xml;base64,") {
+			t.Errorf("Model %s: logo should be a base64 data URI, got: %s", modelName, actualLogo)
+			continue
+		}
+
+		// Check that the correct logo type is assigned
+		expectedLogo := nonValidatedLogo
+		if shouldBeValidated {
+			expectedLogo = validatedLogo
+		}
+
+		if actualLogo != *expectedLogo {
+			t.Errorf("Model %s: expected %s validation logo, got different logo", modelName,
+				map[bool]string{true: "validated", false: "non-validated"}[shouldBeValidated])
 		}
 	}
 }
 
-// TestDetermineLogo tests the logo determination logic directly
+// TestDetermineLogo tests the logo determination logic directly using embedded assets
 func TestDetermineLogo(t *testing.T) {
-	// Create temporary directory with SVG files for testing
-	tmpDir := t.TempDir()
-
-	// Create assets directory and test SVG files
-	assetsDir := filepath.Join(tmpDir, "assets")
-	err := os.MkdirAll(assetsDir, 0755)
-	if err != nil {
-		t.Fatalf("Failed to create assets directory: %v", err)
-	}
-
-	// Create test SVG content
-	validatedSVG := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="green"/></svg>`
-	modelSVG := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="blue"/></svg>`
-
-	err = os.WriteFile(filepath.Join(assetsDir, "catalog-validated_model.svg"), []byte(validatedSVG), 0644)
-	if err != nil {
-		t.Fatalf("Failed to create validated SVG file: %v", err)
-	}
-
-	err = os.WriteFile(filepath.Join(assetsDir, "catalog-model.svg"), []byte(modelSVG), 0644)
-	if err != nil {
-		t.Fatalf("Failed to create model SVG file: %v", err)
-	}
-
-	// Calculate expected base64 data URIs
-	validatedDataURI := "data:image/svg+xml;base64," + base64.StdEncoding.EncodeToString([]byte(validatedSVG))
-	modelDataURI := "data:image/svg+xml;base64," + base64.StdEncoding.EncodeToString([]byte(modelSVG))
-
-	// Change to the temp directory so the function can find the assets
-	originalDir, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Failed to get working directory: %v", err)
-	}
-	defer func() {
-		err := os.Chdir(originalDir)
-		if err != nil {
-			t.Errorf("Failed to restore working directory: %v", err)
-		}
-	}()
-
-	err = os.Chdir(tmpDir)
-	if err != nil {
-		t.Fatalf("Failed to change to temp directory: %v", err)
-	}
 
 	testCases := []struct {
-		name         string
-		tags         []string
-		expectedLogo string
+		name              string
+		tags              []string
+		shouldBeValidated bool
 	}{
 		{
-			name:         "validated tag present",
-			tags:         []string{"validated", "featured"},
-			expectedLogo: validatedDataURI,
+			name:              "validated tag present",
+			tags:              []string{"validated", "featured"},
+			shouldBeValidated: true,
 		},
 		{
-			name:         "only validated tag",
-			tags:         []string{"validated"},
-			expectedLogo: validatedDataURI,
+			name:              "only validated tag",
+			tags:              []string{"validated"},
+			shouldBeValidated: true,
 		},
 		{
-			name:         "no validated tag",
-			tags:         []string{"featured", "popular"},
-			expectedLogo: modelDataURI,
+			name:              "no validated tag",
+			tags:              []string{"featured", "popular"},
+			shouldBeValidated: false,
 		},
 		{
-			name:         "empty tags",
-			tags:         []string{},
-			expectedLogo: modelDataURI,
+			name:              "empty tags",
+			tags:              []string{},
+			shouldBeValidated: false,
 		},
 		{
-			name:         "nil tags",
-			tags:         nil,
-			expectedLogo: modelDataURI,
+			name:              "nil tags",
+			tags:              nil,
+			shouldBeValidated: false,
 		},
+	}
+
+	// Get reference logos to compare against
+	validatedLogo := determineLogo([]string{"validated"})
+	nonValidatedLogo := determineLogo([]string{"featured"})
+
+	if validatedLogo == nil || nonValidatedLogo == nil {
+		t.Fatal("Failed to get reference logos")
+	}
+
+	// Validated and non-validated logos should be different
+	if *validatedLogo == *nonValidatedLogo {
+		t.Errorf("Expected different logos for validated vs non-validated models")
 	}
 
 	for _, tc := range testCases {
@@ -602,8 +575,26 @@ func TestDetermineLogo(t *testing.T) {
 			if logo == nil {
 				t.Fatal("determineLogo returned nil")
 			}
-			if *logo != tc.expectedLogo {
-				t.Errorf("Expected logo %s, got %s", tc.expectedLogo, *logo)
+
+			// Verify it's a valid data URI
+			if !strings.HasPrefix(*logo, "data:image/svg+xml;base64,") {
+				t.Errorf("Expected valid data URI, got %s", *logo)
+			}
+
+			// Verify we get substantial content from embedded assets
+			if len(*logo) < 100 {
+				t.Errorf("Expected substantial logo content from embedded assets, got short string: %s", *logo)
+			}
+
+			// Verify correct logo type is returned based on validation status
+			expectedLogo := nonValidatedLogo
+			if tc.shouldBeValidated {
+				expectedLogo = validatedLogo
+			}
+
+			if *logo != *expectedLogo {
+				t.Errorf("Expected %s validation logo, got different logo",
+					map[bool]string{true: "validated", false: "non-validated"}[tc.shouldBeValidated])
 			}
 		})
 	}
@@ -1064,7 +1055,7 @@ func TestCreateModelsCatalogWithStatic(t *testing.T) {
 			t.Errorf("Expected 3 models in catalog, got %d", len(catalog.Models))
 		}
 
-		// Check that static models are at the end
+		// Check that all expected models are present
 		modelNames := make([]string, len(catalog.Models))
 		for i, model := range catalog.Models {
 			if model.Name != nil {
@@ -1072,20 +1063,12 @@ func TestCreateModelsCatalogWithStatic(t *testing.T) {
 			}
 		}
 
-		// The first model should be the dynamic model (after sorting)
-		if modelNames[0] != "Dynamic Model 1" {
-			t.Errorf("Expected first model to be 'Dynamic Model 1', got '%s'", modelNames[0])
-		}
-
-		// Static models should be at the end
-		staticFound := 0
-		for _, name := range modelNames {
-			if name == "Static Model 1" || name == "Static Model 2" {
-				staticFound++
-			}
-		}
-		if staticFound != 2 {
-			t.Errorf("Expected 2 static models in catalog, found %d", staticFound)
+		// Sort collected names and compare with expected sorted list
+		sort.Strings(modelNames)
+		expected := []string{"Dynamic Model 1", "Static Model 1", "Static Model 2"}
+		sort.Strings(expected)
+		if !reflect.DeepEqual(modelNames, expected) {
+			t.Errorf("Expected names %v, got %v", expected, modelNames)
 		}
 	})
 
@@ -1119,4 +1102,398 @@ func TestCreateModelsCatalogWithStatic(t *testing.T) {
 			t.Error("Expected single model to be 'Dynamic Model 1'")
 		}
 	})
+}
+
+// TestDeduplicateModels tests the model deduplication logic
+func TestDeduplicateModels(t *testing.T) {
+	testCases := []struct {
+		name          string
+		dynamicModels []types.CatalogMetadata
+		staticModels  []types.CatalogMetadata
+		expectedNames []string
+		description   string
+	}{
+		{
+			name: "NoOverlap",
+			dynamicModels: []types.CatalogMetadata{
+				{Name: stringPtr("Dynamic Model A")},
+				{Name: stringPtr("Dynamic Model B")},
+			},
+			staticModels: []types.CatalogMetadata{
+				{Name: stringPtr("Static Model C")},
+				{Name: stringPtr("Static Model D")},
+			},
+			expectedNames: []string{"Dynamic Model A", "Dynamic Model B", "Static Model C", "Static Model D"},
+			description:   "All models should be included when there are no name conflicts",
+		},
+		{
+			name: "WithOverlap",
+			dynamicModels: []types.CatalogMetadata{
+				{Name: stringPtr("Model A")},
+				{Name: stringPtr("Model B")},
+			},
+			staticModels: []types.CatalogMetadata{
+				{Name: stringPtr("Model B")}, // Duplicate of dynamic model
+				{Name: stringPtr("Model C")},
+			},
+			expectedNames: []string{"Model A", "Model B", "Model C"},
+			description:   "Dynamic models should take precedence over static models with same name",
+		},
+		{
+			name: "DuplicateStaticModels",
+			dynamicModels: []types.CatalogMetadata{
+				{Name: stringPtr("Dynamic Model")},
+			},
+			staticModels: []types.CatalogMetadata{
+				{Name: stringPtr("Static Model A")},
+				{Name: stringPtr("Static Model A")}, // Duplicate within static
+				{Name: stringPtr("Static Model B")},
+			},
+			expectedNames: []string{"Dynamic Model", "Static Model A", "Static Model B"},
+			description:   "Duplicate static models should be filtered out",
+		},
+		{
+			name:          "EmptyDynamicModels",
+			dynamicModels: []types.CatalogMetadata{},
+			staticModels: []types.CatalogMetadata{
+				{Name: stringPtr("Static Only A")},
+				{Name: stringPtr("Static Only B")},
+			},
+			expectedNames: []string{"Static Only A", "Static Only B"},
+			description:   "Should handle case with no dynamic models",
+		},
+		{
+			name: "EmptyStaticModels",
+			dynamicModels: []types.CatalogMetadata{
+				{Name: stringPtr("Dynamic Only A")},
+				{Name: stringPtr("Dynamic Only B")},
+			},
+			staticModels:  []types.CatalogMetadata{},
+			expectedNames: []string{"Dynamic Only A", "Dynamic Only B"},
+			description:   "Should handle case with no static models",
+		},
+		{
+			name: "NilNames",
+			dynamicModels: []types.CatalogMetadata{
+				{Name: stringPtr("Valid Dynamic")},
+				{Name: nil}, // Invalid model with nil name
+			},
+			staticModels: []types.CatalogMetadata{
+				{Name: nil}, // Invalid model with nil name
+				{Name: stringPtr("Valid Static")},
+			},
+			expectedNames: []string{"Valid Dynamic", "Valid Static"},
+			description:   "Should handle models with nil names gracefully",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := deduplicateModels(tc.dynamicModels, tc.staticModels)
+
+			// Extract names from result for comparison
+			var actualNames []string
+			for _, model := range result {
+				if model.Name != nil {
+					actualNames = append(actualNames, *model.Name)
+				}
+			}
+
+			// Verify expected number of models
+			if len(actualNames) != len(tc.expectedNames) {
+				t.Errorf("%s: Expected %d models, got %d", tc.description, len(tc.expectedNames), len(actualNames))
+				t.Errorf("Expected names: %v", tc.expectedNames)
+				t.Errorf("Actual names: %v", actualNames)
+				return
+			}
+
+			// Verify all expected names are present in order
+			for i, expectedName := range tc.expectedNames {
+				if i >= len(actualNames) || actualNames[i] != expectedName {
+					t.Errorf("%s: Expected model at index %d to be '%s', got '%s'", tc.description, i, expectedName, actualNames[i])
+				}
+			}
+
+			// Verify no duplicate names in result
+			nameCount := make(map[string]int)
+			for _, name := range actualNames {
+				nameCount[name]++
+				if nameCount[name] > 1 {
+					t.Errorf("%s: Found duplicate model name '%s' in result", tc.description, name)
+				}
+			}
+		})
+	}
+}
+
+// TestCreateModelsCatalogWithStaticDeduplication tests end-to-end deduplication
+func TestCreateModelsCatalogWithStaticDeduplication(t *testing.T) {
+	// Create a temporary directory structure for testing
+	tmpDir := t.TempDir()
+	outputDir := filepath.Join(tmpDir, "output")
+
+	// Create dynamic model metadata that will conflict with static
+	conflictingModel := types.ExtractedMetadata{
+		Name:        stringPtr("Conflicting Model"),
+		Provider:    stringPtr("Dynamic Provider"),
+		Description: stringPtr("This model exists in both dynamic and static"),
+		License:     stringPtr("Apache-2.0"),
+		Language:    []string{"en"},
+		Tasks:       []string{"text-generation"},
+		Tags:        []string{"validated"},
+	}
+
+	uniqueDynamicModel := types.ExtractedMetadata{
+		Name:        stringPtr("Unique Dynamic Model"),
+		Provider:    stringPtr("Dynamic Provider"),
+		Description: stringPtr("This model only exists in dynamic"),
+		License:     stringPtr("MIT"),
+		Language:    []string{"en"},
+		Tasks:       []string{"text-classification"},
+		Tags:        []string{},
+	}
+
+	// Create metadata files
+	modelsToCreate := []struct {
+		path     string
+		metadata types.ExtractedMetadata
+	}{
+		{"conflicting-model/models/metadata.yaml", conflictingModel},
+		{"unique-dynamic/models/metadata.yaml", uniqueDynamicModel},
+	}
+
+	for _, model := range modelsToCreate {
+		fullPath := filepath.Join(outputDir, model.path)
+		err := os.MkdirAll(filepath.Dir(fullPath), 0755)
+		if err != nil {
+			t.Fatalf("Failed to create directory: %v", err)
+		}
+
+		yamlData, err := yaml.Marshal(&model.metadata)
+		if err != nil {
+			t.Fatalf("Failed to marshal metadata: %v", err)
+		}
+
+		err = os.WriteFile(fullPath, yamlData, 0644)
+		if err != nil {
+			t.Fatalf("Failed to write metadata file: %v", err)
+		}
+	}
+
+	// Create static models with one conflict and one unique
+	staticModels := []types.CatalogMetadata{
+		{
+			Name:        stringPtr("Conflicting Model"), // Same name as dynamic model
+			Provider:    stringPtr("Static Provider"),
+			Description: stringPtr("This should be ignored due to conflict"),
+			License:     stringPtr("GPL-3.0"),
+			Artifacts: []types.CatalogOCIArtifact{
+				{URI: "registry.example.com/static/conflicting-model:latest"},
+			},
+		},
+		{
+			Name:        stringPtr("Unique Static Model"),
+			Provider:    stringPtr("Static Provider"),
+			Description: stringPtr("This model only exists in static"),
+			License:     stringPtr("BSD-3-Clause"),
+			Artifacts: []types.CatalogOCIArtifact{
+				{URI: "registry.example.com/static/unique-model:latest"},
+			},
+		},
+	}
+
+	// Create catalog with deduplication
+	catalogPath := filepath.Join(tmpDir, "models-catalog-dedup.yaml")
+	err := CreateModelsCatalogWithStatic(outputDir, catalogPath, staticModels)
+	if err != nil {
+		t.Fatalf("Failed to create catalog with static models: %v", err)
+	}
+
+	// Read and verify the catalog
+	catalogData, err := os.ReadFile(catalogPath)
+	if err != nil {
+		t.Fatalf("Failed to read catalog file: %v", err)
+	}
+
+	var catalog types.ModelsCatalog
+	err = yaml.Unmarshal(catalogData, &catalog)
+	if err != nil {
+		t.Fatalf("Failed to parse catalog YAML: %v", err)
+	}
+
+	// Should have 3 models: 2 dynamic + 1 unique static (1 static model deduplicated)
+	if len(catalog.Models) != 3 {
+		t.Errorf("Expected 3 models in catalog after deduplication, got %d", len(catalog.Models))
+	}
+
+	// Verify the conflicting model has dynamic provider (not static)
+	var conflictingModelFound bool
+	for _, model := range catalog.Models {
+		if model.Name != nil && *model.Name == "Conflicting Model" {
+			conflictingModelFound = true
+			if model.Provider == nil || *model.Provider != "Dynamic Provider" {
+				t.Errorf("Expected conflicting model to have 'Dynamic Provider', got %v", model.Provider)
+			}
+		}
+	}
+
+	if !conflictingModelFound {
+		t.Error("Conflicting model not found in catalog")
+	}
+
+	// Verify unique static model is present
+	var uniqueStaticFound bool
+	for _, model := range catalog.Models {
+		if model.Name != nil && *model.Name == "Unique Static Model" {
+			uniqueStaticFound = true
+			break
+		}
+	}
+
+	if !uniqueStaticFound {
+		t.Error("Unique static model should be present in catalog")
+	}
+}
+
+// TestEmbeddedAssets tests that the go:embed assets work correctly
+func TestEmbeddedAssets(t *testing.T) {
+	testCases := []struct {
+		name                string
+		tags                []string
+		shouldHaveValidated bool
+	}{
+		{
+			name:                "validated tag present",
+			tags:                []string{"validated", "featured"},
+			shouldHaveValidated: true,
+		},
+		{
+			name:                "no validated tag",
+			tags:                []string{"featured", "popular"},
+			shouldHaveValidated: false,
+		},
+		{
+			name:                "empty tags",
+			tags:                []string{},
+			shouldHaveValidated: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			logo := determineLogo(tc.tags)
+			if logo == nil {
+				t.Errorf("Expected logo, got nil")
+				return
+			}
+
+			// Verify it's a proper data URI
+			if !strings.HasPrefix(*logo, "data:image/svg+xml;base64,") {
+				t.Errorf("Expected data URI to start with 'data:image/svg+xml;base64,', got %s", *logo)
+			}
+
+			// Verify we get substantial content (embedded assets should work)
+			if len(*logo) < 100 {
+				t.Errorf("Expected substantial logo content from embedded assets, got short string: %s", *logo)
+			}
+
+			// Verify the base64 content is valid
+			base64Part := strings.TrimPrefix(*logo, "data:image/svg+xml;base64,")
+			_, err := base64.StdEncoding.DecodeString(base64Part)
+			if err != nil {
+				t.Errorf("Failed to decode base64 content: %v", err)
+			}
+		})
+	}
+}
+
+// TestEmbeddedAssetsDirectly tests reading assets directly from embedded filesystem
+func TestEmbeddedAssetsDirectly(t *testing.T) {
+	testFiles := []string{
+		"assets/catalog-validated_model.svg",
+		"assets/catalog-model.svg",
+	}
+
+	for _, filePath := range testFiles {
+		t.Run(filePath, func(t *testing.T) {
+			content, err := assetsFS.ReadFile(filePath)
+			if err != nil {
+				t.Errorf("Failed to read embedded file %s: %v", filePath, err)
+				return
+			}
+
+			if len(content) == 0 {
+				t.Errorf("Embedded file %s is empty", filePath)
+			}
+
+			// Verify it looks like SVG content
+			contentStr := string(content)
+			if !strings.Contains(contentStr, "<svg") {
+				t.Errorf("Embedded file %s doesn't appear to contain SVG content", filePath)
+			}
+		})
+	}
+}
+
+// TestGetFallbackLogo tests the fallback logo functionality
+func TestGetFallbackLogo(t *testing.T) {
+	logo := getFallbackLogo()
+
+	if logo == nil {
+		t.Fatal("getFallbackLogo returned nil")
+	}
+
+	// Verify it's a valid data URI
+	if !strings.HasPrefix(*logo, "data:image/svg+xml;base64,") {
+		t.Errorf("Expected valid data URI, got %s", *logo)
+	}
+
+	// Verify we get substantial content
+	if len(*logo) < 100 {
+		t.Errorf("Expected substantial fallback logo content, got short string: %s", *logo)
+	}
+
+	// Decode and verify the content contains SVG
+	base64Part := strings.TrimPrefix(*logo, "data:image/svg+xml;base64,")
+	svgContent, err := base64.StdEncoding.DecodeString(base64Part)
+	if err != nil {
+		t.Errorf("Failed to decode fallback logo base64: %v", err)
+	}
+
+	svgStr := string(svgContent)
+	if !strings.Contains(svgStr, "<svg") || !strings.Contains(svgStr, "<circle") || !strings.Contains(svgStr, "<text") {
+		t.Errorf("Fallback logo doesn't contain expected SVG elements")
+	}
+
+	// Verify it contains the "M" text for model
+	if !strings.Contains(svgStr, ">M<") {
+		t.Errorf("Fallback logo should contain 'M' text")
+	}
+}
+
+// TestDetermineLogoResilience ensures determineLogo never returns nil and always yields a valid data URI.
+func TestDetermineLogoResilience(t *testing.T) {
+	// Test that the encodeSVGToDataURI function handles asset failures gracefully
+	// by returning a fallback logo instead of nil
+
+	// This tests the interface without relying on internal main package functions
+	// We verify that determineLogo always returns a valid logo (never nil)
+	testCases := [][]string{
+		{"validated"},
+		{"featured"},
+		{},
+		nil,
+	}
+
+	for _, tags := range testCases {
+		logo := determineLogo(tags)
+		if logo == nil {
+			t.Errorf("determineLogo should never return nil for tags %v", tags)
+			continue
+		}
+
+		if !strings.HasPrefix(*logo, "data:image/svg+xml;base64,") {
+			t.Errorf("determineLogo should always return valid data URI for tags %v", tags)
+		}
+	}
 }

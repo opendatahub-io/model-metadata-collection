@@ -232,6 +232,39 @@ models:
       - uri: oci://example.com/static-model:1.0
 ```
 
+#### Static Catalog Merge Behavior
+
+When static catalogs are merged with dynamically extracted models, the following behavior applies:
+
+##### Merge Process
+
+1. **Processing Order**: Dynamic models (extracted from containers) are processed first
+2. **Deduplication**: Static models with the same name as dynamic models are automatically skipped
+3. **Precedence Rules**: Dynamic models always take precedence over static models with identical names
+4. **Append Strategy**: Unique static models (no name conflicts) are appended to the catalog
+
+##### Merge Examples
+
+###### Scenario 1: No Name Conflicts
+- Dynamic models: `ModelA`, `ModelB`
+- Static models: `ModelC`, `ModelD`
+- **Result**: `ModelA`, `ModelB`, `ModelC`, `ModelD` (all models included)
+
+###### Scenario 2: With Name Conflicts
+- Dynamic models: `ModelA`, `ModelB`
+- Static models: `ModelB`, `ModelC`
+- **Result**: `ModelA`, `ModelB` (dynamic), `ModelC` (static `ModelB` skipped)
+
+###### Scenario 3: Static-Only Models
+- Dynamic models: (none)
+- Static models: `ModelA`, `ModelB`
+- **Result**: `ModelA`, `ModelB` (all static models included)
+
+##### Conflict Resolution
+- When conflicts occur, a warning is logged: `"Skipping duplicate static model: ModelName (dynamic version takes precedence)"`
+- Dynamic metadata (from container extraction) is considered more authoritative than static definitions
+- This ensures the catalog reflects the actual deployed model artifacts
+
 ### Manual YAML Input
 You can also provide a YAML file with structured model entries supporting both OCI registry and HuggingFace model references:
 
@@ -461,13 +494,17 @@ The tool integrates with HuggingFace APIs to:
 - Extract provider information from README files
 - Parse structured data from model tags
 
-**Data Prioritization**: The tool follows a strict data priority hierarchy:
+#### Data Prioritization
+
+The tool follows a strict data priority hierarchy:
 1. **Primary**: Data extracted from `modelcard.md` files in container layers (highest priority)
 2. **Secondary**: HuggingFace API data (used only when modelcard.md data is missing or empty)
 3. **Fallback**: Registry metadata and generated defaults
 4. **Skeleton Creation**: When modelcard extraction fails completely, creates minimal metadata structure for enrichment
 
-**Tag Management**: The tool implements intelligent tag merging:
+#### Tag Management
+
+The tool implements intelligent tag merging:
 - Labels from the models-index.yaml configuration are automatically added as tags
 - Existing modelcard tags are preserved and merged with HuggingFace enrichment tags
 - Duplicate tags are automatically deduplicated

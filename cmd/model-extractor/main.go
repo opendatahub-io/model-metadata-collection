@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -158,6 +159,9 @@ func main() {
 	log.Println("Model metadata collection completed successfully!")
 }
 
+// printHelp displays comprehensive usage information and command-line examples.
+// It provides users with detailed guidance on how to use the model metadata
+// collection tool effectively with various configuration options.
 func printHelp() {
 	fmt.Println("Model Metadata Collection Tool")
 	fmt.Println("")
@@ -189,7 +193,16 @@ func printHelp() {
 	fmt.Printf("  %s --skip-default-static-catalog --static-catalog-files custom.yaml\n", os.Args[0])
 }
 
-// getStaticCatalogPaths returns the list of static catalog files to process
+// getStaticCatalogPaths constructs the complete list of static catalog files to process
+// based on CLI flags. It handles both custom catalog files and the default supplemental
+// catalog, providing flexible catalog management.
+//
+// Parameters:
+//   - staticCatalogFiles: comma-separated string of custom catalog file paths
+//   - skipDefaultStaticCatalog: whether to exclude the default supplemental catalog
+//
+// Returns:
+//   - []string: slice of file paths to process, may be empty if all sources skipped
 func getStaticCatalogPaths(staticCatalogFiles string, skipDefaultStaticCatalog bool) []string {
 	var paths []string
 
@@ -215,7 +228,16 @@ func getStaticCatalogPaths(staticCatalogFiles string, skipDefaultStaticCatalog b
 	return paths
 }
 
-// loadModelsWithMetadata loads models with their metadata from various sources with fallback logic
+// loadModelsWithMetadata loads model configurations from the specified index file with
+// intelligent fallback to version-specific index files. It provides resilient model
+// loading that adapts to different index file formats and availability.
+//
+// Parameters:
+//   - modelsIndexPath: primary path to models index YAML file
+//
+// Returns:
+//   - []types.ModelEntry: slice of model entries with metadata
+//   - error: loading or parsing errors, nil on success
 func loadModelsWithMetadata(modelsIndexPath string) ([]types.ModelEntry, error) {
 	// First try to load from specified models index file
 	if _, err := os.Stat(modelsIndexPath); err == nil {
@@ -247,7 +269,13 @@ func loadModelsWithMetadata(modelsIndexPath string) ([]types.ModelEntry, error) 
 	return nil, fmt.Errorf("no valid models index file found at %s and no version index files available", modelsIndexPath)
 }
 
-// getLatestVersionIndexFile finds the latest version index file
+// getLatestVersionIndexFile discovers and returns the most recent version-specific
+// index file from the data directory. It uses glob patterns to find HuggingFace
+// collection index files and returns the lexicographically latest version.
+//
+// Returns:
+//   - string: path to the latest version index file
+//   - error: filesystem or discovery errors, nil on success
 func getLatestVersionIndexFile() (string, error) {
 	files, err := filepath.Glob("data/hugging-face-redhat-ai-validated-v*.yaml")
 	if err != nil {
@@ -258,13 +286,20 @@ func getLatestVersionIndexFile() (string, error) {
 		return "", fmt.Errorf("no version index files found")
 	}
 
-	// Sort files to get the latest version
-	// This is a simple sort - for production you might want more sophisticated version comparison
+	sort.Strings(files) // explicit lexicographic order
 	return files[len(files)-1], nil
 }
 
-// processModelsInParallel processes multiple models concurrently
-// processModelsInParallelWithMetadata processes multiple models concurrently with metadata support
+// processModelsInParallelWithMetadata orchestrates concurrent processing of multiple
+// model entries, extracting metadata from their container images. It converts model
+// entries to manifest references and delegates to the core parallel processing logic.
+//
+// Parameters:
+//   - modelEntries: slice of model entries containing URIs and metadata
+//   - maxConcurrent: maximum number of concurrent processing goroutines
+//
+// Returns:
+//   - []ModelResult: slice of processing results for each model
 func processModelsInParallelWithMetadata(modelEntries []types.ModelEntry, maxConcurrent int) []ModelResult {
 	// Extract URIs for processing
 	var manifestRefs []string
@@ -278,7 +313,17 @@ func processModelsInParallelWithMetadata(modelEntries []types.ModelEntry, maxCon
 	return processModelsInParallelWithEntryMap(manifestRefs, uriToEntry, maxConcurrent)
 }
 
-// processModelsInParallelWithEntryMap processes multiple models concurrently with entry metadata
+// processModelsInParallelWithEntryMap performs the core parallel processing of model
+// container images with concurrency control. It uses goroutines with semaphore-based
+// limiting to extract modelcard metadata while respecting system resource constraints.
+//
+// Parameters:
+//   - manifestRefs: slice of container manifest references to process
+//   - uriToEntry: mapping from URI to ModelEntry for metadata lookup
+//   - maxConcurrent: maximum number of concurrent processing goroutines
+//
+// Returns:
+//   - []ModelResult: slice of processing results with metadata extraction status
 func processModelsInParallelWithEntryMap(manifestRefs []string, uriToEntry map[string]types.ModelEntry, maxConcurrent int) []ModelResult {
 	sys := &containertypes.SystemContext{}
 
@@ -286,6 +331,10 @@ func processModelsInParallelWithEntryMap(manifestRefs []string, uriToEntry map[s
 	var wg sync.WaitGroup
 
 	// Create a semaphore to limit concurrent goroutines
+	if maxConcurrent < 1 {
+		log.Printf("Warning: invalid --max-concurrent=%d; defaulting to 1", maxConcurrent)
+		maxConcurrent = 1
+	}
 	semaphore := make(chan struct{}, maxConcurrent)
 
 	// Channel to collect results from goroutines
@@ -302,7 +351,17 @@ func processModelsInParallelWithEntryMap(manifestRefs []string, uriToEntry map[s
 			defer func() { <-semaphore }() // Release semaphore when done
 
 			log.Printf("Starting processing for: %s", ref)
-			src, layers, configBlob := fetchManifestSrcAndLayers(ref, sys)
+			src, layers, configBlob, err := fetchManifestSrcAndLayers(ref, sys)
+			if err != nil {
+				log.Printf("Warning: Failed to fetch manifest for %s: %v", ref, err)
+				// Send failed result to channel
+				results <- ModelResult{
+					Ref:            ref,
+					ModelCardFound: false,
+					Metadata:       types.ModelMetadata{},
+				}
+				return
+			}
 			defer func() { _ = src.Close() }()
 			modelCardFound, metadata := scanLayersForModelCardWithTags(layers, src, ref, configBlob, entry)
 			log.Printf("Completed processing for: %s", ref)
@@ -344,7 +403,7 @@ func scanLayersForModelCardWithTags(layers []containertypes.BlobInfo, src contai
 func addModelLabelTags(manifestRef string, entry types.ModelEntry) {
 	// Create sanitized directory name for the model
 	sanitizedName := utils.SanitizeManifestRef(manifestRef)
-	metadataPath := fmt.Sprintf("output/%s/models/metadata.yaml", sanitizedName)
+	metadataPath := filepath.Join(*outputDir, sanitizedName, "models", "metadata.yaml")
 
 	// Read existing metadata
 	data, err := os.ReadFile(metadataPath)
@@ -421,11 +480,14 @@ func scanLayersForModelCard(layers []containertypes.BlobInfo, src containertypes
 				var layerBlob io.ReadCloser
 				var err error
 
-				layerBlob, _, err = src.GetBlob(context.Background(), containertypes.BlobInfo{
+				ctxBlob, cancelBlob := context.WithTimeout(context.Background(), 60*time.Second)
+				defer cancelBlob()
+				layerBlob, _, err = src.GetBlob(ctxBlob, containertypes.BlobInfo{
 					Digest: layer.Digest,
 				}, blobinfocachememory.New())
 				if err != nil {
-					log.Fatalf("Failed to get modelcard layer blob: %v", err)
+					log.Printf("Warning: Failed to get modelcard layer blob for %s: %v", manifestRef, err)
+					continue
 				}
 
 				if layerBlob == nil {
@@ -492,20 +554,34 @@ func scanLayersForModelCard(layers []containertypes.BlobInfo, src containertypes
 
 						// Create output directory
 						sanitizedDir := utils.SanitizeManifestRef(manifestRef)
-						outputDir := filepath.Join(*outputDir, sanitizedDir)
+						modelDir := filepath.Join(*outputDir, sanitizedDir)
 
-						// Create the full directory path for the file (including subdirectories)
-						outputFilePath := filepath.Join(outputDir, singleMdFileName)
+						// Sanitize tar entry path to prevent path traversal
+						safeName := filepath.Clean(singleMdFileName)
+						if filepath.IsAbs(safeName) || strings.HasPrefix(safeName, ".."+string(os.PathSeparator)) {
+							log.Printf("Warning: Skipping unsafe tar entry path: %s", singleMdFileName)
+							continue
+						}
+						outputFilePath := filepath.Join(modelDir, safeName)
+						// Ensure final path remains within modelDir
+						modelDirClean := filepath.Clean(modelDir) + string(os.PathSeparator)
+						outputFilePathClean := filepath.Clean(outputFilePath)
+						if !strings.HasPrefix(outputFilePathClean, modelDirClean) && outputFilePathClean != filepath.Clean(modelDir) {
+							log.Printf("Warning: Skipping potential path traversal: %s", singleMdFileName)
+							continue
+						}
 						outputFileDir := filepath.Dir(outputFilePath)
 						err := os.MkdirAll(outputFileDir, 0755)
 						if err != nil {
-							log.Fatalf("Failed to create output directory: %v", err)
+							log.Printf("Warning: Failed to create output directory for %s: %v", manifestRef, err)
+							continue
 						}
 
 						// Write modelcard content to file
 						err = os.WriteFile(outputFilePath, singleMdContent, 0644)
 						if err != nil {
-							log.Fatalf("Failed to write modelcard content to file: %v", err)
+							log.Printf("Warning: Failed to write modelcard content to file for %s: %v", manifestRef, err)
+							continue
 						}
 
 						log.Printf("  Successfully wrote modelcard content to: %s", outputFilePath)
@@ -560,13 +636,19 @@ func scanLayersForModelCard(layers []containertypes.BlobInfo, src containertypes
 	return false, types.ModelMetadata{}
 }
 
-// createSkeletonMetadata creates a basic metadata.yaml file when modelcard extraction fails
+// createSkeletonMetadata generates fallback metadata when modelcard extraction fails.
+// It creates a minimal metadata.yaml file with OCI artifact information and timestamps
+// to ensure consistent output structure even for models without embedded modelcards.
+//
+// Parameters:
+//   - manifestRef: container manifest reference for the model
+//   - configBlob: container config blob containing timestamp information
 func createSkeletonMetadata(manifestRef string, configBlob []byte) {
 	// Create output directory
 	sanitizedDir := utils.SanitizeManifestRef(manifestRef)
-	outputDir := filepath.Join(*outputDir, sanitizedDir, "models")
+	modelDir := filepath.Join(*outputDir, sanitizedDir, "models")
 
-	err := os.MkdirAll(outputDir, 0755)
+	err := os.MkdirAll(modelDir, 0755)
 	if err != nil {
 		log.Printf("  Warning: Failed to create skeleton output directory: %v", err)
 		return
@@ -592,7 +674,7 @@ func createSkeletonMetadata(manifestRef string, configBlob []byte) {
 	}
 
 	// Write skeleton metadata.yaml
-	metadataFilePath := filepath.Join(outputDir, "metadata.yaml")
+	metadataFilePath := filepath.Join(modelDir, "metadata.yaml")
 	metadataYaml, err := yaml.Marshal(&metadata)
 	if err != nil {
 		log.Printf("  Warning: Failed to marshal skeleton metadata to YAML: %v", err)
@@ -608,50 +690,71 @@ func createSkeletonMetadata(manifestRef string, configBlob []byte) {
 	log.Printf("  Successfully created skeleton metadata.yaml: %s", metadataFilePath)
 }
 
-// fetchManifestSrcAndLayers fetches manifest, layers, and config blob from container registry
-func fetchManifestSrcAndLayers(manifestRef string, sys *containertypes.SystemContext) (containertypes.ImageSource, []containertypes.BlobInfo, []byte) {
+// fetchManifestSrcAndLayers retrieves container manifest data and layer information
+// from the container registry. It handles Docker reference parsing, image source
+// creation, and manifest/layer extraction with comprehensive error handling.
+//
+// Parameters:
+//   - manifestRef: Docker-compatible container manifest reference
+//   - sys: container system context for registry authentication
+//
+// Returns:
+//   - containertypes.ImageSource: image source for blob operations
+//   - []containertypes.BlobInfo: slice of layer blob information
+//   - []byte: container config blob containing metadata
+//   - error: registry access or parsing errors, nil on success
+func fetchManifestSrcAndLayers(manifestRef string, sys *containertypes.SystemContext) (src containertypes.ImageSource, layers []containertypes.BlobInfo, configBlob []byte, err error) {
+	// Create context with timeout for registry operations
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
 	log.Printf("Parsing reference...")
 	ref, err := docker.ParseReference("//" + manifestRef)
 	if err != nil {
-		log.Fatalf("Failed to parse reference: %v", err)
+		return nil, nil, nil, fmt.Errorf("failed to parse reference: %v", err)
 	}
 
 	// Create a new image source (later will use to get "the" blob)
 	log.Printf("Creating image source...")
-	src, err := ref.NewImageSource(context.Background(), sys)
+	src, err = ref.NewImageSource(ctx, sys)
 	if err != nil {
-		log.Fatalf("Failed to create image source: %v", err)
+		return nil, nil, nil, fmt.Errorf("failed to create image source: %v", err)
 	}
-	// not closing `src` given it is returned to the caller
+	// Ensure src is closed on any subsequent error in this function.
+	defer func() {
+		if err != nil && src != nil {
+			_ = src.Close()
+		}
+	}()
 
 	// Get the manifest
-	manifest, manifestType, err := src.GetManifest(context.Background(), nil)
+	manifest, manifestType, err := src.GetManifest(ctx, nil)
 	if err != nil {
-		log.Fatalf("Failed to get manifest: %v", err)
+		return nil, nil, nil, fmt.Errorf("failed to get manifest: %v", err)
 	}
 
 	log.Printf("Manifest type: %s", manifestType)
 	log.Printf("Manifest size: %d bytes", len(manifest))
 
 	// Get the image
-	img, err := ref.NewImage(context.Background(), sys)
+	img, err := ref.NewImage(ctx, sys)
 	if err != nil {
-		log.Fatalf("Failed to create image: %v", err)
+		return nil, nil, nil, fmt.Errorf("failed to create image: %v", err)
 	}
 	defer func() { _ = img.Close() }()
 
 	// Get the image configuration
 	log.Printf("Getting config blob...")
-	configBlob, err := img.ConfigBlob(context.Background())
+	configBlob, err = img.ConfigBlob(ctx)
 	if err != nil {
-		log.Fatalf("Failed to get config blob: %v", err)
+		return nil, nil, nil, fmt.Errorf("failed to get config blob: %v", err)
 	}
 
 	log.Printf("Config blob size: %d bytes", len(configBlob))
 
 	// Get layer information
 	log.Printf("Getting layer infos...")
-	layers := img.LayerInfos()
+	layers = img.LayerInfos()
 	log.Printf("Number of layers: %d", len(layers))
 
 	// Get layer digests from layer infos
@@ -659,7 +762,7 @@ func fetchManifestSrcAndLayers(manifestRef string, sys *containertypes.SystemCon
 	for i, layer := range layers {
 		log.Printf("  Layer %d: %s", i+1, layer.Digest)
 	}
-	return src, layers, configBlob
+	return src, layers, configBlob, nil
 }
 
 // OCI Image Config structure for timestamp extraction
@@ -668,6 +771,34 @@ type OCIImageConfig struct {
 	History []struct {
 		Created string `json:"created"`
 	} `json:"history"`
+}
+
+// parseTimestampWithFallback attempts to parse timestamp strings using multiple formats.
+// It tries RFC3339Nano first (most precise), then RFC3339, with comprehensive error handling.
+//
+// Parameters:
+//   - timestampStr: timestamp string to parse
+//
+// Returns:
+//   - *time.Time: parsed time, nil if parsing fails with all supported formats
+func parseTimestampWithFallback(timestampStr string) *time.Time {
+	if timestampStr == "" {
+		return nil
+	}
+
+	// Supported timestamp formats in order of preference (most precise first)
+	formats := []string{
+		time.RFC3339Nano, // 2006-01-02T15:04:05.999999999Z07:00
+		time.RFC3339,     // 2006-01-02T15:04:05Z07:00
+	}
+
+	for _, format := range formats {
+		if parsedTime, err := time.Parse(format, timestampStr); err == nil {
+			return &parsedTime
+		}
+	}
+
+	return nil
 }
 
 // extractTimestampsFromConfig extracts creation and update timestamps from OCI config blob
@@ -685,11 +816,11 @@ func extractTimestampsFromConfig(configBlob []byte) (*int64, *int64) {
 	// Parse creation timestamp
 	var createTime *int64
 	if config.Created != "" {
-		if parsedTime, err := time.Parse(time.RFC3339, config.Created); err == nil {
+		if parsedTime := parseTimestampWithFallback(config.Created); parsedTime != nil {
 			epochMs := parsedTime.Unix() * 1000
 			createTime = &epochMs
 		} else {
-			log.Printf("Warning: Failed to parse creation time '%s': %v", config.Created, err)
+			log.Printf("Warning: Failed to parse creation time '%s' with any supported format", config.Created)
 		}
 	}
 
@@ -698,7 +829,7 @@ func extractTimestampsFromConfig(configBlob []byte) (*int64, *int64) {
 	if len(config.History) > 0 {
 		lastHistoryEntry := config.History[len(config.History)-1]
 		if lastHistoryEntry.Created != "" {
-			if parsedTime, err := time.Parse(time.RFC3339, lastHistoryEntry.Created); err == nil {
+			if parsedTime := parseTimestampWithFallback(lastHistoryEntry.Created); parsedTime != nil {
 				epochMs := parsedTime.Unix() * 1000
 				updateTime = &epochMs
 			}
