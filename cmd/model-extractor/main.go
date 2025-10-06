@@ -573,6 +573,7 @@ func scanLayersForModelCard(layers []containertypes.BlobInfo, src containertypes
 }
 
 // createSkeletonMetadata creates a basic metadata.yaml file when modelcard extraction fails
+// and attempts to fetch HuggingFace README as a fallback modelcard
 func createSkeletonMetadata(manifestRef string, configBlob []byte) {
 	// Create output directory
 	sanitizedDir := utils.SanitizeManifestRef(manifestRef)
@@ -583,6 +584,9 @@ func createSkeletonMetadata(manifestRef string, configBlob []byte) {
 		log.Printf("  Warning: Failed to create skeleton output directory: %v", err)
 		return
 	}
+
+	// Try to find matching HuggingFace model and fetch README as fallback
+	tryHuggingFaceFallback(manifestRef, outputDir)
 
 	// Create basic metadata with minimal information
 	metadata := types.ExtractedMetadata{
@@ -618,6 +622,97 @@ func createSkeletonMetadata(manifestRef string, configBlob []byte) {
 	}
 
 	log.Printf("  Successfully created skeleton metadata.yaml: %s", metadataFilePath)
+}
+
+// tryHuggingFaceFallback attempts to find a matching HuggingFace model and fetch its README as a fallback modelcard
+func tryHuggingFaceFallback(manifestRef string, outputDir string) {
+	log.Printf("  Attempting HuggingFace README fallback for: %s", manifestRef)
+
+	// Try to get the latest HuggingFace index file
+	latestIndexFile, err := getLatestVersionIndexFile()
+	if err != nil {
+		log.Printf("  Warning: Failed to find HuggingFace index file for fallback: %v", err)
+		return
+	}
+
+	// Load HuggingFace index to find matching models
+	hfData, err := os.ReadFile(latestIndexFile)
+	if err != nil {
+		log.Printf("  Warning: Failed to read HuggingFace index file for fallback: %v", err)
+		return
+	}
+
+	var hfIndex types.VersionIndex
+	err = yaml.Unmarshal(hfData, &hfIndex)
+	if err != nil {
+		log.Printf("  Warning: Failed to parse HuggingFace index for fallback: %v", err)
+		return
+	}
+
+	// Find best matching HuggingFace model using similar logic to enrichment
+	bestMatch := types.ModelIndex{}
+	bestScore := 0.0
+
+	for _, hfModel := range hfIndex.Models {
+		score := utils.CalculateSimilarity(manifestRef, hfModel.Name)
+		if score > bestScore {
+			bestScore = score
+			bestMatch = hfModel
+		}
+	}
+
+	// Only proceed if we have a reasonable match
+	threshold := 0.5
+	if bestScore < threshold {
+		log.Printf("  No suitable HuggingFace model found for fallback (best score: %.2f)", bestScore)
+		return
+	}
+
+	log.Printf("  Found HuggingFace match for fallback: %s (score: %.2f)", bestMatch.Name, bestScore)
+
+	// Fetch README content from HuggingFace
+	hfReadme, err := huggingface.FetchReadme(bestMatch.Name)
+	if err != nil {
+		log.Printf("  Warning: Failed to fetch HuggingFace README for fallback: %v", err)
+		return
+	}
+
+	// Strip YAML frontmatter to match container modelcard format
+	processedContent := stripYAMLFrontmatter(hfReadme)
+
+	// Write the README content as modelcard.md
+	modelcardPath := filepath.Join(outputDir, "modelcard.md")
+	err = os.WriteFile(modelcardPath, []byte(processedContent), 0644)
+	if err != nil {
+		log.Printf("  Warning: Failed to write HuggingFace README as modelcard.md: %v", err)
+		return
+	}
+
+	log.Printf("  Successfully created fallback modelcard.md from HuggingFace README: %s", modelcardPath)
+}
+
+// stripYAMLFrontmatter removes YAML frontmatter from markdown content to match container modelcard format
+func stripYAMLFrontmatter(content string) string {
+	lines := strings.Split(content, "\n")
+
+	// Check if content starts with YAML frontmatter
+	if len(lines) == 0 || strings.TrimSpace(lines[0]) != "---" {
+		return content // No frontmatter to strip
+	}
+
+	// Find the end of the frontmatter (second "---")
+	for i := 1; i < len(lines); i++ {
+		if strings.TrimSpace(lines[i]) == "---" {
+			// Return content after the frontmatter, skipping the closing "---"
+			if i+1 < len(lines) {
+				return strings.Join(lines[i+1:], "\n")
+			}
+			return "" // Only frontmatter, no content
+		}
+	}
+
+	// No closing "---" found, return original content
+	return content
 }
 
 // fetchManifestSrcAndLayers fetches manifest, layers, and config blob from container registry
