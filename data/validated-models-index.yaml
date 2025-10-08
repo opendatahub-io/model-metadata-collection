@@ -153,3 +153,15 @@ models:
   uri: registry.redhat.io/rhelai1/modelcar-gemma-3n-e4b-it-fp8-dynamic:1.5
   labels:
   - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-fp8-dynamic:1.5
+  labels:
+  - validated

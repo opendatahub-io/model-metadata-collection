@@ -123,14 +123,13 @@ process: build
 	@echo "Processing models..."
 	./$(BUILD_DIR)/$(BINARY_NAME) \
 		--input $(REDHAT_MODELS_INDEX_PATH) \
-		--output-dir output \
+		--output-dir output/redhat \
 		--catalog-output $(REDHAT_CATALOG_OUTPUT_PATH)
 	./$(BUILD_DIR)/$(BINARY_NAME) \
 		--input $(VALIDATED_MODELS_INDEX_PATH) \
-		--output-dir output \
+		--output-dir output/validated \
 		--catalog-output $(VALIDATED_CATALOG_OUTPUT_PATH) \
-		--skip-default-static-catalog \
-		--static-catalog-files input/validated-supplemental-catalog.yaml
+		--skip-default-static-catalog
 
 # Generate metadata completeness report
 report: build-report
