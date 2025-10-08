@@ -1,0 +1,167 @@
+models:
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-4-scout-17b-16e-instruct:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-4-scout-17b-16e-instruct-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-4-scout-17b-16e-instruct-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-4-maverick-17b-128e-instruct:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-4-maverick-17b-128e-instruct-fp8:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-3-1-24b-instruct-2503:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-3-1-24b-instruct-2503-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-3-1-24b-instruct-2503-quantized-w8a8:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-3-1-24b-instruct-2503-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-3-70b-instruct:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-3-70b-instruct-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-3-70b-instruct-quantized-w8a8:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-3-70b-instruct-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-quantized-w8a8:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-phi-4:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-phi-4-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-phi-4-quantized-w8a8:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-phi-4-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct-quantized-w8a8:1.5
+  labels:
+  - validated
+  - featured
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-24b-instruct-2501:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-24b-instruct-2501-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-24b-instruct-2501-quantized-w8a8:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mistral-small-24b-instruct-2501-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-mixtral-8x7b-instruct-v0-1:1.4
+  labels:
+  - validated
+  - featured
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-nemotron-70b-instruct-hf-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-nemotron-70b-instruct-hf:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-gemma-2-9b-it-fp8:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-gemma-2-9b-it:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-deepseek-r1-0528-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-qwen3-8b-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-kimi-k2-instruct-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-gemma-3n-e4b-it-fp8-dynamic:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base-quantized-w4a16:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct:1.5
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-fp8-dynamic:1.5
+  labels:
+  - validated
