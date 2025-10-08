@@ -16,8 +16,10 @@ BUILD_DIR=build
 MAIN_PATH=./cmd/model-extractor
 
 # Default data paths
-MODELS_INDEX_PATH=data/models-index.yaml
-CATALOG_OUTPUT_PATH=data/models-catalog.yaml
+REDHAT_MODELS_INDEX_PATH=data/models-index.yaml
+VALIDATED_MODELS_INDEX_PATH=data/validated-models-index.yaml
+REDHAT_CATALOG_OUTPUT_PATH=data/models-catalog.yaml
+VALIDATED_CATALOG_OUTPUT_PATH=data/validated-models-catalog.yaml
 
 # Container parameters
 CONTAINER_RUNTIME?=$(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null || echo docker)
@@ -120,9 +122,15 @@ run: build
 process: build
 	@echo "Processing models..."
 	./$(BUILD_DIR)/$(BINARY_NAME) \
-		--input $(MODELS_INDEX_PATH) \
+		--input $(REDHAT_MODELS_INDEX_PATH) \
 		--output-dir output \
-		--catalog-output $(CATALOG_OUTPUT_PATH)
+		--catalog-output $(REDHAT_CATALOG_OUTPUT_PATH)
+	./$(BUILD_DIR)/$(BINARY_NAME) \
+		--input $(VALIDATED_MODELS_INDEX_PATH) \
+		--output-dir output \
+		--catalog-output $(VALIDATED_CATALOG_OUTPUT_PATH) \
+		--skip-default-static-catalog \
+		--static-catalog-files input/validated-supplemental-catalog.yaml
 
 # Generate metadata completeness report
 report: build-report

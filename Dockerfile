@@ -8,12 +8,15 @@ RUN mkdir -p /app/data /app/benchmarks
 # Copy the pre-generated catalog and index files from the codebase
 COPY data/models-catalog.yaml /app/data/
 COPY data/models-index.yaml /app/data/
+COPY data/validated-models-catalog.yaml /app/data
+COPY data/validated-models-index.yaml /app/data
 
 # Copy sample data for benchmarks
 COPY sample-data/ /app/benchmarks/
 
 # Set proper permissions
 RUN chmod 644 /app/data/models-catalog.yaml /app/data/models-index.yaml && \
+    chmod 644 /app/data/validated-models-catalog.yaml /app/data/validated-models-index.yaml && \
     chmod -R 755 /app/benchmarks && \
     chmod 644 /app/benchmarks/manifest.json && \
     /bin/sh -c 'for f in /app/benchmarks/models/*/*/*/*; do [ -f "$f" ] && chmod 644 "$f" || true; done'
