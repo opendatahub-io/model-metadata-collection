@@ -43,6 +43,9 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
+      - name: Run tests
+        run: make test
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
