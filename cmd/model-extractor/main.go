@@ -356,7 +356,7 @@ func scanLayersForModelCardWithTags(layers []containertypes.BlobInfo, src contai
 func addModelLabelTags(manifestRef string, entry types.ModelEntry) {
 	// Create sanitized directory name for the model
 	sanitizedName := utils.SanitizeManifestRef(manifestRef)
-	metadataPath := fmt.Sprintf("output/%s/models/metadata.yaml", sanitizedName)
+	metadataPath := fmt.Sprintf("%s/%s/models/metadata.yaml", *outputDir, sanitizedName)
 
 	// Read existing metadata
 	data, err := os.ReadFile(metadataPath)
