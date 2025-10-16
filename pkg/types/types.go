@@ -151,6 +151,7 @@ type EnrichedModelMetadata struct {
 	Provider             MetadataSource `yaml:"provider"`
 	Description          MetadataSource `yaml:"description"`
 	License              MetadataSource `yaml:"license"`
+	LicenseLink          MetadataSource `yaml:"license_link"`
 	Language             MetadataSource `yaml:"language"`
 	LastModified         MetadataSource `yaml:"last_modified"`
 	CreateTimeSinceEpoch MetadataSource `yaml:"create_time_since_epoch"`

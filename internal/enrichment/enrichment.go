@@ -91,6 +91,7 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 		enriched.Provider = metadata.CreateMetadataSource(nil, "null")
 		enriched.Description = metadata.CreateMetadataSource(nil, "null")
 		enriched.License = metadata.CreateMetadataSource(nil, "null")
+		enriched.LicenseLink = metadata.CreateMetadataSource(nil, "null")
 		enriched.Language = metadata.CreateMetadataSource(nil, "null")
 		enriched.LastModified = metadata.CreateMetadataSource(nil, "null")
 		enriched.CreateTimeSinceEpoch = metadata.CreateMetadataSource(nil, "null")
@@ -154,6 +155,15 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 							source = "modelcard.yaml"
 						}
 						enriched.License = metadata.CreateMetadataSource(*existingMetadata.License, source)
+					}
+
+					// LicenseLink can come from YAML frontmatter
+					if existingMetadata.LicenseLink != nil && *existingMetadata.LicenseLink != "" {
+						source := "modelcard.regex"
+						if frontmatter.LicenseLink != "" && frontmatter.LicenseLink == *existingMetadata.LicenseLink {
+							source = "modelcard.yaml"
+						}
+						enriched.LicenseLink = metadata.CreateMetadataSource(*existingMetadata.LicenseLink, source)
 					}
 
 					// Tasks can come from YAML frontmatter (tasks field or pipeline_tag)
@@ -228,6 +238,9 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 				}
 				if existingMetadata.License != nil && *existingMetadata.License != "" {
 					enriched.License = metadata.CreateMetadataSource(*existingMetadata.License, "modelcard.regex")
+				}
+				if existingMetadata.LicenseLink != nil && *existingMetadata.LicenseLink != "" {
+					enriched.LicenseLink = metadata.CreateMetadataSource(*existingMetadata.LicenseLink, "modelcard.regex")
 				}
 				if len(existingMetadata.Language) > 0 {
 					enriched.Language = metadata.CreateMetadataSource(existingMetadata.Language, "modelcard.regex")
@@ -393,6 +406,12 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 					if frontmatter.LicenseName != "" {
 						enriched.License = metadata.CreateMetadataSource(frontmatter.LicenseName, "huggingface.yaml")
 						log.Printf("  Extracted license_name from YAML frontmatter: %s", frontmatter.LicenseName)
+					}
+
+					// Always use license_link from HuggingFace YAML frontmatter (highest priority)
+					if frontmatter.LicenseLink != "" {
+						enriched.LicenseLink = metadata.CreateMetadataSource(frontmatter.LicenseLink, "huggingface.yaml")
+						log.Printf("  Extracted license_link from YAML frontmatter: %s", frontmatter.LicenseLink)
 					}
 
 					// Always use tasks from HuggingFace YAML (highest priority)

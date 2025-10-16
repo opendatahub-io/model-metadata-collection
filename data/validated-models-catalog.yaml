@@ -63,7 +63,7 @@ models:
       language:
         - en
       license: mit
-      licenseLink: https://opensource.org/licenses/MIT
+      licenseLink: https://choosealicense.com/licenses/mit/
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1748563200000"
@@ -135,7 +135,7 @@ models:
       language:
         - en
       license: modified-mit
-      licenseLink: null
+      licenseLink: https://huggingface.co/moonshotai/Kimi-K2-Instruct/blob/main/LICENSE
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1752537600000"
@@ -384,7 +384,7 @@ models:
         - es
         - th
       license: llama3.3
-      licenseLink: https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/LICENSE
+      licenseLink: https://www.llama.com/llama3_3/license/
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1739776988000"
@@ -440,7 +440,7 @@ models:
         - es
         - th
       license: llama-3.3
-      licenseLink: https://github.com/meta-llama/llama-models/blob/main/models/llama3_3/LICENSE
+      licenseLink: https://www.llama.com/llama3_3/license/
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1733875200000"
@@ -1238,7 +1238,7 @@ models:
         - tl
         - vi
       license: llama4
-      licenseLink: https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE
+      licenseLink: https://www.llama.com/llama4/license/
       tasks:
         - image-text-to-text
         - text-to-text
@@ -1300,7 +1300,7 @@ models:
         - tl
         - vi
       license: llama4
-      licenseLink: https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE
+      licenseLink: https://www.llama.com/llama4/license/
       tasks:
         - image-text-to-text
         - text-to-text
@@ -1380,7 +1380,7 @@ models:
         - tl
         - vi
       license: llama4
-      licenseLink: https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE
+      licenseLink: https://www.llama.com/llama4/license/
       tasks:
         - image-text-to-text
         - text-to-text
@@ -1442,7 +1442,7 @@ models:
         - tl
         - vi
       license: llama4
-      licenseLink: https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE
+      licenseLink: https://www.llama.com/llama4/license/
       tasks:
         - image-text-to-text
         - text-to-text
@@ -1515,7 +1515,7 @@ models:
         - tl
         - vi
       license: llama4
-      licenseLink: https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE
+      licenseLink: https://www.llama.com/llama4/license/
       tasks:
         - image-text-to-text
         - text-to-text
@@ -3704,7 +3704,7 @@ models:
       language:
         - en
       license: mit
-      licenseLink: https://opensource.org/licenses/MIT
+      licenseLink: https://choosealicense.com/licenses/mit/
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1739776988000"
@@ -3768,7 +3768,7 @@ models:
       language:
         - en
       license: mit
-      licenseLink: https://opensource.org/licenses/MIT
+      licenseLink: https://choosealicense.com/licenses/mit/
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1740960000000"
@@ -3839,7 +3839,7 @@ models:
       language:
         - en
       license: mit
-      licenseLink: https://opensource.org/licenses/MIT
+      licenseLink: https://choosealicense.com/licenses/mit/
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1740960000000"
@@ -3912,7 +3912,7 @@ models:
       language:
         - en
       license: mit
-      licenseLink: https://opensource.org/licenses/MIT
+      licenseLink: https://choosealicense.com/licenses/mit/
       tasks:
         - text-to-text
       createTimeSinceEpoch: "1740960000000"

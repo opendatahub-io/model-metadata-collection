@@ -122,6 +122,16 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 		enrichmentInfo.DataSources.License = enrichedData.License.Source
 	}
 
+	if enrichedData.LicenseLink.Source != "null" {
+		// Always override with HuggingFace YAML data (highest priority)
+		shouldOverride := existingMetadata.LicenseLink == nil || enrichedData.LicenseLink.Source == "huggingface.yaml"
+		if shouldOverride {
+			licenseLinkStr := enrichedData.LicenseLink.Value.(string)
+			existingMetadata.LicenseLink = &licenseLinkStr
+		}
+		enrichmentInfo.DataSources.LicenseLink = enrichedData.LicenseLink.Source
+	}
+
 	// Handle license from tags
 	if enrichedData.Tags.Source == "huggingface.tags" && enrichedData.Tags.Value != nil {
 		tags, ok := enrichedData.Tags.Value.([]string)
