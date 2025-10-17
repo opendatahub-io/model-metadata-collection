@@ -13,6 +13,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
+	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
 
 // LoadStaticCatalogs loads static catalog files and returns their models
@@ -84,44 +85,43 @@ func validateStaticCatalog(catalog *types.ModelsCatalog) error {
 	return nil
 }
 
-// CreateModelsCatalogWithStatic collects all metadata.yaml files, merges with static models, and creates a models-catalog.yaml
-func CreateModelsCatalogWithStatic(outputDir, catalogPath string, staticModels []types.CatalogMetadata) error {
+// CreateModelsCatalogWithStaticFromResults creates a models catalog from specific model results and static models
+func CreateModelsCatalogWithStaticFromResults(outputDir, catalogPath string, modelRefs []string, staticModels []types.CatalogMetadata) error {
 	var allModels []types.ExtractedMetadata
 
-	// Find all metadata.yaml files in the specified output directory
-	err := filepath.Walk(outputDir, func(path string, info os.FileInfo, err error) error {
+	// Process only metadata files for models that were processed in the current run
+	for _, ref := range modelRefs {
+		// Create sanitized directory name for the model (using same logic as main.go)
+		sanitizedName := utils.SanitizeManifestRef(ref)
+		metadataPath := filepath.Join(outputDir, sanitizedName, "models", "metadata.yaml")
+		
+		// Check if the metadata file exists
+		if _, err := os.Stat(metadataPath); os.IsNotExist(err) {
+			log.Printf("  Warning: metadata file not found for %s: %s", ref, metadataPath)
+			continue
+		}
+		
+		log.Printf("  Processing: %s", metadataPath)
+
+		// Read the metadata file
+		data, err := os.ReadFile(metadataPath)
 		if err != nil {
-			return err
+			log.Printf("  Error reading %s: %v", metadataPath, err)
+			continue
 		}
 
-		if info.Name() == "metadata.yaml" {
-			log.Printf("  Processing: %s", path)
-
-			// Read the metadata file
-			data, err := os.ReadFile(path)
-			if err != nil {
-				log.Printf("  Error reading %s: %v", path, err)
-				return nil // Continue with other files
-			}
-
-			// Parse the YAML
-			var metadata types.ExtractedMetadata
-			err = yaml.Unmarshal(data, &metadata)
-			if err != nil {
-				log.Printf("  Error parsing %s: %v", path, err)
-				return nil // Continue with other files
-			}
-
-			// Add to collection
-			allModels = append(allModels, metadata)
+		// Parse the YAML
+		var metadata types.ExtractedMetadata
+		err = yaml.Unmarshal(data, &metadata)
+		if err != nil {
+			log.Printf("  Error parsing %s: %v", metadataPath, err)
+			continue
 		}
 
-		return nil
-	})
-
-	if err != nil {
-		return fmt.Errorf("error walking directory: %v", err)
+		// Add to collection
+		allModels = append(allModels, metadata)
 	}
+
 
 	// Sort models by name for consistent output
 	sort.Slice(allModels, func(i, j int) bool {
@@ -169,6 +169,40 @@ func CreateModelsCatalogWithStatic(outputDir, catalogPath string, staticModels [
 
 	log.Printf("Successfully created %s with %d dynamic models and %d static models", catalogPath, len(allModels), len(staticModels))
 	return nil
+}
+
+// CreateModelsCatalogWithStatic collects all metadata.yaml files, merges with static models, and creates a models-catalog.yaml (backward compatibility)
+func CreateModelsCatalogWithStatic(outputDir, catalogPath string, staticModels []types.CatalogMetadata) error {
+	var modelRefs []string
+
+	// Find all metadata.yaml files in the specified output directory to maintain backward compatibility
+	err := filepath.Walk(outputDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.Name() == "metadata.yaml" {
+			// Extract model reference from path for backward compatibility
+			// Path format: outputDir/sanitized-ref/models/metadata.yaml
+			relPath, _ := filepath.Rel(outputDir, path)
+			pathParts := strings.Split(relPath, string(filepath.Separator))
+			if len(pathParts) >= 2 {
+				sanitizedRef := pathParts[0]
+				// Convert back to original reference format (this is a best effort)
+				// For exact matching, use CreateModelsCatalogWithStaticFromResults
+				modelRefs = append(modelRefs, sanitizedRef)
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("error walking directory: %v", err)
+	}
+
+	// Use the new function with the found model references
+	return CreateModelsCatalogWithStaticFromResults(outputDir, catalogPath, modelRefs, staticModels)
 }
 
 // CreateModelsCatalog collects all metadata.yaml files and creates a models-catalog.yaml (backward compatibility)
