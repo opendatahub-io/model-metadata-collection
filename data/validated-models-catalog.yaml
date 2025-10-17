@@ -192,7 +192,460 @@ models:
     - name: RedHatAI/Llama-3.1-8B-Instruct
       provider: Meta
       description: The Meta Llama 3.1 multilingual large language model (LLM) is a collection of pretrained and instruction tuned generative models in 8B.
-      readme: "# First, define a tool\ndef get_current_temperature(location: str) -> float:\n    \"\"\"\n    Get the current temperature at a location.\n    \n    Args:\n        location: The location to get the temperature for, in the format \"City, Country\"\n    Returns:\n        The current temperature at the specified location in the specified units, as a float.\n    \"\"\"\n    return 22.  # A real function should probably actually get the temperature!\n\n# Next, create a chat and apply the chat template\nmessages = [\n  {\"role\": \"system\", \"content\": \"You are a bot that responds to weather queries.\"},\n  {\"role\": \"user\", \"content\": \"Hey, what's the temperature in Paris right now?\"}\n]\n\ninputs = tokenizer.apply_chat_template(messages, tools=[get_current_temperature], add_generation_prompt=True)\n```\n\nYou can then generate text from this input as normal. If the model generates a tool call, you should add it to the chat like so:\n\n```python\ntool_call = {\"name\": \"get_current_temperature\", \"arguments\": {\"location\": \"Paris, France\"}}\nmessages.append({\"role\": \"assistant\", \"tool_calls\": [{\"type\": \"function\", \"function\": tool_call}]})\n```\n\nand then call the tool and append the result, with the `tool` role, like so:\n\n```python\nmessages.append({\"role\": \"tool\", \"name\": \"get_current_temperature\", \"content\": \"22.0\"})\n```\n\nAfter that, you can `generate()` again to let the model use the tool result in the chat. Note that this was a very brief introduction to tool calling - for more information,\nsee the [LLaMA prompt format docs](https://llama.meta.com/docs/model-cards-and-prompt-formats/llama3_1/) and the Transformers [tool use documentation](https://huggingface.co/docs/transformers/main/chat_templating#advanced-tool-use--function-calling).\n\n\n### Use with `llama`\n\nPlease, follow the instructions in the [repository](https://github.com/meta-llama/llama)\n\nTo download Original checkpoints, see the example command below leveraging `huggingface-cli`:\n\n```\nhuggingface-cli download meta-llama/Meta-Llama-3.1-8B-Instruct --include \"original/*\" --local-dir Meta-Llama-3.1-8B-Instruct\n```\n\n## Hardware and Software\n\n**Training Factors** We used custom training libraries, Meta's custom built GPU cluster, and production infrastructure for pretraining. Fine-tuning, annotation, and evaluation were also performed on production infrastructure.\n\n**Training utilized a cumulative of** 39.3M GPU hours of computation on H100-80GB (TDP of 700W) type hardware, per the table below. Training time is the total GPU time required for training each model and power consumption is the peak power capacity per GPU device used, adjusted for power usage efficiency. \n\n\n**Training Greenhouse Gas Emissions** Estimated total location-based greenhouse gas emissions were **11,390** tons CO2eq for training. Since 2020, Meta has maintained net zero greenhouse gas emissions in its global operations and matched 100% of its electricity use with renewable energy, therefore the total market-based greenhouse gas emissions for training were 0 tons CO2eq.\n\n\n<table>\n  <tr>\n   <td>\n   </td>\n   <td><strong>Training Time (GPU hours)</strong>\n   </td>\n   <td><strong>Training Power Consumption (W)</strong>\n   </td>\n   <td><strong>Training Location-Based Greenhouse Gas Emissions</strong>\n<p>\n<strong>(tons CO2eq)</strong>\n   </td>\n   <td><strong>Training Market-Based Greenhouse Gas Emissions</strong>\n<p>\n<strong>(tons CO2eq)</strong>\n   </td>\n  </tr>\n  <tr>\n   <td>Llama 3.1 8B\n   </td>\n   <td>1.46M\n   </td>\n   <td>700\n   </td>\n   <td>420\n   </td>\n   <td>0\n   </td>\n  </tr>\n  <tr>\n   <td>Llama 3.1 70B\n   </td>\n   <td>7.0M\n   </td>\n   <td>700\n   </td>\n   <td>2,040\n   </td>\n   <td>0\n   </td>\n  </tr>\n  <tr>\n   <td>Llama 3.1 405B\n   </td>\n   <td>30.84M\n   </td>\n   <td>700\n   </td>\n   <td>8,930\n   </td>\n   <td>0\n   </td>\n  </tr>\n  <tr>\n   <td>Total\n   </td>\n   <td>39.3M\n   <td>\n<ul>\n\n</ul>\n   </td>\n   <td>11,390\n   </td>\n   <td>0\n   </td>\n  </tr>\n</table>\n\n\n\nThe methodology used to determine training energy use and greenhouse gas emissions can be found [here](https://arxiv.org/pdf/2204.05149).  Since Meta is openly releasing these models, the training energy use and greenhouse gas emissions  will not be incurred by others.\n\n\n## Training Data\n\n**Overview:** Llama 3.1 was pretrained on ~15 trillion tokens of data from publicly available sources. The fine-tuning data includes publicly available instruction datasets, as well as over 25M synthetically generated examples. \n\n**Data Freshness:** The pretraining data has a cutoff of December 2023.\n\n\n## Benchmark scores\n\nIn this section, we report the results for Llama 3.1 models on standard automatic benchmarks. For all the evaluations, we use our internal evaluations library. \n\n### Base pretrained models\n\n\n<table>\n  <tr>\n   <td><strong>Category</strong>\n   </td>\n   <td><strong>Benchmark</strong>\n   </td>\n   <td><strong># Shots</strong>\n   </td>\n   <td><strong>Metric</strong>\n   </td>\n   <td><strong>Llama 3 8B</strong>\n   </td>\n   <td><strong>Llama 3.1 8B</strong>\n   </td>\n   <td><strong>Llama 3 70B</strong>\n   </td>\n   <td><strong>Llama 3.1 70B</strong>\n   </td>\n   <td><strong>Llama 3.1 405B</strong>\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"7\" >General\n   </td>\n   <td>MMLU\n   </td>\n   <td>5\n   </td>\n   <td>macro_avg/acc_char\n   </td>\n   <td>66.7\n   </td>\n   <td>66.7\n   </td>\n   <td>79.5\n   </td>\n   <td>79.3\n   </td>\n   <td>85.2\n   </td>\n  </tr>\n  <tr>\n   <td>MMLU-Pro (CoT)\n   </td>\n   <td>5\n   </td>\n   <td>macro_avg/acc_char\n   </td>\n   <td>36.2\n   </td>\n   <td>37.1\n   </td>\n   <td>55.0\n   </td>\n   <td>53.8\n   </td>\n   <td>61.6\n   </td>\n  </tr>\n  <tr>\n   <td>AGIEval English\n   </td>\n   <td>3-5\n   </td>\n   <td>average/acc_char\n   </td>\n   <td>47.1\n   </td>\n   <td>47.8\n   </td>\n   <td>63.0\n   </td>\n   <td>64.6\n   </td>\n   <td>71.6\n   </td>\n  </tr>\n  <tr>\n   <td>CommonSenseQA\n   </td>\n   <td>7\n   </td>\n   <td>acc_char\n   </td>\n   <td>72.6\n   </td>\n   <td>75.0\n   </td>\n   <td>83.8\n   </td>\n   <td>84.1\n   </td>\n   <td>85.8\n   </td>\n  </tr>\n  <tr>\n   <td>Winogrande\n   </td>\n   <td>5\n   </td>\n   <td>acc_char\n   </td>\n   <td>-\n   </td>\n   <td>60.5\n   </td>\n   <td>-\n   </td>\n   <td>83.3\n   </td>\n   <td>86.7\n   </td>\n  </tr>\n  <tr>\n   <td>BIG-Bench Hard (CoT)\n   </td>\n   <td>3\n   </td>\n   <td>average/em\n   </td>\n   <td>61.1\n   </td>\n   <td>64.2\n   </td>\n   <td>81.3\n   </td>\n   <td>81.6\n   </td>\n   <td>85.9\n   </td>\n  </tr>\n  <tr>\n   <td>ARC-Challenge\n   </td>\n   <td>25\n   </td>\n   <td>acc_char\n   </td>\n   <td>79.4\n   </td>\n   <td>79.7\n   </td>\n   <td>93.1\n   </td>\n   <td>92.9\n   </td>\n   <td>96.1\n   </td>\n  </tr>\n  <tr>\n   <td>Knowledge reasoning\n   </td>\n   <td>TriviaQA-Wiki\n   </td>\n   <td>5\n   </td>\n   <td>em\n   </td>\n   <td>78.5\n   </td>\n   <td>77.6\n   </td>\n   <td>89.7\n   </td>\n   <td>89.8\n   </td>\n   <td>91.8\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"4\" >Reading comprehension\n   </td>\n   <td>SQuAD\n   </td>\n   <td>1\n   </td>\n   <td>em\n   </td>\n   <td>76.4\n   </td>\n   <td>77.0\n   </td>\n   <td>85.6\n   </td>\n   <td>81.8\n   </td>\n   <td>89.3\n   </td>\n  </tr>\n  <tr>\n   <td>QuAC (F1)\n   </td>\n   <td>1\n   </td>\n   <td>f1\n   </td>\n   <td>44.4\n   </td>\n   <td>44.9\n   </td>\n   <td>51.1\n   </td>\n   <td>51.1\n   </td>\n   <td>53.6\n   </td>\n  </tr>\n  <tr>\n   <td>BoolQ\n   </td>\n   <td>0\n   </td>\n   <td>acc_char\n   </td>\n   <td>75.7\n   </td>\n   <td>75.0\n   </td>\n   <td>79.0\n   </td>\n   <td>79.4\n   </td>\n   <td>80.0\n   </td>\n  </tr>\n  <tr>\n   <td>DROP (F1)\n   </td>\n   <td>3\n   </td>\n   <td>f1\n   </td>\n   <td>58.4\n   </td>\n   <td>59.5\n   </td>\n   <td>79.7\n   </td>\n   <td>79.6\n   </td>\n   <td>84.8\n   </td>\n  </tr>\n</table>\n\n\n\n### Instruction tuned models\n\n\n<table>\n  <tr>\n   <td><strong>Category</strong>\n   </td>\n   <td><strong>Benchmark</strong>\n   </td>\n   <td><strong># Shots</strong>\n   </td>\n   <td><strong>Metric</strong>\n   </td>\n   <td><strong>Llama 3 8B Instruct</strong>\n   </td>\n   <td><strong>Llama 3.1 8B Instruct</strong>\n   </td>\n   <td><strong>Llama 3 70B Instruct</strong>\n   </td>\n   <td><strong>Llama 3.1 70B Instruct</strong>\n   </td>\n   <td><strong>Llama 3.1 405B Instruct</strong>\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"4\" >General\n   </td>\n   <td>MMLU\n   </td>\n   <td>5\n   </td>\n   <td>macro_avg/acc\n   </td>\n   <td>68.5\n   </td>\n   <td>69.4\n   </td>\n   <td>82.0\n   </td>\n   <td>83.6\n   </td>\n   <td>87.3\n   </td>\n  </tr>\n  <tr>\n   <td>MMLU (CoT)\n   </td>\n   <td>0\n   </td>\n   <td>macro_avg/acc\n   </td>\n   <td>65.3\n   </td>\n   <td>73.0\n   </td>\n   <td>80.9\n   </td>\n   <td>86.0\n   </td>\n   <td>88.6\n   </td>\n  </tr>\n  <tr>\n   <td>MMLU-Pro (CoT)\n   </td>\n   <td>5\n   </td>\n   <td>micro_avg/acc_char\n   </td>\n   <td>45.5\n   </td>\n   <td>48.3\n   </td>\n   <td>63.4\n   </td>\n   <td>66.4\n   </td>\n   <td>73.3\n   </td>\n  </tr>\n  <tr>\n   <td>IFEval\n   </td>\n   <td>\n   </td>\n   <td>\n   </td>\n   <td>76.8\n   </td>\n   <td>80.4\n   </td>\n   <td>82.9\n   </td>\n   <td>87.5\n   </td>\n   <td>88.6\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"2\" >Reasoning\n   </td>\n   <td>ARC-C\n   </td>\n   <td>0\n   </td>\n   <td>acc\n   </td>\n   <td>82.4\n   </td>\n   <td>83.4\n   </td>\n   <td>94.4\n   </td>\n   <td>94.8\n   </td>\n   <td>96.9\n   </td>\n  </tr>\n  <tr>\n   <td>GPQA\n   </td>\n   <td>0\n   </td>\n   <td>em\n   </td>\n   <td>34.6\n   </td>\n   <td>30.4\n   </td>\n   <td>39.5\n   </td>\n   <td>46.7\n   </td>\n   <td>50.7\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"4\" >Code\n   </td>\n   <td>HumanEval\n   </td>\n   <td>0\n   </td>\n   <td>pass@1\n   </td>\n   <td>60.4\n   </td>\n   <td>72.6\n   </td>\n   <td>81.7\n   </td>\n   <td>80.5\n   </td>\n   <td>89.0\n   </td>\n  </tr>\n  <tr>\n   <td>MBPP ++ base version\n   </td>\n   <td>0\n   </td>\n   <td>pass@1\n   </td>\n   <td>70.6\n   </td>\n   <td>72.8\n   </td>\n   <td>82.5\n   </td>\n   <td>86.0\n   </td>\n   <td>88.6\n   </td>\n  </tr>\n  <tr>\n   <td>Multipl-E HumanEval\n   </td>\n   <td>0\n   </td>\n   <td>pass@1\n   </td>\n   <td>-\n   </td>\n   <td>50.8\n   </td>\n   <td>-\n   </td>\n   <td>65.5\n   </td>\n   <td>75.2\n   </td>\n  </tr>\n  <tr>\n   <td>Multipl-E MBPP\n   </td>\n   <td>0\n   </td>\n   <td>pass@1\n   </td>\n   <td>-\n   </td>\n   <td>52.4\n   </td>\n   <td>-\n   </td>\n   <td>62.0\n   </td>\n   <td>65.7\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"2\" >Math\n   </td>\n   <td>GSM-8K (CoT)\n   </td>\n   <td>8\n   </td>\n   <td>em_maj1@1\n   </td>\n   <td>80.6\n   </td>\n   <td>84.5\n   </td>\n   <td>93.0\n   </td>\n   <td>95.1\n   </td>\n   <td>96.8\n   </td>\n  </tr>\n  <tr>\n   <td>MATH (CoT)\n   </td>\n   <td>0\n   </td>\n   <td>final_em\n   </td>\n   <td>29.1\n   </td>\n   <td>51.9\n   </td>\n   <td>51.0\n   </td>\n   <td>68.0\n   </td>\n   <td>73.8\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"4\" >Tool Use\n   </td>\n   <td>API-Bank\n   </td>\n   <td>0\n   </td>\n   <td>acc\n   </td>\n   <td>48.3\n   </td>\n   <td>82.6\n   </td>\n   <td>85.1\n   </td>\n   <td>90.0\n   </td>\n   <td>92.0\n   </td>\n  </tr>\n  <tr>\n   <td>BFCL\n   </td>\n   <td>0\n   </td>\n   <td>acc\n   </td>\n   <td>60.3\n   </td>\n   <td>76.1\n   </td>\n   <td>83.0\n   </td>\n   <td>84.8\n   </td>\n   <td>88.5\n   </td>\n  </tr>\n  <tr>\n   <td>Gorilla Benchmark API Bench\n   </td>\n   <td>0\n   </td>\n   <td>acc\n   </td>\n   <td>1.7\n   </td>\n   <td>8.2\n   </td>\n   <td>14.7\n   </td>\n   <td>29.7\n   </td>\n   <td>35.3\n   </td>\n  </tr>\n  <tr>\n   <td>Nexus (0-shot)\n   </td>\n   <td>0\n   </td>\n   <td>macro_avg/acc\n   </td>\n   <td>18.1\n   </td>\n   <td>38.5\n   </td>\n   <td>47.8\n   </td>\n   <td>56.7\n   </td>\n   <td>58.7\n   </td>\n  </tr>\n  <tr>\n   <td>Multilingual\n   </td>\n   <td>Multilingual MGSM (CoT)\n   </td>\n   <td>0\n   </td>\n   <td>em\n   </td>\n   <td>-\n   </td>\n   <td>68.9\n   </td>\n   <td>-\n   </td>\n   <td>86.9\n   </td>\n   <td>91.6\n   </td>\n  </tr>\n</table>\n\n#### Multilingual benchmarks\n\n<table>\n  <tr>\n   <td><strong>Category</strong>\n   </td>\n   <td><strong>Benchmark</strong>\n   </td>\n   <td><strong>Language</strong>\n   </td>\n   <td><strong>Llama 3.1 8B</strong>\n   </td>\n   <td><strong>Llama 3.1 70B</strong>\n   </td>\n   <td><strong>Llama 3.1 405B</strong>\n   </td>\n  </tr>\n  <tr>\n   <td rowspan=\"9\" ><strong>General</strong>\n   </td>\n   <td rowspan=\"9\" ><strong>MMLU (5-shot, macro_avg/acc)</strong>\n   </td>\n   <td>Portuguese\n   </td>\n   <td>62.12\n   </td>\n   <td>80.13\n   </td>\n   <td>84.95\n   </td>\n  </tr>\n  <tr>\n   <td>Spanish\n   </td>\n   <td>62.45\n   </td>\n   <td>80.05\n   </td>\n   <td>85.08\n   </td>\n  </tr>\n  <tr>\n   <td>Italian\n   </td>\n   <td>61.63\n   </td>\n   <td>80.4\n   </td>\n   <td>85.04\n   </td>\n  </tr>\n  <tr>\n   <td>German\n   </td>\n   <td>60.59\n   </td>\n   <td>79.27\n   </td>\n   <td>84.36\n   </td>\n  </tr>\n  <tr>\n   <td>French\n   </td>\n   <td>62.34\n   </td>\n   <td>79.82\n   </td>\n   <td>84.66\n   </td>\n  </tr>\n  <tr>\n   <td>Hindi\n   </td>\n   <td>50.88\n   </td>\n   <td>74.52\n   </td>\n   <td>80.31\n   </td>\n  </tr>\n  <tr>\n   <td>Thai\n   </td>\n   <td>50.32\n   </td>\n   <td>72.95\n   </td>\n   <td>78.21\n   </td>\n  </tr>\n</table>\n\n\n\n## Responsibility & Safety\n\nAs part of our Responsible release approach, we followed a three-pronged strategy to managing trust & safety risks:\n\n\n\n* Enable developers to deploy helpful, safe and flexible experiences for their target audience and for the use cases supported by Llama. \n* Protect developers against adversarial users aiming to exploit Llama capabilities to potentially cause harm.\n* Provide protections for the community to help prevent the misuse of our models.\n\n\n### Responsible deployment \n\nLlama is a foundational technology designed to be used in a variety of use cases, examples on how Meta’s Llama models have been responsibly deployed can be found in our [Community Stories webpage](https://llama.meta.com/community-stories/). Our approach is to build the most helpful models enabling the world to benefit from the technology power, by aligning our model safety for the generic use cases addressing a standard set of harms. Developers are then in the driver seat to tailor safety for their use case, defining their own policy and deploying the models with the necessary safeguards in their Llama systems. Llama 3.1 was developed following the best practices outlined in our Responsible Use Guide, you can refer to the [Responsible Use Guide](https://llama.meta.com/responsible-use-guide/) to learn more. \n\n\n#### Llama 3.1 instruct \n\nOur main objectives for conducting safety fine-tuning are to provide the research community with a valuable resource for studying the robustness of safety fine-tuning, as well as to offer developers a readily available, safe, and powerful model for various applications to reduce the developer workload to deploy safe AI systems. For more details on the safety mitigations implemented please read the Llama 3 paper. \n\n**Fine-tuning data**\n\nWe employ a multi-faceted approach to data collection, combining human-generated data from our vendors with synthetic data to mitigate potential safety risks. We’ve developed many large language model (LLM)-based classifiers that enable us to thoughtfully select high-quality prompts and responses, enhancing data quality control. \n\n**Refusals and Tone**\n\nBuilding on the work we started with Llama 3, we put a great emphasis on model refusals to benign prompts as well as refusal tone. We included both borderline and adversarial prompts in our safety data strategy, and modified our safety data responses to follow  tone guidelines. \n\n\n#### Llama 3.1 systems\n\n**Large language models, including Llama 3.1, are not designed to be deployed in isolation but instead should be deployed as part of an overall AI system with additional safety guardrails as required.** Developers are expected to deploy system safeguards when building agentic systems. Safeguards are key to achieve the right helpfulness-safety alignment as well as mitigating safety and security risks inherent to the system and any integration of the model or system with external tools. \n\nAs part of our responsible release approach, we provide the community with [safeguards](https://llama.meta.com/trust-and-safety/) that developers should deploy with Llama models or other LLMs, including Llama Guard 3, Prompt Guard and Code Shield. All our [reference implementations](https://github.com/meta-llama/llama-agentic-system) demos contain these safeguards by default so developers can benefit from system-level safety out-of-the-box. \n\n\n#### New capabilities \n\nNote that this release introduces new capabilities, including a longer context window, multilingual inputs and outputs and possible integrations by developers with third party tools. Building with these new capabilities requires specific considerations in addition to the best practices that generally apply across all Generative AI use cases.\n\n**Tool-use**: Just like in standard software development, developers are responsible for the integration of the LLM with the tools and services of their choice. They should define a clear policy for their use case and assess the integrity of the third party services they use to be aware of the safety and security limitations when using this capability. Refer to the Responsible Use Guide for best practices on the safe deployment of the third party safeguards. \n\n**Multilinguality**: Llama 3.1 supports 7 languages in addition to English: French, German, Hindi, Italian, Portuguese, Spanish, and Thai. Llama may be able to output text in other languages than those that meet performance thresholds for safety and helpfulness. We strongly discourage developers from using this model to converse in non-supported languages without implementing finetuning and system controls in alignment with their policies and the best practices shared in the Responsible Use Guide. \n\n\n### Evaluations\n\nWe evaluated Llama models for common use cases as well as specific capabilities. Common use cases evaluations measure safety risks of systems for most commonly built applications including chat bot, coding assistant, tool calls. We built dedicated, adversarial evaluation datasets and evaluated systems composed of Llama models and Llama Guard 3 to filter input prompt and output response. It is important to evaluate applications in context, and we recommend building dedicated evaluation dataset for your use case. Prompt Guard and Code Shield are also available if relevant to the application. \n\nCapability evaluations measure vulnerabilities of Llama models inherent to specific capabilities, for which were crafted dedicated benchmarks including long context, multilingual, tools calls, coding or memorization.\n\n**Red teaming**\n\nFor both scenarios, we conducted recurring red teaming exercises with the goal of discovering risks via adversarial prompting and we used the learnings to improve our benchmarks and safety tuning datasets. \n\nWe partnered early with subject-matter experts in critical risk areas to understand the nature of these real-world harms and how such models may lead to unintended harm for society. Based on these conversations, we derived a set of adversarial goals for the red team to attempt to achieve, such as extracting harmful information or reprogramming the model to act in a potentially harmful capacity.  The red team consisted of experts in cybersecurity, adversarial machine learning, responsible AI, and integrity in addition to multilingual content specialists with background in integrity issues in specific geographic markets.\n\n\n### Critical and other risks \n\nWe specifically focused our efforts on mitigating the following critical risk areas:\n\n**1- CBRNE (Chemical, Biological, Radiological, Nuclear, and Explosive materials) helpfulness**\n\nTo assess risks related to proliferation of chemical and biological weapons, we performed uplift testing designed to assess whether use of Llama 3.1 models could meaningfully increase the capabilities of malicious actors to plan or carry out attacks using these types of weapons. \n\n\n**2. Child Safety**\n\nChild Safety risk assessments were conducted using a team of experts, to assess the model’s capability to produce outputs that could result in Child Safety risks and inform on any necessary and appropriate risk mitigations via fine tuning. We leveraged those expert red teaming sessions to expand the coverage of our evaluation benchmarks through Llama 3 model development.  For Llama 3, we conducted new in-depth sessions using objective based methodologies to assess the model risks along multiple attack vectors including the additional languages Llama 3 is trained on. We also partnered with content specialists to perform red teaming exercises assessing potentially violating content while taking account of market specific nuances or experiences. \n\n**3. Cyber attack enablement**\n\nOur cyber attack uplift study investigated whether LLMs can enhance human capabilities in hacking tasks, both in terms of skill level and speed.\n\nOur attack automation study focused on evaluating the capabilities of LLMs when used as autonomous agents in cyber offensive operations, specifically in the context of ransomware attacks. This evaluation was distinct from previous studies that considered LLMs as interactive assistants. The primary objective was to assess whether these models could effectively function as independent agents in executing complex cyber-attacks without human intervention.\n\nOur study of Llama-3.1-405B’s social engineering uplift for cyber attackers was conducted to assess the effectiveness of AI models in aiding cyber threat actors in spear phishing campaigns. Please read our Llama 3.1 Cyber security whitepaper to learn more.\n\n\n### Community \n\nGenerative AI safety requires expertise and tooling, and we believe in the strength of the open community to accelerate its progress. We are active members of open consortiums, including the AI Alliance, Partnership on AI and MLCommons, actively contributing to safety standardization and transparency. We encourage the community to adopt taxonomies like the MLCommons Proof of Concept evaluation to facilitate collaboration and transparency on safety and content evaluations. Our Purple Llama tools are open sourced for the community to use and widely distributed across ecosystem partners including cloud service providers. We encourage community contributions to our [Github repository](https://github.com/meta-llama/PurpleLlama). \n\nWe also set up the [Llama Impact Grants](https://llama.meta.com/llama-impact-grants/) program to identify and support the most compelling applications of Meta’s Llama model for societal benefit across three categories: education, climate and open innovation. The 20 finalists from the hundreds of applications can be found [here](https://llama.meta.com/llama-impact-grants/#finalists). \n\nFinally, we put in place a set of resources including an [output reporting mechanism](https://developers.facebook.com/llama_output_feedback) and [bug bounty program](https://www.facebook.com/whitehat) to continuously improve the Llama technology with the help of the community.\n\n\n## Ethical Considerations and Limitations\n\nThe core values of Llama 3.1 are openness, inclusivity and helpfulness. It is meant to serve everyone, and to work for a wide range of use cases. It is thus designed to be accessible to people across many different backgrounds, experiences and perspectives. Llama 3.1 addresses users and their needs as they are, without insertion unnecessary judgment or normativity, while reflecting the understanding that even content that may appear problematic in some cases can serve valuable purposes in others. It respects the dignity and autonomy of all users, especially in terms of the values of free thought and expression that power innovation and progress. \n\nBut Llama 3.1 is a new technology, and like any new technology, there are risks associated with its use. Testing conducted to date has not covered, nor could it cover, all scenarios. For these reasons, as with all LLMs, Llama 3.1’s potential outputs cannot be predicted in advance, and the model may in some instances produce inaccurate, biased or other objectionable responses to user prompts. Therefore, before deploying any applications of Llama 3.1 models, developers should perform safety testing and tuning tailored to their specific applications of the model. Please refer to available resources including our [Responsible Use Guide](https://llama.meta.com/responsible-use-guide), [Trust and Safety](https://llama.meta.com/trust-and-safety/) solutions, and other [resources](https://llama.meta.com/docs/get-started/) to learn more about responsible development. "
+      readme: |
+        # Meta-Llama-3.1-8B-Instruct-FP8-dynamic
+
+        ## Model Overview
+        - **Model Architecture:** Meta-Llama-3.1
+          - **Input:** Text
+          - **Output:** Text
+        - **Model Optimizations:**
+          - **Weight quantization:** FP8
+          - **Activation quantization:** FP8
+        - **Intended Use Cases:** Intended for commercial and research use in multiple languages. Similarly to [Meta-Llama-3.1-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct), this models is intended for assistant-like chat.
+        - **Out-of-scope:** Use in any manner that violates applicable laws or regulations (including trade compliance laws). Use in languages other than English.
+        - **Release Date:** 7/23/2024
+        - **Version:** 1.0
+        - **Model Developers:** Neural Magic
+
+        This model is a quantized version of [Meta-Llama-3.1-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct).
+        It was evaluated on a several tasks to assess the its quality in comparison to the unquatized model, including multiple-choice, math reasoning, and open-ended text generation.
+        Meta-Llama-3.1-8B-Instruct-FP8-dynamic achieves 105.4% recovery for the Arena-Hard evaluation, 99.7% for OpenLLM v1 (using Meta's prompting when available), 101.2% for OpenLLM v2, 100.0% for HumanEval pass@1, and 101.0% for HumanEval+ pass@1.
+
+        ### Model Optimizations
+
+        This model was obtained by quantizing the weights and activations of [Meta-Llama-3.1-8B-Instruct](https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct) to FP8 data type, ready for inference with vLLM built from source.
+        This optimization reduces the number of bits per parameter from 16 to 8, reducing the disk size and GPU memory requirements by approximately 50%.
+
+        Only the weights and activations of the linear operators within transformers blocks are quantized. Symmetric per-channel quantization is applied, in which a linear scaling per output dimension maps the FP8 representations of the quantized weights and activations. Activations are also quantized on a per-token dynamic basis.
+        [LLM Compressor](https://github.com/vllm-project/llm-compressor) is used for quantization.
+
+        ## Deployment
+
+        ### Use with vLLM
+
+        This model can be deployed efficiently using the [vLLM](https://docs.vllm.ai/en/latest/) backend, as shown in the example below.
+
+        ```python
+        from vllm import LLM, SamplingParams
+        from transformers import AutoTokenizer
+
+        model_id = "neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic"
+
+        sampling_params = SamplingParams(temperature=0.6, top_p=0.9, max_tokens=256)
+
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+
+        messages = [
+            {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
+            {"role": "user", "content": "Who are you?"},
+        ]
+
+        prompts = tokenizer.apply_chat_template(messages, tokenize=False)
+
+        llm = LLM(model=model_id)
+
+        outputs = llm.generate(prompts, sampling_params)
+
+        generated_text = outputs[0].outputs[0].text
+        print(generated_text)
+        ```
+
+        vLLM aslo supports OpenAI-compatible serving. See the [documentation](https://docs.vllm.ai/en/latest/) for more details.
+
+        ## Creation
+
+        This model was created by applying [LLM Compressor with calibration samples from UltraChat](https://github.com/vllm-project/llm-compressor/blob/sa/big_model_support/examples/big_model_offloading/big_model_w8a8_calibrate.py), as presented in the code snipet below.
+
+        ```python
+        import torch
+
+        from transformers import AutoTokenizer
+
+        from llmcompressor.transformers import SparseAutoModelForCausalLM, oneshot
+        from llmcompressor.transformers.compression.helpers import (  # noqa
+            calculate_offload_device_map,
+            custom_offload_device_map,
+        )
+
+        recipe = """
+        quant_stage:
+            quant_modifiers:
+                QuantizationModifier:
+                    ignore: ["lm_head"]
+                    config_groups:
+                        group_0:
+                            weights:
+                                num_bits: 8
+                                type: float
+                                strategy: channel
+                                dynamic: false
+                                symmetric: true
+                            input_activations:
+                                num_bits: 8
+                                type: float
+                                strategy: token
+                                dynamic: true
+                                symmetric: true
+                            targets: ["Linear"]
+        """
+
+        model_stub = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+        model_name = model_stub.split("/")[-1]
+
+        device_map = calculate_offload_device_map(
+            model_stub, reserve_for_hessians=False, num_gpus=1, torch_dtype="auto"
+        )
+
+        model = SparseAutoModelForCausalLM.from_pretrained(
+            model_stub, torch_dtype="auto", device_map=device_map
+        )
+
+        output_dir = f"./{model_name}-FP8-dynamic"
+
+        oneshot(
+            model=model,
+            recipe=recipe,
+            output_dir=output_dir,
+            save_compressed=True,
+            tokenizer=AutoTokenizer.from_pretrained(model_stub),
+        )
+        ```
+
+        ## Evaluation
+
+        This model was evaluated on the well-known Arena-Hard, OpenLLM v1, OpenLLM v2, HumanEval, and HumanEval+ benchmarks.
+        In all cases, model outputs were generated with the [vLLM](https://docs.vllm.ai/en/stable/) engine.
+
+        Arena-Hard evaluations were conducted using the [Arena-Hard-Auto](https://github.com/lmarena/arena-hard-auto) repository.
+        The model generated a single answer for each prompt form Arena-Hard, and each answer was judged twice by GPT-4.
+        We report below the scores obtained in each judgement and the average.
+
+        OpenLLM v1 and v2 evaluations were conducted using Neural Magic's fork of [lm-evaluation-harness](https://github.com/neuralmagic/lm-evaluation-harness/tree/llama_3.1_instruct) (branch llama_3.1_instruct).
+        This version of the lm-evaluation-harness includes versions of MMLU, ARC-Challenge and GSM-8K that match the prompting style of [Meta-Llama-3.1-Instruct-evals](https://huggingface.co/datasets/meta-llama/Meta-Llama-3.1-8B-Instruct-evals) and a few fixes to OpenLLM v2 tasks.
+
+        HumanEval and HumanEval+ evaluations were conducted using Neural Magic's fork of the [EvalPlus](https://github.com/neuralmagic/evalplus) repository.
+
+        Detailed model outputs are available as HuggingFace datasets for [Arena-Hard](https://huggingface.co/datasets/neuralmagic/quantized-llama-3.1-arena-hard-evals), [OpenLLM v2](https://huggingface.co/datasets/neuralmagic/quantized-llama-3.1-leaderboard-v2-evals), and [HumanEval](https://huggingface.co/datasets/neuralmagic/quantized-llama-3.1-humaneval-evals).
+
+        ### Accuracy
+
+        <table>
+          <tr>
+           <td><strong>Benchmark</strong>
+           </td>
+           <td><strong>Meta-Llama-3.1-8B-Instruct </strong>
+           </td>
+           <td><strong>Meta-Llama-3.1-8B-Instruct-FP8-dynamic (this model)</strong>
+           </td>
+           <td><strong>Recovery</strong>
+           </td>
+          </tr>
+          <tr>
+           <td>MMLU (5-shot)
+           </td>
+           <td>67.95
+           </td>
+           <td>68.02
+           </td>
+           <td>100.1%
+           </td>
+          </tr>
+          <tr>
+           <td><strong>Arena Hard</strong>
+           </td>
+           <td>25.8 (25.1 / 26.5)
+           </td>
+           <td>27.2 (27.4 / 27.0)
+           </td>
+           <td>105.4%
+           </td>
+          </tr>
+          <tr>
+           <td><strong>OpenLLM v1</strong>
+           </td>
+          </tr>
+          <tr>
+           <td>MMLU-cot (0-shot)
+           </td>
+           <td>71.2
+           </td>
+           <td>71.6
+           </td>
+           <td>100.5%
+           </td>
+          </tr>
+          <tr>
+           <td>ARC Challenge (0-shot)
+           </td>
+           <td>82.0
+           </td>
+           <td>81.2
+           </td>
+           <td>99.1%
+           </td>
+          </tr>
+          <tr>
+           <td>GSM-8K-cot (8-shot, strict-match)
+           </td>
+           <td>82.0
+           </td>
+           <td>82.0
+           </td>
+           <td>100.0%
+           </td>
+          </tr>
+          <tr>
+           <td>Hellaswag (10-shot)
+           </td>
+           <td>80.5
+           </td>
+           <td>80.0
+           </td>
+           <td>99.5%
+           </td>
+          </tr>
+          <tr>
+           <td>Winogrande (5-shot)
+           </td>
+           <td>78.5
+           </td>
+           <td>77.7
+           </td>
+           <td>99.0%
+           </td>
+          </tr>
+          <tr>
+           <td>TruthfulQA (0-shot, mc2)
+           </td>
+           <td>54.5
+           </td>
+           <td>54.3
+           </td>
+           <td>99.6%
+           </td>
+          </tr>
+          <tr>
+           <td><strong>Average</strong>
+           </td>
+           <td><strong>73.8</strong>
+           </td>
+           <td><strong>73.6</strong>
+           </td>
+           <td><strong>99.7%</strong>
+           </td>
+          </tr>
+          <tr>
+           <td><strong>OpenLLM v2</strong>
+           </td>
+          </tr>
+          <tr>
+           <td>MMLU-Pro (5-shot)
+           </td>
+           <td>30.8
+           </td>
+           <td>31.2
+           </td>
+           <td>101.3%
+           </td>
+          </tr>
+          <tr>
+           <td>IFEval (0-shot)
+           </td>
+           <td>77.9
+           </td>
+           <td>77.2
+           </td>
+           <td>99.1%
+           </td>
+          </tr>
+          <tr>
+           <td>BBH (3-shot)
+           </td>
+           <td>30.1
+           </td>
+           <td>29.7
+           </td>
+           <td>98.5%
+           </td>
+          </tr>
+          <tr>
+           <td>Math-|v|-5 (4-shot)
+           </td>
+           <td>15.7
+           </td>
+           <td>16.5
+           </td>
+           <td>105.4%
+           </td>
+          </tr>
+          <tr>
+           <td>GPQA (0-shot)
+           </td>
+           <td>3.7
+           </td>
+           <td>5.7
+           </td>
+           <td>156.0%
+           </td>
+          </tr>
+          <tr>
+           <td>MuSR (0-shot)
+           </td>
+           <td>7.6
+           </td>
+           <td>7.5
+           </td>
+           <td>98.8%
+           </td>
+          </tr>
+          <tr>
+           <td><strong>Average</strong>
+           </td>
+           <td><strong>27.6</strong>
+           </td>
+           <td><strong>28.0</strong>
+           </td>
+           <td><strong>101.2%</strong>
+           </td>
+          </tr>
+          <tr>
+           <td><strong>Coding</strong>
+           </td>
+          </tr>
+          <tr>
+           <td>HumanEval pass@1
+           </td>
+           <td>67.3
+           </td>
+           <td>67.3
+           </td>
+           <td>100.0%
+           </td>
+          </tr>
+          <tr>
+           <td>HumanEval+ pass@1
+           </td>
+           <td>60.7
+           </td>
+           <td>61.3
+           </td>
+           <td>101.0%
+           </td>
+          </tr>
+        </table>
+
+        ### Reproduction
+
+        The results were obtained using the following commands:
+
+        #### MMLU
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1 \
+          --tasks mmlu \
+          --num_fewshot 5 \
+          --batch_size auto
+        ```
+
+        #### MMLU-cot
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1 \
+          --tasks mmlu_cot_0shot_llama_3.1_instruct \
+          --apply_chat_template \
+          --num_fewshot 0 \
+          --batch_size auto
+        ```
+
+        #### ARC-Challenge
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1 \
+          --tasks arc_challenge_llama_3.1_instruct \
+          --apply_chat_template \
+          --num_fewshot 0 \
+          --batch_size auto
+        ```
+
+        #### GSM-8K
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1 \
+          --tasks gsm8k_cot_llama_3.1_instruct \
+          --apply_chat_template \
+          --fewshot_as_multiturn \
+          --num_fewshot 8 \
+          --batch_size auto
+        ```
+
+        #### Hellaswag
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1 \
+          --tasks hellaswag \
+          --num_fewshot 10 \
+          --batch_size auto
+        ```
+
+        #### Winogrande
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1 \
+          --tasks winogrande \
+          --num_fewshot 5 \
+          --batch_size auto
+        ```
+
+        #### TruthfulQA
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1 \
+          --tasks truthfulqa \
+          --num_fewshot 0 \
+          --batch_size auto
+        ```
+
+        #### OpenLLM v2
+        ```
+        lm_eval \
+          --model vllm \
+          --model_args pretrained="neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",dtype=auto,max_model_len=4096,tensor_parallel_size=1,enable_chunked_prefill=True \
+          --apply_chat_template \
+          --fewshot_as_multiturn \
+          --tasks leaderboard \
+          --batch_size auto
+        ```
+
+        #### HumanEval and HumanEval+
+        ##### Generation
+        ```
+        python3 codegen/generate.py \
+          --model neuralmagic/Meta-Llama-3.1-8B-Instruct-FP8-dynamic \
+          --bs 16 \
+          --temperature 0.2 \
+          --n_samples 50 \
+          --root "." \
+          --dataset humaneval
+        ```
+        ##### Sanitization
+        ```
+        python3 evalplus/sanitize.py \
+          humaneval/neuralmagic--Meta-Llama-3.1-8B-Instruct-FP8-dynamic_vllm_temp_0.2
+        ```
+        ##### Evaluation
+        ```
+        evalplus.evaluate \
+          --dataset humaneval \
+          --samples humaneval/neuralmagic--Meta-Llama-3.1-8B-Instruct-FP8-dynamic_vllm_temp_0.2-sanitized
+        ```
       language:
         - en
         - de
@@ -234,9 +687,9 @@ models:
             metadataType: MetadataStringValue
             string_value: "RHOAI 2.20,RHAIIS 3.0,RHELAI 1.5"
       artifacts:
-        - uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct:1.5
+        - uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-fp8-dynamic:1.5
           createTimeSinceEpoch: "1739776988000"
-          lastUpdateTimeSinceEpoch: "1744896921000"
+          lastUpdateTimeSinceEpoch: "1744887641000"
           customProperties:
             source:
                 metadataType: MetadataStringValue
@@ -244,9 +697,9 @@ models:
             type:
                 metadataType: MetadataStringValue
                 string_value: modelcar
-        - uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-fp8-dynamic:1.5
+        - uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-quantized-w8a8:1.5
           createTimeSinceEpoch: "1739776988000"
-          lastUpdateTimeSinceEpoch: "1744887641000"
+          lastUpdateTimeSinceEpoch: "1744886948000"
           customProperties:
             source:
                 metadataType: MetadataStringValue
@@ -264,9 +717,9 @@ models:
             type:
                 metadataType: MetadataStringValue
                 string_value: modelcar
-        - uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-quantized-w8a8:1.5
+        - uri: oci://registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct:1.5
           createTimeSinceEpoch: "1739776988000"
-          lastUpdateTimeSinceEpoch: "1744886948000"
+          lastUpdateTimeSinceEpoch: "1744896921000"
           customProperties:
             source:
                 metadataType: MetadataStringValue
@@ -3697,6 +4150,101 @@ models:
                 metadataType: MetadataStringValue
                 string_value: modelcar
       logo: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIGlkPSJ1dWlkLTlmMDM5ZTY4LTZiOTgtNDNlMS05ZjE3LWYwOWNkZTFiNzdhZCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTc1IiBoZWlnaHQ9IjE3NSIgdmlld0JveD0iMCAwIDE3NSAxNzUiPjxkZWZzPjxzdHlsZT4udXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmZ7ZmlsbDpub25lO30udXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjZ7ZmlsbDojZTBlMGUwO30udXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDh7ZmlsbDojZmZmO30udXVpZC1jNGQxYmJmMC02ZGZkLTQyMTEtYmZjYi1iYjM4YjU2ZWQ3NGF7ZmlsbDojNjM5OTNkO30udXVpZC1lZjg1YzExZi1iNjczLTRmZjAtYTYxMi1mMGRiMDYyMmNlYTJ7ZmlsbDojODdiYjYyO30udXVpZC0yZGM1Zjc4Yy04ZTgwLTQxNTYtODYxNy1jOTllZGJlZGRjOGN7ZmlsbDojZTAwO308L3N0eWxlPjwvZGVmcz48ZyBpZD0idXVpZC0zZjA0ZDNkOS0xYzI3LTRkYTYtYWU3NS0xZjlhYTMzY2EzNWQiPjxnIGlkPSJ1dWlkLWRhMzg4MTVhLTAyMGEtNDcwOC1iZWQ3LTNiZGEwYmNmZWM0YiI+PHJlY3QgY2xhc3M9InV1aWQtYzRkMWJiZjAtNmRmZC00MjExLWJmY2ItYmIzOGI1NmVkNzRhIiB4PSIxMjIuNSIgeT0iMTIyLjUiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgcng9IjEyLjUiIHJ5PSIxMi41Ii8+PHBhdGggY2xhc3M9InV1aWQtZWY4NWMxMWYtYjY3My00ZmYwLWE2MTItZjBkYjA2MjJjZWEyIiBkPSJNMTYwLDEyMy41YzYuMzQxMTMsMCwxMS41LDUuMTU4ODgsMTEuNSwxMS41djI1YzAsNi4zNDExMy01LjE1ODg3LDExLjUtMTEuNSwxMS41aC0yNWMtNi4zNDExMiwwLTExLjUtNS4xNTg4Ny0xMS41LTExLjV2LTI1YzAtNi4zNDExMiw1LjE1ODg4LTExLjUsMTEuNS0xMS41aDI1TTE2MCwxMjIuNWgtMjVjLTYuOTAzNTYsMC0xMi41LDUuNTk2NDQtMTIuNSwxMi41djI1YzAsNi45MDM1Niw1LjU5NjQ0LDEyLjUsMTIuNSwxMi41aDI1YzYuOTAzNTYsMCwxMi41LTUuNTk2NDQsMTIuNS0xMi41di0yNWMwLTYuOTAzNTYtNS41OTY0NC0xMi41LTEyLjUtMTIuNWgwWiIvPjwvZz48ZyBpZD0idXVpZC1mMDM5ZWRhYy04NzNkLTRhYzAtODIyMS1lNWZiYjdiYTAwNjMiPjxnIGlkPSJ1dWlkLTAxMTdlYTBhLTU3N2YtNGUyMi1iYjliLTZiNDE2MDI3Njc0NiI+PGcgaWQ9InV1aWQtNGU5NTUyZmItZWFhMS00MmExLWFjMDgtMTI0ZmJmNTQ0MmRkIj48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHg9IjEzMS41IiB5PSIxMzEuNSIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+PC9nPjxnIGlkPSJ1dWlkLTZhMDVmZDM5LTk4ZTMtNDU0Zi05NmZkLWZkNTdmYmZlMjdkMCI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTQyLjcsMTU4LjM2NzJjLS42MTQwOCwwLTEuMjI5NzYtLjIzMjgtMS42OTY4LS43MDE2bC03LjQzNDQtNy40MzQ0Yy0uNjI0OTYtLjYyNDk2LS42MjQ5Ni0xLjYzNzQ0LDAtMi4yNjI1NnMxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDBsNi44Njg4LDYuODY4OCwxNi40Njg4LTE2LjQ2ODhjLjYyNDk2LS42MjQ5NiwxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDAsLjYyNTEyLjYyNDk2LjYyNDk2LDEuNjM3NDQsMCwyLjI2MjU2bC0xNy4wMzQ0LDE3LjAzNDRjLS40NjcyLjQ2ODgtMS4wODI4OC43MDE2LTEuNjk2OC43MDE2aC0uMDAwMzJaIi8+PC9nPjwvZz48L2c+PC9nPjxnIGlkPSJ1dWlkLWMwOGJhYmRjLTExMWMtNDIyMS04NWM4LTkwYzhlMjFhN2Q1OSI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTE3LjUsMTM1YzAtOS42NDk1NCw3Ljg1MDQ2LTE3LjUsMTcuNS0xNy41aDE3LjQwNzg0Yy4wNTQ1LS44MjcyMS4wOTIxNi0xLjY1OS4wOTIxNi0yLjVWNDBjMC0yMC43MTA2OS0xNi43ODkzMS0zNy41LTM3LjUtMzcuNUg0MEMxOS4yODkzMSwyLjUsMi41LDE5LjI4OTMxLDIuNSw0MHY3NWMwLDIwLjcxMDYzLDE2Ljc4OTMxLDM3LjUsMzcuNSwzNy41aDc1Yy44NDEsMCwxLjY3Mjc5LS4wMzc2NiwyLjUtLjA5MjE2di0xNy40MDc4NFoiLz48cGF0aCBjbGFzcz0idXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjYiIGQ9Ik0xMTcuNSwxNDcuMTg1MzZjLS44MjYwNS4wNjM2LTEuNjU3OS4xMDYyNi0yLjUuMTA2MjZINDBjLTE3LjgwNTczLDAtMzIuMjkxNjktMTQuNDg1OTYtMzIuMjkxNjktMzIuMjkxNjNWNDBDNy43MDgzMSwyMi4xOTQzNCwyMi4xOTQyNyw3LjcwODMxLDQwLDcuNzA4MzFoNzVjMTcuODA1NzMsMCwzMi4yOTE2OSwxNC40ODYwMiwzMi4yOTE2OSwzMi4yOTE2OXY3NWMwLC44NDIxLS4wNDI2NiwxLjY3Mzk1LS4xMDYyNiwyLjVoNS4yMjI0MWMuMDU0NS0uODI3MjEuMDkyMTYtMS42NTkuMDkyMTYtMi41VjQwYzAtMjAuNzEwNzUtMTYuNzg5MjUtMzcuNS0zNy41LTM3LjVINDBDMTkuMjg5MjUsMi41LDIuNSwxOS4yODkyNSwyLjUsNDB2NzVjMCwyMC43MTA2OSwxNi43ODkyNSwzNy41LDM3LjUsMzcuNWg3NWMuODQxLDAsMS42NzI3OS0uMDM3NjYsMi41LS4wOTIxNnYtNS4yMjI0N1oiLz48L2c+PGcgaWQ9InV1aWQtYjU4NDEwOGQtNjIyNy00MDBlLWIxOTctYjEzMDY1ZWM3ZjA4Ij48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHdpZHRoPSIxNzUiIGhlaWdodD0iMTc1Ii8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDEwOS4yNzE3M2gtNTguMzMzMzJjLTEuMDUzODcsMC0yLjAwMTk1LS42MzQ3Ny0yLjQwNjgyLTEuNjA3MjYtLjQwMjgzLS45NzI0OS0uMTc5MDQtMi4wOTM1MS41NjU1OS0yLjgzODEzbDI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0Yy0uNzQ0NjMtLjc0NDYzLS45Njg0Mi0xLjg2NTY0LS41NjU1OS0yLjgzODEzLjQwNDg3LS45NzI0OSwxLjM1Mjk1LTEuNjA3MjYsMi40MDY4Mi0xLjYwNzI2aDU4LjMzMzMyYzEuMDUzODcsMCwyLjAwMTk1LjYzNDc3LDIuNDA2ODIsMS42MDcyNi40MDI4My45NzI0OS4xNzkwNCwyLjA5MzUxLS41NjU1OSwyLjgzODEzbC0yNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NGMuNzQ0NjMuNzQ0NjMuOTY4NDIsMS44NjU2NC41NjU1OSwyLjgzODEzLS40MDQ4Ny45NzI0OS0xLjM1Mjk1LDEuNjA3MjYtMi40MDY4MiwxLjYwNzI2Wk01NC42MjAyLDEwNC4wNjM0aDQ1Ljc2MDA4bC0yMi44ODAwNC0yMi44ODAwNC0yMi44ODAwNCwyMi44ODAwNFpNNTQuNjIwMiw1MC45Mzg0MWwyMi44ODAwNCwyMi44ODAwNCwyMi44ODAwNC0yMi44ODAwNGgtNDUuNzYwMDhaIi8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDgwLjEwNTA3aC01OC4zMzMzMmMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTdzMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2g1OC4zMzMzMmMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3MtMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDExNy42MDUwNmgtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk0xMDUuMTA0NDEsMTEyLjM5NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjQwLjAwMDAxIiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsMTE3LjYwNTA2aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDExMi4zOTY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSIxMDIuNSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDU1LjEwNTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTEwNS4xMDQ0MSw0OS44OTY3NGg3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSI0MC4wMDAwMSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsNTUuMTA1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNNDIuNjA0NDEsNDkuODk2NzRoNy4yOTE2N3YtNy4yOTE2N2gtNy4yOTE2N3Y3LjI5MTY3WiIvPjxyZWN0IGNsYXNzPSJ1dWlkLWFjYjZmOWFkLWZhYjUtNGU5Zi05ZDVjLWRhNzUxMmY5YWZkOCIgeD0iNDAuMDAwMDEiIHk9IjcxLjI0OTk5IiB3aWR0aD0iMTIuNSIgaGVpZ2h0PSIxMi41Ii8+PHBhdGggZD0iTTUyLjUwMDI1LDg2LjM1NTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik0xMTUuMDAwMjQsODYuMzU1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNMTA1LjEwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjcxLjI1MDAxIiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik04My43NTAyNCw4Ni4zNTUwN2gtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk03My44NTQ0MSw4MS4xNDY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PC9nPjwvc3ZnPg==
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+      provider: IBM
+      description: This model was obtained by quantizing the weights of ibm-granite/granite-3.1-8b-instruct to INT4 data type.
+      readme: "# granite-3.1-8b-instruct-quantized.w4a16\n\n## Model Overview\n- **Model Architecture:** granite-3.1-8b-instruct\n  - **Input:** Text\n  - **Output:** Text\n- **Model Optimizations:**\n  - **Weight quantization:** INT4\n  - **Activation quantization:** INT4\n- **Release Date:** 1/8/2025\n- **Version:** 1.0\n- **Model Developers:** Neural Magic\n\nQuantized version of [ibm-granite/granite-3.1-8b-instruct](https://huggingface.co/ibm-granite/granite-3.1-8b-instruct).\nIt achieves an average score of 69.81 on the [OpenLLM](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) benchmark (version 1), whereas the unquantized model achieves 70.30.\n\n### Model Optimizations\n\nThis model was obtained by quantizing the weights of [ibm-granite/granite-3.1-8b-instruct](https://huggingface.co/ibm-granite/granite-3.1-8b-instruct) to INT4 data type, ready for inference with vLLM >= 0.5.2.\nThis optimization reduces the number of bits per parameter from 16 to 4, reducing the disk size and GPU memory requirements by approximately 75%. Only the weights of the linear operators within transformers blocks are quantized. \n\n## Deployment\n\n### Use with vLLM\n\nThis model can be deployed efficiently using the [vLLM](https://docs.vllm.ai/en/latest/) backend, as shown in the example below.\n\n```python\nfrom transformers import AutoTokenizer\nfrom vllm import LLM, SamplingParams\n\nmax_model_len, tp_size = 4096, 1\nmodel_name = \"neuralmagic/granite-3.1-8b-instruct-quantized.w4a16\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nllm = LLM(model=model_name, tensor_parallel_size=tp_size, max_model_len=max_model_len, trust_remote_code=True)\nsampling_params = SamplingParams(temperature=0.3, max_tokens=256, stop_token_ids=[tokenizer.eos_token_id])\n\nmessages_list = [\n    [{\"role\": \"user\", \"content\": \"Who are you? Please respond in pirate speak!\"}],\n]\n\nprompt_token_ids = [tokenizer.apply_chat_template(messages, add_generation_prompt=True) for messages in messages_list]\n\noutputs = llm.generate(prompt_token_ids=prompt_token_ids, sampling_params=sampling_params)\n\ngenerated_text = [output.outputs[0].text for output in outputs]\nprint(generated_text)\n```\n\nvLLM also supports OpenAI-compatible serving. See the [documentation](https://docs.vllm.ai/en/latest/) for more details.\n\n## Creation\n\nThis model was created with [llm-compressor](https://github.com/vllm-project/llm-compressor) by running the code snippet below. \n\n<details>\n  <summary>Model Creation Code</summary>\n\n```bash\npython quantize.py --model_path ibm-granite/granite-3.1-8b-instruct --quant_path \"output_dir/granite-3.1-8b-instruct-quantized.w4a16\" --calib_size 1024 --dampening_frac 0.1 --observer mse  --actorder static\n```\n\n\n```python\nfrom datasets import load_dataset\nfrom transformers import AutoTokenizer\nfrom llmcompressor.modifiers.quantization import GPTQModifier\nfrom llmcompressor.transformers import SparseAutoModelForCausalLM, oneshot, apply\nimport argparse\nfrom compressed_tensors.quantization import QuantizationScheme, QuantizationArgs, QuantizationType, QuantizationStrategy\n\n\nparser = argparse.ArgumentParser()\nparser.add_argument('--model_path', type=str)\nparser.add_argument('--quant_path', type=str)\nparser.add_argument('--calib_size', type=int, default=256)\nparser.add_argument('--dampening_frac', type=float, default=0.1) \nparser.add_argument('--observer', type=str, default=\"minmax\")\nparser.add_argument('--actorder', type=str, default=\"dynamic\")\n\nargs = parser.parse_args()\n\nmodel = SparseAutoModelForCausalLM.from_pretrained(\n    args.model_path,\n    device_map=\"auto\",\n    torch_dtype=\"auto\",\n    use_cache=False,\n    trust_remote_code=True,\n)\ntokenizer = AutoTokenizer.from_pretrained(args.model_path)\n\n\nNUM_CALIBRATION_SAMPLES = args.calib_size\nDATASET_ID = \"neuralmagic/LLM_compression_calibration\"\nDATASET_SPLIT = \"train\"\nds = load_dataset(DATASET_ID, split=DATASET_SPLIT)\nds = ds.shuffle(seed=42).select(range(NUM_CALIBRATION_SAMPLES))\n\ndef preprocess(example):\n    return {\"text\": example[\"text\"]}\n\nds = ds.map(preprocess)\n\ndef tokenize(sample):\n    return tokenizer(\n        sample[\"text\"],\n        padding=False,\n        truncation=False,\n        add_special_tokens=True,\n    )\n\n\nds = ds.map(tokenize, remove_columns=ds.column_names)\n\nrecipe = [\n    GPTQModifier(\n        targets=[\"Linear\"],\n        ignore=[\"lm_head\"],\n        scheme=\"w4a16\",\n        dampening_frac=args.dampening_frac,\n        observer=args.observer,\n        actoder=args.actorder,\n    )\n]\noneshot(\n    model=model,\n    dataset=ds,\n    recipe=recipe,\n    num_calibration_samples=args.calib_size,\n    max_seq_length=8196,\n)\n\n# Save to disk compressed.\nmodel.save_pretrained(SAVE_DIR, save_compressed=True)\ntokenizer.save_pretrained(SAVE_DIR)\n```\n</details>\n\n## Evaluation\n\nThe model was evaluated on OpenLLM Leaderboard [V1](https://huggingface.co/spaces/open-llm-leaderboard-old/open_llm_leaderboard), OpenLLM Leaderboard [V2](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard#/) and on [HumanEval](https://github.com/neuralmagic/evalplus), using the following commands:\n\n<details>\n<summary>Evaluation Commands</summary>\n  \nOpenLLM Leaderboard V1:\n```\nlm_eval \\\n  --model vllm \\\n  --model_args pretrained=\"neuralmagic/granite-3.1-8b-instruct-quantized.w4a16\",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1,gpu_memory_utilization=0.8,enable_chunked_prefill=True,trust_remote_code=True \\\n  --tasks openllm \\\n  --write_out \\\n  --batch_size auto \\\n  --output_path output_dir \\\n  --show_config\n```\n\nOpenLLM Leaderboard V2:\n```\nlm_eval \\\n  --model vllm \\\n  --model_args pretrained=\"neuralmagic/granite-3.1-8b-instruct-quantized.w4a16\",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1,gpu_memory_utilization=0.8,enable_chunked_prefill=True,trust_remote_code=True \\\n  --tasks leaderboard \\\n  --write_out \\\n  --batch_size auto \\\n  --output_path output_dir \\\n  --show_config\n```\n\n#### HumanEval\n##### Generation\n```\npython3 codegen/generate.py \\\n  --model neuralmagic/granite-3.1-8b-instruct-quantized.w4a16 \\\n  --bs 16 \\\n  --temperature 0.2 \\\n  --n_samples 50 \\\n  --root \".\" \\\n  --dataset humaneval\n```\n##### Sanitization\n```\npython3 evalplus/sanitize.py \\\n  humaneval/neuralmagic--granite-3.1-8b-instruct-quantized.w4a16_vllm_temp_0.2\n```\n##### Evaluation\n```\nevalplus.evaluate \\\n  --dataset humaneval \\\n  --samples humaneval/neuralmagic--granite-3.1-8b-instruct-quantized.w4a16_vllm_temp_0.2-sanitized\n```\n</details>\n\n### Accuracy\n\n<table>\n  <thead>\n    <tr>\n      <th>Category</th>\n      <th>Metric</th>\n      <th>ibm-granite/granite-3.1-8b-instruct</th>\n      <th>neuralmagic/granite-3.1-8b-instruct-quantized.w4a16</th>\n      <th>Recovery (%)</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td rowspan=\"7\"><b>OpenLLM V1</b></td>\n      <td>ARC-Challenge (Acc-Norm, 25-shot)</td>\n      <td>66.81</td>\n      <td>66.81</td>\n      <td>100.00</td>\n    </tr>\n    <tr>\n      <td>GSM8K (Strict-Match, 5-shot)</td>\n      <td>64.52</td>\n      <td>65.66</td>\n      <td>101.77</td>\n    </tr>\n    <tr>\n      <td>HellaSwag (Acc-Norm, 10-shot)</td>\n      <td>84.18</td>\n      <td>83.62</td>\n      <td>99.33</td>\n    </tr>\n    <tr>\n      <td>MMLU (Acc, 5-shot)</td>\n      <td>65.52</td>\n      <td>64.25</td>\n      <td>98.06</td>\n    </tr>\n    <tr>\n      <td>TruthfulQA (MC2, 0-shot)</td>\n      <td>60.57</td>\n      <td>60.17</td>\n      <td>99.34</td>\n    </tr>\n    <tr>\n      <td>Winogrande (Acc, 5-shot)</td>\n      <td>80.19</td>\n      <td>78.37</td>\n      <td>97.73</td>\n    </tr>\n    <tr>\n      <td><b>Average Score</b></td>\n      <td><b>70.30</b></td>\n      <td><b>69.81</b></td>\n      <td><b>99.31</b></td>\n    </tr>\n    <tr>\n      <td rowspan=\"7\"><b>OpenLLM V2</b></td>\n      <td>IFEval (Inst Level Strict Acc, 0-shot)</td>\n      <td>74.01</td>\n      <td>73.14</td>\n      <td>98.82</td>\n    </tr>\n    <tr>\n      <td>BBH (Acc-Norm, 3-shot)</td>\n      <td>53.19</td>\n      <td>51.52</td>\n      <td>96.86</td>\n    </tr>\n    <tr>\n      <td>Math-Hard (Exact-Match, 4-shot)</td>\n      <td>14.77</td>\n      <td>16.66</td>\n      <td>112.81</td>\n    </tr>\n    <tr>\n      <td>GPQA (Acc-Norm, 0-shot)</td>\n      <td>31.76</td>\n      <td>29.91</td>\n      <td>94.17</td>\n    </tr>\n    <tr>\n      <td>MUSR (Acc-Norm, 0-shot)</td>\n      <td>46.01</td>\n      <td>45.75</td>\n      <td>99.44</td>\n    </tr>\n    <tr>\n      <td>MMLU-Pro (Acc, 5-shot)</td>\n      <td>35.81</td>\n      <td>34.23</td>\n      <td>95.59</td>\n    </tr>\n    <tr>\n      <td><b>Average Score</b></td>\n      <td><b>42.61</b></td>\n      <td><b>41.87</b></td>\n      <td><b>98.26</b></td>\n    </tr>\n    <tr>\n      <td rowspan=\"2\"><b>Coding</b></td>\n      <td>HumanEval Pass@1</td>\n      <td>71.00</td>\n      <td>70.50</td>\n      <td><b>99.30</b></td>\n    </tr>\n  </tbody>\n</table>\n\n\n\n## Inference Performance\n\n\nThis model achieves up to 2.7x speedup in single-stream deployment and up to 1.5x speedup in multi-stream asynchronous deployment, depending on hardware and use-case scenario.\nThe following performance benchmarks were conducted with [vLLM](https://docs.vllm.ai/en/latest/) version 0.6.6.post1, and [GuideLLM](https://github.com/neuralmagic/guidellm).\n\n<details>\n<summary>Benchmarking Command</summary>\n\n```\nguidellm --model neuralmagic/granite-3.1-8b-instruct-quantized.w4a16 --target \"http://localhost:8000/v1\" --data-type emulated --data \"prompt_tokens=<prompt_tokens>,generated_tokens=<generated_tokens>\" --max seconds 360 --backend aiohttp_server\n```\n\n</details>\n\n### Single-stream performance (measured with vLLM version 0.6.6.post1)\n<table>\n  <tr>\n    <td></td>\n    <td></td>\n    <td></td>\n    <th style=\"text-align: center;\" colspan=\"7\" >Latency (s)</th>\n  </tr>\n  <tr>\n    <th>GPU class</th>\n    <th>Model</th>\n    <th>Speedup</th>\n    <th>Code Completion<br>prefill: 256 tokens<br>decode: 1024 tokens</th>\n    <th>Docstring Generation<br>prefill: 768 tokens<br>decode: 128 tokens</th>\n    <th>Code Fixing<br>prefill: 1024 tokens<br>decode: 1024 tokens</th>\n    <th>RAG<br>prefill: 1024 tokens<br>decode: 128 tokens</th>\n    <th>Instruction Following<br>prefill: 256 tokens<br>decode: 128 tokens</th>\n    <th>Multi-turn Chat<br>prefill: 512 tokens<br>decode: 256 tokens</th>\n    <th>Large Summarization<br>prefill: 4096 tokens<br>decode: 512 tokens</th>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A5000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>28.3</td>\n    <td>3.7</td>\n    <td>28.8</td>\n    <td>3.8</td>\n    <td>3.6</td>\n    <td>7.2</td>\n    <td>15.7</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8</td>\n    <td>1.60</td>\n    <td>17.7</td>\n    <td>2.3</td>\n    <td>18.0</td>\n    <td>2.4</td>\n    <td>2.2</td>\n    <td>4.5</td>\n    <td>10.0</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>2.61</td>\n    <td>10.3</td>\n    <td>1.5</td>\n    <td>10.7</td>\n    <td>1.5</td>\n    <td>1.3</td>\n    <td>2.7</td>\n    <td>6.6</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A6000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>25.8</td>\n    <td>3.4</td>\n    <td>26.2</td>\n    <td>3.4</td>\n    <td>3.3</td>\n    <td>6.5</td>\n    <td>14.2</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8</td>\n    <td>1.50</td>\n    <td>17.4</td>\n    <td>2.3</td>\n    <td>16.9</td>\n    <td>2.2</td>\n    <td>2.2</td>\n    <td>4.4</td>\n    <td>9.8</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>2.48</td>\n    <td>10.0</td>\n    <td>1.4</td>\n    <td>10.4</td>\n    <td>1.5</td>\n    <td>1.3</td>\n    <td>2.5</td>\n    <td>6.2</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A100</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>13.6</td>\n    <td>1.8</td>\n    <td>13.7</td>\n    <td>1.8</td>\n    <td>1.7</td>\n    <td>3.4</td>\n    <td>7.3</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8</td>\n    <td>1.31</td>\n    <td>10.4</td>\n    <td>1.3</td>\n    <td>10.5</td>\n    <td>1.4</td>\n    <td>1.3</td>\n    <td>2.6</td>\n    <td>5.6</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>1.80</td>\n    <td>7.3</td>\n    <td>1.0</td>\n    <td>7.4</td>\n    <td>1.0</td>\n    <td>0.9</td>\n    <td>1.9</td>\n    <td>4.3</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >L40</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>25.1</td>\n    <td>3.2</td>\n    <td>25.3</td>\n    <td>3.2</td>\n    <td>3.2</td>\n    <td>6.3</td>\n    <td>13.4</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-FP8-dynamic</td>\n    <td>1.47</td>\n    <td>16.8</td>\n    <td>2.2</td>\n    <td>17.1</td>\n    <td>2.2</td>\n    <td>2.1</td>\n    <td>4.2</td>\n    <td>9.3</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>2.72</td>\n    <td>8.9</td>\n    <td>1.2</td>\n    <td>9.2</td>\n    <td>1.2</td>\n    <td>1.1</td>\n    <td>2.3</td>\n    <td>5.3</td>\n  </tr>\n</table>\n\n\n### Multi-stream asynchronous performance (measured with vLLM version 0.6.6.post1)\n<table>\n  <tr>\n    <td></td>\n    <td></td>\n    <td></td>\n    <th style=\"text-align: center;\" colspan=\"7\" >Maximum Throughput (Queries per Second)</th>\n  </tr>\n  <tr>\n    <th>GPU class</th>\n    <th>Model</th>\n    <th>Speedup</th>\n    <th>Code Completion<br>prefill: 256 tokens<br>decode: 1024 tokens</th>\n    <th>Docstring Generation<br>prefill: 768 tokens<br>decode: 128 tokens</th>\n    <th>Code Fixing<br>prefill: 1024 tokens<br>decode: 1024 tokens</th>\n    <th>RAG<br>prefill: 1024 tokens<br>decode: 128 tokens</th>\n    <th>Instruction Following<br>prefill: 256 tokens<br>decode: 128 tokens</th>\n    <th>Multi-turn Chat<br>prefill: 512 tokens<br>decode: 256 tokens</th>\n    <th>Large Summarization<br>prefill: 4096 tokens<br>decode: 512 tokens</th>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A5000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>0.8</td>\n    <td>3.1</td>\n    <td>0.4</td>\n    <td>2.5</td>\n    <td>6.7</td>\n    <td>2.7</td>\n    <td>0.3</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8</td>\n    <td>1.71</td>\n    <td>1.3</td>\n    <td>5.2</td>\n    <td>0.9</td>\n    <td>4.0</td>\n    <td>10.5</td>\n    <td>4.4</td>\n    <td>0.5</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>1.46</td>\n    <td>1.3</td>\n    <td>3.9</td>\n    <td>0.8</td>\n    <td>2.9</td>\n    <td>8.2</td>\n    <td>3.6</td>\n    <td>0.5</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A6000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>1.3</td>\n    <td>5.1</td>\n    <td>0.9</td>\n    <td>4.0</td>\n    <td>0.3</td>\n    <td>4.3</td>\n    <td>0.6</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8</td>\n    <td>1.39</td>\n    <td>1.8</td>\n    <td>7.0</td>\n    <td>1.3</td>\n    <td>5.6</td>\n    <td>14.0</td>\n    <td>6.3</td>\n    <td>0.8</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>1.09</td>\n    <td>1.9</td>\n    <td>4.8</td>\n    <td>1.0</td>\n    <td>3.8</td>\n    <td>10.0</td>\n    <td>5.0</td>\n    <td>0.6</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A100</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>3.1</td>\n    <td>10.7</td>\n    <td>2.1</td>\n    <td>8.5</td>\n    <td>20.6</td>\n    <td>9.6</td>\n    <td>1.4</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8</td>\n    <td>1.23</td>\n    <td>3.8</td>\n    <td>14.2</td>\n    <td>2.1</td>\n    <td>11.4</td>\n    <td>25.9</td>\n    <td>12.1</td>\n    <td>1.7</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>0.96</td>\n    <td>3.4</td>\n    <td>9.0</td>\n    <td>2.6</td>\n    <td>7.2</td>\n    <td>18.0</td>\n    <td>8.8</td>\n    <td>1.3</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >L40</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>1.4</td>\n    <td>7.8</td>\n    <td>1.1</td>\n    <td>6.2</td>\n    <td>15.5</td>\n    <td>6.0</td>\n    <td>0.7</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-FP8-dynamic</td>\n    <td>1.12</td>\n    <td>2.1</td>\n    <td>7.4</td>\n    <td>1.3</td>\n    <td>5.9</td>\n    <td>15.3</td>\n    <td>6.9</td>\n    <td>0.8</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16<br>(this model)</td>\n    <td>1.29</td>\n    <td>2.4</td>\n    <td>8.9</td>\n    <td>1.4</td>\n    <td>7.1</td>\n    <td>17.8</td>\n    <td>7.8</td>\n    <td>1.0</td>\n  </tr>\n</table>\n\n"
+      language:
+        - en
+      license: apache-2.0
+      licenseLink: https://www.apache.org/licenses/LICENSE-2.0
+      tasks:
+        - text-to-text
+      createTimeSinceEpoch: "1736294400000"
+      lastUpdateTimeSinceEpoch: "1736294400000"
+      customProperties:
+        compressed-tensors:
+            metadataType: MetadataStringValue
+            string_value: ""
+        conversational:
+            metadataType: MetadataStringValue
+            string_value: ""
+        granite:
+            metadataType: MetadataStringValue
+            string_value: ""
+        int4:
+            metadataType: MetadataStringValue
+            string_value: ""
+        validated:
+            metadataType: MetadataStringValue
+            string_value: ""
+        validated_on:
+            metadataType: MetadataStringValue
+            string_value: "RHOAI 2.20,RHAIIS 3.0,RHELAI 1.5"
+        vllm:
+            metadataType: MetadataStringValue
+            string_value: ""
+        w4a16:
+            metadataType: MetadataStringValue
+            string_value: ""
+      artifacts:
+        - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-quantized-w4a16:1.5
+          createTimeSinceEpoch: "1739776988000"
+          lastUpdateTimeSinceEpoch: "1746714934000"
+          customProperties:
+            source:
+                metadataType: MetadataStringValue
+                string_value: registry.redhat.io
+            type:
+                metadataType: MetadataStringValue
+                string_value: modelcar
+      logo: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIGlkPSJ1dWlkLTlmMDM5ZTY4LTZiOTgtNDNlMS05ZjE3LWYwOWNkZTFiNzdhZCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTc1IiBoZWlnaHQ9IjE3NSIgdmlld0JveD0iMCAwIDE3NSAxNzUiPjxkZWZzPjxzdHlsZT4udXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmZ7ZmlsbDpub25lO30udXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjZ7ZmlsbDojZTBlMGUwO30udXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDh7ZmlsbDojZmZmO30udXVpZC1jNGQxYmJmMC02ZGZkLTQyMTEtYmZjYi1iYjM4YjU2ZWQ3NGF7ZmlsbDojNjM5OTNkO30udXVpZC1lZjg1YzExZi1iNjczLTRmZjAtYTYxMi1mMGRiMDYyMmNlYTJ7ZmlsbDojODdiYjYyO30udXVpZC0yZGM1Zjc4Yy04ZTgwLTQxNTYtODYxNy1jOTllZGJlZGRjOGN7ZmlsbDojZTAwO308L3N0eWxlPjwvZGVmcz48ZyBpZD0idXVpZC0zZjA0ZDNkOS0xYzI3LTRkYTYtYWU3NS0xZjlhYTMzY2EzNWQiPjxnIGlkPSJ1dWlkLWRhMzg4MTVhLTAyMGEtNDcwOC1iZWQ3LTNiZGEwYmNmZWM0YiI+PHJlY3QgY2xhc3M9InV1aWQtYzRkMWJiZjAtNmRmZC00MjExLWJmY2ItYmIzOGI1NmVkNzRhIiB4PSIxMjIuNSIgeT0iMTIyLjUiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgcng9IjEyLjUiIHJ5PSIxMi41Ii8+PHBhdGggY2xhc3M9InV1aWQtZWY4NWMxMWYtYjY3My00ZmYwLWE2MTItZjBkYjA2MjJjZWEyIiBkPSJNMTYwLDEyMy41YzYuMzQxMTMsMCwxMS41LDUuMTU4ODgsMTEuNSwxMS41djI1YzAsNi4zNDExMy01LjE1ODg3LDExLjUtMTEuNSwxMS41aC0yNWMtNi4zNDExMiwwLTExLjUtNS4xNTg4Ny0xMS41LTExLjV2LTI1YzAtNi4zNDExMiw1LjE1ODg4LTExLjUsMTEuNS0xMS41aDI1TTE2MCwxMjIuNWgtMjVjLTYuOTAzNTYsMC0xMi41LDUuNTk2NDQtMTIuNSwxMi41djI1YzAsNi45MDM1Niw1LjU5NjQ0LDEyLjUsMTIuNSwxMi41aDI1YzYuOTAzNTYsMCwxMi41LTUuNTk2NDQsMTIuNS0xMi41di0yNWMwLTYuOTAzNTYtNS41OTY0NC0xMi41LTEyLjUtMTIuNWgwWiIvPjwvZz48ZyBpZD0idXVpZC1mMDM5ZWRhYy04NzNkLTRhYzAtODIyMS1lNWZiYjdiYTAwNjMiPjxnIGlkPSJ1dWlkLTAxMTdlYTBhLTU3N2YtNGUyMi1iYjliLTZiNDE2MDI3Njc0NiI+PGcgaWQ9InV1aWQtNGU5NTUyZmItZWFhMS00MmExLWFjMDgtMTI0ZmJmNTQ0MmRkIj48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHg9IjEzMS41IiB5PSIxMzEuNSIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+PC9nPjxnIGlkPSJ1dWlkLTZhMDVmZDM5LTk4ZTMtNDU0Zi05NmZkLWZkNTdmYmZlMjdkMCI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTQyLjcsMTU4LjM2NzJjLS42MTQwOCwwLTEuMjI5NzYtLjIzMjgtMS42OTY4LS43MDE2bC03LjQzNDQtNy40MzQ0Yy0uNjI0OTYtLjYyNDk2LS42MjQ5Ni0xLjYzNzQ0LDAtMi4yNjI1NnMxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDBsNi44Njg4LDYuODY4OCwxNi40Njg4LTE2LjQ2ODhjLjYyNDk2LS42MjQ5NiwxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDAsLjYyNTEyLjYyNDk2LjYyNDk2LDEuNjM3NDQsMCwyLjI2MjU2bC0xNy4wMzQ0LDE3LjAzNDRjLS40NjcyLjQ2ODgtMS4wODI4OC43MDE2LTEuNjk2OC43MDE2aC0uMDAwMzJaIi8+PC9nPjwvZz48L2c+PC9nPjxnIGlkPSJ1dWlkLWMwOGJhYmRjLTExMWMtNDIyMS04NWM4LTkwYzhlMjFhN2Q1OSI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTE3LjUsMTM1YzAtOS42NDk1NCw3Ljg1MDQ2LTE3LjUsMTcuNS0xNy41aDE3LjQwNzg0Yy4wNTQ1LS44MjcyMS4wOTIxNi0xLjY1OS4wOTIxNi0yLjVWNDBjMC0yMC43MTA2OS0xNi43ODkzMS0zNy41LTM3LjUtMzcuNUg0MEMxOS4yODkzMSwyLjUsMi41LDE5LjI4OTMxLDIuNSw0MHY3NWMwLDIwLjcxMDYzLDE2Ljc4OTMxLDM3LjUsMzcuNSwzNy41aDc1Yy44NDEsMCwxLjY3Mjc5LS4wMzc2NiwyLjUtLjA5MjE2di0xNy40MDc4NFoiLz48cGF0aCBjbGFzcz0idXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjYiIGQ9Ik0xMTcuNSwxNDcuMTg1MzZjLS44MjYwNS4wNjM2LTEuNjU3OS4xMDYyNi0yLjUuMTA2MjZINDBjLTE3LjgwNTczLDAtMzIuMjkxNjktMTQuNDg1OTYtMzIuMjkxNjktMzIuMjkxNjNWNDBDNy43MDgzMSwyMi4xOTQzNCwyMi4xOTQyNyw3LjcwODMxLDQwLDcuNzA4MzFoNzVjMTcuODA1NzMsMCwzMi4yOTE2OSwxNC40ODYwMiwzMi4yOTE2OSwzMi4yOTE2OXY3NWMwLC44NDIxLS4wNDI2NiwxLjY3Mzk1LS4xMDYyNiwyLjVoNS4yMjI0MWMuMDU0NS0uODI3MjEuMDkyMTYtMS42NTkuMDkyMTYtMi41VjQwYzAtMjAuNzEwNzUtMTYuNzg5MjUtMzcuNS0zNy41LTM3LjVINDBDMTkuMjg5MjUsMi41LDIuNSwxOS4yODkyNSwyLjUsNDB2NzVjMCwyMC43MTA2OSwxNi43ODkyNSwzNy41LDM3LjUsMzcuNWg3NWMuODQxLDAsMS42NzI3OS0uMDM3NjYsMi41LS4wOTIxNnYtNS4yMjI0N1oiLz48L2c+PGcgaWQ9InV1aWQtYjU4NDEwOGQtNjIyNy00MDBlLWIxOTctYjEzMDY1ZWM3ZjA4Ij48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHdpZHRoPSIxNzUiIGhlaWdodD0iMTc1Ii8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDEwOS4yNzE3M2gtNTguMzMzMzJjLTEuMDUzODcsMC0yLjAwMTk1LS42MzQ3Ny0yLjQwNjgyLTEuNjA3MjYtLjQwMjgzLS45NzI0OS0uMTc5MDQtMi4wOTM1MS41NjU1OS0yLjgzODEzbDI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0Yy0uNzQ0NjMtLjc0NDYzLS45Njg0Mi0xLjg2NTY0LS41NjU1OS0yLjgzODEzLjQwNDg3LS45NzI0OSwxLjM1Mjk1LTEuNjA3MjYsMi40MDY4Mi0xLjYwNzI2aDU4LjMzMzMyYzEuMDUzODcsMCwyLjAwMTk1LjYzNDc3LDIuNDA2ODIsMS42MDcyNi40MDI4My45NzI0OS4xNzkwNCwyLjA5MzUxLS41NjU1OSwyLjgzODEzbC0yNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NGMuNzQ0NjMuNzQ0NjMuOTY4NDIsMS44NjU2NC41NjU1OSwyLjgzODEzLS40MDQ4Ny45NzI0OS0xLjM1Mjk1LDEuNjA3MjYtMi40MDY4MiwxLjYwNzI2Wk01NC42MjAyLDEwNC4wNjM0aDQ1Ljc2MDA4bC0yMi44ODAwNC0yMi44ODAwNC0yMi44ODAwNCwyMi44ODAwNFpNNTQuNjIwMiw1MC45Mzg0MWwyMi44ODAwNCwyMi44ODAwNCwyMi44ODAwNC0yMi44ODAwNGgtNDUuNzYwMDhaIi8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDgwLjEwNTA3aC01OC4zMzMzMmMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTdzMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2g1OC4zMzMzMmMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3MtMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDExNy42MDUwNmgtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk0xMDUuMTA0NDEsMTEyLjM5NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjQwLjAwMDAxIiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsMTE3LjYwNTA2aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDExMi4zOTY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSIxMDIuNSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDU1LjEwNTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTEwNS4xMDQ0MSw0OS44OTY3NGg3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSI0MC4wMDAwMSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsNTUuMTA1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNNDIuNjA0NDEsNDkuODk2NzRoNy4yOTE2N3YtNy4yOTE2N2gtNy4yOTE2N3Y3LjI5MTY3WiIvPjxyZWN0IGNsYXNzPSJ1dWlkLWFjYjZmOWFkLWZhYjUtNGU5Zi05ZDVjLWRhNzUxMmY5YWZkOCIgeD0iNDAuMDAwMDEiIHk9IjcxLjI0OTk5IiB3aWR0aD0iMTIuNSIgaGVpZ2h0PSIxMi41Ii8+PHBhdGggZD0iTTUyLjUwMDI1LDg2LjM1NTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik0xMTUuMDAwMjQsODYuMzU1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNMTA1LjEwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjcxLjI1MDAxIiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik04My43NTAyNCw4Ni4zNTUwN2gtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk03My44NTQ0MSw4MS4xNDY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PC9nPjwvc3ZnPg==
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+      provider: IBM
+      description: This model was obtained by quantizing the weights and activations of ibm-granite/granite-3.1-8b-instruct to INT8 data type.
+      readme: "# granite-3.1-8b-instruct-quantized.w8a8\n\n## Model Overview\n- **Model Architecture:** granite-3.1-8b-instruct\n  - **Input:** Text\n  - **Output:** Text\n- **Model Optimizations:**\n  - **Weight quantization:** INT8\n  - **Activation quantization:** INT8\n- **Release Date:** 1/8/2025\n- **Version:** 1.0\n- **Model Developers:** Neural Magic\n\nQuantized version of [ibm-granite/granite-3.1-8b-instruct](https://huggingface.co/ibm-granite/granite-3.1-8b-instruct).\nIt achieves an average score of 70.26 on the [OpenLLM](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard) benchmark (version 1), whereas the unquantized model achieves 70.30.\n\n### Model Optimizations\n\nThis model was obtained by quantizing the weights and activations of [ibm-granite/granite-3.1-8b-instruct](https://huggingface.co/ibm-granite/granite-3.1-8b-instruct) to INT8 data type, ready for inference with vLLM >= 0.5.2.\nThis optimization reduces the number of bits per parameter from 16 to 8, reducing the disk size and GPU memory requirements by approximately 50%. Only the weights and activations of the linear operators within transformers blocks are quantized. \n\n## Deployment\n\n### Use with vLLM\n\nThis model can be deployed efficiently using the [vLLM](https://docs.vllm.ai/en/latest/) backend, as shown in the example below.\n\n```python\nfrom transformers import AutoTokenizer\nfrom vllm import LLM, SamplingParams\n\nmax_model_len, tp_size = 4096, 1\nmodel_name = \"neuralmagic/granite-3.1-8b-instruct-quantized.w8a8\"\ntokenizer = AutoTokenizer.from_pretrained(model_name)\nllm = LLM(model=model_name, tensor_parallel_size=tp_size, max_model_len=max_model_len, trust_remote_code=True)\nsampling_params = SamplingParams(temperature=0.3, max_tokens=256, stop_token_ids=[tokenizer.eos_token_id])\n\nmessages_list = [\n    [{\"role\": \"user\", \"content\": \"Who are you? Please respond in pirate speak!\"}],\n]\n\nprompt_token_ids = [tokenizer.apply_chat_template(messages, add_generation_prompt=True) for messages in messages_list]\n\noutputs = llm.generate(prompt_token_ids=prompt_token_ids, sampling_params=sampling_params)\n\ngenerated_text = [output.outputs[0].text for output in outputs]\nprint(generated_text)\n```\n\nvLLM also supports OpenAI-compatible serving. See the [documentation](https://docs.vllm.ai/en/latest/) for more details.\n\n## Creation\n\nThis model was created with [llm-compressor](https://github.com/vllm-project/llm-compressor) by running the code snippet below. \n<details>\n  <summary>Model Creation Code</summary>\n\n```bash\npython quantize.py --model_path ibm-granite/granite-3.1-8b-instruct --quant_path \"output_dir/granite-3.1-8b-instruct-quantized.w8a8\" --calib_size 3072 --dampening_frac 0.1 --observer mse\n```\n\n\n```python\nfrom datasets import load_dataset\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nfrom llmcompressor.modifiers.quantization import GPTQModifier\nfrom llmcompressor.modifiers.smoothquant import SmoothQuantModifier\nfrom llmcompressor.transformers import oneshot, apply\nimport argparse\nfrom compressed_tensors.quantization import QuantizationScheme, QuantizationArgs, QuantizationType, QuantizationStrategy\n\n\nparser = argparse.ArgumentParser()\nparser.add_argument('--model_path', type=str)\nparser.add_argument('--quant_path', type=str)\nparser.add_argument('--calib_size', type=int, default=256)\nparser.add_argument('--dampening_frac', type=float, default=0.1) \nparser.add_argument('--observer', type=str, default=\"minmax\")\nargs = parser.parse_args()\n\nmodel = AutoModelForCausalLM.from_pretrained(\n    args.model_path,\n    device_map=\"auto\",\n    torch_dtype=\"auto\",\n    use_cache=False,\n    trust_remote_code=True,\n)\ntokenizer = AutoTokenizer.from_pretrained(args.model_path)\n\nNUM_CALIBRATION_SAMPLES = args.calib_size\nDATASET_ID = \"neuralmagic/LLM_compression_calibration\"\nDATASET_SPLIT = \"train\"\nds = load_dataset(DATASET_ID, split=DATASET_SPLIT)\nds = ds.shuffle(seed=42).select(range(NUM_CALIBRATION_SAMPLES))\n\ndef preprocess(example):\n    return {\"text\": example[\"text\"]}\n\nds = ds.map(preprocess)\n\ndef tokenize(sample):\n    return tokenizer(\n        sample[\"text\"],\n        padding=False,\n        truncation=False,\n        add_special_tokens=True,\n    )\n\n\nds = ds.map(tokenize, remove_columns=ds.column_names)\n\nignore=[\"lm_head\"]\nmappings=[\n    [[\"re:.*q_proj\", \"re:.*k_proj\", \"re:.*v_proj\"], \"re:.*input_layernorm\"],\n    [[\"re:.*gate_proj\", \"re:.*up_proj\"], \"re:.*post_attention_layernorm\"],\n    [[\"re:.*down_proj\"], \"re:.*up_proj\"]\n]\n\nrecipe = [\n    SmoothQuantModifier(smoothing_strength=0.8, ignore=ignore, mappings=mappings),\n    GPTQModifier(\n        targets=[\"Linear\"],\n        ignore=[\"lm_head\"],\n        scheme=\"W8A8\",\n        dampening_frac=args.dampening_frac,\n        observer=args.observer,\n    )\n]\noneshot(\n    model=model,\n    dataset=ds,\n    recipe=recipe,\n    num_calibration_samples=args.calib_size,\n    max_seq_length=8196,\n)\n\n# Save to disk compressed.\nmodel.save_pretrained(quant_path, save_compressed=True)\ntokenizer.save_pretrained(quant_path)\n```\n</details>\n\n## Evaluation\n\nThe model was evaluated on OpenLLM Leaderboard [V1](https://huggingface.co/spaces/open-llm-leaderboard-old/open_llm_leaderboard), OpenLLM Leaderboard [V2](https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard#/) and on [HumanEval](https://github.com/neuralmagic/evalplus), using the following commands:\n\n<details>\n<summary>Evaluation Commands</summary>\n  \nOpenLLM Leaderboard V1:\n```\nlm_eval \\\n  --model vllm \\\n  --model_args pretrained=\"neuralmagic/granite-3.1-8b-instruct-quantized.w8a8\",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1,gpu_memory_utilization=0.8,enable_chunked_prefill=True,trust_remote_code=True \\\n  --tasks openllm \\\n  --write_out \\\n  --batch_size auto \\\n  --output_path output_dir \\\n  --show_config\n```\n\nOpenLLM Leaderboard V2:\n```\nlm_eval \\\n  --model vllm \\\n  --model_args pretrained=\"neuralmagic/granite-3.1-8b-instruct-quantized.w8a8\",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=1,gpu_memory_utilization=0.8,enable_chunked_prefill=True,trust_remote_code=True \\\n  --tasks leaderboard \\\n  --write_out \\\n  --batch_size auto \\\n  --output_path output_dir \\\n  --show_config\n```\n\n#### HumanEval\n##### Generation\n```\npython3 codegen/generate.py \\\n  --model neuralmagic/granite-3.1-8b-instruct-quantized.w8a8 \\\n  --bs 16 \\\n  --temperature 0.2 \\\n  --n_samples 50 \\\n  --root \".\" \\\n  --dataset humaneval\n```\n##### Sanitization\n```\npython3 evalplus/sanitize.py \\\n  humaneval/neuralmagic--granite-3.1-8b-instruct-quantized.w8a8_vllm_temp_0.2\n```\n##### Evaluation\n```\nevalplus.evaluate \\\n  --dataset humaneval \\\n  --samples humaneval/neuralmagic--granite-3.1-8b-instruct-quantized.w8a8_vllm_temp_0.2-sanitized\n```\n</details>\n\n### Accuracy\n\n<table>\n  <thead>\n    <tr>\n      <th>Category</th>\n      <th>Metric</th>\n      <th>ibm-granite/granite-3.1-8b-instruct</th>\n      <th>neuralmagic/granite-3.1-8b-instruct-quantized.w8a8</th>\n      <th>Recovery (%)</th>\n    </tr>\n  </thead>\n  <tbody>\n    <!-- OpenLLM Leaderboard V1 -->\n    <tr>\n      <td rowspan=\"7\"><b>OpenLLM V1</b></td>\n      <td>ARC-Challenge (Acc-Norm, 25-shot)</td>\n      <td>66.81</td>\n      <td>67.06</td>\n      <td>100.37</td>\n    </tr>\n    <tr>\n      <td>GSM8K (Strict-Match, 5-shot)</td>\n      <td>64.52</td>\n      <td>65.66</td>\n      <td>101.77</td>\n    </tr>\n    <tr>\n      <td>HellaSwag (Acc-Norm, 10-shot)</td>\n      <td>84.18</td>\n      <td>83.93</td>\n      <td>99.70</td>\n    </tr>\n    <tr>\n      <td>MMLU (Acc, 5-shot)</td>\n      <td>65.52</td>\n      <td>65.03</td>\n      <td>99.25</td>\n    </tr>\n    <tr>\n      <td>TruthfulQA (MC2, 0-shot)</td>\n      <td>60.57</td>\n      <td>60.02</td>\n      <td>99.09</td>\n    </tr>\n    <tr>\n      <td>Winogrande (Acc, 5-shot)</td>\n      <td>80.19</td>\n      <td>79.87</td>\n      <td>99.60</td>\n    </tr>\n    <tr>\n      <td><b>Average Score</b></td>\n      <td><b>70.30</b></td>\n      <td><b>70.26</b></td>\n      <td><b>99.95</b></td>\n    </tr>\n    <!-- OpenLLM Leaderboard V2 -->\n    <tr>\n      <td rowspan=\"7\"><b>OpenLLM V2</b></td>\n      <td>IFEval (Inst Level Strict Acc, 0-shot)</td>\n      <td>74.01</td>\n      <td>73.50</td>\n      <td>99.31</td>\n    </tr>\n    <tr>\n      <td>BBH (Acc-Norm, 3-shot)</td>\n      <td>53.19</td>\n      <td>52.59</td>\n      <td>98.87</td>\n    </tr>\n    <tr>\n      <td>Math-Hard (Exact-Match, 4-shot)</td>\n      <td>14.77</td>\n      <td>15.73</td>\n      <td>106.50</td>\n    </tr>\n    <tr>\n      <td>GPQA (Acc-Norm, 0-shot)</td>\n      <td>31.76</td>\n      <td>30.62</td>\n      <td>96.40</td>\n    </tr>\n    <tr>\n      <td>MUSR (Acc-Norm, 0-shot)</td>\n      <td>46.01</td>\n      <td>44.30</td>\n      <td>96.28</td>\n    </tr>\n    <tr>\n      <td>MMLU-Pro (Acc, 5-shot)</td>\n      <td>35.81</td>\n      <td>35.41</td>\n      <td>98.88</td>\n    </tr>\n    <tr>\n      <td><b>Average Score</b></td>\n      <td><b>42.61</b></td>\n      <td><b>42.03</b></td>\n      <td><b>98.64</b></td>\n    </tr>\n    <!-- HumanEval -->\n    <tr>\n      <td rowspan=\"2\"><b>Coding</b></td>\n      <td>HumanEval Pass@1</td>\n      <td>71.00</td>\n      <td>70.50</td>\n      <td><b>99.30</b></td>\n    </tr>\n  </tbody>\n</table>\n\n\n\n## Inference Performance\n\n\nThis model achieves up to 1.6x speedup in single-stream deployment and up to 1.7x speedup in multi-stream asynchronous deployment, depending on hardware and use-case scenario.\nThe following performance benchmarks were conducted with [vLLM](https://docs.vllm.ai/en/latest/) version 0.6.6.post1, and [GuideLLM](https://github.com/neuralmagic/guidellm).\n\n<details>\n<summary>Benchmarking Command</summary>\n\n```\nguidellm --model neuralmagic/granite-3.1-8b-instruct-quantized.w8a8 --target \"http://localhost:8000/v1\" --data-type emulated --data \"prompt_tokens=<prompt_tokens>,generated_tokens=<generated_tokens>\" --max seconds 360 --backend aiohttp_server\n```\n\n</details>\n\n### Single-stream performance (measured with vLLM version 0.6.6.post1)\n<table>\n  <tr>\n    <td></td>\n    <td></td>\n    <td></td>\n    <th style=\"text-align: center;\" colspan=\"7\" >Latency (s)</th>\n  </tr>\n  <tr>\n    <th>GPU class</th>\n    <th>Model</th>\n    <th>Speedup</th>\n    <th>Code Completion<br>prefill: 256 tokens<br>decode: 1024 tokens</th>\n    <th>Docstring Generation<br>prefill: 768 tokens<br>decode: 128 tokens</th>\n    <th>Code Fixing<br>prefill: 1024 tokens<br>decode: 1024 tokens</th>\n    <th>RAG<br>prefill: 1024 tokens<br>decode: 128 tokens</th>\n    <th>Instruction Following<br>prefill: 256 tokens<br>decode: 128 tokens</th>\n    <th>Multi-turn Chat<br>prefill: 512 tokens<br>decode: 256 tokens</th>\n    <th>Large Summarization<br>prefill: 4096 tokens<br>decode: 512 tokens</th>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A5000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>28.3</td>\n    <td>3.7</td>\n    <td>28.8</td>\n    <td>3.8</td>\n    <td>3.6</td>\n    <td>7.2</td>\n    <td>15.7</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8<br>(this model)</td>\n    <td>1.60</td>\n    <td>17.7</td>\n    <td>2.3</td>\n    <td>18.0</td>\n    <td>2.4</td>\n    <td>2.2</td>\n    <td>4.5</td>\n    <td>10.0</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16</td>\n    <td>2.61</td>\n    <td>10.3</td>\n    <td>1.5</td>\n    <td>10.7</td>\n    <td>1.5</td>\n    <td>1.3</td>\n    <td>2.7</td>\n    <td>6.6</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A6000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>25.8</td>\n    <td>3.4</td>\n    <td>26.2</td>\n    <td>3.4</td>\n    <td>3.3</td>\n    <td>6.5</td>\n    <td>14.2</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8<br>(this model)</td>\n    <td>1.50</td>\n    <td>17.4</td>\n    <td>2.3</td>\n    <td>16.9</td>\n    <td>2.2</td>\n    <td>2.2</td>\n    <td>4.4</td>\n    <td>9.8</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16</td>\n    <td>2.48</td>\n    <td>10.0</td>\n    <td>1.4</td>\n    <td>10.4</td>\n    <td>1.5</td>\n    <td>1.3</td>\n    <td>2.5</td>\n    <td>6.2</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A100</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>13.6</td>\n    <td>1.8</td>\n    <td>13.7</td>\n    <td>1.8</td>\n    <td>1.7</td>\n    <td>3.4</td>\n    <td>7.3</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8<br>(this model)</td>\n    <td>1.31</td>\n    <td>10.4</td>\n    <td>1.3</td>\n    <td>10.5</td>\n    <td>1.4</td>\n    <td>1.3</td>\n    <td>2.6</td>\n    <td>5.6</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16</td>\n    <td>1.80</td>\n    <td>7.3</td>\n    <td>1.0</td>\n    <td>7.4</td>\n    <td>1.0</td>\n    <td>0.9</td>\n    <td>1.9</td>\n    <td>4.3</td>\n  </tr>\n</table>\n\n\n### Multi-stream asynchronous performance (measured with vLLM version 0.6.6.post1)\n<table>\n  <tr>\n    <td></td>\n    <td></td>\n    <td></td>\n    <th style=\"text-align: center;\" colspan=\"7\" >Maximum Throughput (Queries per Second)</th>\n  </tr>\n  <tr>\n    <th>GPU class</th>\n    <th>Model</th>\n    <th>Speedup</th>\n    <th>Code Completion<br>prefill: 256 tokens<br>decode: 1024 tokens</th>\n    <th>Docstring Generation<br>prefill: 768 tokens<br>decode: 128 tokens</th>\n    <th>Code Fixing<br>prefill: 1024 tokens<br>decode: 1024 tokens</th>\n    <th>RAG<br>prefill: 1024 tokens<br>decode: 128 tokens</th>\n    <th>Instruction Following<br>prefill: 256 tokens<br>decode: 128 tokens</th>\n    <th>Multi-turn Chat<br>prefill: 512 tokens<br>decode: 256 tokens</th>\n    <th>Large Summarization<br>prefill: 4096 tokens<br>decode: 512 tokens</th>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A5000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>0.8</td>\n    <td>3.1</td>\n    <td>0.4</td>\n    <td>2.5</td>\n    <td>6.7</td>\n    <td>2.7</td>\n    <td>0.3</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8<br>(this model)</td>\n    <td>1.71</td>\n    <td>1.3</td>\n    <td>5.2</td>\n    <td>0.9</td>\n    <td>4.0</td>\n    <td>10.5</td>\n    <td>4.4</td>\n    <td>0.5</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16</td>\n    <td>1.46</td>\n    <td>1.3</td>\n    <td>3.9</td>\n    <td>0.8</td>\n    <td>2.9</td>\n    <td>8.2</td>\n    <td>3.6</td>\n    <td>0.5</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A6000</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>1.3</td>\n    <td>5.1</td>\n    <td>0.9</td>\n    <td>4.0</td>\n    <td>0.3</td>\n    <td>4.3</td>\n    <td>0.6</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8<br>(this model)</td>\n    <td>1.39</td>\n    <td>1.8</td>\n    <td>7.0</td>\n    <td>1.3</td>\n    <td>5.6</td>\n    <td>14.0</td>\n    <td>6.3</td>\n    <td>0.8</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16</td>\n    <td>1.09</td>\n    <td>1.9</td>\n    <td>4.8</td>\n    <td>1.0</td>\n    <td>3.8</td>\n    <td>10.0</td>\n    <td>5.0</td>\n    <td>0.6</td>\n  </tr>\n  <tr>\n    <td style=\"vertical-align: middle;\" rowspan=\"3\" >A100</td>\n    <td>granite-3.1-8b-instruct</td>\n    <td></td>\n    <td>3.1</td>\n    <td>10.7</td>\n    <td>2.1</td>\n    <td>8.5</td>\n    <td>20.6</td>\n    <td>9.6</td>\n    <td>1.4</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w8a8<br>(this model)</td>\n    <td>1.23</td>\n    <td>3.8</td>\n    <td>14.2</td>\n    <td>2.1</td>\n    <td>11.4</td>\n    <td>25.9</td>\n    <td>12.1</td>\n    <td>1.7</td>\n  </tr>\n  <tr>\n    <td>granite-3.1-8b-instruct-quantized.w4a16</td>\n    <td>0.96</td>\n    <td>3.4</td>\n    <td>9.0</td>\n    <td>2.6</td>\n    <td>7.2</td>\n    <td>18.0</td>\n    <td>8.8</td>\n    <td>1.3</td>\n  </tr>\n</table>\n"
+      language:
+        - en
+      license: apache-2.0
+      licenseLink: https://www.apache.org/licenses/LICENSE-2.0
+      tasks:
+        - text-to-text
+      createTimeSinceEpoch: "1736294400000"
+      lastUpdateTimeSinceEpoch: "1736294400000"
+      customProperties:
+        conversational:
+            metadataType: MetadataStringValue
+            string_value: ""
+        int8:
+            metadataType: MetadataStringValue
+            string_value: ""
+        text-generation-inference:
+            metadataType: MetadataStringValue
+            string_value: ""
+        validated:
+            metadataType: MetadataStringValue
+            string_value: ""
+        validated_on:
+            metadataType: MetadataStringValue
+            string_value: "RHOAI 2.20,RHAIIS 3.0,RHELAI 1.5"
+        vllm:
+            metadataType: MetadataStringValue
+            string_value: ""
+        w8a8:
+            metadataType: MetadataStringValue
+            string_value: ""
+      artifacts:
+        - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-quantized-w8a8:1.5
+          createTimeSinceEpoch: "1739776988000"
+          lastUpdateTimeSinceEpoch: "1744994076000"
+          customProperties:
+            source:
+                metadataType: MetadataStringValue
+                string_value: registry.redhat.io
+            type:
+                metadataType: MetadataStringValue
+                string_value: modelcar
+      logo: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIGlkPSJ1dWlkLTlmMDM5ZTY4LTZiOTgtNDNlMS05ZjE3LWYwOWNkZTFiNzdhZCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTc1IiBoZWlnaHQ9IjE3NSIgdmlld0JveD0iMCAwIDE3NSAxNzUiPjxkZWZzPjxzdHlsZT4udXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmZ7ZmlsbDpub25lO30udXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjZ7ZmlsbDojZTBlMGUwO30udXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDh7ZmlsbDojZmZmO30udXVpZC1jNGQxYmJmMC02ZGZkLTQyMTEtYmZjYi1iYjM4YjU2ZWQ3NGF7ZmlsbDojNjM5OTNkO30udXVpZC1lZjg1YzExZi1iNjczLTRmZjAtYTYxMi1mMGRiMDYyMmNlYTJ7ZmlsbDojODdiYjYyO30udXVpZC0yZGM1Zjc4Yy04ZTgwLTQxNTYtODYxNy1jOTllZGJlZGRjOGN7ZmlsbDojZTAwO308L3N0eWxlPjwvZGVmcz48ZyBpZD0idXVpZC0zZjA0ZDNkOS0xYzI3LTRkYTYtYWU3NS0xZjlhYTMzY2EzNWQiPjxnIGlkPSJ1dWlkLWRhMzg4MTVhLTAyMGEtNDcwOC1iZWQ3LTNiZGEwYmNmZWM0YiI+PHJlY3QgY2xhc3M9InV1aWQtYzRkMWJiZjAtNmRmZC00MjExLWJmY2ItYmIzOGI1NmVkNzRhIiB4PSIxMjIuNSIgeT0iMTIyLjUiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgcng9IjEyLjUiIHJ5PSIxMi41Ii8+PHBhdGggY2xhc3M9InV1aWQtZWY4NWMxMWYtYjY3My00ZmYwLWE2MTItZjBkYjA2MjJjZWEyIiBkPSJNMTYwLDEyMy41YzYuMzQxMTMsMCwxMS41LDUuMTU4ODgsMTEuNSwxMS41djI1YzAsNi4zNDExMy01LjE1ODg3LDExLjUtMTEuNSwxMS41aC0yNWMtNi4zNDExMiwwLTExLjUtNS4xNTg4Ny0xMS41LTExLjV2LTI1YzAtNi4zNDExMiw1LjE1ODg4LTExLjUsMTEuNS0xMS41aDI1TTE2MCwxMjIuNWgtMjVjLTYuOTAzNTYsMC0xMi41LDUuNTk2NDQtMTIuNSwxMi41djI1YzAsNi45MDM1Niw1LjU5NjQ0LDEyLjUsMTIuNSwxMi41aDI1YzYuOTAzNTYsMCwxMi41LTUuNTk2NDQsMTIuNS0xMi41di0yNWMwLTYuOTAzNTYtNS41OTY0NC0xMi41LTEyLjUtMTIuNWgwWiIvPjwvZz48ZyBpZD0idXVpZC1mMDM5ZWRhYy04NzNkLTRhYzAtODIyMS1lNWZiYjdiYTAwNjMiPjxnIGlkPSJ1dWlkLTAxMTdlYTBhLTU3N2YtNGUyMi1iYjliLTZiNDE2MDI3Njc0NiI+PGcgaWQ9InV1aWQtNGU5NTUyZmItZWFhMS00MmExLWFjMDgtMTI0ZmJmNTQ0MmRkIj48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHg9IjEzMS41IiB5PSIxMzEuNSIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+PC9nPjxnIGlkPSJ1dWlkLTZhMDVmZDM5LTk4ZTMtNDU0Zi05NmZkLWZkNTdmYmZlMjdkMCI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTQyLjcsMTU4LjM2NzJjLS42MTQwOCwwLTEuMjI5NzYtLjIzMjgtMS42OTY4LS43MDE2bC03LjQzNDQtNy40MzQ0Yy0uNjI0OTYtLjYyNDk2LS42MjQ5Ni0xLjYzNzQ0LDAtMi4yNjI1NnMxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDBsNi44Njg4LDYuODY4OCwxNi40Njg4LTE2LjQ2ODhjLjYyNDk2LS42MjQ5NiwxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDAsLjYyNTEyLjYyNDk2LjYyNDk2LDEuNjM3NDQsMCwyLjI2MjU2bC0xNy4wMzQ0LDE3LjAzNDRjLS40NjcyLjQ2ODgtMS4wODI4OC43MDE2LTEuNjk2OC43MDE2aC0uMDAwMzJaIi8+PC9nPjwvZz48L2c+PC9nPjxnIGlkPSJ1dWlkLWMwOGJhYmRjLTExMWMtNDIyMS04NWM4LTkwYzhlMjFhN2Q1OSI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTE3LjUsMTM1YzAtOS42NDk1NCw3Ljg1MDQ2LTE3LjUsMTcuNS0xNy41aDE3LjQwNzg0Yy4wNTQ1LS44MjcyMS4wOTIxNi0xLjY1OS4wOTIxNi0yLjVWNDBjMC0yMC43MTA2OS0xNi43ODkzMS0zNy41LTM3LjUtMzcuNUg0MEMxOS4yODkzMSwyLjUsMi41LDE5LjI4OTMxLDIuNSw0MHY3NWMwLDIwLjcxMDYzLDE2Ljc4OTMxLDM3LjUsMzcuNSwzNy41aDc1Yy44NDEsMCwxLjY3Mjc5LS4wMzc2NiwyLjUtLjA5MjE2di0xNy40MDc4NFoiLz48cGF0aCBjbGFzcz0idXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjYiIGQ9Ik0xMTcuNSwxNDcuMTg1MzZjLS44MjYwNS4wNjM2LTEuNjU3OS4xMDYyNi0yLjUuMTA2MjZINDBjLTE3LjgwNTczLDAtMzIuMjkxNjktMTQuNDg1OTYtMzIuMjkxNjktMzIuMjkxNjNWNDBDNy43MDgzMSwyMi4xOTQzNCwyMi4xOTQyNyw3LjcwODMxLDQwLDcuNzA4MzFoNzVjMTcuODA1NzMsMCwzMi4yOTE2OSwxNC40ODYwMiwzMi4yOTE2OSwzMi4yOTE2OXY3NWMwLC44NDIxLS4wNDI2NiwxLjY3Mzk1LS4xMDYyNiwyLjVoNS4yMjI0MWMuMDU0NS0uODI3MjEuMDkyMTYtMS42NTkuMDkyMTYtMi41VjQwYzAtMjAuNzEwNzUtMTYuNzg5MjUtMzcuNS0zNy41LTM3LjVINDBDMTkuMjg5MjUsMi41LDIuNSwxOS4yODkyNSwyLjUsNDB2NzVjMCwyMC43MTA2OSwxNi43ODkyNSwzNy41LDM3LjUsMzcuNWg3NWMuODQxLDAsMS42NzI3OS0uMDM3NjYsMi41LS4wOTIxNnYtNS4yMjI0N1oiLz48L2c+PGcgaWQ9InV1aWQtYjU4NDEwOGQtNjIyNy00MDBlLWIxOTctYjEzMDY1ZWM3ZjA4Ij48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHdpZHRoPSIxNzUiIGhlaWdodD0iMTc1Ii8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDEwOS4yNzE3M2gtNTguMzMzMzJjLTEuMDUzODcsMC0yLjAwMTk1LS42MzQ3Ny0yLjQwNjgyLTEuNjA3MjYtLjQwMjgzLS45NzI0OS0uMTc5MDQtMi4wOTM1MS41NjU1OS0yLjgzODEzbDI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0Yy0uNzQ0NjMtLjc0NDYzLS45Njg0Mi0xLjg2NTY0LS41NjU1OS0yLjgzODEzLjQwNDg3LS45NzI0OSwxLjM1Mjk1LTEuNjA3MjYsMi40MDY4Mi0xLjYwNzI2aDU4LjMzMzMyYzEuMDUzODcsMCwyLjAwMTk1LjYzNDc3LDIuNDA2ODIsMS42MDcyNi40MDI4My45NzI0OS4xNzkwNCwyLjA5MzUxLS41NjU1OSwyLjgzODEzbC0yNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NGMuNzQ0NjMuNzQ0NjMuOTY4NDIsMS44NjU2NC41NjU1OSwyLjgzODEzLS40MDQ4Ny45NzI0OS0xLjM1Mjk1LDEuNjA3MjYtMi40MDY4MiwxLjYwNzI2Wk01NC42MjAyLDEwNC4wNjM0aDQ1Ljc2MDA4bC0yMi44ODAwNC0yMi44ODAwNC0yMi44ODAwNCwyMi44ODAwNFpNNTQuNjIwMiw1MC45Mzg0MWwyMi44ODAwNCwyMi44ODAwNCwyMi44ODAwNC0yMi44ODAwNGgtNDUuNzYwMDhaIi8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDgwLjEwNTA3aC01OC4zMzMzMmMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTdzMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2g1OC4zMzMzMmMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3MtMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDExNy42MDUwNmgtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk0xMDUuMTA0NDEsMTEyLjM5NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjQwLjAwMDAxIiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsMTE3LjYwNTA2aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDExMi4zOTY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSIxMDIuNSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDU1LjEwNTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTEwNS4xMDQ0MSw0OS44OTY3NGg3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSI0MC4wMDAwMSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsNTUuMTA1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNNDIuNjA0NDEsNDkuODk2NzRoNy4yOTE2N3YtNy4yOTE2N2gtNy4yOTE2N3Y3LjI5MTY3WiIvPjxyZWN0IGNsYXNzPSJ1dWlkLWFjYjZmOWFkLWZhYjUtNGU5Zi05ZDVjLWRhNzUxMmY5YWZkOCIgeD0iNDAuMDAwMDEiIHk9IjcxLjI0OTk5IiB3aWR0aD0iMTIuNSIgaGVpZ2h0PSIxMi41Ii8+PHBhdGggZD0iTTUyLjUwMDI1LDg2LjM1NTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik0xMTUuMDAwMjQsODYuMzU1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNMTA1LjEwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjcxLjI1MDAxIiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik04My43NTAyNCw4Ni4zNTUwN2gtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk03My44NTQ0MSw4MS4xNDY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PC9nPjwvc3ZnPg==
     - name: RedHatAI/phi-4
       provider: Microsoft
       description: A state-of-the-art open model built upon a blend of synthetic datasets, data from filtered public domain websites, and acquired academic books and Q&A datasets.
@@ -3970,6 +4518,69 @@ models:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-phi-4-quantized-w8a8:1.5
           createTimeSinceEpoch: "1739776988000"
           lastUpdateTimeSinceEpoch: "1744995117000"
+          customProperties:
+            source:
+                metadataType: MetadataStringValue
+                string_value: registry.redhat.io
+            type:
+                metadataType: MetadataStringValue
+                string_value: modelcar
+      logo: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIGlkPSJ1dWlkLTlmMDM5ZTY4LTZiOTgtNDNlMS05ZjE3LWYwOWNkZTFiNzdhZCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTc1IiBoZWlnaHQ9IjE3NSIgdmlld0JveD0iMCAwIDE3NSAxNzUiPjxkZWZzPjxzdHlsZT4udXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmZ7ZmlsbDpub25lO30udXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjZ7ZmlsbDojZTBlMGUwO30udXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDh7ZmlsbDojZmZmO30udXVpZC1jNGQxYmJmMC02ZGZkLTQyMTEtYmZjYi1iYjM4YjU2ZWQ3NGF7ZmlsbDojNjM5OTNkO30udXVpZC1lZjg1YzExZi1iNjczLTRmZjAtYTYxMi1mMGRiMDYyMmNlYTJ7ZmlsbDojODdiYjYyO30udXVpZC0yZGM1Zjc4Yy04ZTgwLTQxNTYtODYxNy1jOTllZGJlZGRjOGN7ZmlsbDojZTAwO308L3N0eWxlPjwvZGVmcz48ZyBpZD0idXVpZC0zZjA0ZDNkOS0xYzI3LTRkYTYtYWU3NS0xZjlhYTMzY2EzNWQiPjxnIGlkPSJ1dWlkLWRhMzg4MTVhLTAyMGEtNDcwOC1iZWQ3LTNiZGEwYmNmZWM0YiI+PHJlY3QgY2xhc3M9InV1aWQtYzRkMWJiZjAtNmRmZC00MjExLWJmY2ItYmIzOGI1NmVkNzRhIiB4PSIxMjIuNSIgeT0iMTIyLjUiIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgcng9IjEyLjUiIHJ5PSIxMi41Ii8+PHBhdGggY2xhc3M9InV1aWQtZWY4NWMxMWYtYjY3My00ZmYwLWE2MTItZjBkYjA2MjJjZWEyIiBkPSJNMTYwLDEyMy41YzYuMzQxMTMsMCwxMS41LDUuMTU4ODgsMTEuNSwxMS41djI1YzAsNi4zNDExMy01LjE1ODg3LDExLjUtMTEuNSwxMS41aC0yNWMtNi4zNDExMiwwLTExLjUtNS4xNTg4Ny0xMS41LTExLjV2LTI1YzAtNi4zNDExMiw1LjE1ODg4LTExLjUsMTEuNS0xMS41aDI1TTE2MCwxMjIuNWgtMjVjLTYuOTAzNTYsMC0xMi41LDUuNTk2NDQtMTIuNSwxMi41djI1YzAsNi45MDM1Niw1LjU5NjQ0LDEyLjUsMTIuNSwxMi41aDI1YzYuOTAzNTYsMCwxMi41LTUuNTk2NDQsMTIuNS0xMi41di0yNWMwLTYuOTAzNTYtNS41OTY0NC0xMi41LTEyLjUtMTIuNWgwWiIvPjwvZz48ZyBpZD0idXVpZC1mMDM5ZWRhYy04NzNkLTRhYzAtODIyMS1lNWZiYjdiYTAwNjMiPjxnIGlkPSJ1dWlkLTAxMTdlYTBhLTU3N2YtNGUyMi1iYjliLTZiNDE2MDI3Njc0NiI+PGcgaWQ9InV1aWQtNGU5NTUyZmItZWFhMS00MmExLWFjMDgtMTI0ZmJmNTQ0MmRkIj48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHg9IjEzMS41IiB5PSIxMzEuNSIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIi8+PC9nPjxnIGlkPSJ1dWlkLTZhMDVmZDM5LTk4ZTMtNDU0Zi05NmZkLWZkNTdmYmZlMjdkMCI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTQyLjcsMTU4LjM2NzJjLS42MTQwOCwwLTEuMjI5NzYtLjIzMjgtMS42OTY4LS43MDE2bC03LjQzNDQtNy40MzQ0Yy0uNjI0OTYtLjYyNDk2LS42MjQ5Ni0xLjYzNzQ0LDAtMi4yNjI1NnMxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDBsNi44Njg4LDYuODY4OCwxNi40Njg4LTE2LjQ2ODhjLjYyNDk2LS42MjQ5NiwxLjYzNzQ0LS42MjQ5NiwyLjI2MjU2LDAsLjYyNTEyLjYyNDk2LjYyNDk2LDEuNjM3NDQsMCwyLjI2MjU2bC0xNy4wMzQ0LDE3LjAzNDRjLS40NjcyLjQ2ODgtMS4wODI4OC43MDE2LTEuNjk2OC43MDE2aC0uMDAwMzJaIi8+PC9nPjwvZz48L2c+PC9nPjxnIGlkPSJ1dWlkLWMwOGJhYmRjLTExMWMtNDIyMS04NWM4LTkwYzhlMjFhN2Q1OSI+PHBhdGggY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiBkPSJNMTE3LjUsMTM1YzAtOS42NDk1NCw3Ljg1MDQ2LTE3LjUsMTcuNS0xNy41aDE3LjQwNzg0Yy4wNTQ1LS44MjcyMS4wOTIxNi0xLjY1OS4wOTIxNi0yLjVWNDBjMC0yMC43MTA2OS0xNi43ODkzMS0zNy41LTM3LjUtMzcuNUg0MEMxOS4yODkzMSwyLjUsMi41LDE5LjI4OTMxLDIuNSw0MHY3NWMwLDIwLjcxMDYzLDE2Ljc4OTMxLDM3LjUsMzcuNSwzNy41aDc1Yy44NDEsMCwxLjY3Mjc5LS4wMzc2NiwyLjUtLjA5MjE2di0xNy40MDc4NFoiLz48cGF0aCBjbGFzcz0idXVpZC1kODQzNTgyOS05ZGJhLTRhYzgtODk2ZS0xYmNmMjNhY2RhMjYiIGQ9Ik0xMTcuNSwxNDcuMTg1MzZjLS44MjYwNS4wNjM2LTEuNjU3OS4xMDYyNi0yLjUuMTA2MjZINDBjLTE3LjgwNTczLDAtMzIuMjkxNjktMTQuNDg1OTYtMzIuMjkxNjktMzIuMjkxNjNWNDBDNy43MDgzMSwyMi4xOTQzNCwyMi4xOTQyNyw3LjcwODMxLDQwLDcuNzA4MzFoNzVjMTcuODA1NzMsMCwzMi4yOTE2OSwxNC40ODYwMiwzMi4yOTE2OSwzMi4yOTE2OXY3NWMwLC44NDIxLS4wNDI2NiwxLjY3Mzk1LS4xMDYyNiwyLjVoNS4yMjI0MWMuMDU0NS0uODI3MjEuMDkyMTYtMS42NTkuMDkyMTYtMi41VjQwYzAtMjAuNzEwNzUtMTYuNzg5MjUtMzcuNS0zNy41LTM3LjVINDBDMTkuMjg5MjUsMi41LDIuNSwxOS4yODkyNSwyLjUsNDB2NzVjMCwyMC43MTA2OSwxNi43ODkyNSwzNy41LDM3LjUsMzcuNWg3NWMuODQxLDAsMS42NzI3OS0uMDM3NjYsMi41LS4wOTIxNnYtNS4yMjI0N1oiLz48L2c+PGcgaWQ9InV1aWQtYjU4NDEwOGQtNjIyNy00MDBlLWIxOTctYjEzMDY1ZWM3ZjA4Ij48cmVjdCBjbGFzcz0idXVpZC1hNjc0MmM0MS1hNDI3LTQzZGUtYmMyZS1iMTYzZWI4YzMzZmYiIHdpZHRoPSIxNzUiIGhlaWdodD0iMTc1Ii8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDEwOS4yNzE3M2gtNTguMzMzMzJjLTEuMDUzODcsMC0yLjAwMTk1LS42MzQ3Ny0yLjQwNjgyLTEuNjA3MjYtLjQwMjgzLS45NzI0OS0uMTc5MDQtMi4wOTM1MS41NjU1OS0yLjgzODEzbDI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0LTI3LjMyNTQ0Yy0uNzQ0NjMtLjc0NDYzLS45Njg0Mi0xLjg2NTY0LS41NjU1OS0yLjgzODEzLjQwNDg3LS45NzI0OSwxLjM1Mjk1LTEuNjA3MjYsMi40MDY4Mi0xLjYwNzI2aDU4LjMzMzMyYzEuMDUzODcsMCwyLjAwMTk1LjYzNDc3LDIuNDA2ODIsMS42MDcyNi40MDI4My45NzI0OS4xNzkwNCwyLjA5MzUxLS41NjU1OSwyLjgzODEzbC0yNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NCwyNy4zMjU0NGMuNzQ0NjMuNzQ0NjMuOTY4NDIsMS44NjU2NC41NjU1OSwyLjgzODEzLS40MDQ4Ny45NzI0OS0xLjM1Mjk1LDEuNjA3MjYtMi40MDY4MiwxLjYwNzI2Wk01NC42MjAyLDEwNC4wNjM0aDQ1Ljc2MDA4bC0yMi44ODAwNC0yMi44ODAwNC0yMi44ODAwNCwyMi44ODAwNFpNNTQuNjIwMiw1MC45Mzg0MWwyMi44ODAwNCwyMi44ODAwNCwyMi44ODAwNC0yMi44ODAwNGgtNDUuNzYwMDhaIi8+PHBhdGggY2xhc3M9InV1aWQtMmRjNWY3OGMtOGU4MC00MTU2LTg2MTctYzk5ZWRiZWRkYzhjIiBkPSJNMTA2LjY2NjkxLDgwLjEwNTA3aC01OC4zMzMzMmMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTdzMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2g1OC4zMzMzMmMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3MtMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDExNy42MDUwNmgtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk0xMDUuMTA0NDEsMTEyLjM5NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjQwLjAwMDAxIiB5PSIxMDIuNDk5OTgiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsMTE3LjYwNTA2aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDExMi4zOTY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSIxMDIuNSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNMTE1LjAwMDI0LDU1LjEwNTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTEwNS4xMDQ0MSw0OS44OTY3NGg3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PHJlY3QgY2xhc3M9InV1aWQtYWNiNmY5YWQtZmFiNS00ZTlmLTlkNWMtZGE3NTEyZjlhZmQ4IiB4PSI0MC4wMDAwMSIgeT0iMzkuOTk5OTkiIHdpZHRoPSIxMi41IiBoZWlnaHQ9IjEyLjUiLz48cGF0aCBkPSJNNTIuNTAwMjUsNTUuMTA1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNNDIuNjA0NDEsNDkuODk2NzRoNy4yOTE2N3YtNy4yOTE2N2gtNy4yOTE2N3Y3LjI5MTY3WiIvPjxyZWN0IGNsYXNzPSJ1dWlkLWFjYjZmOWFkLWZhYjUtNGU5Zi05ZDVjLWRhNzUxMmY5YWZkOCIgeD0iNDAuMDAwMDEiIHk9IjcxLjI0OTk5IiB3aWR0aD0iMTIuNSIgaGVpZ2h0PSIxMi41Ii8+PHBhdGggZD0iTTUyLjUwMDI1LDg2LjM1NTA3aC0xMi41Yy0xLjQzODM5LDAtMi42MDQxNy0xLjE2NTc3LTIuNjA0MTctMi42MDQxN3YtMTIuNWMwLTEuNDM4MzksMS4xNjU3Ny0yLjYwNDE3LDIuNjA0MTctMi42MDQxN2gxMi41YzEuNDM4MzksMCwyLjYwNDE3LDEuMTY1NzcsMi42MDQxNywyLjYwNDE3djEyLjVjMCwxLjQzODM5LTEuMTY1NzcsMi42MDQxNy0yLjYwNDE3LDIuNjA0MTdaTTQyLjYwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjEwMi41IiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik0xMTUuMDAwMjQsODYuMzU1MDdoLTEyLjVjLTEuNDM4MzksMC0yLjYwNDE3LTEuMTY1NzctMi42MDQxNy0yLjYwNDE3di0xMi41YzAtMS40MzgzOSwxLjE2NTc3LTIuNjA0MTcsMi42MDQxNy0yLjYwNDE3aDEyLjVjMS40MzgzOSwwLDIuNjA0MTcsMS4xNjU3NywyLjYwNDE3LDIuNjA0MTd2MTIuNWMwLDEuNDM4MzktMS4xNjU3NywyLjYwNDE3LTIuNjA0MTcsMi42MDQxN1pNMTA1LjEwNDQxLDgxLjE0NjczaDcuMjkxNjd2LTcuMjkxNjdoLTcuMjkxNjd2Ny4yOTE2N1oiLz48cmVjdCBjbGFzcz0idXVpZC1hY2I2ZjlhZC1mYWI1LTRlOWYtOWQ1Yy1kYTc1MTJmOWFmZDgiIHg9IjcxLjI1MDAxIiB5PSI3MS4yNDk5OSIgd2lkdGg9IjEyLjUiIGhlaWdodD0iMTIuNSIvPjxwYXRoIGQ9Ik04My43NTAyNCw4Ni4zNTUwN2gtMTIuNWMtMS40MzgzOSwwLTIuNjA0MTctMS4xNjU3Ny0yLjYwNDE3LTIuNjA0MTd2LTEyLjVjMC0xLjQzODM5LDEuMTY1NzctMi42MDQxNywyLjYwNDE3LTIuNjA0MTdoMTIuNWMxLjQzODM5LDAsMi42MDQxNywxLjE2NTc3LDIuNjA0MTcsMi42MDQxN3YxMi41YzAsMS40MzgzOS0xLjE2NTc3LDIuNjA0MTctMi42MDQxNywyLjYwNDE3Wk03My44NTQ0MSw4MS4xNDY3M2g3LjI5MTY3di03LjI5MTY3aC03LjI5MTY3djcuMjkxNjdaIi8+PC9nPjwvc3ZnPg==
+    - name: granite-3.1-8b-starter-v2
+      provider: IBM
+      description: The model is designed to respond to general instructions and can be used to build AI assistants for multiple domains, including business applications.
+      readme: |
+        # granite-3.1-8b-starter-v2
+
+        Version 2 of the base/student Granite 3.1 model for fine-tuning
+      language:
+        - en
+        - de
+        - es
+        - fr
+        - ja
+        - pt
+        - ar
+        - cs
+        - it
+        - ko
+        - nl
+        - zh
+      license: apache-2.0
+      licenseLink: https://www.apache.org/licenses/LICENSE-2.0
+      tasks:
+        - text-to-text
+      createTimeSinceEpoch: "1739776988000"
+      lastUpdateTimeSinceEpoch: "1747377277000"
+      customProperties:
+        conversational:
+            metadataType: MetadataStringValue
+            string_value: ""
+        featured:
+            metadataType: MetadataStringValue
+            string_value: ""
+        granite:
+            metadataType: MetadataStringValue
+            string_value: ""
+        granite-3.1:
+            metadataType: MetadataStringValue
+            string_value: ""
+        language:
+            metadataType: MetadataStringValue
+            string_value: ""
+        text-generation-inference:
+            metadataType: MetadataStringValue
+            string_value: ""
+        validated:
+            metadataType: MetadataStringValue
+            string_value: ""
+        validated_on:
+            metadataType: MetadataStringValue
+            string_value: "RHOAI 2.20,RHAIIS 3.0,RHELAI 1.5"
+      artifacts:
+        - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-starter-v2:1.5
+          createTimeSinceEpoch: "1739776988000"
+          lastUpdateTimeSinceEpoch: "1747377277000"
           customProperties:
             source:
                 metadataType: MetadataStringValue

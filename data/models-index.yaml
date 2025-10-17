@@ -1,14 +1,1 @@
-models:
-- type: oci
-  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-quantized-w4a16:1.5
-  labels:
-  - validated
-- type: oci
-  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-quantized-w8a8:1.5
-  labels:
-  - validated
-- type: oci
-  uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-starter-v2:1.5
-  labels:
-  - validated
-  - featured
+models: []
