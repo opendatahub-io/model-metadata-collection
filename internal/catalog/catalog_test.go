@@ -1351,7 +1351,7 @@ func TestConvertExtractedToCatalogMetadata_ValidatedOn(t *testing.T) {
 		} else {
 			expectedValue := types.MetadataValue{
 				MetadataType: "MetadataStringValue",
-				StringValue:  "RHOAI 2.24,RHAIIS 3.2.1",
+				StringValue:  `["RHOAI 2.24","RHAIIS 3.2.1"]`,
 			}
 			if validatedOnProp != expectedValue {
 				t.Errorf("Expected validated_on customProperty to be %+v, got %+v", expectedValue, validatedOnProp)

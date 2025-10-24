@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -94,13 +95,13 @@ func CreateModelsCatalogWithStaticFromResults(outputDir, catalogPath string, mod
 		// Create sanitized directory name for the model (using same logic as main.go)
 		sanitizedName := utils.SanitizeManifestRef(ref)
 		metadataPath := filepath.Join(outputDir, sanitizedName, "models", "metadata.yaml")
-		
+
 		// Check if the metadata file exists
 		if _, err := os.Stat(metadataPath); os.IsNotExist(err) {
 			log.Printf("  Warning: metadata file not found for %s: %s", ref, metadataPath)
 			continue
 		}
-		
+
 		log.Printf("  Processing: %s", metadataPath)
 
 		// Read the metadata file
@@ -121,7 +122,6 @@ func CreateModelsCatalogWithStaticFromResults(outputDir, catalogPath string, mod
 		// Add to collection
 		allModels = append(allModels, metadata)
 	}
-
 
 	// Sort models by name for consistent output
 	sort.Slice(allModels, func(i, j int) bool {
@@ -245,8 +245,12 @@ func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.Cata
 
 	// Add validated_on as customProperty if present
 	if len(model.ValidatedOn) > 0 {
-		validatedOnValue := strings.Join(model.ValidatedOn, ",")
-		customProps["validated_on"] = createMetadataValue(validatedOnValue)
+		validatedOnValue, err := json.Marshal(model.ValidatedOn)
+		if err != nil {
+			log.Printf("unable to marshal ValidatedOn (%q): %v", model.ValidatedOn, err)
+		} else {
+			customProps["validated_on"] = createMetadataValue(string(validatedOnValue))
+		}
 	}
 
 	return types.CatalogMetadata{
@@ -414,7 +418,7 @@ func deduplicateAndMergeModels(models []types.CatalogMetadata) []types.CatalogMe
 			// Merge duplicates
 			log.Printf("Found %d duplicate models for '%s', consolidating...", len(group), groupName)
 			duplicatesFound += len(group) - 1
-			
+
 			merged := mergeModelGroup(group)
 			result = append(result, merged)
 		}
