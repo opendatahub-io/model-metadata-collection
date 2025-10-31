@@ -158,13 +158,13 @@ func main() {
 
 		// Create the models catalog with both dynamic and static models
 		log.Printf("Creating models catalog...")
-		
+
 		// Extract model references from the entries that were processed in this run
 		var processedModelRefs []string
 		for _, entry := range modelEntries {
 			processedModelRefs = append(processedModelRefs, entry.URI)
 		}
-		
+
 		err = catalog.CreateModelsCatalogWithStaticFromResults(*outputDir, *catalogOutputPath, processedModelRefs, staticModels)
 		if err != nil {
 			log.Fatalf("Failed to create models catalog: %v", err)
