@@ -21,11 +21,11 @@ import (
 func isCompatibleModelFamily(regModel, hfModelName string) bool {
 	regNorm := utils.NormalizeModelName(regModel)
 	hfNorm := utils.NormalizeModelName(hfModelName)
-	
+
 	// Extract model family identifiers
 	regFamily := extractModelFamily(regNorm)
 	hfFamily := extractModelFamily(hfNorm)
-	
+
 	// Allow matching within the same family or when families are unknown
 	return regFamily == "" || hfFamily == "" || regFamily == hfFamily
 }
@@ -271,7 +271,7 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 			if !isCompatibleModelFamily(regModel, hfModel.Name) {
 				continue
 			}
-			
+
 			score := utils.CalculateSimilarity(regModel, hfModel.Name)
 			if score > bestScore {
 				bestScore = score
