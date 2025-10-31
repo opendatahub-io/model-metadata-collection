@@ -175,7 +175,7 @@ func ProcessCollections() error {
 		collectionSlugs = []string{
 			"RedHatAI/red-hat-ai-validated-models-may-2025-682613dc19c4a596dbac9437",
 			"RedHatAI/red-hat-ai-validated-models-september-2025-68cc3d7a8a272f6beae3e9a7",
-			"RedHatAI/red-hat-ai-validated-models-october-2025",
+			"RedHatAI/red-hat-ai-validated-models-october-2025-68ed0a23ec5ce4b0ffc4c60c",
 		}
 	}
 
