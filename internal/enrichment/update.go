@@ -112,7 +112,9 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 		shouldOverride := existingMetadata.License == nil || enrichedData.License.Source == "huggingface.yaml"
 		if shouldOverride {
 			licenseStr := enrichedData.License.Value.(string)
-			existingMetadata.License = &licenseStr
+			// Transform license to human-readable format
+			humanReadableLicense := utils.GetHumanReadableLicenseName(licenseStr)
+			existingMetadata.License = &humanReadableLicense
 			// Automatically set license link if we have a well-known license
 			if licenseURL := utils.GetLicenseURL(licenseStr); licenseURL != "" {
 				existingMetadata.LicenseLink = &licenseURL
@@ -138,7 +140,9 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 		if ok {
 			_, tagLicense, _ := huggingface.ParseTagsForStructuredData(tags)
 			if tagLicense != "" && existingMetadata.License == nil {
-				existingMetadata.License = &tagLicense
+				// Transform license to human-readable format
+				humanReadableLicense := utils.GetHumanReadableLicenseName(tagLicense)
+				existingMetadata.License = &humanReadableLicense
 				enrichmentInfo.DataSources.License = "huggingface.tags"
 				// Automatically set license link if we have a well-known license
 				if licenseURL := utils.GetLicenseURL(tagLicense); licenseURL != "" {

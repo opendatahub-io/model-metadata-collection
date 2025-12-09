@@ -66,7 +66,7 @@ models:
     more rigorous exploration, comprehension, and mitigations in this domain."
   language:
   - en
-  license: apache-2.0
+  license: Apache 2.0
   licenseLink: https://www.apache.org/licenses/LICENSE-2.0.txt
   tasks:
   - text-generation
@@ -153,7 +153,7 @@ models:
     more rigorous exploration, comprehension, and mitigations in this domain."
   language:
   - en
-  license: apache-2.0
+  license: Apache 2.0
   licenseLink: https://www.apache.org/licenses/LICENSE-2.0.txt
   tasks:
   - text-generation
@@ -237,7 +237,7 @@ models:
     more rigorous exploration, comprehension, and mitigations in this domain."
   language:
   - en
-  license: apache-2.0
+  license: Apache 2.0
   licenseLink: https://www.apache.org/licenses/LICENSE-2.0.txt
   tasks:
   - text-generation
@@ -321,7 +321,7 @@ models:
     more rigorous exploration, comprehension, and mitigations in this domain."
   language:
   - en
-  license: apache-2.0
+  license: Apache 2.0
   licenseLink: https://www.apache.org/licenses/LICENSE-2.0.txt
   tasks:
   - text-generation
@@ -399,7 +399,7 @@ models:
     Granite code instruct models are primarily finetuned using instruction-response pairs across a specific set of programming languages. Thus, their performance may be limited with out-of-domain programming languages. In this situation, it is beneficial providing few-shot examples to steer the model's output. Moreover, developers should perform safety testing and target-specific tuning before deploying these models on critical applications. The model also inherits ethical considerations and limitations from its base model. For more information, please refer to *[Granite-8B-Code-Base-4K](https://huggingface.co/ibm-granite/granite-8b-code-base-4k)* model card.
   language:
   - en
-  license: apache-2.0
+  license: Apache 2.0
   licenseLink: https://www.apache.org/licenses/LICENSE-2.0.txt
   tasks:
   - text-generation
@@ -471,7 +471,7 @@ models:
     The use of Large Language Models involves risks and ethical considerations people must be aware of. Regarding code generation, caution is urged against complete reliance on specific code models for crucial decisions or impactful information as the generated code is not guaranteed to work as intended. **Granite-8B-Code-Base-4K** model is not the exception in this regard. Even though this model is suited for multiple code-related tasks, it has not undergone any safety alignment, there it may produce problematic outputs. Additionally, it remains uncertain whether smaller models might exhibit increased susceptibility to hallucination in generation scenarios by copying source code verbatim from the training dataset due to their reduced sizes and memorization capacities. This aspect is currently an active area of research, and we anticipate more rigorous exploration, comprehension, and mitigations in this domain. Regarding ethics, a latent risk associated with all Large Language Models is their malicious utilization. We urge the community to use **Granite-8B-Code-Base-4K** model with ethical intentions and in a responsible way.
   language:
   - en
-  license: apache-2.0
+  license: Apache 2.0
   licenseLink: https://www.apache.org/licenses/LICENSE-2.0.txt
   tasks:
   - text-generation
@@ -622,7 +622,7 @@ models:
     ```
   language:
   - en
-  license: apache-2.0
+  license: Apache 2.0
   licenseLink: https://www.apache.org/licenses/LICENSE-2.0.txt
   tasks:
   - text-generation

@@ -375,3 +375,82 @@ func TestUpdateOCIArtifacts_InvalidModel(t *testing.T) {
 		t.Error("Expected error for invalid model reference")
 	}
 }
+
+func TestLicenseTransformation_Integration(t *testing.T) {
+	// Test to verify that license transformation works in the enrichment pipeline
+	tmpDir := t.TempDir()
+
+	// Create enriched metadata with technical license identifier
+	enriched := types.EnrichedModelMetadata{
+		Name:        types.MetadataSource{Value: "test-model", Source: "huggingface.yaml"},
+		Provider:    types.MetadataSource{Value: "test-provider", Source: "huggingface.yaml"},
+		License:     types.MetadataSource{Value: "apache-2.0", Source: "huggingface.yaml"}, // Technical identifier
+		LicenseLink: types.MetadataSource{Value: "", Source: "null"},
+		Description: types.MetadataSource{Value: "test description", Source: "huggingface.yaml"},
+		Language:    types.MetadataSource{Value: []string{"en"}, Source: "huggingface.yaml"},
+		Tags:        types.MetadataSource{Value: []string{"test"}, Source: "huggingface.yaml"},
+		Tasks:       types.MetadataSource{Value: []string{"test-task"}, Source: "huggingface.yaml"},
+	}
+
+	// Create output directory structure
+	modelDir := tmpDir + "/registry.example.com_test_model_latest/models"
+	err := os.MkdirAll(modelDir, 0755)
+	if err != nil {
+		t.Fatalf("Failed to create model directory: %v", err)
+	}
+
+	// Create initial metadata.yaml with technical license
+	initialMetadata := types.ExtractedMetadata{
+		Name:        stringPtr("test-model"),
+		Provider:    stringPtr("test-provider"),
+		License:     stringPtr("apache-2.0"), // Technical identifier before transformation
+		Description: stringPtr("test description"),
+		Language:    []string{"en"},
+		Tags:        []string{"test"},
+		Tasks:       []string{"test-task"},
+	}
+
+	yamlData, err := yaml.Marshal(initialMetadata)
+	if err != nil {
+		t.Fatalf("Failed to marshal initial metadata: %v", err)
+	}
+
+	err = os.WriteFile(modelDir+"/metadata.yaml", yamlData, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write initial metadata.yaml: %v", err)
+	}
+
+	// Update with enriched data (this should trigger license transformation)
+	err = UpdateModelMetadataFile("registry.example.com/test/model:latest", &enriched, tmpDir)
+	if err != nil {
+		t.Fatalf("Failed to update model metadata: %v", err)
+	}
+
+	// Read the updated metadata.yaml to verify license transformation
+	updatedData, err := os.ReadFile(modelDir + "/metadata.yaml")
+	if err != nil {
+		t.Fatalf("Failed to read updated metadata.yaml: %v", err)
+	}
+
+	var updatedMetadata types.ExtractedMetadata
+	err = yaml.Unmarshal(updatedData, &updatedMetadata)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal updated metadata: %v", err)
+	}
+
+	// Verify that the license was transformed to human-readable format
+	if updatedMetadata.License == nil {
+		t.Fatal("License field is nil after update")
+	}
+
+	expectedLicense := "Apache 2.0" // Human-readable format
+	if *updatedMetadata.License != expectedLicense {
+		t.Errorf("License not transformed correctly: got %q, expected %q", *updatedMetadata.License, expectedLicense)
+	}
+
+	t.Logf("License successfully transformed from 'apache-2.0' to '%s'", *updatedMetadata.License)
+}
+
+func stringPtr(s string) *string {
+	return &s
+}
