@@ -7,6 +7,7 @@ A Go application for extracting, enriching, and cataloging metadata from Red Hat
 - **HuggingFace Collections Integration**: Automatically discovers and processes Red Hat AI validated model collections with version support (v1.0, v2.1, etc.)
 - **OCI Container Analysis**: Extracts model cards from container image layers with annotation-based detection; creates skeleton metadata when extraction fails to ensure enrichment continuity
 - **Metadata Enrichment**: Enriches model metadata with HuggingFace data including date-to-epoch conversion and quality validation, **with modelcard.md data taking priority over external sources**
+- **Model Type Classification**: Automatic classification of models as generative, predictive, or unknown with validation and programmatic defaults
 - **Automated Tagging**: Automatically adds labels as tags based on model configuration with intelligent tag merging
 - **Registry Integration**: Fetches OCI artifact metadata from container registries
 - **Metadata Reporting**: Comprehensive analysis of metadata completeness, data source tracking, and quality metrics
@@ -255,6 +256,10 @@ Each model entry supports the following fields:
   - Common labels include: `"validated"`, `"featured"`, `"lab-teacher"`, `"lab-base"`
   - Labels are automatically converted to customProperties in the final model catalog
   - New labels can be added without code changes
+- **model_type**: Optional classification of the model type (defaults to `"generative"` if omitted)
+  - Allowed values: `"generative"`, `"predictive"`, or `"unknown"`
+  - Automatically validated during catalog generation
+  - Appears in the generated catalog as a customProperty
 
 ### Version-Specific Index Files
 Generated automatically from HuggingFace collections:
@@ -267,6 +272,74 @@ models:
     url: https://huggingface.co/RedHatAI/Llama-4-Scout-17B-16E-Instruct
     readme_path: /RedHatAI/Llama-4-Scout-17B-16E-Instruct/README.md
 ```
+
+## Model Type Classification
+
+The tool supports automatic classification of models using the `model_type` field. This classification is included in the generated catalog's `customProperties` section.
+
+### Supported Model Types
+
+Three model type classifications are supported:
+
+- **`generative`**: Models that generate new content (text, images, etc.)
+  - Examples: Large Language Models (LLMs), text-to-image models, code generators
+  - This is the **default** value applied when `model_type` is not explicitly specified
+
+- **`predictive`**: Models that make predictions or classifications
+  - Examples: Sentiment analysis, image classification, forecasting models
+
+- **`unknown`**: Models with unclear or mixed purposes
+  - Use this when the model type cannot be determined
+
+### Automatic Default Behavior
+
+The tool automatically applies the `"generative"` model type to all models in the following scenarios:
+
+1. **Static Catalogs**: Models defined in `input/supplemental-catalog.yaml` automatically receive `model_type: "generative"`
+2. **Dynamic Catalogs**: Models extracted from OCI containers default to `"generative"` unless otherwise specified
+3. **Index Files**: When the `model_type` field is omitted from index YAML files, the default is applied
+
+This default behavior ensures all models have a valid classification without requiring manual updates to existing catalog files.
+
+### Explicit Model Type Specification
+
+To specify a different model type, add the `model_type` field to your index YAML:
+
+```yaml
+models:
+  - type: "oci"
+    uri: "registry.redhat.io/rhelai1/modelcar-example-predictive:1.0"
+    labels: ["validated"]
+    model_type: "predictive"  # Explicitly set as predictive model
+```
+
+### Validation
+
+The tool automatically validates `model_type` values during catalog generation:
+
+- **Valid Values**: Only `"generative"`, `"predictive"`, and `"unknown"` are accepted
+- **Invalid Values**: If an invalid `model_type` is detected, the tool:
+  1. Logs a warning message with the invalid value
+  2. Automatically falls back to the default `"generative"` value
+  3. Continues catalog generation without failure
+
+Example validation warning:
+```
+Warning: Invalid model_type "custom-type" for model "example-model", defaulting to "generative": invalid model_type: "custom-type" (allowed values: "generative", "predictive", "unknown")
+```
+
+### Output Format
+
+In the generated catalog, `model_type` appears in the `customProperties` section using the `MetadataStringValue` format:
+
+```yaml
+customProperties:
+  model_type:
+    metadataType: MetadataStringValue
+    string_value: "generative"
+```
+
+This structured format ensures compatibility with downstream systems that consume the catalog data.
 
 ## Output Structure
 
@@ -315,6 +388,10 @@ artifacts:
         string_value: registry.redhat.io
       type:
         string_value: modelcar
+customProperties:
+  model_type:
+    metadataType: MetadataStringValue
+    string_value: "generative"
 ```
 
 ### Aggregated Catalog

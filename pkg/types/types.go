@@ -1,16 +1,25 @@
 package types
 
 import (
+	"fmt"
 	"time"
 
 	"gopkg.in/yaml.v3"
 )
 
+// Model type constants
+const (
+	ModelTypeGenerative = "generative"
+	ModelTypePredictive = "predictive"
+	ModelTypeUnknown    = "unknown"
+)
+
 // ModelEntry represents a single model entry in the models index
 type ModelEntry struct {
-	Type   string   `yaml:"type"`   // "oci" for registry-based modelcar or "hf" for HuggingFace models
-	URI    string   `yaml:"uri"`    // OCI link or HuggingFace link
-	Labels []string `yaml:"labels"` // Labels for the model (e.g., "validated", "featured", "lab-teacher", "lab-base")
+	Type      string   `yaml:"type"`       // "oci" for registry-based modelcar or "hf" for HuggingFace models
+	URI       string   `yaml:"uri"`        // OCI link or HuggingFace link
+	Labels    []string `yaml:"labels"`     // Labels for the model (e.g., "validated", "featured", "lab-teacher", "lab-base")
+	ModelType string   `yaml:"model_type"` // Model type: "generative", "predictive", or "unknown" (defaults to "generative" if omitted)
 }
 
 // ModelsConfig represents the configuration of models to process
@@ -280,4 +289,20 @@ type ModelManifest struct {
 // ManifestsData represents the collection of all manifests
 type ManifestsData struct {
 	Models []ModelManifest `yaml:"models"`
+}
+
+// ValidateModelType validates that a model type is one of the allowed values
+func ValidateModelType(modelType string) error {
+	switch modelType {
+	case ModelTypeGenerative, ModelTypePredictive, ModelTypeUnknown:
+		return nil
+	default:
+		return fmt.Errorf("invalid model_type: %q (allowed values: %q, %q, %q)",
+			modelType, ModelTypeGenerative, ModelTypePredictive, ModelTypeUnknown)
+	}
+}
+
+// GetDefaultModelType returns the default model type value
+func GetDefaultModelType() string {
+	return ModelTypeGenerative
 }

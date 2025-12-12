@@ -12,6 +12,10 @@ models:
         - text-generation
       createTimeSinceEpoch: "1739210683000"
       lastUpdateTimeSinceEpoch: "1739210683000"
+      customProperties:
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-7b-redhat-lab:1.4.0
           createTimeSinceEpoch: "1739210683000"
@@ -36,6 +40,10 @@ models:
         - text-generation
       createTimeSinceEpoch: "1739210683000"
       lastUpdateTimeSinceEpoch: "1739210683000"
+      customProperties:
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-8b-starter-v1:1.4.0
           createTimeSinceEpoch: "1739210683000"
@@ -60,6 +68,10 @@ models:
         - text-generation
       createTimeSinceEpoch: "1739210683000"
       lastUpdateTimeSinceEpoch: "1739210683000"
+      customProperties:
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-8b-lab-v1:1.4.0
           createTimeSinceEpoch: "1739210683000"
@@ -84,6 +96,10 @@ models:
         - text-generation
       createTimeSinceEpoch: "1739210683000"
       lastUpdateTimeSinceEpoch: "1739210683000"
+      customProperties:
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-lab-v1:1.4.0
           createTimeSinceEpoch: "1739210683000"
@@ -161,6 +177,10 @@ models:
         - text-generation
       createTimeSinceEpoch: "1739210683000"
       lastUpdateTimeSinceEpoch: "1739210683000"
+      customProperties:
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-8b-code-instruct:1.4.0
           createTimeSinceEpoch: "1739210683000"
@@ -232,6 +252,10 @@ models:
         - text-generation
       createTimeSinceEpoch: "1739210683000"
       lastUpdateTimeSinceEpoch: "1739210683000"
+      customProperties:
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-8b-code-base:1.4.0
           createTimeSinceEpoch: "1739210683000"
@@ -382,6 +406,10 @@ models:
         - text-generation
       createTimeSinceEpoch: "1743078706000"
       lastUpdateTimeSinceEpoch: "1743078706000"
+      customProperties:
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-prometheus-8x7b-v2-0:1.4
           createTimeSinceEpoch: "1743078706000"

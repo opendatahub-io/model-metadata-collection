@@ -90,6 +90,9 @@ models:
         llmcompressor:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -162,6 +165,9 @@ models:
         llmcompressor:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -677,6 +683,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -750,6 +759,9 @@ models:
         llama3.1:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         nvidia:
             metadataType: MetadataStringValue
             string_value: ""
@@ -799,6 +811,9 @@ models:
         llama:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -858,6 +873,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -920,6 +938,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         quantized:
             metadataType: MetadataStringValue
             string_value: ""
@@ -994,6 +1015,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -1649,6 +1673,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -1713,6 +1740,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -1784,6 +1814,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -1855,6 +1888,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -1920,6 +1956,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -1953,7 +1992,7 @@ models:
     - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16
       provider: Meta
       description: This model was obtained by quantizing weights of Llama-4-Scout-17B-16E-Instruct to INT4 data type.
-      readme: "# Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\n\n## Model Overview\n- **Model Architecture:** Llama4ForConditionalGeneration\n  - **Input:** Text / Image\n  - **Output:** Text\n- **Model Optimizations:**\n  - **Activation quantization:** None\n  - **Weight quantization:** INT4\n- **Release Date:** 04/25/2025\n- **Version:** 1.0\n- **Model Developers:** Red Hat (Neural Magic)\n\n\n### Model Optimizations\n\nThis model was obtained by quantizing weights of [Llama-4-Scout-17B-16E-Instruct](https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct) to INT4 data type.\nThis optimization reduces the number of bits used to represent weights from 16 to 4, reducing GPU memory requirements by approximately 75%.\nWeight quantization also reduces disk size requirements by approximately 75%. The [llm-compressor](https://github.com/vllm-project/llm-compressor) library is used for quantization.\n\n\n## Deployment\n\nThis model can be deployed efficiently using the [vLLM](https://docs.vllm.ai/en/latest/) backend, as shown in the example below.\n\n```python\nfrom vllm import LLM, SamplingParams\nfrom transformers import AutoTokenizer\n\nmodel_id = \"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\"\nnumber_gpus = 4\n\nsampling_params = SamplingParams(temperature=0.7, top_p=0.8, max_tokens=256)\n\ntokenizer = AutoTokenizer.from_pretrained(model_id)\n\nprompt = \"Give me a short introduction to large language model.\"\n\nllm = LLM(model=model_id, tensor_parallel_size=number_gpus)\n\noutputs = llm.generate(prompt, sampling_params)\n\ngenerated_text = outputs[0].outputs[0].text\nprint(generated_text)\n```\n\nvLLM also supports OpenAI-compatible serving. See the [documentation](https://docs.vllm.ai/en/latest/) for more details.\n\n\n## Evaluation\n\nThe model was evaluated on the OpenLLM leaderboard tasks (v1 and v2), long context RULER, multimodal MMMU, and multimodal ChartQA.\nAll evaluations are obtained through [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness).\n\n<details>\n  <summary>Evaluation details</summary>\n\n  **OpenLLM v1**\n  ```\n  lm_eval \\\n    --model vllm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=8,gpu_memory_utilization=0.7,enable_chunked_prefill=True,trust_remote_code=True \\\n    --tasks openllm \\\n    --batch_size auto \n  ```\n\n  **OpenLLM v2**\n  ```\n  lm_eval \\\n    --model vllm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=16384,tensor_parallel_size=8,gpu_memory_utilization=0.5,enable_chunked_prefill=True,trust_remote_code=True \\\n    --tasks leaderboard \\\n    --apply_chat_template \\\n    --fewshot_as_multiturn \\\n    --batch_size auto \n  ```\n\n  **Long Context RULER**\n  ```\n  lm_eval \\\n    --model vllm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=524288,tensor_parallel_size=8,gpu_memory_utilization=0.9,enable_chunked_prefill=True,trust_remote_code=True \\\n    --tasks ruler \\\n    --metadata='{\"max_seq_lengths\":[131072]}' \\\n    --batch_size auto \n  ```\n\n  **Multimodal MMMU**\n  ```\n  lm_eval \\\n    --model vllm-vlm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=1000000,tensor_parallel_size=8,gpu_memory_utilization=0.9,enable_chunked_prefill=True,trust_remote_code=True,max_images=10 \\\n    --tasks mmmu_val \\\n    --apply_chat_template \\\n    --batch_size auto \n  ```\n\n  **Multimodal ChartQA**\n  ```\n  export VLLM_MM_INPUT_CACHE_GIB=8\n  lm_eval \\\n    --model vllm-vlm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=1000000,tensor_parallel_size=8,gpu_memory_utilization=0.9,enable_chunked_prefill=True,trust_remote_code=True,max_images=10 \\\n    --tasks chartqa \\\n    --apply_chat_template \\\n    --batch_size auto \n  ```\n\n</details>\n\n### Accuracy\n\n|                                                | Recovery (%) | meta-llama/Llama-4-Scout-17B-16E-Instruct | RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16<br>(this model) |\n| ---------------------------------------------- | :-----------: | :---------------------------------------: | :-----------------------------------------------------------------: |\n| ARC-Challenge<br>25-shot                       | 98.51       | 69.37                                     | 68.34                                                               |\n| GSM8k<br>5-shot                                | 100.4        | 90.45                                     | 90.90\n| HellaSwag<br>10-shot                           | 99.67        | 85.23                                     | 84.95                                                               |\n| MMLU<br>5-shot                                 | 99.75        | 80.54                                     | 80.34                                                               |\n| TruthfulQA<br>0-shot                           | 99.82        | 61.41                                     | 61.30                                                               |\n| WinoGrande<br>5-shot                           | 98.98        | 77.90                                     | 77.11                                                               |\n| **OpenLLM v1<br>Average Score**                    | **99.59**        | **77.48**                                     | **77.16**                                                               |\n| IFEval<br>0-shot<br>avg of inst and prompt acc | 99.51       | 86.90                                     | 86.47                                                               |\n| Big Bench Hard<br>3-shot                       | 99.46        | 65.13                                     | 64.78                                                               |\n| Math Lvl 5<br>4-shot                           | 99.22        | 57.78                                     | 57.33                                                               |\n| GPQA<br>0-shot                                 | 100.0       | 31.88                                     | 31.88                                                               |\n| MuSR<br>0-shot                                 | 100.9       | 42.20                                     | 42.59                                                               |\n| MMLU-Pro<br>5-shot                             | 98.67        | 55.70                                     | 54.96                                                               |\n| **OpenLLM v2<br>Average Score**                    | **99.54**       | **56.60**                                     | **56.34**                                                               |                                                            |\n| MMMU<br>0-shot                                 | 100.6        | 53.44                                     | 53.78                                                               |\n| ChartQA<br>0-shot<br>exact_match               | 100.1       | 65.88                                     | 66.00                                                               |\n| ChartQA<br>0-shot<br>relaxed_accuracy          | 99.55        | 88.92                                     | 88.52                                                               |\n| **Multimodal Average Score**                       | **100.0**        | **69.41**                                     | **69.43**                                                               |\n| RULER<br>seqlen = 131072<br>niah_multikey_1    | 98.41       | 88.20                                     | 86.80                                                               |\n| RULER<br>seqlen = 131072<br>niah_multikey_2    | 94.73       | 83.60                                     | 79.20                                                               |\n| RULER<br>seqlen = 131072<br>niah_multikey_3    | 96.44        | 78.80                                     | 76.00                                                               |\n| RULER<br>seqlen = 131072<br>niah_multiquery    | 98.79       | 95.40                                     | 94.25                                                               |\n| RULER<br>seqlen = 131072<br>niah_multivalue    | 101.6        | 73.75                                     | 74.95                                                               |\n| RULER<br>seqlen = 131072<br>niah_single_1      | 100.0       | 100.00                                    | 100.0                                                              |\n| RULER<br>seqlen = 131072<br>niah_single_2      | 100.0       | 99.80                                     | 99.80                                                               |\n| RULER<br>seqlen = 131072<br>niah_single_3      | 100.2       | 99.80                                     | 100.0                                                               |\n| RULER<br>seqlen = 131072<br>ruler_cwe          | 87.39        | 39.42                                     | 33.14                                                               |\n| RULER<br>seqlen = 131072<br>ruler_fwe          | 98.13        | 92.93                                     | 91.20                                                               |\n| RULER<br>seqlen = 131072<br>ruler_qa_hotpot    | 100.4       | 48.20                                     | 48.40                                                               |\n| RULER<br>seqlen = 131072<br>ruler_qa_squad     | 96.22        | 53.57                                     | 51.55                                                               |\n| RULER<br>seqlen = 131072<br>ruler_qa_vt        | 98.82       | 92.28                                     | 91.20                                                               |\n| **RULER<br>seqlen = 131072<br>Average Score**      | **98.16**        | **80.44**                                     | **78.96**                                                               |\n"
+      readme: "# Download model from Red Hat Registry via docker\n# Note: This downloads the model to ~/.cache/instructlab/models unless --model-dir is specified.\nilab model download --repository docker://registry.redhat.io/rhelai1/llama-4-scout-17b-16e-instruct-quantized-w4a16:1.5\n```\n\n```bash\n# Serve model via ilab\nilab model serve --model-path ~/.cache/instructlab/models/llama-4-scout-17b-16e-instruct-quantized-w4a16\n  \n# Chat with model\nilab model chat --model ~/.cache/instructlab/models/llama-4-scout-17b-16e-instruct-quantized-w4a16\n```\nSee [Red Hat Enterprise Linux AI documentation](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux_ai/1.4) for more details.\n</details>\n\n<details>\n  <summary>Deploy on <strong>Red Hat Openshift AI</strong></summary>\n  \n```python\n# Setting up vllm server with ServingRuntime\n# Save as: vllm-servingruntime.yaml\napiVersion: serving.kserve.io/v1alpha1\nkind: ServingRuntime\nmetadata:\n name: vllm-cuda-runtime # OPTIONAL CHANGE: set a unique name\n annotations:\n   openshift.io/display-name: vLLM NVIDIA GPU ServingRuntime for KServe\n   opendatahub.io/recommended-accelerators: '[\"nvidia.com/gpu\"]'\n labels:\n   opendatahub.io/dashboard: 'true'\nspec:\n annotations:\n   prometheus.io/port: '8080'\n   prometheus.io/path: '/metrics'\n multiModel: false\n supportedModelFormats:\n   - autoSelect: true\n     name: vLLM\n containers:\n   - name: kserve-container\n     image: quay.io/modh/vllm:rhoai-2.20-cuda # CHANGE if needed. If AMD: quay.io/modh/vllm:rhoai-2.20-rocm\n     command:\n       - python\n       - -m\n       - vllm.entrypoints.openai.api_server\n     args:\n       - \"--port=8080\"\n       - \"--model=/mnt/models\"\n       - \"--served-model-name={{.Name}}\"\n     env:\n       - name: HF_HOME\n         value: /tmp/hf_home\n     ports:\n       - containerPort: 8080\n         protocol: TCP\n```\n\n```python\n# Attach model to vllm server. This is an NVIDIA template\n# Save as: inferenceservice.yaml\napiVersion: serving.kserve.io/v1beta1\nkind: InferenceService\nmetadata:\n  annotations:\n    openshift.io/display-name: Llama-4-Scout-17B-16E-Instruct-quantized.w4a16 # OPTIONAL CHANGE\n    serving.kserve.io/deploymentMode: RawDeployment\n  name: Llama-4-Scout-17B-16E-Instruct-quantized.w4a16          # specify model name. This value will be used to invoke the model in the payload\n  labels:\n    opendatahub.io/dashboard: 'true'\nspec:\n  predictor:\n    maxReplicas: 1\n    minReplicas: 1\n    model:\n      modelFormat:\n        name: vLLM\n      name: ''\n      resources:\n        limits:\n          cpu: '2'\t\t\t# this is model specific\n          memory: 8Gi\t\t# this is model specific\n          nvidia.com/gpu: '1'\t# this is accelerator specific\n        requests:\t\t\t# same comment for this block\n          cpu: '1'\n          memory: 4Gi\n          nvidia.com/gpu: '1'\n      runtime: vllm-cuda-runtime\t# must match the ServingRuntime name above\n      storageUri: oci://registry.redhat.io/rhelai1/modelcar-llama-4-scout-17b-16e-instruct-quantized-w4a16:1.5\n    tolerations:\n    - effect: NoSchedule\n      key: nvidia.com/gpu\n      operator: Exists\n```\n\n```bash\n# make sure first to be in the project where you want to deploy the model\n# oc project <project-name>\n\n# apply both resources to run model\n\n# Apply the ServingRuntime\noc apply -f vllm-servingruntime.yaml\n\n# Apply the InferenceService\noc apply -f qwen-inferenceservice.yaml\n```\n\n```python\n# Replace <inference-service-name> and <cluster-ingress-domain> below:\n# - Run `oc get inferenceservice` to find your URL if unsure.\n\n# Call the server using curl:\ncurl https://<inference-service-name>-predictor-default.<domain>/v1/chat/completions\n        -H \"Content-Type: application/json\" \\\n        -d '{\n    \"model\": \"Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",\n    \"stream\": true,\n    \"stream_options\": {\n        \"include_usage\": true\n    },\n    \"max_tokens\": 1,\n    \"messages\": [\n        {\n            \"role\": \"user\",\n            \"content\": \"How can a bee fly when its wings are so small?\"\n        }\n    ]\n}'\n\n```\n\nSee [Red Hat Openshift AI documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_ai/2025) for more details.\n</details>\n\n\n\n## Evaluation\n\nThe model was evaluated on the OpenLLM leaderboard tasks (v1 and v2), long context RULER, multimodal MMMU, and multimodal ChartQA.\nAll evaluations are obtained through [lm-evaluation-harness](https://github.com/EleutherAI/lm-evaluation-harness).\n\n<details>\n  <summary>Evaluation details</summary>\n\n  **OpenLLM v1**\n  ```\n  lm_eval \\\n    --model vllm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=True,max_model_len=4096,tensor_parallel_size=8,gpu_memory_utilization=0.7,enable_chunked_prefill=True,trust_remote_code=True \\\n    --tasks openllm \\\n    --batch_size auto \n  ```\n\n  **OpenLLM v2**\n  ```\n  lm_eval \\\n    --model vllm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=16384,tensor_parallel_size=8,gpu_memory_utilization=0.5,enable_chunked_prefill=True,trust_remote_code=True \\\n    --tasks leaderboard \\\n    --apply_chat_template \\\n    --fewshot_as_multiturn \\\n    --batch_size auto \n  ```\n\n  **Long Context RULER**\n  ```\n  lm_eval \\\n    --model vllm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=524288,tensor_parallel_size=8,gpu_memory_utilization=0.9,enable_chunked_prefill=True,trust_remote_code=True \\\n    --tasks ruler \\\n    --metadata='{\"max_seq_lengths\":[131072]}' \\\n    --batch_size auto \n  ```\n\n  **Multimodal MMMU**\n  ```\n  lm_eval \\\n    --model vllm-vlm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=1000000,tensor_parallel_size=8,gpu_memory_utilization=0.9,enable_chunked_prefill=True,trust_remote_code=True,max_images=10 \\\n    --tasks mmmu_val \\\n    --apply_chat_template \\\n    --batch_size auto \n  ```\n\n  **Multimodal ChartQA**\n  ```\n  export VLLM_MM_INPUT_CACHE_GIB=8\n  lm_eval \\\n    --model vllm-vlm \\\n    --model_args pretrained=\"RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16\",dtype=auto,add_bos_token=False,max_model_len=1000000,tensor_parallel_size=8,gpu_memory_utilization=0.9,enable_chunked_prefill=True,trust_remote_code=True,max_images=10 \\\n    --tasks chartqa \\\n    --apply_chat_template \\\n    --batch_size auto \n  ```\n\n</details>\n\n### Accuracy\n\n|                                                | Recovery (%) | meta-llama/Llama-4-Scout-17B-16E-Instruct | RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16<br>(this model) |\n| ---------------------------------------------- | :-----------: | :---------------------------------------: | :-----------------------------------------------------------------: |\n| ARC-Challenge<br>25-shot                       | 98.51       | 69.37                                     | 68.34                                                               |\n| GSM8k<br>5-shot                                | 100.4        | 90.45                                     | 90.90\n| HellaSwag<br>10-shot                           | 99.67        | 85.23                                     | 84.95                                                               |\n| MMLU<br>5-shot                                 | 99.75        | 80.54                                     | 80.34                                                               |\n| TruthfulQA<br>0-shot                           | 99.82        | 61.41                                     | 61.30                                                               |\n| WinoGrande<br>5-shot                           | 98.98        | 77.90                                     | 77.11                                                               |\n| **OpenLLM v1<br>Average Score**                    | **99.59**        | **77.48**                                     | **77.16**                                                               |\n| IFEval<br>0-shot<br>avg of inst and prompt acc | 99.51       | 86.90                                     | 86.47                                                               |\n| Big Bench Hard<br>3-shot                       | 99.46        | 65.13                                     | 64.78                                                               |\n| Math Lvl 5<br>4-shot                           | 99.22        | 57.78                                     | 57.33                                                               |\n| GPQA<br>0-shot                                 | 100.0       | 31.88                                     | 31.88                                                               |\n| MuSR<br>0-shot                                 | 100.9       | 42.20                                     | 42.59                                                               |\n| MMLU-Pro<br>5-shot                             | 98.67        | 55.70                                     | 54.96                                                               |\n| **OpenLLM v2<br>Average Score**                    | **99.54**       | **56.60**                                     | **56.34**                                                               |                                                            |\n| MMMU<br>0-shot                                 | 100.6        | 53.44                                     | 53.78                                                               |\n| ChartQA<br>0-shot<br>exact_match               | 100.1       | 65.88                                     | 66.00                                                               |\n| ChartQA<br>0-shot<br>relaxed_accuracy          | 99.55        | 88.92                                     | 88.52                                                               |\n| **Multimodal Average Score**                       | **100.0**        | **69.41**                                     | **69.43**                                                               |\n| RULER<br>seqlen = 131072<br>niah_multikey_1    | 98.41       | 88.20                                     | 86.80                                                               |\n| RULER<br>seqlen = 131072<br>niah_multikey_2    | 94.73       | 83.60                                     | 79.20                                                               |\n| RULER<br>seqlen = 131072<br>niah_multikey_3    | 96.44        | 78.80                                     | 76.00                                                               |\n| RULER<br>seqlen = 131072<br>niah_multiquery    | 98.79       | 95.40                                     | 94.25                                                               |\n| RULER<br>seqlen = 131072<br>niah_multivalue    | 101.6        | 73.75                                     | 74.95                                                               |\n| RULER<br>seqlen = 131072<br>niah_single_1      | 100.0       | 100.00                                    | 100.0                                                              |\n| RULER<br>seqlen = 131072<br>niah_single_2      | 100.0       | 99.80                                     | 99.80                                                               |\n| RULER<br>seqlen = 131072<br>niah_single_3      | 100.2       | 99.80                                     | 100.0                                                               |\n| RULER<br>seqlen = 131072<br>ruler_cwe          | 87.39        | 39.42                                     | 33.14                                                               |\n| RULER<br>seqlen = 131072<br>ruler_fwe          | 98.13        | 92.93                                     | 91.20                                                               |\n| RULER<br>seqlen = 131072<br>ruler_qa_hotpot    | 100.4       | 48.20                                     | 48.40                                                               |\n| RULER<br>seqlen = 131072<br>ruler_qa_squad     | 96.22        | 53.57                                     | 51.55                                                               |\n| RULER<br>seqlen = 131072<br>ruler_qa_vt        | 98.82       | 92.28                                     | 91.20                                                               |\n| **RULER<br>seqlen = 131072<br>Average Score**      | **98.16**        | **80.44**                                     | **78.96**                                                               |\n"
       language:
         - ar
         - de
@@ -2002,6 +2041,9 @@ models:
         meta:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2022,8 +2064,8 @@ models:
             string_value: "[\"RHOAI 2.20\",\"RHAIIS 3.0\",\"RHELAI 1.5\"]"
       artifacts:
         - uri: oci://registry.redhat.io/rhelai1/modelcar-llama-4-scout-17b-16e-instruct-quantized-w4a16:1.5
-          createTimeSinceEpoch: "1739776988000"
-          lastUpdateTimeSinceEpoch: "1746640711000"
+          createTimeSinceEpoch: "1754345689000"
+          lastUpdateTimeSinceEpoch: "1762766864000"
           customProperties:
             source:
                 metadataType: MetadataStringValue
@@ -2063,6 +2105,9 @@ models:
         mistral-small:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2125,6 +2170,9 @@ models:
         mistral-small:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2410,6 +2458,9 @@ models:
         mistral-small:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2475,6 +2526,9 @@ models:
         mistral-small:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         quantized:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2564,6 +2618,9 @@ models:
         mistralai:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2659,6 +2716,9 @@ models:
         mistralai:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2763,6 +2823,9 @@ models:
         mistralai:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2864,6 +2927,9 @@ models:
         mistralai:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2920,6 +2986,9 @@ models:
         mixtral:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2971,6 +3040,9 @@ models:
         llm-compressor:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         nvidia:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3048,6 +3120,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         qwen:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3131,6 +3206,9 @@ models:
         fp8:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         quantized:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3217,6 +3295,9 @@ models:
         int4:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         qwen:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3536,6 +3617,9 @@ models:
         int8:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         qwen:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3622,6 +3706,9 @@ models:
         fp8:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         qwen:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3679,6 +3766,9 @@ models:
         fp8:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         qwen:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3750,6 +3840,9 @@ models:
         fp8:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         multimodal:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3805,6 +3898,9 @@ models:
         gemma2:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4054,6 +4150,9 @@ models:
         gemma2:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4148,6 +4247,9 @@ models:
         gemma3n:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         multimodal:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4201,6 +4303,9 @@ models:
         gpt_oss:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         mxfp4:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4251,6 +4356,9 @@ models:
         gpt_oss:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         mxfp4:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4300,6 +4408,9 @@ models:
         int4:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4360,6 +4471,9 @@ models:
         language:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4417,6 +4531,9 @@ models:
         granite:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4463,6 +4580,9 @@ models:
         int4:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4506,6 +4626,9 @@ models:
         int8:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4564,6 +4687,9 @@ models:
         math:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4631,6 +4757,9 @@ models:
         math:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4705,6 +4834,9 @@ models:
         math:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4778,6 +4910,9 @@ models:
         math:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         neuralmagic:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4837,6 +4972,9 @@ models:
         int4:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4909,6 +5047,9 @@ models:
         language:
             metadataType: MetadataStringValue
             string_value: ""
+        model_type:
+            metadataType: MetadataStringValue
+            string_value: "generative"
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""

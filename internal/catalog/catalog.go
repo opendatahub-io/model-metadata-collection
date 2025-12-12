@@ -51,6 +51,11 @@ func LoadStaticCatalogs(filePaths []string) ([]types.CatalogMetadata, error) {
 			continue
 		}
 
+		// Apply default model_type to all models from this catalog
+		for i := range staticCatalog.Models {
+			applyDefaultModelType(&staticCatalog.Models[i])
+		}
+
 		// Add models from this catalog
 		allStaticModels = append(allStaticModels, staticCatalog.Models...)
 		log.Printf("  Successfully loaded %d models from %s", len(staticCatalog.Models), filePath)
@@ -252,6 +257,10 @@ func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.Cata
 			customProps["validated_on"] = createMetadataValue(string(validatedOnValue))
 		}
 	}
+
+	// Add model_type as customProperty (defaults to "generative")
+	// Note: In future, this could be extracted from modelcard metadata
+	customProps["model_type"] = createMetadataValue(types.GetDefaultModelType())
 
 	return types.CatalogMetadata{
 		Name:                     model.Name,
@@ -594,4 +603,35 @@ func mergeUniqueStrings(slice1, slice2 []string) []string {
 	}
 
 	return result
+}
+
+// applyDefaultModelType ensures that model_type is present in customProperties
+// If not present, it defaults to "generative"
+// If present, it validates the value
+func applyDefaultModelType(model *types.CatalogMetadata) {
+	if model.CustomProperties == nil {
+		model.CustomProperties = make(map[string]types.MetadataValue)
+	}
+
+	// Check if model_type already exists
+	if existingValue, exists := model.CustomProperties["model_type"]; exists {
+		// Validate the existing value
+		if err := types.ValidateModelType(existingValue.StringValue); err != nil {
+			log.Printf("  Warning: Invalid model_type %q for model %q, defaulting to %q: %v",
+				existingValue.StringValue, getModelName(model), types.GetDefaultModelType(), err)
+			model.CustomProperties["model_type"] = createMetadataValue(types.GetDefaultModelType())
+		}
+	} else {
+		// Apply default model_type
+		model.CustomProperties["model_type"] = createMetadataValue(types.GetDefaultModelType())
+		log.Printf("  Applied default model_type %q to model %q", types.GetDefaultModelType(), getModelName(model))
+	}
+}
+
+// getModelName safely retrieves the model name for logging
+func getModelName(model *types.CatalogMetadata) string {
+	if model.Name != nil {
+		return *model.Name
+	}
+	return "<unnamed>"
 }
