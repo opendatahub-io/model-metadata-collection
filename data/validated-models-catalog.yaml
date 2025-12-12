@@ -910,7 +910,7 @@ models:
         - hi
         - es
         - th
-      license: llama-3.3
+      license: llama3.3
       licenseLink: https://www.llama.com/llama3_3/license/
       tasks:
         - text-to-text
