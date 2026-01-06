@@ -153,12 +153,8 @@ func CalculateSimilarity(s1, s2 string) float64 {
 		return 1.0
 	}
 
-	// Check if one contains the other
-	if strings.Contains(s1Norm, s2Norm) || strings.Contains(s2Norm, s1Norm) {
-		return 0.8
-	}
-
 	// Count common words/tokens
+	// This provides better specificity than simple substring matching
 	s1Tokens := strings.Split(s1Norm, "-")
 	s2Tokens := strings.Split(s2Norm, "-")
 
@@ -184,7 +180,17 @@ func CalculateSimilarity(s1, s2 string) float64 {
 		return 0.0
 	}
 
-	return float64(commonTokens) / float64(maxTokens)
+	tokenScore := float64(commonTokens) / float64(maxTokens)
+
+	// Boost score if one string contains the other (indicates close relationship)
+	// but don't override token-based matching which provides better specificity
+	if strings.Contains(s1Norm, s2Norm) || strings.Contains(s2Norm, s1Norm) {
+		// Give a small boost to substring matches, but token score takes precedence
+		// This ensures more specific matches (e.g., with quantization suffix) score higher
+		return tokenScore + (1.0-tokenScore)*0.1
+	}
+
+	return tokenScore
 }
 
 // GenerateReadableDescription creates a human-readable description from a model name
