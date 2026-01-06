@@ -423,3 +423,426 @@ func TestExtractOCIArtifactsFromRegistry_NeverNil(t *testing.T) {
 		t.Errorf("Expected empty slice for invalid input, got %d artifacts", len(result))
 	}
 }
+
+// TestManifestListSchema_Parsing tests JSON unmarshaling of manifest lists
+func TestManifestListSchema_Parsing(t *testing.T) {
+	tests := []struct {
+		name                  string
+		manifestJSON          string
+		expectError           bool
+		expectedArchCount     int
+		expectedArchitectures []string
+	}{
+		{
+			name: "multi-arch manifest list",
+			manifestJSON: `{
+				"schemaVersion": 2,
+				"mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+				"manifests": [
+					{
+						"platform": {
+							"architecture": "amd64",
+							"os": "linux"
+						}
+					},
+					{
+						"platform": {
+							"architecture": "arm64",
+							"os": "linux"
+						}
+					},
+					{
+						"platform": {
+							"architecture": "s390x",
+							"os": "linux"
+						}
+					}
+				]
+			}`,
+			expectError:           false,
+			expectedArchCount:     3,
+			expectedArchitectures: []string{"amd64", "arm64", "s390x"},
+		},
+		{
+			name: "single arch in manifest list",
+			manifestJSON: `{
+				"schemaVersion": 2,
+				"mediaType": "application/vnd.oci.image.index.v1+json",
+				"manifests": [
+					{
+						"platform": {
+							"architecture": "amd64",
+							"os": "linux"
+						}
+					}
+				]
+			}`,
+			expectError:           false,
+			expectedArchCount:     1,
+			expectedArchitectures: []string{"amd64"},
+		},
+		{
+			name: "manifest with variant",
+			manifestJSON: `{
+				"schemaVersion": 2,
+				"mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+				"manifests": [
+					{
+						"platform": {
+							"architecture": "arm",
+							"os": "linux",
+							"variant": "v7"
+						}
+					}
+				]
+			}`,
+			expectError:           false,
+			expectedArchCount:     1,
+			expectedArchitectures: []string{"arm"},
+		},
+		{
+			name:         "invalid JSON",
+			manifestJSON: `{invalid json}`,
+			expectError:  true,
+		},
+		{
+			name: "empty manifests array",
+			manifestJSON: `{
+				"schemaVersion": 2,
+				"mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+				"manifests": []
+			}`,
+			expectError:       false,
+			expectedArchCount: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var manifestList ManifestListSchema
+			err := json.Unmarshal([]byte(tt.manifestJSON), &manifestList)
+
+			if tt.expectError {
+				if err == nil {
+					t.Error("Expected error but got none")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Unexpected error: %v", err)
+				return
+			}
+
+			if len(manifestList.Manifests) != tt.expectedArchCount {
+				t.Errorf("Expected %d manifests, got %d", tt.expectedArchCount, len(manifestList.Manifests))
+			}
+
+			// Verify specific architectures if provided
+			if tt.expectedArchitectures != nil {
+				for i, expectedArch := range tt.expectedArchitectures {
+					if i >= len(manifestList.Manifests) {
+						t.Errorf("Missing manifest entry for architecture %s", expectedArch)
+						continue
+					}
+					actualArch := manifestList.Manifests[i].Platform.Architecture
+					if actualArch != expectedArch {
+						t.Errorf("Manifest[%d]: expected arch %s, got %s", i, expectedArch, actualArch)
+					}
+				}
+			}
+		})
+	}
+}
+
+// TestAddArchitectureToCustomProps tests the architecture custom property addition
+func TestAddArchitectureToCustomProps(t *testing.T) {
+	tests := []struct {
+		name               string
+		imageRef           string
+		expectArchProperty bool
+		skipTest           bool
+	}{
+		{
+			name:               "valid multi-arch image",
+			imageRef:           "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0",
+			expectArchProperty: true,
+			skipTest:           true, // Integration test - requires network
+		},
+		{
+			name:               "invalid image reference",
+			imageRef:           "invalid/ref",
+			expectArchProperty: false,
+			skipTest:           false, // Can test without network
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.skipTest {
+				t.Skip("Skipping integration test that makes network calls")
+			}
+
+			customProps := make(map[string]interface{})
+			addArchitectureToCustomProps(tt.imageRef, customProps)
+
+			archProp, exists := customProps["architecture"]
+			if tt.expectArchProperty && !exists {
+				t.Error("Expected architecture property but it was not added")
+				return
+			}
+
+			if !tt.expectArchProperty && exists {
+				t.Error("Architecture property should not exist for invalid reference")
+				return
+			}
+
+			if exists {
+				// Verify structure
+				archMap, ok := archProp.(map[string]interface{})
+				if !ok {
+					t.Error("Architecture property should be a map")
+					return
+				}
+
+				// Check metadataType
+				metadataType, exists := archMap["metadataType"]
+				if !exists || metadataType != "MetadataStringValue" {
+					t.Errorf("Expected metadataType 'MetadataStringValue', got %v", metadataType)
+				}
+
+				// Check string_value
+				stringValue, exists := archMap["string_value"]
+				if !exists {
+					t.Error("Missing string_value field")
+					return
+				}
+
+				// Verify it's valid JSON array
+				stringVal, ok := stringValue.(string)
+				if !ok {
+					t.Error("string_value should be a string")
+					return
+				}
+
+				var architectures []string
+				if err := json.Unmarshal([]byte(stringVal), &architectures); err != nil {
+					t.Errorf("string_value should be valid JSON array: %v", err)
+					return
+				}
+
+				if len(architectures) == 0 {
+					t.Error("Architectures array should not be empty")
+				}
+
+				t.Logf("Found architectures: %v", architectures)
+			}
+		})
+	}
+}
+
+// TestFetchImageArchitectures tests the architecture detection function
+func TestFetchImageArchitectures(t *testing.T) {
+	t.Skip("Skipping integration test that makes network calls - should be run separately with -integration flag")
+
+	tests := []struct {
+		name           string
+		imageRef       string
+		expectError    bool
+		minArchCount   int
+		checkMultiArch bool
+	}{
+		{
+			name:           "multi-arch red hat image",
+			imageRef:       "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0",
+			expectError:    false,
+			minArchCount:   1,
+			checkMultiArch: true,
+		},
+		{
+			name:         "single-arch image",
+			imageRef:     "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct:1.5",
+			expectError:  false,
+			minArchCount: 1,
+		},
+		{
+			name:        "invalid image reference format",
+			imageRef:    "invalid/ref",
+			expectError: true,
+		},
+		{
+			name:        "non-existent image",
+			imageRef:    "registry.redhat.io/nonexistent/image:latest",
+			expectError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			architectures, err := fetchImageArchitectures(tt.imageRef)
+
+			if tt.expectError {
+				if err == nil {
+					t.Error("Expected error but got none")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Errorf("Unexpected error: %v", err)
+				return
+			}
+
+			if len(architectures) < tt.minArchCount {
+				t.Errorf("Expected at least %d architecture(s), got %d", tt.minArchCount, len(architectures))
+			}
+
+			// Verify architectures are valid strings
+			for _, arch := range architectures {
+				if arch == "" {
+					t.Error("Architecture should not be empty string")
+				}
+			}
+
+			// Check if multi-arch when expected
+			if tt.checkMultiArch && len(architectures) > 1 {
+				t.Logf("Multi-arch image found with architectures: %v", architectures)
+			}
+
+			// Verify architectures are sorted
+			for i := 1; i < len(architectures); i++ {
+				if architectures[i-1] > architectures[i] {
+					t.Error("Architectures should be sorted")
+					break
+				}
+			}
+		})
+	}
+}
+
+// TestAddArchitectureToArtifactProps tests the exported wrapper function
+func TestAddArchitectureToArtifactProps(t *testing.T) {
+	t.Skip("Skipping integration test that makes network calls - should be run separately with -integration flag")
+
+	imageRef := "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0"
+	customProps := make(map[string]interface{})
+
+	// Add some existing properties to verify they're not overwritten
+	customProps["source"] = map[string]interface{}{
+		"string_value": "registry.redhat.io",
+	}
+	customProps["type"] = map[string]interface{}{
+		"string_value": "modelcar",
+	}
+
+	AddArchitectureToArtifactProps(imageRef, customProps)
+
+	// Verify architecture was added
+	if _, exists := customProps["architecture"]; !exists {
+		t.Error("Architecture property was not added")
+	}
+
+	// Verify existing properties were not modified
+	if source, exists := customProps["source"]; exists {
+		sourceMap := source.(map[string]interface{})
+		if sourceMap["string_value"] != "registry.redhat.io" {
+			t.Error("Existing source property was modified")
+		}
+	}
+
+	if typeVal, exists := customProps["type"]; exists {
+		typeMap := typeVal.(map[string]interface{})
+		if typeMap["string_value"] != "modelcar" {
+			t.Error("Existing type property was modified")
+		}
+	}
+}
+
+// TestFetchImageArchitectures_ErrorHandling tests error cases
+func TestFetchImageArchitectures_ErrorHandling(t *testing.T) {
+	tests := []struct {
+		name     string
+		imageRef string
+	}{
+		{
+			name:     "empty string",
+			imageRef: "",
+		},
+		{
+			name:     "invalid format - single part",
+			imageRef: "image",
+		},
+		{
+			name:     "invalid format - two parts",
+			imageRef: "registry/image",
+		},
+		{
+			name:     "non-existent registry",
+			imageRef: "nonexistent.registry.example.com/test/model:1.0",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := fetchImageArchitectures(tt.imageRef)
+			if err == nil {
+				t.Error("Expected error for invalid input but got none")
+			}
+		})
+	}
+}
+
+// TestArchitectureJSONFormatting verifies JSON array formatting
+func TestArchitectureJSONFormatting(t *testing.T) {
+	tests := []struct {
+		name          string
+		architectures []string
+		expectedJSON  string
+	}{
+		{
+			name:          "single architecture",
+			architectures: []string{"amd64"},
+			expectedJSON:  `["amd64"]`,
+		},
+		{
+			name:          "multiple architectures",
+			architectures: []string{"amd64", "arm64"},
+			expectedJSON:  `["amd64","arm64"]`,
+		},
+		{
+			name:          "three architectures",
+			architectures: []string{"amd64", "arm64", "s390x"},
+			expectedJSON:  `["amd64","arm64","s390x"]`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			jsonBytes, err := json.Marshal(tt.architectures)
+			if err != nil {
+				t.Fatalf("Failed to marshal architectures: %v", err)
+			}
+
+			jsonStr := string(jsonBytes)
+			if jsonStr != tt.expectedJSON {
+				t.Errorf("JSON formatting incorrect: got %s, want %s", jsonStr, tt.expectedJSON)
+			}
+
+			// Verify it unmarshals correctly
+			var unmarshaled []string
+			if err := json.Unmarshal(jsonBytes, &unmarshaled); err != nil {
+				t.Errorf("Failed to unmarshal JSON: %v", err)
+			}
+
+			if len(unmarshaled) != len(tt.architectures) {
+				t.Errorf("Unmarshaled length mismatch: got %d, want %d", len(unmarshaled), len(tt.architectures))
+			}
+
+			for i, arch := range tt.architectures {
+				if unmarshaled[i] != arch {
+					t.Errorf("Architecture[%d]: got %s, want %s", i, unmarshaled[i], arch)
+				}
+			}
+		})
+	}
+}

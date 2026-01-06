@@ -13,6 +13,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/opendatahub-io/model-metadata-collection/internal/registry"
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
@@ -54,6 +55,11 @@ func LoadStaticCatalogs(filePaths []string) ([]types.CatalogMetadata, error) {
 		// Apply default model_type to all models from this catalog
 		for i := range staticCatalog.Models {
 			applyDefaultModelType(&staticCatalog.Models[i])
+		}
+
+		// Enrich artifacts with architecture information
+		for i := range staticCatalog.Models {
+			enrichStaticArtifactsWithArchitecture(&staticCatalog.Models[i])
 		}
 
 		// Add models from this catalog
@@ -634,4 +640,23 @@ func getModelName(model *types.CatalogMetadata) string {
 		return *model.Name
 	}
 	return "<unnamed>"
+}
+
+// enrichStaticArtifactsWithArchitecture adds architecture information to artifacts in static catalog models
+func enrichStaticArtifactsWithArchitecture(model *types.CatalogMetadata) {
+	for i := range model.Artifacts {
+		artifact := &model.Artifacts[i]
+
+		// Extract the image reference from the OCI URI
+		// Format: oci://registry.redhat.io/rhelai1/modelcar-name:tag
+		imageRef := strings.TrimPrefix(artifact.URI, "oci://")
+
+		// Add architecture information to the artifact's custom properties
+		if artifact.CustomProperties == nil {
+			artifact.CustomProperties = make(map[string]interface{})
+		}
+
+		// Use the registry package function to add architecture
+		registry.AddArchitectureToArtifactProps(imageRef, artifact.CustomProperties)
+	}
 }

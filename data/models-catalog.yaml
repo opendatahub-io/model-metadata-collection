@@ -21,6 +21,9 @@ models:
           createTimeSinceEpoch: "1739210683000"
           lastUpdateTimeSinceEpoch: "1739210683000"
           customProperties:
+            architecture:
+                metadataType: MetadataStringValue
+                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
@@ -49,6 +52,9 @@ models:
           createTimeSinceEpoch: "1739210683000"
           lastUpdateTimeSinceEpoch: "1739210683000"
           customProperties:
+            architecture:
+                metadataType: MetadataStringValue
+                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
@@ -77,6 +83,9 @@ models:
           createTimeSinceEpoch: "1739210683000"
           lastUpdateTimeSinceEpoch: "1739210683000"
           customProperties:
+            architecture:
+                metadataType: MetadataStringValue
+                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
@@ -105,6 +114,9 @@ models:
           createTimeSinceEpoch: "1739210683000"
           lastUpdateTimeSinceEpoch: "1739210683000"
           customProperties:
+            architecture:
+                metadataType: MetadataStringValue
+                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
@@ -186,6 +198,9 @@ models:
           createTimeSinceEpoch: "1739210683000"
           lastUpdateTimeSinceEpoch: "1739210683000"
           customProperties:
+            architecture:
+                metadataType: MetadataStringValue
+                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
@@ -261,6 +276,9 @@ models:
           createTimeSinceEpoch: "1739210683000"
           lastUpdateTimeSinceEpoch: "1739210683000"
           customProperties:
+            architecture:
+                metadataType: MetadataStringValue
+                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
@@ -415,6 +433,9 @@ models:
           createTimeSinceEpoch: "1743078706000"
           lastUpdateTimeSinceEpoch: "1743078706000"
           customProperties:
+            architecture:
+                metadataType: MetadataStringValue
+                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
