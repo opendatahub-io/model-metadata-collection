@@ -158,14 +158,18 @@ func CalculateSimilarity(s1, s2 string) float64 {
 	s1Tokens := strings.Split(s1Norm, "-")
 	s2Tokens := strings.Split(s2Norm, "-")
 
+	// Track which s2 tokens have been matched to ensure symmetric results
+	// Each token in s2 can only be matched once
+	usedS2 := make(map[int]bool)
 	commonTokens := 0
 	for _, token1 := range s1Tokens {
 		if token1 == "" {
 			continue
 		}
-		for _, token2 := range s2Tokens {
-			if token1 == token2 {
+		for j, token2 := range s2Tokens {
+			if token1 == token2 && !usedS2[j] {
 				commonTokens++
+				usedS2[j] = true
 				break
 			}
 		}

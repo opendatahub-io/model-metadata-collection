@@ -207,3 +207,41 @@ func TestCalculateSimilarity_SpecificMatchesBetter(t *testing.T) {
 			correctScore, wrongScore, correctScore-wrongScore, minDifference)
 	}
 }
+
+func TestCalculateSimilarity_Symmetry(t *testing.T) {
+	// Test that similarity is symmetric (swapping s1 and s2 gives same result)
+	// This ensures duplicate tokens are handled correctly
+	testCases := []struct {
+		name string
+		s1   string
+		s2   string
+	}{
+		{
+			name: "duplicate tokens in first string",
+			s1:   "llama-3-3-70b-instruct",
+			s2:   "llama-3-70b-instruct",
+		},
+		{
+			name: "duplicate tokens in second string",
+			s1:   "granite-8b-model",
+			s2:   "granite-3-1-3-8b",
+		},
+		{
+			name: "complex model names",
+			s1:   "registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct-quantized-w4a16:1.5",
+			s2:   "RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			score1 := CalculateSimilarity(tc.s1, tc.s2)
+			score2 := CalculateSimilarity(tc.s2, tc.s1)
+
+			if score1 != score2 {
+				t.Errorf("Similarity is not symmetric: CalculateSimilarity(%q, %q) = %f, but CalculateSimilarity(%q, %q) = %f",
+					tc.s1, tc.s2, score1, tc.s2, tc.s1, score2)
+			}
+		})
+	}
+}
