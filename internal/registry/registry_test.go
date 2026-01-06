@@ -519,7 +519,7 @@ func TestManifestListSchema_Parsing(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var manifestList ManifestListSchema
+			var manifestList manifestListSchema
 			err := json.Unmarshal([]byte(tt.manifestJSON), &manifestList)
 
 			if tt.expectError {

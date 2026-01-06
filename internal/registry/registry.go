@@ -9,12 +9,18 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/containers/image/v5/docker"
 	containertypes "github.com/containers/image/v5/types"
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
+
+// HTTP client with timeout for registry API calls
+var httpClient = &http.Client{
+	Timeout: 30 * time.Second,
+}
 
 // RegistryManifest represents container registry manifest metadata
 type RegistryManifest struct {
@@ -50,8 +56,8 @@ func parseRegistryImageRef(imageRef string) (registry, repository, imageName, ta
 	return registry, repository, imageName, tag, nil
 }
 
-// ManifestListEntry represents an entry in a Docker/OCI manifest list
-type ManifestListEntry struct {
+// manifestListEntry represents an entry in a Docker/OCI manifest list
+type manifestListEntry struct {
 	Platform struct {
 		Architecture string `json:"architecture"`
 		OS           string `json:"os"`
@@ -59,11 +65,11 @@ type ManifestListEntry struct {
 	} `json:"platform"`
 }
 
-// ManifestListSchema represents a Docker/OCI manifest list
-type ManifestListSchema struct {
+// manifestListSchema represents a Docker/OCI manifest list
+type manifestListSchema struct {
 	SchemaVersion int                 `json:"schemaVersion"`
 	MediaType     string              `json:"mediaType"`
-	Manifests     []ManifestListEntry `json:"manifests"`
+	Manifests     []manifestListEntry `json:"manifests"`
 }
 
 // fetchImageArchitectures inspects an OCI image reference and returns all supported architectures
@@ -77,8 +83,11 @@ func fetchImageArchitectures(imageRef string) ([]string, error) {
 	// Create a system context
 	sys := &containertypes.SystemContext{}
 
+	// Create a context with timeout for registry operations
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	// Create an image source to access the raw manifest
-	ctx := context.Background()
 	src, err := ref.NewImageSource(ctx, sys)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create image source: %v", err)
@@ -95,13 +104,11 @@ func fetchImageArchitectures(imageRef string) ([]string, error) {
 
 	// Check if it's a manifest list (indicated by specific MIME types)
 	isManifestList := strings.Contains(manifestMIMEType, "manifest.list") ||
-		strings.Contains(manifestMIMEType, "image.index") ||
-		manifestMIMEType == "application/vnd.docker.distribution.manifest.list.v2+json" ||
-		manifestMIMEType == "application/vnd.oci.image.index.v1+json"
+		strings.Contains(manifestMIMEType, "image.index")
 
 	if isManifestList {
 		// Parse as manifest list to extract platform information
-		var manifestList ManifestListSchema
+		var manifestList manifestListSchema
 		if err := json.Unmarshal(manifestBytes, &manifestList); err != nil {
 			return nil, fmt.Errorf("failed to parse manifest list: %v", err)
 		}
@@ -153,24 +160,26 @@ func fetchImageArchitectures(imageRef string) ([]string, error) {
 }
 
 // AddArchitectureToArtifactProps fetches architectures and adds them to artifact custom properties (exported)
-func AddArchitectureToArtifactProps(imageRef string, customProps map[string]interface{}) {
-	addArchitectureToCustomProps(imageRef, customProps)
+// Returns true if architecture was successfully added, false otherwise.
+func AddArchitectureToArtifactProps(imageRef string, customProps map[string]interface{}) bool {
+	return addArchitectureToCustomProps(imageRef, customProps)
 }
 
 // addArchitectureToCustomProps fetches architectures and adds them to custom properties
-func addArchitectureToCustomProps(imageRef string, customProps map[string]interface{}) {
+// Returns true if architecture was successfully added, false otherwise.
+func addArchitectureToCustomProps(imageRef string, customProps map[string]interface{}) bool {
 	// Fetch architectures from the image
 	architectures, err := fetchImageArchitectures(imageRef)
 	if err != nil {
 		log.Printf("Warning: Failed to fetch architectures for %s: %v", imageRef, err)
-		return
+		return false
 	}
 
 	// Marshal architectures to JSON array format
 	archJSON, err := json.Marshal(architectures)
 	if err != nil {
 		log.Printf("Warning: Failed to marshal architectures for %s: %v", imageRef, err)
-		return
+		return false
 	}
 
 	// Add architecture to custom properties in the required format
@@ -178,6 +187,7 @@ func addArchitectureToCustomProps(imageRef string, customProps map[string]interf
 		"metadataType": "MetadataStringValue",
 		"string_value": string(archJSON),
 	}
+	return true
 }
 
 // FetchRegistryMetadata fetches OCI artifact metadata from registry API
@@ -196,7 +206,7 @@ func FetchRegistryMetadata(imageRef string) (*types.OCIArtifact, error) {
 		// Try to fetch manifest via registry API v2
 		manifestURL := fmt.Sprintf("https://%s/v2/%s/%s/manifests/%s", registry, repository, imageName, tag)
 
-		resp, err := http.Get(manifestURL)
+		resp, err := httpClient.Get(manifestURL)
 		if err != nil {
 			// If we can't fetch from API, create artifact with nil timestamps
 			customProps := map[string]interface{}{
