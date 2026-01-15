@@ -117,11 +117,16 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 		}
 
 		if shouldOverrideName {
-			nameStr := enrichedData.Name.Value.(string)
-			existingMetadata.Name = &nameStr
-			log.Printf("  Updated model name to: %s (source: %s)", nameStr, enrichedData.Name.Source)
+			if enrichedData.Name.Value != nil {
+				if nameStr, ok := enrichedData.Name.Value.(string); ok {
+					existingMetadata.Name = &nameStr
+					enrichmentInfo.DataSources.Name = enrichedData.Name.Source
+					log.Printf("  Updated model name to: %s (source: %s)", nameStr, enrichedData.Name.Source)
+				}
+			}
+		} else {
+			enrichmentInfo.DataSources.Name = enrichedData.Name.Source
 		}
-		enrichmentInfo.DataSources.Name = enrichedData.Name.Source
 	}
 
 	if enrichedData.Provider.Source != "null" {

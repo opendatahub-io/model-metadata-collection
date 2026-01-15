@@ -407,6 +407,11 @@ base_model:
 					t.Errorf("Expected %d base models, got %d", len(expectedModels), len(fm.BaseModel))
 					return
 				}
+				for i, expected := range expectedModels {
+					if fm.BaseModel[i] != expected {
+						t.Errorf("BaseModel[%d]: expected %q, got %q", i, expected, fm.BaseModel[i])
+					}
+				}
 			},
 		},
 		{
