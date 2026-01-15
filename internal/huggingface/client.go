@@ -262,14 +262,14 @@ func (s *stringSlice) UnmarshalYAML(value *yaml.Node) error {
 		*s = out
 		return nil
 	default:
-		return fmt.Errorf("validated_on: unsupported YAML node kind %v", value.Kind)
+		return fmt.Errorf("stringSlice: unsupported YAML node kind %v", value.Kind)
 	}
 }
 
 // YAMLFrontmatter represents the YAML frontmatter in HuggingFace README files
 type YAMLFrontmatter struct {
-	Language    []string    `yaml:"language"`
-	BaseModel   []string    `yaml:"base_model"`
+	Language    stringSlice `yaml:"language"`
+	BaseModel   stringSlice `yaml:"base_model"`
 	PipelineTag string      `yaml:"pipeline_tag"`
 	License     string      `yaml:"license"`
 	LicenseName string      `yaml:"license_name"`

@@ -386,7 +386,8 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 
 					// Always use language from HuggingFace YAML frontmatter (highest priority)
 					if len(frontmatter.Language) > 0 {
-						enriched.Language = metadata.CreateMetadataSource(frontmatter.Language, "huggingface.yaml")
+						// Convert to []string to ensure type compatibility
+						enriched.Language = metadata.CreateMetadataSource([]string(frontmatter.Language), "huggingface.yaml")
 						log.Printf("  Found languages in YAML frontmatter: %v", frontmatter.Language)
 					}
 

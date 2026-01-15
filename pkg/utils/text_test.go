@@ -5,6 +5,79 @@ import (
 	"testing"
 )
 
+func TestStripYAMLFrontmatter(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "content with frontmatter",
+			input:    "---\nlicense: apache-2.0\ntags:\n  - llm\n---\n## Model Overview\nThis is the content.",
+			expected: "## Model Overview\nThis is the content.",
+		},
+		{
+			name:     "content without frontmatter",
+			input:    "## Model Overview\nThis is the content.",
+			expected: "## Model Overview\nThis is the content.",
+		},
+		{
+			name:     "empty string",
+			input:    "",
+			expected: "",
+		},
+		{
+			name:     "only frontmatter",
+			input:    "---\nlicense: apache-2.0\n---",
+			expected: "",
+		},
+		{
+			name:     "frontmatter with leading newlines after",
+			input:    "---\nlicense: apache-2.0\n---\n\n\n## Content",
+			expected: "## Content",
+		},
+		{
+			name:     "malformed frontmatter no closing",
+			input:    "---\nlicense: apache-2.0\nno closing marker",
+			expected: "---\nlicense: apache-2.0\nno closing marker",
+		},
+		{
+			name:     "frontmatter with whitespace before",
+			input:    "  ---\nlicense: apache-2.0\n---\n## Content",
+			expected: "## Content",
+		},
+		{
+			name:     "content with triple dashes in body",
+			input:    "---\nlicense: apache-2.0\n---\n## Content\nSome text --- with dashes --- here",
+			expected: "## Content\nSome text --- with dashes --- here",
+		},
+		{
+			name:     "only single triple dash",
+			input:    "---",
+			expected: "---",
+		},
+		{
+			name:     "whitespace only content after frontmatter",
+			input:    "---\nlicense: apache-2.0\n---\n   \n   ",
+			expected: "   \n   ",
+		},
+		{
+			name:     "nested yaml-like content after frontmatter",
+			input:    "---\nlicense: apache-2.0\n---\n## Code Example\n```yaml\nname: test\n---\nvalue: 123\n```",
+			expected: "## Code Example\n```yaml\nname: test\n---\nvalue: 123\n```",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := StripYAMLFrontmatter(tt.input)
+			if result != tt.expected {
+				t.Errorf("StripYAMLFrontmatter() = %q, expected %q", result, tt.expected)
+			}
+		})
+	}
+}
+
 func TestParseLanguageNames(t *testing.T) {
 	tests := []struct {
 		name     string

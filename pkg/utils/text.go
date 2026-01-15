@@ -8,6 +8,50 @@ import (
 	"golang.org/x/text/language"
 )
 
+// StripYAMLFrontmatter removes YAML frontmatter from markdown content.
+// YAML frontmatter is the section between --- markers at the start of the content.
+// Returns the content without the frontmatter, preserving the rest of the markdown.
+func StripYAMLFrontmatter(content string) string {
+	if content == "" {
+		return ""
+	}
+
+	// Check if content starts with YAML frontmatter (---)
+	trimmed := strings.TrimSpace(content)
+	if !strings.HasPrefix(trimmed, "---") {
+		return content
+	}
+
+	// Find the end of the frontmatter
+	lines := strings.Split(content, "\n")
+	startIndex := -1
+	endIndex := -1
+
+	for i, line := range lines {
+		trimmedLine := strings.TrimSpace(line)
+		if trimmedLine == "---" {
+			if startIndex == -1 {
+				startIndex = i
+			} else {
+				endIndex = i
+				break
+			}
+		}
+	}
+
+	// If we found both start and end markers, strip the frontmatter
+	if startIndex != -1 && endIndex != -1 && endIndex > startIndex {
+		// Return everything after the closing ---
+		remainingLines := lines[endIndex+1:]
+		result := strings.Join(remainingLines, "\n")
+		// Trim leading whitespace but preserve the content structure
+		return strings.TrimLeft(result, "\n")
+	}
+
+	// If frontmatter is malformed, return original content
+	return content
+}
+
 // parseLanguageNames converts language names to locale codes
 func ParseLanguageNames(langStr string) []string {
 	// Language name to locale code mapping

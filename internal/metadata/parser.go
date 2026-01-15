@@ -11,6 +11,46 @@ import (
 	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
 
+// Package-level compiled regex patterns for performance
+var (
+	// Code block and title extraction
+	codeBlockRegex = regexp.MustCompile("(?s)```.*?```")
+	titleRegex     = regexp.MustCompile(`(?m)^#\s+(.+)$`)
+
+	// Model name pattern matching
+	versionNumberRegex = regexp.MustCompile(`\d+[.-]\d+`)
+	modelTypeRegex     = regexp.MustCompile(`(?i)(instruct|base|quantized|fp8|w\d+a\d+)`)
+
+	// Provider extraction patterns
+	providerPatterns = []*regexp.Regexp{
+		regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:Model Developers?|Developers?|Author|Provider|Authors?):\*?\*?\s*(.+)$`),
+		regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:Developed by|Created by|Made by):\*?\*?\s*(.+)$`),
+		regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:Company|Organization|Team):\*?\*?\s*(.+)$`),
+	}
+	companyRegex = regexp.MustCompile(`(?i)(IBM|Microsoft|Meta|Google|OpenAI|Anthropic|Mistral|Neural Magic|Red Hat|Hugging Face|Facebook)\s+(?:Research|AI|Inc\.?|Corporation|Corp\.?)?`)
+
+	// Description extraction
+	overviewRegex     = regexp.MustCompile(`(?i)(?:## Model Overview|## Overview)\s*\n((?:[^\n]+\n)*?)(?:\n##|\n#|$)`)
+	descInOverviewRe  = regexp.MustCompile(`(?i)(?:^|\n)\s*(.+?(?:model|quantized version|intended for).{20,200}?)(?:\n|$)`)
+	descFallbackRegex = regexp.MustCompile(`(?s)^#[^\n]+\n\n([^\n#]+(?:\n[^\n#]+)*?)(?:\n\n|\n#|$)`)
+
+	// License extraction
+	licenseRegex     = regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:License(?:\(s\))?|Licensing):\*?\*?\s*(?:\[([^\]]+)\]|\*?([A-Za-z0-9\.\-_]+)\*?)`)
+	licenseLinkRegex = regexp.MustCompile(`(?i)(?:license|licensing)[^\(]*\((https?://[^\)]+)\)`)
+
+	// Date extraction
+	releaseDateRegex = regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:Release Date|Date):\*?\*?\s*([0-9]{1,2}[\/\-][0-9]{1,2}[\/\-][0-9]{4})`)
+	versionRegex     = regexp.MustCompile(`(?i)^-?\s*\*?\*?Version:\*?\*?\s*([0-9]+\.[0-9]+(?:\.[0-9]+)?)`)
+	updateDateRegex  = regexp.MustCompile(`(?i)(?:updated?|modified|last\s+update).*?([0-9]{1,2}[\/\-][0-9]{1,2}[\/\-][0-9]{4})`)
+
+	// Task extraction
+	taskRegex = regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:Intended Use Cases?|Tasks?):\*?\*?\s*(.+)$`)
+
+	// Language extraction
+	supportedLangsRegex = regexp.MustCompile(`(?i)(?:(?:supported\s+languages?|languages?\s+supported):\s*([^.\n]+)|supports\s+\d+\s+languages?\s+in\s+addition\s+to\s+English:\s*([^.]+))`)
+	langFallbackRegex   = regexp.MustCompile(`(?i)(?:language|languages?).*?(?:in\s+)?([A-Z][a-z]+(?:\s+and\s+[A-Z][a-z]+)*)`)
+)
+
 // stringSlice is a helper type that can unmarshal from either a YAML scalar or sequence
 type stringSlice []string
 
@@ -235,29 +275,43 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 	}
 
 	// Extract name from title - look for model-like headings, not code examples
-	titleRegex := regexp.MustCompile(`(?m)^#\s+(.+)$`)
-	titleMatches := titleRegex.FindAllStringSubmatch(contentStr, -1)
+	// First, remove code blocks to avoid matching Python comments inside them
+	contentWithoutCode := codeBlockRegex.ReplaceAllString(contentStr, "")
+
+	titleMatches := titleRegex.FindAllStringSubmatch(contentWithoutCode, -1)
 
 	for _, titleMatch := range titleMatches {
 		name := utils.CleanExtractedValue(titleMatch[1])
-		// Skip obvious code examples, function definitions, or generic headings
-		if strings.Contains(strings.ToLower(name), "define") ||
-			strings.Contains(strings.ToLower(name), "function") ||
-			strings.Contains(strings.ToLower(name), "tool") ||
-			strings.Contains(strings.ToLower(name), "example") ||
+		nameLower := strings.ToLower(name)
+		// Skip obvious code examples, function definitions, generic headings, or code comments
+		if strings.Contains(nameLower, "define") ||
+			strings.Contains(nameLower, "function") ||
+			strings.Contains(nameLower, "tool") ||
+			strings.Contains(nameLower, "example") ||
+			strings.Contains(nameLower, "modify") ||
+			strings.Contains(nameLower, "api key") ||
+			strings.Contains(nameLower, "openai") ||
+			strings.Contains(nameLower, "todo") ||
+			strings.Contains(nameLower, "note:") ||
+			strings.Contains(nameLower, "warning:") ||
 			strings.Contains(name, "(") ||
-			strings.Contains(name, "def ") {
+			strings.Contains(name, "def ") ||
+			strings.Contains(name, "=") ||
+			len(name) > 80 {
 			continue
 		}
 		// Look for model name patterns (contains model-like terms or version numbers)
-		if (strings.Contains(strings.ToLower(name), "model") ||
-			strings.Contains(strings.ToLower(name), "llama") ||
-			strings.Contains(strings.ToLower(name), "granite") ||
-			strings.Contains(strings.ToLower(name), "mistral") ||
-			strings.Contains(strings.ToLower(name), "qwen") ||
-			strings.Contains(strings.ToLower(name), "phi") ||
-			regexp.MustCompile(`\d+[.-]\d+`).MatchString(name) ||
-			regexp.MustCompile(`(?i)(instruct|base|quantized|fp8|w\d+a\d+)`).MatchString(name)) &&
+		if (strings.Contains(nameLower, "model") ||
+			strings.Contains(nameLower, "llama") ||
+			strings.Contains(nameLower, "granite") ||
+			strings.Contains(nameLower, "mistral") ||
+			strings.Contains(nameLower, "qwen") ||
+			strings.Contains(nameLower, "phi") ||
+			strings.Contains(nameLower, "gemma") ||
+			strings.Contains(nameLower, "apertus") ||
+			strings.Contains(nameLower, "nemotron") ||
+			versionNumberRegex.MatchString(name) ||
+			modelTypeRegex.MatchString(name)) &&
 			utils.IsValidValue(name, 3, 100, nil) {
 			metadata.Name = &name
 			break
@@ -266,15 +320,8 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 
 	// Extract provider/developers from structured fields - enhanced patterns
 	for _, line := range lines {
-		// Try multiple provider patterns
-		patterns := []string{
-			`(?i)^-?\s*\*?\*?(?:Model Developers?|Developers?|Author|Provider|Authors?):\*?\*?\s*(.+)$`,
-			`(?i)^-?\s*\*?\*?(?:Developed by|Created by|Made by):\*?\*?\s*(.+)$`,
-			`(?i)^-?\s*\*?\*?(?:Company|Organization|Team):\*?\*?\s*(.+)$`,
-		}
-
-		for _, pattern := range patterns {
-			if providerMatch := regexp.MustCompile(pattern).FindStringSubmatch(line); providerMatch != nil {
+		for _, pattern := range providerPatterns {
+			if providerMatch := pattern.FindStringSubmatch(line); providerMatch != nil {
 				provider := utils.CleanExtractedValue(providerMatch[1])
 				// More lenient validation for provider names
 				if utils.IsValidValue(provider, 2, 100, []string{`^[A-Za-z0-9\s\\.&,\-()]+$`}) {
@@ -291,7 +338,6 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 	// Additional provider extraction from model cards that mention well-known companies
 	if metadata.Provider == nil {
 		// Look for company mentions in first few paragraphs
-		companyRegex := regexp.MustCompile(`(?i)(IBM|Microsoft|Meta|Google|OpenAI|Anthropic|Mistral|Neural Magic|Red Hat|Hugging Face|Facebook)\s+(?:Research|AI|Inc\.?|Corporation|Corp\.?)?`)
 		if companyMatch := companyRegex.FindStringSubmatch(contentStr); companyMatch != nil {
 			company := strings.TrimSpace(companyMatch[0])
 			metadata.Provider = &company
@@ -299,11 +345,10 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 	}
 
 	// Extract description from Model Overview or first paragraph after title
-	overviewRegex := regexp.MustCompile(`(?i)(?:## Model Overview|## Overview)\s*\n((?:[^\n]+\n)*?)(?:\n##|\n#|$)`)
 	if overviewMatch := overviewRegex.FindStringSubmatch(contentStr); overviewMatch != nil {
 		// Look for description in overview section
 		overviewText := overviewMatch[1]
-		if descMatch := regexp.MustCompile(`(?i)(?:^|\n)\s*(.+?(?:model|quantized version|intended for).{20,200}?)(?:\n|$)`).FindStringSubmatch(overviewText); descMatch != nil {
+		if descMatch := descInOverviewRe.FindStringSubmatch(overviewText); descMatch != nil {
 			desc := utils.CleanExtractedValue(descMatch[1])
 			if utils.IsValidValue(desc, 20, 500, nil) {
 				metadata.Description = &desc
@@ -313,8 +358,7 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 
 	// Fallback: first paragraph after title
 	if metadata.Description == nil {
-		descRegex := regexp.MustCompile(`(?s)^#[^\n]+\n\n([^\n#]+(?:\n[^\n#]+)*?)(?:\n\n|\n#|$)`)
-		if descMatch := descRegex.FindStringSubmatch(contentStr); descMatch != nil {
+		if descMatch := descFallbackRegex.FindStringSubmatch(contentStr); descMatch != nil {
 			desc := utils.CleanExtractedValue(descMatch[1])
 			if utils.IsValidValue(desc, 20, 500, nil) {
 				metadata.Description = &desc
@@ -330,16 +374,16 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 		}
 	}
 
-	// Readme is the full content
+	// Readme is the content without YAML frontmatter
 	if len(content) > 0 {
-		readme := string(content)
+		readme := utils.StripYAMLFrontmatter(string(content))
 		metadata.Readme = &readme
 	}
 
 	// Extract license from structured fields (only if not already set by YAML frontmatter)
 	if metadata.License == nil {
 		for _, line := range lines {
-			if licenseMatch := regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:License(?:\(s\))?|Licensing):\*?\*?\s*(?:\[([^\]]+)\]|\*?([A-Za-z0-9\.\-_]+)\*?)`).FindStringSubmatch(line); licenseMatch != nil {
+			if licenseMatch := licenseRegex.FindStringSubmatch(line); licenseMatch != nil {
 				var license string
 				if licenseMatch[1] != "" {
 					license = utils.CleanExtractedValue(licenseMatch[1])
@@ -360,7 +404,6 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 
 	// Extract license link (only if not already set by YAML frontmatter)
 	if metadata.LicenseLink == nil {
-		licenseLinkRegex := regexp.MustCompile(`(?i)(?:license|licensing)[^\(]*\((https?://[^\)]+)\)`)
 		if linkMatch := licenseLinkRegex.FindStringSubmatch(contentStr); linkMatch != nil {
 			link := strings.TrimSpace(linkMatch[1])
 			if utils.IsValidValue(link, 10, 200, []string{`^https?://`}) {
@@ -371,7 +414,7 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 
 	// Extract release date from structured fields and convert to epoch
 	for _, line := range lines {
-		if dateMatch := regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:Release Date|Date):\*?\*?\s*([0-9]{1,2}[\/\-][0-9]{1,2}[\/\-][0-9]{4})`).FindStringSubmatch(line); dateMatch != nil {
+		if dateMatch := releaseDateRegex.FindStringSubmatch(line); dateMatch != nil {
 			if epoch := utils.ParseDateToEpoch(dateMatch[1]); epoch != nil {
 				metadata.CreateTimeSinceEpoch = epoch
 				break
@@ -381,7 +424,7 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 
 	// Extract version from structured fields and convert version date to epoch if possible
 	for _, line := range lines {
-		if versionMatch := regexp.MustCompile(`(?i)^-?\s*\*?\*?Version:\*?\*?\s*([0-9]+\.[0-9]+(?:\.[0-9]+)?)`).FindStringSubmatch(line); versionMatch != nil {
+		if versionMatch := versionRegex.FindStringSubmatch(line); versionMatch != nil {
 			// For version numbers, we'll look for any associated date in the same section
 			// If no date is found associated with version, we'll leave it null
 			// This is because version numbers alone don't represent epoch timestamps
@@ -390,7 +433,6 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 	}
 
 	// Look for any update/modification dates in the content
-	updateDateRegex := regexp.MustCompile(`(?i)(?:updated?|modified|last\s+update).*?([0-9]{1,2}[\/\-][0-9]{1,2}[\/\-][0-9]{4})`)
 	if updateMatch := updateDateRegex.FindStringSubmatch(contentStr); updateMatch != nil {
 		if epoch := utils.ParseDateToEpoch(updateMatch[1]); epoch != nil {
 			metadata.LastUpdateTimeSinceEpoch = epoch
@@ -400,7 +442,7 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 	// Extract intended use cases/tasks from structured fields (only if not already set by YAML frontmatter)
 	if len(metadata.Tasks) == 0 {
 		for _, line := range lines {
-			if taskMatch := regexp.MustCompile(`(?i)^-?\s*\*?\*?(?:Intended Use Cases?|Tasks?):\*?\*?\s*(.+)$`).FindStringSubmatch(line); taskMatch != nil {
+			if taskMatch := taskRegex.FindStringSubmatch(line); taskMatch != nil {
 				taskStr := utils.CleanExtractedValue(taskMatch[1])
 				if utils.IsValidValue(taskStr, 5, 200, nil) {
 					// Use smarter splitting that preserves URLs and markdown links
@@ -423,7 +465,6 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 
 	// Extract language from supported languages sections (only if not already set by YAML frontmatter)
 	if len(metadata.Language) == 0 {
-		supportedLangsRegex := regexp.MustCompile(`(?i)(?:(?:supported\s+languages?|languages?\s+supported):\s*([^.\n]+)|supports\s+\d+\s+languages?\s+in\s+addition\s+to\s+English:\s*([^.]+))`)
 		if langMatch := supportedLangsRegex.FindStringSubmatch(contentStr); langMatch != nil {
 			var langStr string
 			if langMatch[1] != "" {
@@ -438,7 +479,7 @@ func ExtractMetadataValues(content []byte) types.ExtractedMetadata {
 		} else {
 			// Fallback: Extract language from other structured fields
 			for _, line := range lines {
-				if langMatch := regexp.MustCompile(`(?i)(?:language|languages?).*?(?:in\s+)?([A-Z][a-z]+(?:\s+and\s+[A-Z][a-z]+)*)`).FindStringSubmatch(line); langMatch != nil {
+				if langMatch := langFallbackRegex.FindStringSubmatch(line); langMatch != nil {
 					langStr := utils.CleanExtractedValue(langMatch[1])
 					languages := utils.ParseLanguageNames(langStr)
 					if len(languages) > 0 {

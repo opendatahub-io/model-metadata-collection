@@ -245,6 +245,214 @@ func TestLoadModelsFromVersionIndex_InvalidYAML(t *testing.T) {
 	}
 }
 
+func TestStringSliceUnmarshalYAML(t *testing.T) {
+	tests := []struct {
+		name     string
+		yaml     string
+		expected []string
+	}{
+		{
+			name:     "single scalar value",
+			yaml:     "value: en",
+			expected: []string{"en"},
+		},
+		{
+			name:     "sequence of values",
+			yaml:     "value:\n  - en\n  - es\n  - fr",
+			expected: []string{"en", "es", "fr"},
+		},
+		{
+			name:     "empty scalar",
+			yaml:     "value: ''",
+			expected: nil,
+		},
+		{
+			name:     "whitespace only scalar",
+			yaml:     "value: '   '",
+			expected: nil,
+		},
+		{
+			name:     "sequence with duplicates",
+			yaml:     "value:\n  - en\n  - en\n  - es",
+			expected: []string{"en", "es"},
+		},
+		{
+			name:     "sequence with empty strings",
+			yaml:     "value:\n  - en\n  - ''\n  - es",
+			expected: []string{"en", "es"},
+		},
+		{
+			name:     "scalar with whitespace",
+			yaml:     "value: '  en  '",
+			expected: []string{"en"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var result struct {
+				Value stringSlice `yaml:"value"`
+			}
+			err := yaml.Unmarshal([]byte(tt.yaml), &result)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+
+			if len(result.Value) != len(tt.expected) {
+				t.Errorf("Expected %v, got %v", tt.expected, result.Value)
+				return
+			}
+
+			for i, v := range tt.expected {
+				if result.Value[i] != v {
+					t.Errorf("Expected value[%d] = %s, got %s", i, v, result.Value[i])
+				}
+			}
+		})
+	}
+}
+
+func TestExtractYAMLFrontmatter(t *testing.T) {
+	tests := []struct {
+		name        string
+		content     string
+		expectError bool
+		checkFields func(t *testing.T, fm *YAMLFrontmatter)
+	}{
+		{
+			name:        "empty content",
+			content:     "",
+			expectError: true,
+		},
+		{
+			name:        "no frontmatter",
+			content:     "# Model Name\nSome content",
+			expectError: true,
+		},
+		{
+			name:        "malformed frontmatter no closing",
+			content:     "---\nlicense: apache-2.0\nno closing",
+			expectError: true,
+		},
+		{
+			name: "valid frontmatter with scalar language",
+			content: `---
+language: en
+license: apache-2.0
+---
+# Model content`,
+			expectError: false,
+			checkFields: func(t *testing.T, fm *YAMLFrontmatter) {
+				if len(fm.Language) != 1 || fm.Language[0] != "en" {
+					t.Errorf("Expected language [en], got %v", fm.Language)
+				}
+				if fm.License != "apache-2.0" {
+					t.Errorf("Expected license apache-2.0, got %s", fm.License)
+				}
+			},
+		},
+		{
+			name: "valid frontmatter with sequence language",
+			content: `---
+language:
+  - en
+  - es
+  - fr
+provider: NVIDIA
+---
+# Model content`,
+			expectError: false,
+			checkFields: func(t *testing.T, fm *YAMLFrontmatter) {
+				expectedLangs := []string{"en", "es", "fr"}
+				if len(fm.Language) != len(expectedLangs) {
+					t.Errorf("Expected %d languages, got %d", len(expectedLangs), len(fm.Language))
+					return
+				}
+				for i, lang := range expectedLangs {
+					if fm.Language[i] != lang {
+						t.Errorf("Expected language[%d] = %s, got %s", i, lang, fm.Language[i])
+					}
+				}
+				if fm.Provider != "NVIDIA" {
+					t.Errorf("Expected provider NVIDIA, got %s", fm.Provider)
+				}
+			},
+		},
+		{
+			name: "frontmatter with scalar base_model",
+			content: `---
+base_model: meta-llama/Llama-3.1-8B-Instruct
+license: llama3
+---
+# Model content`,
+			expectError: false,
+			checkFields: func(t *testing.T, fm *YAMLFrontmatter) {
+				if len(fm.BaseModel) != 1 || fm.BaseModel[0] != "meta-llama/Llama-3.1-8B-Instruct" {
+					t.Errorf("Expected base_model [meta-llama/Llama-3.1-8B-Instruct], got %v", fm.BaseModel)
+				}
+			},
+		},
+		{
+			name: "frontmatter with sequence base_model",
+			content: `---
+base_model:
+  - meta-llama/Llama-3.1-8B-Instruct
+  - RedHatAI/granite-3.1-8b
+---
+# Model content`,
+			expectError: false,
+			checkFields: func(t *testing.T, fm *YAMLFrontmatter) {
+				expectedModels := []string{"meta-llama/Llama-3.1-8B-Instruct", "RedHatAI/granite-3.1-8b"}
+				if len(fm.BaseModel) != len(expectedModels) {
+					t.Errorf("Expected %d base models, got %d", len(expectedModels), len(fm.BaseModel))
+					return
+				}
+			},
+		},
+		{
+			name: "frontmatter with validated_on",
+			content: `---
+license: apache-2.0
+validated_on:
+  - RHOAI 2.20
+  - RHAIIS 3.0
+---
+# Model content`,
+			expectError: false,
+			checkFields: func(t *testing.T, fm *YAMLFrontmatter) {
+				expectedValidated := []string{"RHOAI 2.20", "RHAIIS 3.0"}
+				if len(fm.ValidatedOn) != len(expectedValidated) {
+					t.Errorf("Expected %d validated_on entries, got %d", len(expectedValidated), len(fm.ValidatedOn))
+					return
+				}
+				for i, val := range expectedValidated {
+					if fm.ValidatedOn[i] != val {
+						t.Errorf("Expected validated_on[%d] = %s, got %s", i, val, fm.ValidatedOn[i])
+					}
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fm, err := ExtractYAMLFrontmatter(tt.content)
+			if tt.expectError {
+				if err == nil {
+					t.Errorf("Expected error but got none")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+			if tt.checkFields != nil {
+				tt.checkFields(t, fm)
+			}
+		})
+	}
+}
+
 func TestExtractProviderFromReadme(t *testing.T) {
 	tests := []struct {
 		name     string

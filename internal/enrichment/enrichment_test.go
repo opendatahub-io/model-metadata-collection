@@ -375,3 +375,119 @@ func TestUpdateOCIArtifacts_InvalidModel(t *testing.T) {
 		t.Error("Expected error for invalid model reference")
 	}
 }
+
+func TestIsLowQualityModelName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		// Low quality names (should return true)
+		{
+			name:     "empty string",
+			input:    "",
+			expected: true,
+		},
+		{
+			name:     "contains model card",
+			input:    "Model Card - Test",
+			expected: true,
+		},
+		{
+			name:     "contains readme",
+			input:    "README for the model",
+			expected: true,
+		},
+		{
+			name:     "contains documentation",
+			input:    "Documentation page",
+			expected: true,
+		},
+		{
+			name:     "ends with card",
+			input:    "Test Card",
+			expected: true,
+		},
+		{
+			name:     "contains modify (code comment artifact)",
+			input:    "Modify OpenAI's API key in the code above",
+			expected: true,
+		},
+		{
+			name:     "contains api key",
+			input:    "Set your API key here",
+			expected: true,
+		},
+		{
+			name:     "contains openai",
+			input:    "OpenAI compatible setup",
+			expected: true,
+		},
+		{
+			name:     "contains example",
+			input:    "Example usage instructions",
+			expected: true,
+		},
+		{
+			name:     "contains todo",
+			input:    "TODO: add documentation",
+			expected: true,
+		},
+		{
+			name:     "contains note:",
+			input:    "note: this is a test",
+			expected: true,
+		},
+		{
+			name:     "contains warning:",
+			input:    "warning: do not use in production",
+			expected: true,
+		},
+		{
+			name:     "excessively long name",
+			input:    "This is a very long model name that exceeds the maximum allowed length and should be considered low quality",
+			expected: true,
+		},
+
+		// Good quality names (should return false)
+		{
+			name:     "simple model name",
+			input:    "Llama-3.1-8B-Instruct",
+			expected: false,
+		},
+		{
+			name:     "huggingface format model name",
+			input:    "RedHatAI/granite-3.1-8b-base",
+			expected: false,
+		},
+		{
+			name:     "quantized model name",
+			input:    "Meta-Llama-3.1-8B-Instruct-quantized.w4a16",
+			expected: false,
+		},
+		{
+			name:     "fp8 dynamic model name",
+			input:    "granite-3.1-8b-base-FP8-dynamic",
+			expected: false,
+		},
+		{
+			name:     "short reasonable name",
+			input:    "Test Model v1.0",
+			expected: false,
+		},
+		{
+			name:     "name with version number",
+			input:    "Phi-3.5-mini-instruct",
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := isLowQualityModelName(tt.input)
+			if result != tt.expected {
+				t.Errorf("isLowQualityModelName(%q) = %v, expected %v", tt.input, result, tt.expected)
+			}
+		})
+	}
+}

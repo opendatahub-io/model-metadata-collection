@@ -14,6 +14,43 @@ import (
 	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
 
+// isLowQualityModelName checks if a name appears to be a document title,
+// code comment, or other non-model name that should be overridden.
+// Returns true if the name is low quality and should be replaced.
+func isLowQualityModelName(name string) bool {
+	if name == "" {
+		return true
+	}
+
+	nameLower := strings.ToLower(name)
+
+	// Check for document-like titles
+	if strings.Contains(nameLower, "model card") ||
+		strings.Contains(nameLower, "readme") ||
+		strings.Contains(nameLower, "documentation") ||
+		strings.HasSuffix(nameLower, " card") {
+		return true
+	}
+
+	// Check for code comment artifacts
+	if strings.Contains(nameLower, "modify") ||
+		strings.Contains(nameLower, "api key") ||
+		strings.Contains(nameLower, "openai") ||
+		strings.Contains(nameLower, "example") ||
+		strings.Contains(nameLower, "todo") ||
+		strings.Contains(nameLower, "note:") ||
+		strings.Contains(nameLower, "warning:") {
+		return true
+	}
+
+	// Check for excessively long names (likely paragraphs, not model names)
+	if len(name) > 60 {
+		return true
+	}
+
+	return false
+}
+
 // UpdateModelMetadataFile updates an existing metadata.yaml file with enriched data and creates separate enrichment.yaml
 func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedModelMetadata, outputDir string) error {
 	// Create sanitized directory name for the model
@@ -60,20 +97,19 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 
 	// Update metadata with enriched values and track sources in enrichment file
 	if enrichedData.Name.Source != "null" {
-		// Allow HuggingFace data to override modelcard extractions when we have high confidence
-		shouldOverrideName := existingMetadata.Name == nil
+		// Always override with HuggingFace YAML data (highest priority)
+		// For other sources, use confidence-based logic
+		shouldOverrideName := existingMetadata.Name == nil || enrichedData.Name.Source == "huggingface.yaml"
 
-		if existingMetadata.Name != nil {
-			// Override based on HuggingFace match confidence
+		if !shouldOverrideName && existingMetadata.Name != nil {
+			// Override based on HuggingFace match confidence for non-YAML sources
 			switch enrichedData.MatchConfidence {
 			case "high":
 				shouldOverrideName = true
 				log.Printf("  Overriding model name '%s' with high-confidence HuggingFace data", *existingMetadata.Name)
 			case "medium":
-				// For medium confidence, only override if the existing name looks like a document title
-				name := strings.ToLower(*existingMetadata.Name)
-				if strings.Contains(name, "model card") || strings.Contains(name, "readme") ||
-					strings.Contains(name, "documentation") || strings.HasSuffix(name, " card") {
+				// For medium confidence, override if the existing name looks like a document title or code comment
+				if isLowQualityModelName(*existingMetadata.Name) {
 					shouldOverrideName = true
 					log.Printf("  Overriding poor quality model name '%s' with medium-confidence HuggingFace data", *existingMetadata.Name)
 				}
@@ -83,6 +119,7 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 		if shouldOverrideName {
 			nameStr := enrichedData.Name.Value.(string)
 			existingMetadata.Name = &nameStr
+			log.Printf("  Updated model name to: %s (source: %s)", nameStr, enrichedData.Name.Source)
 		}
 		enrichmentInfo.DataSources.Name = enrichedData.Name.Source
 	}
@@ -294,7 +331,8 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 	if existingMetadata.Readme == nil {
 		modelcardPath := fmt.Sprintf("%s/%s/models/modelcard.md", outputDir, sanitizedName)
 		if modelcardContent, err := os.ReadFile(modelcardPath); err == nil && len(modelcardContent) > 0 {
-			readme := string(modelcardContent)
+			// Strip YAML frontmatter from the readme content
+			readme := utils.StripYAMLFrontmatter(string(modelcardContent))
 			existingMetadata.Readme = &readme
 			log.Printf("  Restored readme content from modelcard.md for: %s", registryModel)
 		}

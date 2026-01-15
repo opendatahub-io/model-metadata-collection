@@ -685,7 +685,7 @@ func tryHuggingFaceFallback(manifestRef string, outputDir string) {
 	}
 
 	// Strip YAML frontmatter to match container modelcard format
-	processedContent := stripYAMLFrontmatter(hfReadme)
+	processedContent := utils.StripYAMLFrontmatter(hfReadme)
 
 	// Write the README content as modelcard.md
 	modelcardPath := filepath.Join(outputDir, "modelcard.md")
@@ -696,30 +696,6 @@ func tryHuggingFaceFallback(manifestRef string, outputDir string) {
 	}
 
 	log.Printf("  Successfully created fallback modelcard.md from HuggingFace README: %s", modelcardPath)
-}
-
-// stripYAMLFrontmatter removes YAML frontmatter from markdown content to match container modelcard format
-func stripYAMLFrontmatter(content string) string {
-	lines := strings.Split(content, "\n")
-
-	// Check if content starts with YAML frontmatter
-	if len(lines) == 0 || strings.TrimSpace(lines[0]) != "---" {
-		return content // No frontmatter to strip
-	}
-
-	// Find the end of the frontmatter (second "---")
-	for i := 1; i < len(lines); i++ {
-		if strings.TrimSpace(lines[i]) == "---" {
-			// Return content after the frontmatter, skipping the closing "---"
-			if i+1 < len(lines) {
-				return strings.Join(lines[i+1:], "\n")
-			}
-			return "" // Only frontmatter, no content
-		}
-	}
-
-	// No closing "---" found, return original content
-	return content
 }
 
 // fetchManifestSrcAndLayers fetches manifest, layers, and config blob from container registry
