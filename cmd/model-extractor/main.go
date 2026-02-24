@@ -117,14 +117,21 @@ func main() {
 		log.Println("Enriching extracted metadata with HuggingFace data...")
 
 		// Determine HuggingFace index file to use
-		hfIndexFile, err := getLatestVersionIndexFile()
-		if err != nil {
-			log.Printf("Warning: Could not find HuggingFace index file: %v", err)
-			// Use default fallback path
-			hfIndexFile = "data/hugging-face-redhat-ai-validated-v1-0.yaml"
+		// Prefer merged index file to ensure all models from all collections are available for matching
+		hfIndexFile := "data/hugging-face-redhat-ai-validated-merged.yaml"
+		if _, err := os.Stat(hfIndexFile); err != nil {
+			// Fallback to latest version-specific file if merged doesn't exist
+			log.Printf("Warning: Merged index file not found, falling back to latest version file")
+			hfIndexFile, err = getLatestVersionIndexFile()
+			if err != nil {
+				log.Printf("Warning: Could not find HuggingFace index file: %v", err)
+				// Use default fallback path
+				hfIndexFile = "data/hugging-face-redhat-ai-validated-v1-0.yaml"
+			}
 		}
 
-		err = enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir)
+		log.Printf("Using HuggingFace index file: %s", hfIndexFile)
+		err := enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir)
 		if err != nil {
 			log.Printf("Warning: Failed to enrich metadata: %v", err)
 		}

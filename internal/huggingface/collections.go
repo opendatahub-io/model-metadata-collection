@@ -147,8 +147,8 @@ func generateMergedIndex() error {
 		Models:  mergedModels,
 	}
 
-	// Write merged index as the latest version file
-	filename := fmt.Sprintf("data/hugging-face-redhat-ai-validated-%s.yaml", strings.ReplaceAll(latestVersion, ".", "-"))
+	// Write merged index to a separate file (not overwriting version-specific files)
+	filename := "data/hugging-face-redhat-ai-validated-merged.yaml"
 	yamlData, err := yaml.Marshal(mergedIndex)
 	if err != nil {
 		return fmt.Errorf("failed to marshal merged index to YAML: %v", err)
@@ -159,7 +159,7 @@ func generateMergedIndex() error {
 		return fmt.Errorf("failed to write merged index file: %v", err)
 	}
 
-	log.Printf("Generated merged index file: %s with %d unique models", filename, len(mergedModels))
+	log.Printf("Generated merged index file: %s with %d unique models (version: %s)", filename, len(mergedModels), latestVersion)
 	return nil
 }
 
@@ -171,12 +171,13 @@ func ProcessCollections() error {
 	collectionSlugs, err := DiscoverValidatedModelCollections()
 	if err != nil {
 		log.Printf("Failed to discover collections, using known collections: %v", err)
-		// Fall back to known collections - include May, September, October 2025 and January 2026
+		// Fall back to known collections - include May, September, October 2025 and January, February 2026
 		collectionSlugs = []string{
 			"RedHatAI/red-hat-ai-validated-models-may-2025-682613dc19c4a596dbac9437",
 			"RedHatAI/red-hat-ai-validated-models-september-2025-68cc3d7a8a272f6beae3e9a7",
 			"RedHatAI/red-hat-ai-validated-models-october-2025-68ed0a23ec5ce4b0ffc4c60c",
 			"RedHatAI/red-hat-ai-validated-models-january-2026-69652094dc3429e12c32ad49",
+			"RedHatAI/red-hat-ai-validated-models-february-2026-699c6b8ade9c198927302989",
 		}
 	}
 

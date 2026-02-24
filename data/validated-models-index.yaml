@@ -218,3 +218,27 @@ models:
   uri: registry.redhat.io/rhai/modelcar-nvidia-nemotron-3-nano-30b-a3b-fp8:3.0
   labels:
   - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-phi-4-reasoning-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-qwen3-vl-235b-a22b-instruct-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-qwen3-next-80b-a3b-instruct-quantized-w4a16:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-tiny-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-small-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-ministral-3-14b-instruct-2512:3.0
+  labels:
+  - validated
