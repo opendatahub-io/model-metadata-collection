@@ -43,17 +43,17 @@ func TestParseVersionFromTitle(t *testing.T) {
 		{
 			name:     "granite quantized collection",
 			title:    "Granite Quantized",
-			expected: "granite-quantized",
+			expected: "v1.0-granite-quantized",
 		},
 		{
 			name:     "granite quantized with different casing",
 			title:    "GRANITE QUANTIZED",
-			expected: "granite-quantized",
+			expected: "v1.0-granite-quantized",
 		},
 		{
 			name:     "granite quantized with extra words",
 			title:    "Red Hat AI Granite Quantized Models",
-			expected: "granite-quantized",
+			expected: "v1.0-granite-quantized",
 		},
 		{
 			name:     "no matching pattern",

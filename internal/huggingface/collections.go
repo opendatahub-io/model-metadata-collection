@@ -43,9 +43,10 @@ func parseVersionFromTitle(title string) string {
 	}
 
 	// Look for special collection types (e.g., "Granite Quantized")
+	// Return with version prefix to maintain compatibility with GetLatestVersionIndexFile glob pattern
 	lowerTitle := strings.ToLower(title)
 	if strings.Contains(lowerTitle, "granite") && strings.Contains(lowerTitle, "quantized") {
-		return "granite-quantized"
+		return "v1.0-granite-quantized"
 	}
 
 	return ""
