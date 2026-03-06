@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 
@@ -17,10 +18,15 @@ import (
 	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
 
+// httpClient is a shared HTTP client with timeout for all HuggingFace API calls
+var httpClient = &http.Client{
+	Timeout: 30 * time.Second,
+}
+
 // FetchCollections fetches collections from HuggingFace
 func FetchCollections() ([]types.HFCollection, error) {
 	// Fetch collections list from RedHatAI
-	resp, err := http.Get("https://huggingface.co/api/collections?search=red-hat-ai-validated-models")
+	resp, err := httpClient.Get("https://huggingface.co/api/collections?search=red-hat-ai-validated-models")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch collections: %v", err)
 	}
@@ -43,7 +49,7 @@ func FetchCollections() ([]types.HFCollection, error) {
 // FetchCollectionDetails fetches detailed information for a specific collection
 func FetchCollectionDetails(collectionID string) (*types.HFCollection, error) {
 	url := fmt.Sprintf("https://huggingface.co/api/collections/%s", collectionID)
-	resp, err := http.Get(url)
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch collection details: %v", err)
 	}
@@ -66,7 +72,7 @@ func FetchCollectionDetails(collectionID string) (*types.HFCollection, error) {
 // DiscoverValidatedModelCollections finds all Red Hat AI validated model collections
 func DiscoverValidatedModelCollections() ([]string, error) {
 	// Fetch collections from RedHatAI user
-	resp, err := http.Get("https://huggingface.co/api/users/RedHatAI/collections")
+	resp, err := httpClient.Get("https://huggingface.co/api/users/RedHatAI/collections")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch user collections: %v", err)
 	}
@@ -88,6 +94,7 @@ func DiscoverValidatedModelCollections() ([]string, error) {
 	validatedPatterns := []*regexp.Regexp{
 		regexp.MustCompile(`(?i)red.?hat.?ai.?validated.?models`),
 		regexp.MustCompile(`(?i)red\s+hat\s+ai\s+validated\s+models\s+-\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{4}`),
+		regexp.MustCompile(`(?i)granite.?quantized`),
 	}
 
 	for _, collection := range collections {
@@ -105,7 +112,7 @@ func DiscoverValidatedModelCollections() ([]string, error) {
 // FetchModelDetails fetches detailed metadata for a specific model
 func FetchModelDetails(modelName string) (*types.HFModelDetails, error) {
 	url := fmt.Sprintf("https://huggingface.co/api/models/%s", modelName)
-	resp, err := http.Get(url)
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch model details: %v", err)
 	}
@@ -132,7 +139,7 @@ func FetchModelDetails(modelName string) (*types.HFModelDetails, error) {
 // FetchReadme fetches the README content from HuggingFace
 func FetchReadme(modelName string) (string, error) {
 	url := fmt.Sprintf("https://huggingface.co/%s/raw/main/README.md", modelName)
-	resp, err := http.Get(url)
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch README: %v", err)
 	}

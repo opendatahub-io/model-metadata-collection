@@ -159,20 +159,34 @@ func GenerateDescriptionFromModelName(modelName string) string {
 }
 
 // normalizeModelName normalizes model names for comparison
+// This function preserves version numbers as complete tokens to prevent
+// version mismatching (e.g., 3.1 vs 3.3)
 func NormalizeModelName(name string) string {
 	// Remove common prefixes and suffixes
 	normalized := strings.ToLower(name)
 
-	// Remove registry prefix
+	// Remove registry prefixes
 	normalized = strings.TrimPrefix(normalized, "registry.redhat.io/rhelai1/modelcar-")
+	normalized = strings.TrimPrefix(normalized, "registry.redhat.io/rhai/modelcar-")
 
 	// Remove RedHatAI prefix
 	normalized = strings.TrimPrefix(normalized, "redhatai/")
+	normalized = strings.TrimPrefix(normalized, "meta-llama/")
+	normalized = strings.TrimPrefix(normalized, "ibm-granite/")
 
-	// Remove version tags
+	// Remove version tags (e.g., :1.5, :3.0)
 	if idx := strings.LastIndex(normalized, ":"); idx != -1 {
 		normalized = normalized[:idx]
 	}
+
+	// First, protect dotted versions: "3.1" → "3v1"
+	versionDotRegex := regexp.MustCompile(`(\d+)\.(\d+)`)
+	normalized = versionDotRegex.ReplaceAllString(normalized, "${1}v${2}")
+
+	// Second, protect hyphenated versions in model names: "granite-3-3" → "granite-3v3"
+	// Match patterns like "granite-3-3", "llama-3-1", etc. where version appears after model name
+	versionHyphenRegex := regexp.MustCompile(`(granite|llama|mistral|qwen|phi|gemma)-(\d+)-(\d+)`)
+	normalized = versionHyphenRegex.ReplaceAllString(normalized, "${1}-${2}v${3}")
 
 	// Replace various separators with hyphens for consistency
 	normalized = strings.ReplaceAll(normalized, "_", "-")

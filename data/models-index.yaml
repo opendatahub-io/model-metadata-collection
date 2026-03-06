@@ -1,1 +1,7 @@
-models: []
+models:
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-3-3-8b-instruct
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-small:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-tiny:3.0

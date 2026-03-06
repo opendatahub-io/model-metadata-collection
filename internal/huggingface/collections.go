@@ -42,6 +42,12 @@ func parseVersionFromTitle(title string) string {
 		}
 	}
 
+	// Look for special collection types (e.g., "Granite Quantized")
+	lowerTitle := strings.ToLower(title)
+	if strings.Contains(lowerTitle, "granite") && strings.Contains(lowerTitle, "quantized") {
+		return "granite-quantized"
+	}
+
 	return ""
 }
 
@@ -91,13 +97,24 @@ func generateVersionIndex(collection *types.HFCollection, version string) error 
 
 // generateMergedIndex creates a merged index file from all processed collections
 func generateMergedIndex() error {
-	// Find all version index files
-	files, err := filepath.Glob("data/hugging-face-redhat-ai-validated-v*.yaml")
+	// Find all version index files (including both dated versions and special collections)
+	// Pattern matches: v2025-05.yaml, v2026-02.yaml, granite-quantized.yaml, etc.
+	files, err := filepath.Glob("data/hugging-face-redhat-ai-validated-*.yaml")
 	if err != nil {
 		return fmt.Errorf("failed to find version index files: %v", err)
 	}
 
-	if len(files) == 0 {
+	// Filter out the merged file itself to avoid circular inclusion
+	// Use explicit filename matching to prevent accidentally excluding valid files
+	const mergedFileName = "hugging-face-redhat-ai-validated-merged.yaml"
+	filteredFiles := make([]string, 0, len(files))
+	for _, file := range files {
+		if filepath.Base(file) != mergedFileName {
+			filteredFiles = append(filteredFiles, file)
+		}
+	}
+
+	if len(filteredFiles) == 0 {
 		return fmt.Errorf("no version index files found to merge")
 	}
 
@@ -105,7 +122,7 @@ func generateMergedIndex() error {
 	allModels := make(map[string]types.ModelIndex)
 	latestVersion := ""
 
-	for _, file := range files {
+	for _, file := range filteredFiles {
 		data, err := os.ReadFile(file)
 		if err != nil {
 			log.Printf("Failed to read %s: %v", file, err)
@@ -171,13 +188,14 @@ func ProcessCollections() error {
 	collectionSlugs, err := DiscoverValidatedModelCollections()
 	if err != nil {
 		log.Printf("Failed to discover collections, using known collections: %v", err)
-		// Fall back to known collections - include May, September, October 2025 and January, February 2026
+		// Fall back to known collections - include May, September, October 2025 and January, February 2026, plus Granite Quantized
 		collectionSlugs = []string{
 			"RedHatAI/red-hat-ai-validated-models-may-2025-682613dc19c4a596dbac9437",
 			"RedHatAI/red-hat-ai-validated-models-september-2025-68cc3d7a8a272f6beae3e9a7",
 			"RedHatAI/red-hat-ai-validated-models-october-2025-68ed0a23ec5ce4b0ffc4c60c",
 			"RedHatAI/red-hat-ai-validated-models-january-2026-69652094dc3429e12c32ad49",
 			"RedHatAI/red-hat-ai-validated-models-february-2026-699c6b8ade9c198927302989",
+			"RedHatAI/granite-quantized",
 		}
 	}
 
