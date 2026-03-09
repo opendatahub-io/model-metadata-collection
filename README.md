@@ -1,25 +1,25 @@
 # Model Metadata Collection
 
-A Go application for extracting, enriching, and cataloging metadata from Red Hat AI container images. This tool automatically discovers models from HuggingFace collections, processes OCI container images containing AI models, extracts model cards, enriches the metadata with information from HuggingFace, and generates comprehensive catalogs.
+A Go application that extracts, enriches, and catalogs metadata from Red Hat AI container images. The tool discovers models from HuggingFace collections, processes OCI container images, and generates structured catalogs.
 
 ## Features
 
-- **HuggingFace Collections Integration**: Automatically discovers and processes Red Hat AI validated model collections with version support (v1.0, v2.1, etc.)
-- **OCI Container Analysis**: Extracts model cards from container image layers with annotation-based detection; creates skeleton metadata when extraction fails to ensure enrichment continuity
-- **Metadata Enrichment**: Enriches model metadata with HuggingFace data including date-to-epoch conversion and quality validation, **with modelcard.md data taking priority over external sources**
-- **Model Type Classification**: Automatic classification of models as generative, predictive, or unknown with validation and programmatic defaults
-- **Automated Tagging**: Automatically adds labels as tags based on model configuration with intelligent tag merging
+- **HuggingFace Collections Integration**: Discovers and processes Red Hat AI validated model collections with version support (v1.0, v2.1, etc.)
+- **OCI Container Analysis**: Extracts model cards from container image layers using annotation-based detection; creates skeleton metadata when extraction fails
+- **Metadata Enrichment**: Enriches model metadata from HuggingFace, with modelcard.md data taking priority over external sources
+- **Model Type Classification**: Classifies models as generative, predictive, or unknown with validation and configurable defaults
+- **Automated Tagging**: Converts labels to tags and merges them from multiple sources without duplicates
 - **Registry Integration**: Fetches OCI artifact metadata from container registries
-- **Metadata Reporting**: Comprehensive analysis of metadata completeness, data source tracking, and quality metrics
-- **Static Catalog Support**: Merge static model catalogs with dynamically extracted metadata
-- **Flexible CLI**: Configurable input/output paths and processing options with skip flags for individual components
-- **Concurrent Processing**: Parallel processing of multiple models with configurable concurrency limits
-- **Comprehensive Testing**: Unit tests for all major components
-- **Structured Output**: Generates both individual model metadata and aggregated catalogs with quality-validated metadata
+- **Metadata Reporting**: Analyzes metadata completeness, data sources, and quality metrics
+- **Static Catalog Support**: Merges static model catalogs with dynamically extracted metadata
+- **Flexible CLI**: Supports configurable paths, output options, and per-component skip flags
+- **Concurrent Processing**: Processes multiple models in parallel with configurable concurrency limits
+- **Comprehensive Testing**: Includes unit tests for all major components
+- **Structured Output**: Generates individual model metadata files and aggregated catalogs
 
 ## Architecture
 
-The project is organized into modular packages for maintainability and testability:
+The project is organized into modular packages:
 
 ```
 ├── cmd/
@@ -56,7 +56,7 @@ cd model-metadata-collection
 make build
 ```
 
-This will create binaries at:
+This creates binaries at:
 - `build/model-extractor` - Main metadata extraction tool
 - `build/metadata-report` - Metadata reporting and analysis tool
 
@@ -74,7 +74,7 @@ go install github.com/opendatahub-io/model-metadata-collection/cmd/metadata-repo
 
 ### Basic Usage
 
-Run with default settings (automatically processes HuggingFace collections and falls back to `data/models-index.yaml`):
+Run with default settings (processes HuggingFace collections and falls back to `data/models-index.yaml`):
 
 ```bash
 ./build/model-extractor
@@ -92,7 +92,7 @@ Run with default settings (automatically processes HuggingFace collections and f
 
 ### Metadata Reporting
 
-Generate comprehensive metadata completeness reports:
+Generate metadata completeness reports:
 
 ```bash
 # Generate reports from existing output
@@ -147,55 +147,33 @@ Generate comprehensive metadata completeness reports:
 
 ## Docker Build and Deployment
 
-### Prerequisites for Docker Build
-
-Before building the Docker image, you must authenticate with Red Hat's container registry:
-
-```bash
-# Login to Red Hat container registry (required for accessing ModelCar images)
-docker login registry.redhat.io
-# Enter your Red Hat account credentials when prompted
-```
-
-**Important**: This authentication step is required because the Docker build process needs to access Red Hat container images during the generation stage.
-
 ### Building the Container
 
-The Docker build uses a multi-stage approach for optimal image size and security:
-
-1. **Builder Stage**: Uses `registry.access.redhat.com/ubi9/go-toolset:1.24` to compile the Go application
-2. **Generator Stage**: Uses `registry.access.redhat.com/ubi9-minimal` to run model extraction and generate `data/models-catalog.yaml`
-3. **Runtime Stage**: Uses `registry.access.redhat.com/ubi9-micro` for the final minimal image containing only the catalog
+The Docker build uses a single-stage approach based on `registry.access.redhat.com/ubi9-micro:latest`. It copies pre-generated catalog files and benchmark data into a minimal image.
 
 ```bash
-# Build the Docker image (requires prior registry.redhat.io authentication)
 make docker-build
-
-# The build automatically uses your host Docker authentication
-# No additional credential files needed
 ```
 
-### Docker Authentication Details
-
-- The build process automatically detects and uses your existing `~/.docker/config.json` authentication
-- Registry credentials are securely mounted during build using Docker BuildKit secrets
-- No credentials are stored in the final container image
-- If no authentication is found, the build gracefully continues without registry access (with reduced functionality)
+The image exposes two volume mount points:
+- `/app/data` — contains the pre-generated catalog and index YAML files
+- `/app/benchmarks` — contains sample benchmark data
 
 ### Container Usage Examples
 
 ```bash
-# Run container and access the generated catalog
+# Run container (stays alive for data access)
 docker run -d --name model-metadata-catalog model-metadata-collection:latest
 
-# Copy catalog from container to host
+# Copy catalog files from container to host
 docker cp model-metadata-catalog:/app/data/models-catalog.yaml ./models-catalog.yaml
+docker cp model-metadata-catalog:/app/data/validated-models-catalog.yaml ./validated-models-catalog.yaml
 
-# Mount catalog directory for external access
+# Mount data directory for external access
 docker run -d -v $(pwd)/catalog-data:/app/data --name catalog model-metadata-collection:latest
 
 # Remove container when done
-docker rm -f model-metadata-catalog
+docker rm -f catalog
 ```
 
 ### Custom Docker Build Options
@@ -210,13 +188,13 @@ docker images model-metadata-collection
 
 ## Input Format
 
-The tool can work with multiple input sources:
+The tool accepts multiple input sources:
 
 ### Automatic HuggingFace Collections (Default)
-Automatically discovers Red Hat AI validated model collections from HuggingFace and generates version-specific index files like `data/hugging-face-redhat-ai-validated-v1-0.yaml`.
+Discovers Red Hat AI validated model collections from HuggingFace and generates version-specific index files such as `data/hugging-face-redhat-ai-validated-v1-0.yaml`.
 
 ### Static Model Catalogs
-You can merge static model catalogs with dynamically extracted metadata. By default, the tool looks for `input/supplemental-catalog.yaml` and includes it automatically:
+The tool merges static model catalogs with dynamically extracted metadata. By default, it reads `input/supplemental-catalog.yaml` automatically:
 
 ```yaml
 source: Red Hat
@@ -234,14 +212,14 @@ models:
 ```
 
 ### Manual YAML Input
-You can also provide a YAML file with structured model entries supporting both OCI registry and HuggingFace model references:
+Provide a YAML file with structured model entries supporting both OCI registry and HuggingFace model references:
 
 ```yaml
 models:
   - type: "oci"
     uri: "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base-quantized-w4a16:1.5"
     labels: ["validated"]
-  - type: "oci" 
+  - type: "oci"
     uri: "registry.redhat.io/rhelai1/modelcar-llama-3-3-70b-instruct:1.5"
     labels: ["validated", "featured"]
   - type: "hf"
@@ -252,17 +230,17 @@ models:
 Each model entry supports the following fields:
 - **type**: `"oci"` for registry-based modelcar containers or `"hf"` for HuggingFace model links
 - **uri**: The OCI registry reference or HuggingFace model URL
-- **labels**: Array of labels that will be added as tags to the model metadata
+- **labels**: Array of labels added as tags to the model metadata
   - Common labels include: `"validated"`, `"featured"`, `"lab-teacher"`, `"lab-base"`
-  - Labels are automatically converted to customProperties in the final model catalog
-  - New labels can be added without code changes
-- **model_type**: Optional classification of the model type (defaults to `"generative"` if omitted)
+  - The tool converts labels to customProperties in the final model catalog
+  - Add new labels without code changes
+- **model_type**: Optional model type classification (defaults to `"generative"` if omitted)
   - Allowed values: `"generative"`, `"predictive"`, or `"unknown"`
-  - Automatically validated during catalog generation
+  - Validated during catalog generation
   - Appears in the generated catalog as a customProperty
 
 ### Version-Specific Index Files
-Generated automatically from HuggingFace collections:
+Generated automatically from HuggingFace collections.
 
 ```yaml
 # Example: data/hugging-face-redhat-ai-validated-v1-0.yaml
@@ -275,35 +253,31 @@ models:
 
 ## Model Type Classification
 
-The tool supports automatic classification of models using the `model_type` field. This classification is included in the generated catalog's `customProperties` section.
+The tool classifies models using `model_type`, which appears in the catalog's `customProperties`.
 
 ### Supported Model Types
 
-Three model type classifications are supported:
-
 - **`generative`**: Models that generate new content (text, images, etc.)
   - Examples: Large Language Models (LLMs), text-to-image models, code generators
-  - This is the **default** value applied when `model_type` is not explicitly specified
+  - This is the **default** when `model_type` is not specified
 
 - **`predictive`**: Models that make predictions or classifications
   - Examples: Sentiment analysis, image classification, forecasting models
 
 - **`unknown`**: Models with unclear or mixed purposes
-  - Use this when the model type cannot be determined
+  - Use when the model type cannot be determined
 
 ### Automatic Default Behavior
 
-The tool automatically applies the `"generative"` model type to all models in the following scenarios:
+The tool defaults all models to `"generative"` in these cases:
 
-1. **Static Catalogs**: Models defined in `input/supplemental-catalog.yaml` automatically receive `model_type: "generative"`
-2. **Dynamic Catalogs**: Models extracted from OCI containers default to `"generative"` unless otherwise specified
-3. **Index Files**: When the `model_type` field is omitted from index YAML files, the default is applied
-
-This default behavior ensures all models have a valid classification without requiring manual updates to existing catalog files.
+1. **Static Catalogs**: Models in `input/supplemental-catalog.yaml` receive `model_type: "generative"`
+2. **Dynamic Catalogs**: Models extracted from OCI containers default to `"generative"` unless specified otherwise
+3. **Index Files**: Models in index YAML files without a `model_type` field receive the default
 
 ### Explicit Model Type Specification
 
-To specify a different model type, add the `model_type` field to your index YAML:
+To specify a different model type, add the `model_type` field to the index YAML:
 
 ```yaml
 models:
@@ -315,13 +289,13 @@ models:
 
 ### Validation
 
-The tool automatically validates `model_type` values during catalog generation:
+The tool validates `model_type` values during catalog generation:
 
-- **Valid Values**: Only `"generative"`, `"predictive"`, and `"unknown"` are accepted
-- **Invalid Values**: If an invalid `model_type` is detected, the tool:
-  1. Logs a warning message with the invalid value
-  2. Automatically falls back to the default `"generative"` value
-  3. Continues catalog generation without failure
+- **Valid Values**: `"generative"`, `"predictive"`, and `"unknown"`
+- **Invalid Values**: When the tool detects an invalid `model_type`, it:
+  1. Logs a warning with the invalid value
+  2. Falls back to `"generative"`
+  3. Continues catalog generation
 
 Example validation warning:
 ```
@@ -330,7 +304,7 @@ Warning: Invalid model_type "custom-type" for model "example-model", defaulting 
 
 ### Output Format
 
-In the generated catalog, `model_type` appears in the `customProperties` section using the `MetadataStringValue` format:
+In the generated catalog, `model_type` appears in the `customProperties` section in `MetadataStringValue` format:
 
 ```yaml
 customProperties:
@@ -339,13 +313,13 @@ customProperties:
     string_value: "generative"
 ```
 
-This structured format ensures compatibility with downstream systems that consume the catalog data.
+This format ensures compatibility with downstream systems that consume catalog data.
 
 ## Output Structure
 
 ### Individual Model Metadata
 
-For each model, the tool generates:
+The tool generates the following for each model:
 
 ```
 output/
@@ -356,7 +330,7 @@ output/
         └── enrichment.yaml       # Data source tracking
 ```
 
-**Note**: When modelcard extraction fails (e.g., no modelcard layer found in the container), the tool automatically creates a skeleton `metadata.yaml` file to ensure the enrichment process can still populate data from HuggingFace and other sources.
+**Note**: When modelcard extraction fails, the tool creates a skeleton `metadata.yaml` so enrichment can still populate data from HuggingFace and other sources.
 
 ### Metadata Schema
 
@@ -406,7 +380,7 @@ models:
 
 ### Metadata Reports
 
-The metadata reporting functionality generates comprehensive analysis of field completeness and data source tracking:
+The reporting tool analyzes field completeness and data source tracking:
 
 #### Report Structure
 
@@ -469,7 +443,7 @@ reports/
 make setup
 ```
 
-This installs development tools including linters and security scanners.
+This installs development tools: linters and security scanners.
 
 ### Running Tests
 
@@ -493,9 +467,6 @@ make fmt
 # Run linters
 make lint
 
-# Run security scan
-make security
-
 # Run all checks
 make check
 ```
@@ -507,7 +478,7 @@ make check
 make dev
 ```
 
-This runs formatting, vetting, testing, and building in sequence.
+Runs formatting, vetting, testing, and building in sequence.
 
 ### Available Make Targets
 
@@ -519,6 +490,7 @@ This runs formatting, vetting, testing, and building in sequence.
 | `test-coverage` | Run tests with coverage |
 | `lint` | Run linters |
 | `fmt` | Format code |
+| `check` | Run all checks (fmt-check, vet, lint) |
 | `dev` | Quick development iteration |
 | `ci` | Full CI pipeline |
 | `release` | Create optimized release build |
@@ -538,19 +510,17 @@ The tool integrates with HuggingFace APIs to:
 - Extract provider information from README files
 - Parse structured data from model tags
 
-**Data Prioritization**: The tool follows a strict data priority hierarchy:
-1. **Primary**: Data extracted from `modelcard.md` files in container layers (highest priority)
-2. **Secondary**: HuggingFace API data (used only when modelcard.md data is missing or empty)
-3. **Fallback**: Registry metadata and generated defaults
-4. **Skeleton Creation**: When modelcard extraction fails completely, creates minimal metadata structure for enrichment
+**Data Prioritization**: The tool follows a strict priority hierarchy:
+1. **Primary**: HuggingFace YAML frontmatter (highest priority, overrides all other sources)
+2. **Secondary**: Data extracted from `modelcard.md` files in container layers
+3. **Tertiary**: HuggingFace API data
+4. **Fallback**: Registry metadata and generated defaults
 
-**Tag Management**: The tool implements intelligent tag merging:
-- Labels from the models-index.yaml configuration are automatically added as tags
-- Existing modelcard tags are preserved and merged with HuggingFace enrichment tags
-- Duplicate tags are automatically deduplicated
-- Tag precedence follows the same hierarchy as data prioritization
+When modelcard extraction fails, the tool creates a minimal metadata structure for enrichment.
 
-This ensures that when non-empty data is present in the modelcard.md, it is always preserved and used over any external enrichment sources.
+**Tag Management**: The tool merges tags from multiple sources:
+- Labels from `models-index.yaml` are added as tags
+- Tags from modelcard.md and HuggingFace enrichment are merged and deduplicated
 
 ### Container Registry Integration
 
@@ -559,34 +529,13 @@ This ensures that when non-empty data is present in the modelcard.md, it is alwa
 - Processes custom annotations and properties
 - Supports multiple registry formats
 
-## Error Handling
-
-The tool includes comprehensive error handling:
-
-- **Network Failures**: Graceful degradation when APIs are unavailable
-- **Malformed Data**: Robust parsing with fallback mechanisms
-- **Missing Files**: Clear error messages and suggestions
-- **Concurrent Processing**: Proper error isolation between goroutines
-- **Failed Modelcard Extraction**: Automatically creates skeleton metadata files when modelcard layers are missing or corrupted, ensuring enrichment processes can continue
-- **Tag Merging**: Intelligent tag merging that preserves existing tags while adding new ones from multiple sources
-
-## Migration and Compatibility
-
-The tool supports migration from legacy metadata formats:
-
-- **Legacy String Artifacts**: Automatically migrated to structured OCI artifacts
-- **Mixed Timestamp Types**: Consistent int64 timestamp handling
-- **Backward Compatibility**: Reads existing metadata files in multiple formats
-
 ## Testing
 
-The project includes comprehensive test coverage:
+The project includes:
 
-- **Unit Tests**: All utility functions and core logic
+- **Unit Tests**: Utility functions and core logic
 - **Integration Tests**: API interactions and file processing
 - **Property-Based Tests**: Edge cases and data validation
-
-Run tests with:
 
 ```bash
 make test
@@ -596,30 +545,9 @@ make test
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes with tests
+3. Include tests with your changes
 4. Run the full test suite: `make ci`
 5. Submit a pull request
-
-### Code Standards
-
-- Follow Go conventions and idioms
-- Include unit tests for new functionality
-- Update documentation as needed
-- Run `make check` before submitting
-
-## Security
-
-- No hardcoded credentials or secrets
-- Secure handling of external API responses
-- Input validation and sanitization
-- Regular security scanning with `make security`
-
-## Performance
-
-- Concurrent processing of multiple models
-- Configurable concurrency limits
-- Efficient memory usage for large files
-- Optimized for large-scale batch processing
 
 ## Troubleshooting
 
@@ -627,27 +555,9 @@ make test
 
 1. **Permission Errors**: Ensure output directories are writable
 2. **Network Timeouts**: Check internet connectivity and registry access
-3. **Memory Issues**: Reduce `--max-concurrent` for resource-constrained environments
-4. **API Rate Limits**: The tool includes built-in rate limiting for HuggingFace APIs
-
-### Debugging
-
-Enable verbose logging:
-
-```bash
-./build/model-extractor --help  # Shows all available options
-```
-
-Check the logs for detailed processing information.
+3. **Memory Issues**: Lower `--max-concurrent` in resource-constrained environments
+4. **API Rate Limits**: HuggingFace requests use a 30-second timeout with no built-in rate limiting
 
 ## License
 
-This project is licensed under the terms specified in the LICENSE file.
-
-## Support
-
-For issues and questions:
-
-1. Check the troubleshooting section above
-2. Search existing [GitHub issues](https://github.com/opendatahub-io/model-metadata-collection/issues)
-3. Create a new issue with detailed information
+Licensed under the terms specified in the LICENSE file.
