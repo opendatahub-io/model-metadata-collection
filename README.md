@@ -41,7 +41,7 @@ The project is organized into modular packages for maintainability and testabili
 
 ## Prerequisites
 
-- Go 1.24 or later
+- Go 1.25 or later
 - Access to container registries (registry.redhat.io)
 - Internet access for HuggingFace API calls
 - Docker (for containerized builds and deployment)
