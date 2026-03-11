@@ -197,3 +197,37 @@ func TestModelFamilyRegex_Singleton(t *testing.T) {
 		t.Error("GetModelFamilyRegex should return singleton instance")
 	}
 }
+
+func TestModelFamilyRegex_ConcurrentAccess(t *testing.T) {
+	// Verify GetModelFamilyRegex is safe for concurrent access (using sync.Once)
+	// This test ensures no data races occur when multiple goroutines call GetModelFamilyRegex
+
+	const goroutines = 100
+	results := make([]*regexp.Regexp, goroutines)
+	done := make(chan bool, goroutines)
+
+	for i := 0; i < goroutines; i++ {
+		go func(index int) {
+			results[index] = GetModelFamilyRegex()
+			done <- true
+		}(i)
+	}
+
+	// Wait for all goroutines to complete
+	for i := 0; i < goroutines; i++ {
+		<-done
+	}
+
+	// Verify all goroutines got the same regex instance
+	firstRegex := results[0]
+	for i := 1; i < goroutines; i++ {
+		if results[i] != firstRegex {
+			t.Errorf("Concurrent access returned different regex instances: %p vs %p", firstRegex, results[i])
+		}
+	}
+
+	// Verify the regex actually works
+	if !firstRegex.MatchString("granite-3-1") {
+		t.Error("Regex should match valid model family pattern")
+	}
+}

@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"sync"
 )
 
 // SupportedModelFamilies defines all recognized model families for metadata enrichment.
@@ -55,12 +56,16 @@ func GetModelFamilyRegexPattern() string {
 	return fmt.Sprintf(`(%s)-(\w?\d+)-(\d+)`, familiesPattern)
 }
 
-// GetModelFamilyRegex returns a compiled regex for model family version matching
-var modelFamilyRegex *regexp.Regexp
+// GetModelFamilyRegex returns a compiled regex for model family version matching.
+// Uses sync.Once to ensure thread-safe lazy initialization for concurrent access.
+var (
+	modelFamilyRegex *regexp.Regexp
+	modelFamilyOnce  sync.Once
+)
 
 func GetModelFamilyRegex() *regexp.Regexp {
-	if modelFamilyRegex == nil {
+	modelFamilyOnce.Do(func() {
 		modelFamilyRegex = regexp.MustCompile(GetModelFamilyRegexPattern())
-	}
+	})
 	return modelFamilyRegex
 }
