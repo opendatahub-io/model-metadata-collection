@@ -6,6 +6,8 @@ import (
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"github.com/opendatahub-io/model-metadata-collection/internal/config"
 )
 
 // StripYAMLFrontmatter removes YAML frontmatter from markdown content.
@@ -158,9 +160,15 @@ func GenerateDescriptionFromModelName(modelName string) string {
 	return cleaned
 }
 
+// Pre-compiled regex for version normalization (performance optimization)
+var versionDotRegex = regexp.MustCompile(`(\d+)\.(\d+)`)
+
 // normalizeModelName normalizes model names for comparison
 // This function preserves version numbers as complete tokens to prevent
 // version mismatching (e.g., 3.1 vs 3.3)
+//
+// IMPORTANT: Uses centralized model family definitions from internal/config/model_families.go
+// This ensures consistency with family extraction in internal/enrichment/enrichment.go
 func NormalizeModelName(name string) string {
 	// Remove common prefixes and suffixes
 	normalized := strings.ToLower(name)
@@ -180,12 +188,13 @@ func NormalizeModelName(name string) string {
 	}
 
 	// First, protect dotted versions: "3.1" → "3v1"
-	versionDotRegex := regexp.MustCompile(`(\d+)\.(\d+)`)
 	normalized = versionDotRegex.ReplaceAllString(normalized, "${1}v${2}")
 
 	// Second, protect hyphenated versions in model names: "granite-3-3" → "granite-3v3"
-	// Match patterns like "granite-3-3", "llama-3-1", etc. where version appears after model name
-	versionHyphenRegex := regexp.MustCompile(`(granite|llama|mistral|qwen|phi|gemma)-(\d+)-(\d+)`)
+	// Uses centralized model family regex pattern from config to ensure consistency
+	// Match patterns like "granite-3-3", "llama-3-1", "minimax-m2-5", etc.
+	// The pattern (\w?\d+) handles both standard versions (e.g., "3") and prefixed versions (e.g., "m2")
+	versionHyphenRegex := config.GetModelFamilyRegex()
 	normalized = versionHyphenRegex.ReplaceAllString(normalized, "${1}-${2}v${3}")
 
 	// Replace various separators with hyphens for consistency

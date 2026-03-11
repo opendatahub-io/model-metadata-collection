@@ -210,6 +210,21 @@ func TestNormalizeModelName(t *testing.T) {
 			input:    "RedHatAI/granite-4.0-h-small",
 			expected: "granite-4v0-h-small",
 		},
+		{
+			name:     "minimax m2.5 from container",
+			input:    "registry.redhat.io/rhai/modelcar-minimax-m2-5:3.0",
+			expected: "minimax-m2v5",
+		},
+		{
+			name:     "minimax m2.5 from HuggingFace with dot",
+			input:    "RedHatAI/MiniMax-M2.5",
+			expected: "minimax-m2v5",
+		},
+		{
+			name:     "minimax lowercase variant",
+			input:    "minimax-m2-5-instruct",
+			expected: "minimax-m2v5-instruct",
+		},
 	}
 
 	for _, tt := range tests {
@@ -264,6 +279,20 @@ func TestCalculateSimilarity(t *testing.T) {
 			s2:       "RedHatAI/Llama-3.1-8B-Instruct",
 			minScore: 0.5,
 			maxScore: 0.8,
+		},
+		{
+			name:     "minimax container vs HuggingFace (high similarity)",
+			s1:       "registry.redhat.io/rhai/modelcar-minimax-m2-5:3.0",
+			s2:       "RedHatAI/MiniMax-M2.5",
+			minScore: 0.9,
+			maxScore: 1.0,
+		},
+		{
+			name:     "minimax with different casing",
+			s1:       "minimax-m2-5",
+			s2:       "MiniMax-M2.5",
+			minScore: 0.9,
+			maxScore: 1.0,
 		},
 	}
 

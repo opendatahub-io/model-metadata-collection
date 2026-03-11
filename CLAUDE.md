@@ -250,6 +250,213 @@ docker cp model-metadata-catalog:/app/data/models-catalog.yaml ./models-catalog.
 docker run -d -v $(pwd)/catalog-data:/app/data --name catalog model-metadata-collection:latest
 ```
 
+## Adding New Models and Model Families
+
+This section documents the process for adding new HuggingFace collections and ensuring proper metadata enrichment for new model families.
+
+### Adding a New HuggingFace Collection (Monthly/Dated)
+
+When a new monthly validated models collection is released (e.g., "March 2026"), follow these steps:
+
+**1. Add Collection Slug to Fallback List**
+
+Update `internal/huggingface/collections.go` in the `ProcessCollections()` function:
+
+```go
+collectionSlugs = []string{
+    "RedHatAI/red-hat-ai-validated-models-may-2025-682613dc19c4a596dbac9437",
+    // ... existing collections ...
+    "RedHatAI/red-hat-ai-validated-models-march-2026-69b0697e7f157651f5c0f5ac", // NEW
+    "RedHatAI/granite-quantized",
+    "RedHatAI/embedding-models",
+}
+```
+
+**2. Run `make process`**
+
+This will:
+- Generate the version-specific index file (e.g., `data/hugging-face-redhat-ai-validated-v2026-03.yaml`)
+- Update `data/validated-models-index.yaml` with ModelCar references
+- Generate updated catalogs
+
+**3. Verify Generated Files**
+
+```bash
+# Check the generated index file
+cat data/hugging-face-redhat-ai-validated-v2026-03.yaml
+
+# Verify models are in the catalog
+grep "name:" data/validated-models-catalog.yaml | tail -10
+```
+
+**4. Fix Any Missing Newlines**
+
+Ensure `data/validated-models-index.yaml` ends with a newline (required by global standards).
+
+### Adding a New Model Family
+
+When adding models from a **new model family** (e.g., MiniMax, DeepSeek, etc.), you need to register the family in the centralized configuration.
+
+**⚠️ CRITICAL: Centralized Model Family Registration**
+
+**All model families are now centrally defined in `internal/config/model_families.go`**
+
+**1. Add to SupportedModelFamilies** (`internal/config/model_families.go`)
+
+Add the new family name to the `SupportedModelFamilies` slice (keep alphabetically sorted):
+
+```go
+var SupportedModelFamilies = []string{
+    "deepseek",
+    "gemma",
+    "granite",
+    "kimi",
+    "llama",
+    "minimax",     // Example: Add your new family here
+    "mistral",
+    "mixtral",
+    "phi",
+    "qwen",
+    "yournewfamily", // Add new family alphabetically
+}
+```
+
+**That's it!** The centralized configuration automatically updates:
+- ✅ `internal/enrichment/enrichment.go` - Model family extraction for cross-family matching
+- ✅ `pkg/utils/text.go` - Version normalization regex pattern
+- ✅ Build-time consistency checks ensure everything stays synchronized
+
+**2. Run Tests to Verify**
+
+The centralized approach includes automated consistency checks:
+
+```bash
+# Run tests to verify model family is properly registered
+make test
+
+# Tests will verify:
+# - Alphabetical ordering
+# - No duplicates
+# - Valid family name format
+# - Regex pattern includes all families
+```
+
+**3. Add Test Cases for New Family**
+
+Update `pkg/utils/text_test.go` with normalization test cases:
+
+```go
+{
+    name:     "yournewfamily standard version",
+    input:    "registry.redhat.io/rhai/modelcar-yournewfamily-3-1:3.0",
+    expected: "yournewfamily-3v1",
+},
+{
+    name:     "yournewfamily from HuggingFace",
+    input:    "RedHatAI/YourNewFamily-3.1",
+    expected: "yournewfamily-3v1",
+},
+```
+
+**Benefits of Centralized Approach:**
+- ✅ Single source of truth prevents synchronization issues
+- ✅ Automated tests catch missing families at build time
+- ✅ Pre-compiled regex improves performance
+- ✅ Easier to add new families (only one location to update)
+- ✅ Self-documenting with comprehensive inline comments
+
+### Testing New Model Enrichment
+
+**⚠️ IMPORTANT**: Always test enrichment for new model families in isolation to identify issues quickly.
+
+**1. Create a Test Index File**
+
+```yaml
+# test-model-index.yaml
+models:
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-your-new-model:3.0
+  labels:
+  - validated
+```
+
+**2. Run Isolated Test**
+
+```bash
+make build
+
+rm -rf output/test-model
+
+./build/model-extractor \
+    --input test-model-index.yaml \
+    --output-dir output/test-model \
+    --skip-catalog \
+    --skip-default-static-catalog 2>&1 | grep -E "(Processing model:|Fetching|Found name|Found provider|Found description)"
+```
+
+**3. Verify Enrichment**
+
+```bash
+# Check the name field was populated
+grep "^name:" output/test-model/registry.redhat.io_rhai_modelcar-your-new-model_3.0/models/metadata.yaml
+
+# Should output something like:
+# name: RedHatAI/YourNewModel-M2.5
+```
+
+**4. If Enrichment Fails (name: null)**
+
+Debug the similarity score:
+- Check that the model family is in `internal/config/model_families.go` `SupportedModelFamilies` slice
+- Run `make test` to verify consistency checks pass
+- Verify the HuggingFace model exists in `data/hugging-face-redhat-ai-validated-merged.yaml`
+
+**5. Clean Up Test Files**
+
+```bash
+rm test-model-index.yaml
+rm -rf output/test-model
+```
+
+### Common Pitfalls and Debugging
+
+**Problem: Model name is `null` in catalog**
+
+**Root Cause**: Model name normalization mismatch between registry and HuggingFace names results in low similarity score (< 0.5 threshold).
+
+**Example (MiniMax case)**:
+- Registry: `"minimax-m2-5"` → tokens: `["minimax", "m2", "5"]`
+- HuggingFace: `"minimax-m2v5"` → tokens: `["minimax", "m2v5"]`
+- Similarity: 0.33 (only 1 of 3 tokens match) → **NO MATCH**
+
+**Solution**: Add model family to `internal/config/model_families.go` `SupportedModelFamilies` slice (alphabetically sorted)
+
+**Problem: Collection index file not found by `GetLatestVersionIndexFile()`**
+
+**Root Cause**: Index filename doesn't start with `v` prefix.
+
+**Solution**: Ensure `parseVersionFromTitle()` returns version starting with `v` (e.g., `v2026.03`, `v1.0-embedding-models`).
+
+**Problem: New models not showing up in catalog**
+
+**Debugging Steps**:
+1. Check if index file was generated: `ls -la data/hugging-face-redhat-ai-validated-v*.yaml`
+2. Check if models are in validated index: `grep -i "your-model" data/validated-models-index.yaml`
+3. Test enrichment in isolation (see Testing section above)
+4. Check enrichment logs for similarity scores: `grep "similarity\|score\|match" logs`
+
+### Checklist for Adding New Model Collections
+
+- [ ] Add collection slug to `internal/huggingface/collections.go` fallback list
+- [ ] If new model family, add to `SupportedModelFamilies` in `internal/config/model_families.go` (alphabetically)
+- [ ] Add test cases for new model family in `pkg/utils/text_test.go`
+- [ ] Run `make test` to verify consistency checks pass
+- [ ] Run `make build && make process`
+- [ ] Verify generated index file exists with correct version prefix
+- [ ] Test enrichment for at least one model in isolation
+- [ ] Verify all models appear in catalog with proper names (not `null`)
+- [ ] Fix any missing newlines in `data/validated-models-index.yaml`
+
 ## Current Capabilities
 - ✅ HuggingFace collections integration with automatic discovery
 - ✅ Semver version detection and handling
@@ -261,3 +468,4 @@ docker run -d -v $(pwd)/catalog-data:/app/data --name catalog model-metadata-col
 - ✅ Version-specific index file generation
 - ✅ Multi-stage Docker builds with registry authentication
 - ✅ Containerized catalog generation
+- ✅ Centralized model family configuration with automated consistency checks

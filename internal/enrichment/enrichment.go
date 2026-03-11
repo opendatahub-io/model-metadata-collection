@@ -18,6 +18,10 @@ import (
 
 // isCompatibleModelFamily checks if a container registry model can be matched with a HuggingFace model
 // This prevents cross-family matching (e.g., llama containers matching granite HF entries)
+//
+// CROSS-REFERENCE:
+// - Uses internal/config/model_families.go for model family definitions
+// - Works in conjunction with pkg/utils/NormalizeModelName() for name matching
 func isCompatibleModelFamily(regModel, hfModelName string) bool {
 	regNorm := utils.NormalizeModelName(regModel)
 	hfNorm := utils.NormalizeModelName(hfModelName)
@@ -31,14 +35,15 @@ func isCompatibleModelFamily(regModel, hfModelName string) bool {
 }
 
 // extractModelFamily extracts the model family from a normalized model name
+// IMPORTANT: Uses centralized model family definitions from internal/config/model_families.go
+// This ensures consistency with version normalization in pkg/utils/text.go
 func extractModelFamily(normalizedName string) string {
 	tokens := strings.FieldsFunc(normalizedName, func(r rune) bool {
 		return r == '-' || r == '_' || r == '/' || r == '.'
 	})
 
 	for _, token := range tokens {
-		switch token {
-		case "llama", "granite", "mistral", "gemma", "qwen", "phi", "mixtral", "deepseek", "kimi":
+		if config.IsModelFamily(token) {
 			return token
 		}
 	}

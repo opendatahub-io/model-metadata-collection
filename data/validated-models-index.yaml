@@ -242,3 +242,19 @@ models:
   uri: registry.redhat.io/rhai/modelcar-ministral-3-14b-instruct-2512:3.0
   labels:
   - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-devstral-small-2-24b-instruct-2512:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-qwen3-coder-next-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-ministral-3-3b-instruct-2512:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-minimax-m2-5:3.0
+  labels:
+  - validated
