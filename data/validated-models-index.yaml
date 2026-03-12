@@ -258,3 +258,7 @@ models:
   uri: registry.redhat.io/rhai/modelcar-minimax-m2-5:3.0
   labels:
   - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-phi-4-mini-instruct-fp8-dynamic:3.0
+  labels:
+  - validated
