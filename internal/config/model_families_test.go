@@ -40,17 +40,54 @@ func TestSupportedModelFamilies_ValidFormat(t *testing.T) {
 func TestGetModelFamilyRegexPattern(t *testing.T) {
 	pattern := GetModelFamilyRegexPattern()
 
-	// Verify pattern includes all families
-	for _, family := range SupportedModelFamilies {
-		if !strings.Contains(pattern, family) {
-			t.Errorf("Regex pattern missing family: %s", family)
-		}
-	}
-
 	// Verify pattern is valid regex
 	_, err := regexp.Compile(pattern)
 	if err != nil {
 		t.Errorf("Invalid regex pattern: %v", err)
+		return
+	}
+
+	// Extract the alternation group from the pattern
+	// Expected format: (family1|family2|...)-(\w?\d+)-(\d+)
+	// We need to extract the families from the first group
+	alternationRegex := regexp.MustCompile(`^\(([^)]+)\)`)
+	matches := alternationRegex.FindStringSubmatch(pattern)
+	if len(matches) < 2 {
+		t.Fatalf("Could not extract alternation group from pattern: %s", pattern)
+	}
+
+	// Split on pipe to get individual family tokens
+	patternFamilies := strings.Split(matches[1], "|")
+
+	// Convert to maps for comparison
+	expectedFamilies := make(map[string]bool)
+	for _, family := range SupportedModelFamilies {
+		expectedFamilies[family] = true
+	}
+
+	actualFamilies := make(map[string]bool)
+	for _, family := range patternFamilies {
+		actualFamilies[family] = true
+	}
+
+	// Verify all expected families are in the pattern (no missing families)
+	for _, family := range SupportedModelFamilies {
+		if !actualFamilies[family] {
+			t.Errorf("Regex pattern missing family: %s", family)
+		}
+	}
+
+	// Verify no extra families in the pattern (no unexpected families)
+	for _, family := range patternFamilies {
+		if !expectedFamilies[family] {
+			t.Errorf("Regex pattern contains unexpected family: %s", family)
+		}
+	}
+
+	// Verify counts match (catches duplicates)
+	if len(patternFamilies) != len(SupportedModelFamilies) {
+		t.Errorf("Pattern family count mismatch: got %d, expected %d",
+			len(patternFamilies), len(SupportedModelFamilies))
 	}
 }
 
