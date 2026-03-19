@@ -437,6 +437,67 @@ validated_on:
 				}
 			},
 		},
+		{
+			name: "frontmatter with tool-calling fields (Ministral example)",
+			content: `---
+language:
+  - en
+  - fr
+license: apache-2.0
+tool_calling_supported: true
+required_cli_args:
+  - --config_format mistral
+  - --load_format mistral
+  - --tokenizer_mode mistral
+chat_template_file_name: chat_template.jinja
+chat_template_path: examples/chat_template.jinja
+tool_call_parser: mistral
+tasks:
+  - text-generation
+  - tool-calling
+---
+# Model content`,
+			expectError: false,
+			checkFields: func(t *testing.T, fm *YAMLFrontmatter) {
+				if !fm.ToolCallingSupported {
+					t.Error("Expected ToolCallingSupported to be true")
+				}
+
+				expectedArgs := []string{"--config_format mistral", "--load_format mistral", "--tokenizer_mode mistral"}
+				if len(fm.RequiredCLIArgs) != len(expectedArgs) {
+					t.Errorf("Expected %d CLI args, got %d", len(expectedArgs), len(fm.RequiredCLIArgs))
+					return
+				}
+				for i, expected := range expectedArgs {
+					if fm.RequiredCLIArgs[i] != expected {
+						t.Errorf("RequiredCLIArgs[%d]: expected %q, got %q", i, expected, fm.RequiredCLIArgs[i])
+					}
+				}
+
+				if fm.ChatTemplateFileName != "chat_template.jinja" {
+					t.Errorf("Expected ChatTemplateFileName 'chat_template.jinja', got %q", fm.ChatTemplateFileName)
+				}
+
+				if fm.ChatTemplatePath != "examples/chat_template.jinja" {
+					t.Errorf("Expected ChatTemplatePath 'examples/chat_template.jinja', got %q", fm.ChatTemplatePath)
+				}
+
+				if fm.ToolCallParser != "mistral" {
+					t.Errorf("Expected ToolCallParser 'mistral', got %q", fm.ToolCallParser)
+				}
+
+				expectedTasks := []string{"text-generation", "tool-calling"}
+				if len(fm.Tasks) != len(expectedTasks) {
+					t.Errorf("Expected %d tasks, got %d", len(expectedTasks), len(fm.Tasks))
+					return
+				}
+				for i, expected := range expectedTasks {
+					if fm.Tasks[i] != expected {
+						t.Errorf("Tasks[%d]: expected %q, got %q", i, expected, fm.Tasks[i])
+					}
+				}
+			},
+		},
 	}
 
 	for _, tt := range tests {

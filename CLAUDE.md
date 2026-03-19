@@ -469,3 +469,88 @@ rm -rf output/test-model
 - ✅ Multi-stage Docker builds with registry authentication
 - ✅ Containerized catalog generation
 - ✅ Centralized model family configuration with automated consistency checks
+- ✅ Tool-calling metadata extraction and README enrichment
+
+## Tool-Calling Metadata Extraction
+
+**Source**: HuggingFace YAML frontmatter ONLY (not from container modelcards)
+
+The pipeline automatically extracts tool-calling configuration from HuggingFace README YAML frontmatter and appends a formatted vLLM deployment section to the model's README in the catalog. This makes tool-calling configuration visible and easy for users to copy-paste into their deployments.
+
+### Extracted Fields
+
+The following fields are extracted from HuggingFace YAML frontmatter:
+- `tool_calling_supported` (bool) - Indicates if the model supports tool calling
+- `required_cli_args` (array of strings) - Required vLLM CLI arguments for tool calling
+- `chat_template_path` (string) - Path to chat template file (auto-converted from `examples/` to `opt/app-root/template/`)
+- `tool_call_parser` (string) - Tool call parser type (e.g., "mistral", "llama", etc.)
+
+### Example YAML Frontmatter
+
+From RedHatAI/Ministral-3-14B-Instruct-2512:
+```yaml
+---
+tool_calling_supported: true
+required_cli_args:
+  - --config_format mistral
+  - --load_format mistral
+  - --tokenizer_mode mistral
+chat_template_path: None
+tool_call_parser: mistral
+---
+```
+
+### Generated README Section
+
+When tool-calling metadata is found, a vLLM deployment section is automatically appended to the model's README:
+
+```markdown
+## vLLM Deployment with Tool Calling
+
+This model supports tool calling capabilities. Use the following configuration for vLLM deployment:
+
+### Required CLI Arguments
+
+\`\`\`bash
+vllm serve RedHatAI/Ministral-3-14B-Instruct-2512 \
+  --config_format mistral \
+  --load_format mistral \
+  --tokenizer_mode mistral \
+  --tool-call-parser mistral \
+  --enable-auto-tool-choice
+\`\`\`
+
+### Tool Call Parser
+
+This model uses the `mistral` tool call parser.
+```
+
+### Template File
+
+The markdown section is generated from [pkg/utils/templates/tool-calling.md.tmpl](pkg/utils/templates/tool-calling.md.tmpl) using Go's `text/template` package.
+
+### Chat Template Path Conversion
+
+**IMPORTANT**: All chat template paths are automatically converted for RHOAI/OpenShift AI deployments:
+- Input: `examples/chat_template.jinja` (HuggingFace format)
+- Output: `opt/app-root/template/chat_template.jinja` (RHOAI format)
+
+This conversion is applied unconditionally for all models to ensure correct path references in the deployed environment.
+
+### Graceful Handling
+
+Models without tool-calling metadata are completely unaffected:
+- ✅ No errors or warnings
+- ✅ No empty sections added to README
+- ✅ Original README content unchanged
+- ✅ Only models WITH tool-calling metadata get the enriched section
+
+### Code Locations
+
+- **YAML Parsing**: [internal/huggingface/client.go:278-296](internal/huggingface/client.go#L278-L296) - YAMLFrontmatter struct with tool-calling fields
+- **Config Type**: [pkg/types/toolcalling.go](pkg/types/toolcalling.go) - ToolCallingConfig with path conversion logic
+- **Extraction**: [internal/enrichment/enrichment.go:438-456](internal/enrichment/enrichment.go#L438-L456) - Extract from HuggingFace YAML frontmatter
+- **README Append**: [internal/enrichment/update.go:344-367](internal/enrichment/update.go#L344-L367) - Conditionally append tool-calling section
+- **Template**: [pkg/utils/templates/tool-calling.md.tmpl](pkg/utils/templates/tool-calling.md.tmpl) - Markdown generation template
+- **Rendering**: [pkg/utils/template.go](pkg/utils/template.go) - Template rendering with go:embed
+

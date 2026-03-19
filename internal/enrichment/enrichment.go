@@ -435,8 +435,38 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 						enriched.ValidatedOn = metadata.CreateMetadataSource([]string(frontmatter.ValidatedOn), "huggingface.yaml")
 						log.Printf("  Extracted validated_on from YAML frontmatter: %v", frontmatter.ValidatedOn)
 					}
+
+					// Extract tool-calling configuration from HuggingFace YAML frontmatter ONLY
+					// NOTE: We do NOT extract this from container modelcard YAML - only from HuggingFace
+					var toolCallingConfig *types.ToolCallingConfig
+					if frontmatter.ToolCallingSupported || len(frontmatter.RequiredCLIArgs) > 0 || frontmatter.ToolCallParser != "" {
+						toolCallingConfig = &types.ToolCallingConfig{
+							Supported:        frontmatter.ToolCallingSupported,
+							RequiredCLIArgs:  []string(frontmatter.RequiredCLIArgs),
+							ChatTemplateFile: frontmatter.ChatTemplateFileName,
+							ChatTemplatePath: frontmatter.ChatTemplatePath,
+							ToolCallParser:   frontmatter.ToolCallParser,
+						}
+						log.Printf("  Extracted tool-calling config from HuggingFace: %+v", toolCallingConfig)
+
+						// Validate the tool-calling configuration
+						if err := toolCallingConfig.Validate(); err != nil {
+							log.Printf("  Warning: Invalid tool-calling config for %s: %v", regModel, err)
+							toolCallingConfig = nil // Discard invalid config
+						}
+					}
+
+					// Store for use during metadata update (will be nil if no tool-calling metadata)
+					enriched.ToolCallingConfig = toolCallingConfig
 				} else {
 					log.Printf("  No valid YAML frontmatter found in HF README: %v", err)
+				}
+
+				// Store the README content (strip YAML frontmatter first) for use during metadata update
+				readmeContent := utils.StripYAMLFrontmatter(hfReadme)
+				if readmeContent != "" {
+					enriched.ReadmeContent = readmeContent
+					log.Printf("  Stored HuggingFace README content (%d chars)", len(readmeContent))
 				}
 
 				// Fallback to text parsing for provider if needed

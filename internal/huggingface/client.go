@@ -231,6 +231,37 @@ func ExtractProviderFromReadme(readmeContent string) string {
 	return ""
 }
 
+// cliArgsSlice handles the malformed required_cli_args format in HuggingFace YAML
+// where elements like "--config_format: mistral" are parsed as maps instead of strings
+type cliArgsSlice []string
+
+func (c *cliArgsSlice) UnmarshalYAML(value *yaml.Node) error {
+	switch value.Kind {
+	case yaml.SequenceNode:
+		result := make([]string, 0)
+		for _, item := range value.Content {
+			switch item.Kind {
+			case yaml.ScalarNode:
+				// Normal string element
+				result = append(result, item.Value)
+			case yaml.MappingNode:
+				// Malformed element like "--config_format: mistral"
+				// This gets parsed as a map with one key-value pair
+				if len(item.Content) >= 2 {
+					key := item.Content[0].Value
+					val := item.Content[1].Value
+					// Combine as "key val" (e.g., "--config_format mistral")
+					result = append(result, key+" "+val)
+				}
+			}
+		}
+		*c = result
+		return nil
+	default:
+		return fmt.Errorf("cliArgsSlice: unsupported YAML node kind %v", value.Kind)
+	}
+}
+
 // stringSlice is a helper type that can unmarshal from either a YAML scalar or sequence
 type stringSlice []string
 
@@ -288,6 +319,13 @@ type YAMLFrontmatter struct {
 	Tasks       []string    `yaml:"tasks"`
 	Provider    string      `yaml:"provider"`
 	ValidatedOn stringSlice `yaml:"validated_on"`
+
+	// Tool-calling configuration fields (HuggingFace only)
+	ToolCallingSupported bool         `yaml:"tool_calling_supported"`
+	RequiredCLIArgs      cliArgsSlice `yaml:"required_cli_args"`
+	ChatTemplateFileName string       `yaml:"chat_template_file_name"`
+	ChatTemplatePath     string       `yaml:"chat_template_path"`
+	ToolCallParser       string       `yaml:"tool_call_parser"`
 }
 
 // ExtractYAMLFrontmatter extracts YAML frontmatter from README content

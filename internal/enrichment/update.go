@@ -332,14 +332,47 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 		}
 	}
 
-	// IMPORTANT: Preserve readme content if it's missing but modelcard file exists
+	// IMPORTANT: Apply HuggingFace README content if available (highest priority)
+	if existingMetadata.Readme == nil && enrichedData.ReadmeContent != "" {
+		existingMetadata.Readme = &enrichedData.ReadmeContent
+		enrichmentInfo.DataSources.Readme = "huggingface.readme"
+		log.Printf("  Applied HuggingFace README content (%d chars) for: %s", len(enrichedData.ReadmeContent), registryModel)
+	}
+
+	// Fallback: Preserve readme content if it's missing but modelcard file exists
 	if existingMetadata.Readme == nil {
 		modelcardPath := fmt.Sprintf("%s/%s/models/modelcard.md", outputDir, sanitizedName)
 		if modelcardContent, err := os.ReadFile(modelcardPath); err == nil && len(modelcardContent) > 0 {
 			// Strip YAML frontmatter from the readme content
 			readme := utils.StripYAMLFrontmatter(string(modelcardContent))
 			existingMetadata.Readme = &readme
+			enrichmentInfo.DataSources.Readme = "modelcard.md"
 			log.Printf("  Restored readme content from modelcard.md for: %s", registryModel)
+		}
+	}
+
+	// Append tool-calling section to README ONLY if tool-calling config exists
+	// Section is NOT added when ToolCallingConfig is nil or HasToolCalling() returns false
+	if enrichedData.ToolCallingConfig != nil && enrichedData.ToolCallingConfig.HasToolCalling() {
+		modelName := registryModel
+		if enrichedData.HuggingFaceModel != "" {
+			modelName = enrichedData.HuggingFaceModel
+		}
+
+		// RenderToolCallingSection returns empty string if no valid config
+		toolCallingSection, err := utils.RenderToolCallingSection(enrichedData.ToolCallingConfig, modelName)
+		if err != nil {
+			log.Printf("  Warning: Failed to render tool-calling section for %s: %v", registryModel, err)
+		} else if toolCallingSection != "" {
+			// ONLY append if section was actually rendered
+			if existingMetadata.Readme == nil {
+				existingMetadata.Readme = &toolCallingSection
+				log.Printf("  Created README with tool-calling section for: %s", registryModel)
+			} else {
+				updatedReadme := *existingMetadata.Readme + "\n\n" + toolCallingSection
+				existingMetadata.Readme = &updatedReadme
+				log.Printf("  Appended tool-calling section to README for: %s", registryModel)
+			}
 		}
 	}
 

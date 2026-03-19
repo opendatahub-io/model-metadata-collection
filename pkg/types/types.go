@@ -155,6 +155,13 @@ type EnrichedModelMetadata struct {
 	ReadmePath       string `yaml:"readme_path,omitempty"`
 	MatchConfidence  string `yaml:"match_confidence,omitempty"`
 	EnrichmentStatus string `yaml:"enrichment_status"`
+
+	// Tool-calling configuration (not exported to YAML, used during enrichment only)
+	ToolCallingConfig *ToolCallingConfig `yaml:"-"`
+
+	// README content from HuggingFace (not exported to YAML, used during enrichment only)
+	ReadmeContent string `yaml:"-"`
+
 	// Metadata with source tracking
 	Name                 MetadataSource `yaml:"name"`
 	Provider             MetadataSource `yaml:"provider"`
