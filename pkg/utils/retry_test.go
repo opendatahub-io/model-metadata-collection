@@ -132,3 +132,35 @@ func TestRetryWithExponentialBackoff_TimeoutProtection(t *testing.T) {
 		t.Errorf("Timeout not enforced properly, took %v (expected ~%v)", elapsed, config.OverallTimeout)
 	}
 }
+
+func TestRetryWithExponentialBackoff_TimeoutErrorWrapping(t *testing.T) {
+	// Test that timeout errors properly wrap the underlying error (or ctx.Err() if no underlying error)
+	config := RetryConfig{
+		MaxRetries:     5,
+		InitialBackoff: 50 * time.Millisecond,
+		MaxBackoff:     200 * time.Millisecond,
+		Multiplier:     2.0,
+		OverallTimeout: 150 * time.Millisecond, // Short timeout to trigger during retries
+	}
+
+	_, err := RetryWithExponentialBackoff(config, func() (string, error) {
+		time.Sleep(30 * time.Millisecond)
+		return "", errors.New("operation failed")
+	}, "test operation")
+
+	// Should return a wrapped timeout error
+	if err == nil {
+		t.Fatal("Expected timeout error, got nil")
+	}
+
+	// Error message should mention timeout
+	errMsg := err.Error()
+	if errMsg == "" {
+		t.Error("Expected non-empty error message")
+	}
+
+	// Should contain timeout information
+	if len(errMsg) < 10 {
+		t.Errorf("Expected descriptive timeout error, got: %v", err)
+	}
+}

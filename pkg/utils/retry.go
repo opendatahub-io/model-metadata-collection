@@ -45,7 +45,12 @@ func RetryWithExponentialBackoff[T any](config RetryConfig, operation func() (T,
 		select {
 		case <-ctx.Done():
 			log.Printf("  Retry timeout exceeded for %s: %v", operationName, ctx.Err())
-			return result, fmt.Errorf("retry timeout exceeded after %v: %w", config.OverallTimeout, err)
+			// Wrap ctx.Err() instead of err to avoid wrapping nil if timeout occurs before first operation
+			errToReturn := err
+			if errToReturn == nil {
+				errToReturn = ctx.Err()
+			}
+			return result, fmt.Errorf("retry timeout exceeded after %v: %w", config.OverallTimeout, errToReturn)
 		default:
 			// Continue with retry attempt
 		}
@@ -66,7 +71,12 @@ func RetryWithExponentialBackoff[T any](config RetryConfig, operation func() (T,
 				// Sleep completed normally
 			case <-ctx.Done():
 				log.Printf("  Retry timeout exceeded during backoff for %s: %v", operationName, ctx.Err())
-				return result, fmt.Errorf("retry timeout exceeded after %v: %w", config.OverallTimeout, err)
+				// Wrap ctx.Err() instead of err to avoid wrapping nil if timeout occurs before first operation
+				errToReturn := err
+				if errToReturn == nil {
+					errToReturn = ctx.Err()
+				}
+				return result, fmt.Errorf("retry timeout exceeded after %v: %w", config.OverallTimeout, errToReturn)
 			}
 		}
 
