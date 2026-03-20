@@ -622,7 +622,7 @@ func UpdateOCIArtifacts(registryModel, outputDir string) error {
 	// Generate OCI artifacts from the registry model reference
 	ociArtifacts := registry.ExtractOCIArtifactsFromRegistry(registryModel)
 
-	// Preserve existing timestamp data when updating artifacts
+	// Preserve existing data when updating artifacts
 	for i := range ociArtifacts {
 		if i < len(existingMetadata.Artifacts) {
 			// Preserve timestamps from existing artifacts if they exist
@@ -631,6 +631,23 @@ func UpdateOCIArtifacts(registryModel, outputDir string) error {
 			}
 			if existingMetadata.Artifacts[i].LastUpdateTimeSinceEpoch != nil {
 				ociArtifacts[i].LastUpdateTimeSinceEpoch = existingMetadata.Artifacts[i].LastUpdateTimeSinceEpoch
+			}
+
+			// Preserve customProperties from existing artifacts, merging with new ones
+			// This is critical to avoid losing architecture and other metadata on re-enrichment
+			if existingMetadata.Artifacts[i].CustomProperties != nil {
+				if ociArtifacts[i].CustomProperties == nil {
+					ociArtifacts[i].CustomProperties = make(map[string]interface{})
+				}
+
+				// Preserve specific fields that should not be lost
+				// Priority: keep existing values unless new ones are explicitly set
+				for key, existingValue := range existingMetadata.Artifacts[i].CustomProperties {
+					// Only preserve if the key doesn't exist in new artifacts or is empty
+					if _, exists := ociArtifacts[i].CustomProperties[key]; !exists {
+						ociArtifacts[i].CustomProperties[key] = existingValue
+					}
+				}
 			}
 		}
 	}

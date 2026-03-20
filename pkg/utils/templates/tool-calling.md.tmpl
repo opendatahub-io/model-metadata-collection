@@ -2,8 +2,7 @@
 
 This model supports tool calling capabilities. Use the following configuration for vLLM deployment:
 
-{{if .HasCLIArgs}}
-### Required CLI Arguments
+{{if .HasCLIArgs}}### Required CLI Arguments
 
 ```bash
 vllm serve {{ .ModelName }} \{{if index .Config.RequiredCLIArgs 0}}
@@ -12,22 +11,19 @@ vllm serve {{ .ModelName }} \{{if index .Config.RequiredCLIArgs 0}}
   {{end}}{{if .ProcessedPath}}--chat-template {{ .ProcessedPath }} \
   {{end}}--enable-auto-tool-choice
 ```
-{{else}}
-```bash
+{{else}}```bash
 vllm serve {{ .ModelName }}{{if .Config.ToolCallParser}} \
-  --tool-call-parser {{ .Config.ToolCallParser }}{{end}}{{if .ProcessedPath}} \
-  --chat-template {{ .ProcessedPath }}{{end}} \
+  --tool-call-parser {{ .Config.ToolCallParser}}{{end}}{{if .ProcessedPath}} \
+  --chat-template {{ .ProcessedPath}}{{end}} \
   --enable-auto-tool-choice
 ```
-{{end}}
+{{end -}}
 {{if .Config.ToolCallParser}}
-
 ### Tool Call Parser
 
 This model uses the `{{ .Config.ToolCallParser }}` tool call parser.
-{{end}}
+{{end -}}
 {{if .HasTemplateFile}}
-
 ### Chat Template
 
 Chat template file: `{{ .Config.ChatTemplateFile }}`{{if .ProcessedPath}}

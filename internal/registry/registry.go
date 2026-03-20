@@ -168,10 +168,16 @@ func AddArchitectureToArtifactProps(imageRef string, customProps map[string]inte
 // addArchitectureToCustomProps fetches architectures and adds them to custom properties
 // Returns true if architecture was successfully added, false otherwise.
 func addArchitectureToCustomProps(imageRef string, customProps map[string]interface{}) bool {
-	// Fetch architectures from the image
-	architectures, err := fetchImageArchitectures(imageRef)
+	// Fetch architectures with retry logic to handle transient failures
+	architectures, err := utils.RetryWithExponentialBackoff(
+		utils.DefaultRetryConfig,
+		func() ([]string, error) {
+			return fetchImageArchitectures(imageRef)
+		},
+		fmt.Sprintf("fetch architectures for %s", imageRef),
+	)
 	if err != nil {
-		log.Printf("Warning: Failed to fetch architectures for %s: %v", imageRef, err)
+		log.Printf("Warning: Failed to fetch architectures for %s after retries: %v", imageRef, err)
 		return false
 	}
 
