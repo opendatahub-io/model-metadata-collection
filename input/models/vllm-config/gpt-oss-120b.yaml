@@ -1,0 +1,28 @@
+---
+model:
+  name: RedHatAI/gpt-oss-120b
+presets:
+  - mode: online-serving
+    optimizations:
+      - optimization: low-latency
+        hardware: H200
+        description: "Low latency for online serving"
+        cli-args:
+          - --tensor-parallel-size 1
+          - --gpu-memory-utilization 0.92
+          - --max-cudagraph-capture-size 2048
+          - --max-num-batched-tokens 8192
+        recommendations:
+          - "--async-scheduling is on by default. If not, it is recommended to enable it with --async-scheduling true"
+  - mode: offline-serving
+    optimizations:
+      - optimization: high-throughput
+        hardware: H200
+        description: "High throughput for offline serving"
+        cli-args:
+          - --tensor-parallel-size 1
+          - --gpu-memory-utilization 0.92
+          - --max-cudagraph-capture-size 2048
+          - --max-num-batched-tokens 8192
+        recommendations:
+          - "--async-scheduling is on by default. If not, it is recommended to enable it with --async-scheduling true"

@@ -29,7 +29,7 @@ func TestEnrichMetadataFromHuggingFace_FilesNotExist(t *testing.T) {
 	}
 
 	// Test with missing HuggingFace index file
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output")
+	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
 	if err == nil {
 		t.Error("Expected error when HuggingFace index file doesn't exist")
 	}
@@ -68,7 +68,7 @@ func TestEnrichMetadataFromHuggingFace_InvalidHFFile(t *testing.T) {
 	}
 
 	// Test with invalid HuggingFace file
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output")
+	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
 	if err == nil {
 		t.Error("Expected error when HuggingFace index file is invalid")
 	}
@@ -122,7 +122,7 @@ func TestEnrichMetadataFromHuggingFace_MissingModelsIndex(t *testing.T) {
 	}
 
 	// Test with missing models-index.yaml
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output")
+	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
 	if err == nil {
 		t.Error("Expected error when models-index.yaml doesn't exist")
 	}
@@ -185,7 +185,7 @@ func TestEnrichMetadataFromHuggingFace_EmptyFiles(t *testing.T) {
 	}
 
 	// Test with empty files - should succeed
-	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "data/models-index.yaml", "output")
+	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "data/models-index.yaml", "output", "")
 	if err != nil {
 		t.Errorf("Unexpected error with empty files: %v", err)
 	}

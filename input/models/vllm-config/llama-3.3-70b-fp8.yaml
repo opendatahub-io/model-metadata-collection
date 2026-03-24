@@ -1,0 +1,28 @@
+---
+model:
+  name: RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic
+presets:
+  - mode: online-serving
+    optimizations:
+      - optimization: low-latency
+        hardware: H200
+        description: "Low latency for online serving"
+        cli-args:
+          - --tensor-parallel-size 1
+          - --max-num-batched-tokens 1024
+          - --gpu-memory-utilization 0.92
+          - --kv-cache-dtype fp8
+        recommendations:
+          - "--async-scheduling is on by default. If not, it is recommended to enable it with --async-scheduling true"
+  - mode: offline-serving
+    optimizations:
+      - optimization: high-throughput
+        hardware: H200
+        description: "High throughput for offline serving"
+        cli-args:
+          - --tensor-parallel-size 1
+          - --max-num-batched-tokens 1024
+          - --gpu-memory-utilization 0.92
+          - --kv-cache-dtype fp8
+        recommendations:
+          - "--async-scheduling is on by default. If not, it is recommended to enable it with --async-scheduling true"

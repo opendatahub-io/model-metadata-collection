@@ -1,0 +1,38 @@
+## vLLM Recommended Configurations
+{{- range .Presets}}
+
+### {{.ModeTitle}}
+{{- range .Optimizations}}
+
+#### {{.OptimizationTitle}}
+
+- Hardware: **{{.Hardware}}**
+{{- if .Constraints}}
+  - Constraints:
+{{- range .Constraints}}
+    - {{.}}
+{{- end}}
+{{- end}}
+{{- if .Description}}
+  - Description: {{.Description}}
+{{- end}}
+{{- if .HasCLIArgs}}
+  - CLI Args:
+    ```bash
+    {{.CLIArgsString}}
+    ```
+{{- end}}
+{{- if .HasEnvVars}}
+  - Env Vars:
+    ```bash
+    {{.EnvVarsString}}
+    ```
+{{- end}}
+{{- if .Recommendations}}
+  - **Recommendations**:
+{{- range .Recommendations}}
+    - {{.}}
+{{- end}}
+{{- end}}
+{{- end -}}
+{{end}}

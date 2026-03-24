@@ -531,3 +531,7 @@ Chat template paths are automatically converted for RHOAI/OpenShift AI deploymen
 - Input: `examples/chat_template.jinja` (HuggingFace format)
 - Output: `opt/app-root/template/chat_template.jinja` (RHOAI format)
 
+## vLLM Recommended Configurations
+
+Optimized vLLM configurations from the PSAP team are stored as YAML files in `input/models/vllm-config/`. During enrichment, these are matched by exact `model.name` and rendered as a "vLLM Recommended Configurations" markdown section appended to the model's README. See `pkg/types/vllmconfig.go` for the YAML schema and `pkg/utils/templates/vllm-config.md.tmpl` for the template.
+

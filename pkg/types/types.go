@@ -159,6 +159,9 @@ type EnrichedModelMetadata struct {
 	// Tool-calling configuration (not exported to YAML, used during enrichment only)
 	ToolCallingConfig *ToolCallingConfig `yaml:"-"`
 
+	// vLLM recommended configuration (not exported to YAML, used during enrichment only)
+	VLLMConfig *VLLMRecommendedConfig `yaml:"-"`
+
 	// README content from HuggingFace (not exported to YAML, used during enrichment only)
 	ReadmeContent string `yaml:"-"`
 

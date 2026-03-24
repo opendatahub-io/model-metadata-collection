@@ -34,6 +34,7 @@ import (
 // Command line flags
 var (
 	modelsIndexPath          = flag.String("input", "data/models-index.yaml", "Path to models index YAML file")
+	inputDir                 = flag.String("input-dir", "input", "Base directory for supplemental input files (supplemental-catalog.yaml, models/vllm-config/)")
 	outputDir                = flag.String("output-dir", "output", "Output directory for extracted metadata")
 	catalogOutputPath        = flag.String("catalog-output", "data/models-catalog.yaml", "Path for the generated models catalog")
 	maxConcurrent            = flag.Int("max-concurrent", 5, "Maximum number of concurrent model processing jobs")
@@ -41,7 +42,7 @@ var (
 	skipEnrichment           = flag.Bool("skip-enrichment", false, "Skip metadata enrichment from HuggingFace")
 	skipCatalog              = flag.Bool("skip-catalog", false, "Skip catalog generation")
 	staticCatalogFiles       = flag.String("static-catalog-files", "", "Comma-separated list of static catalog files to include")
-	skipDefaultStaticCatalog = flag.Bool("skip-default-static-catalog", false, "Skip processing the default input/supplemental-catalog.yaml file")
+	skipDefaultStaticCatalog = flag.Bool("skip-default-static-catalog", false, "Skip processing the default supplemental-catalog.yaml from the input directory")
 	help                     = flag.Bool("help", false, "Show help message")
 )
 
@@ -131,7 +132,7 @@ func main() {
 		}
 
 		log.Printf("Using HuggingFace index file: %s", hfIndexFile)
-		err := enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir)
+		err := enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir, filepath.Join(*inputDir, "models", "vllm-config"))
 		if err != nil {
 			log.Printf("Warning: Failed to enrich metadata: %v", err)
 		}
@@ -229,7 +230,7 @@ func getStaticCatalogPaths(staticCatalogFiles string, skipDefaultStaticCatalog b
 
 	// Add default static catalog file if not skipped and exists
 	if !skipDefaultStaticCatalog {
-		defaultPath := "input/supplemental-catalog.yaml"
+		defaultPath := filepath.Join(*inputDir, "supplemental-catalog.yaml")
 		if _, err := os.Stat(defaultPath); err == nil {
 			paths = append(paths, defaultPath)
 		}

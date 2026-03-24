@@ -353,25 +353,55 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 
 	// Append tool-calling section to README ONLY if tool-calling config exists
 	// Section is NOT added when ToolCallingConfig is nil or HasToolCalling() returns false
+	// Guard against duplicate sections on re-enrichment runs
 	if enrichedData.ToolCallingConfig != nil && enrichedData.ToolCallingConfig.HasToolCalling() {
-		modelName := registryModel
-		if enrichedData.HuggingFaceModel != "" {
-			modelName = enrichedData.HuggingFaceModel
-		}
+		alreadyPresent := existingMetadata.Readme != nil && strings.Contains(*existingMetadata.Readme, "## vLLM Deployment with Tool Calling")
+		if alreadyPresent {
+			log.Printf("  Tool-calling section already present in README, skipping for: %s", registryModel)
+		} else {
+			modelName := registryModel
+			if enrichedData.HuggingFaceModel != "" {
+				modelName = enrichedData.HuggingFaceModel
+			}
 
-		// RenderToolCallingSection returns empty string if no valid config
-		toolCallingSection, err := utils.RenderToolCallingSection(enrichedData.ToolCallingConfig, modelName)
-		if err != nil {
-			log.Printf("  Warning: Failed to render tool-calling section for %s: %v", registryModel, err)
-		} else if toolCallingSection != "" {
-			// ONLY append if section was actually rendered
-			if existingMetadata.Readme == nil {
-				existingMetadata.Readme = &toolCallingSection
-				log.Printf("  Created README with tool-calling section for: %s", registryModel)
-			} else {
-				updatedReadme := *existingMetadata.Readme + "\n\n" + toolCallingSection
-				existingMetadata.Readme = &updatedReadme
-				log.Printf("  Appended tool-calling section to README for: %s", registryModel)
+			// RenderToolCallingSection returns empty string if no valid config
+			toolCallingSection, err := utils.RenderToolCallingSection(enrichedData.ToolCallingConfig, modelName)
+			if err != nil {
+				log.Printf("  Warning: Failed to render tool-calling section for %s: %v", registryModel, err)
+			} else if toolCallingSection != "" {
+				// ONLY append if section was actually rendered
+				if existingMetadata.Readme == nil {
+					existingMetadata.Readme = &toolCallingSection
+					log.Printf("  Created README with tool-calling section for: %s", registryModel)
+				} else {
+					updatedReadme := *existingMetadata.Readme + "\n\n" + toolCallingSection
+					existingMetadata.Readme = &updatedReadme
+					log.Printf("  Appended tool-calling section to README for: %s", registryModel)
+				}
+			}
+		}
+	}
+
+	// Append vLLM recommended configurations section to README ONLY if config exists
+	// Section is NOT added when VLLMConfig is nil or HasPresets() returns false
+	// Guard against duplicate sections on re-enrichment runs
+	if enrichedData.VLLMConfig != nil && enrichedData.VLLMConfig.HasPresets() {
+		alreadyPresent := existingMetadata.Readme != nil && strings.Contains(*existingMetadata.Readme, "## vLLM Recommended Configurations")
+		if alreadyPresent {
+			log.Printf("  vLLM config section already present in README, skipping for: %s", registryModel)
+		} else {
+			vllmSection, err := utils.RenderVLLMConfigSection(enrichedData.VLLMConfig)
+			if err != nil {
+				log.Printf("  Warning: Failed to render vLLM config section for %s: %v", registryModel, err)
+			} else if vllmSection != "" {
+				if existingMetadata.Readme == nil {
+					existingMetadata.Readme = &vllmSection
+					log.Printf("  Created README with vLLM config section for: %s", registryModel)
+				} else {
+					updatedReadme := *existingMetadata.Readme + "\n\n" + vllmSection
+					existingMetadata.Readme = &updatedReadme
+					log.Printf("  Appended vLLM config section to README for: %s", registryModel)
+				}
 			}
 		}
 	}

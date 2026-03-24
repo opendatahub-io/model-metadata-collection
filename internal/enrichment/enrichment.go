@@ -52,7 +52,7 @@ func extractModelFamily(normalizedName string) string {
 }
 
 // EnrichMetadataFromHuggingFace enriches registry model metadata using HuggingFace data
-func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir string) error {
+func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllmConfigDir string) error {
 	log.Println("Enriching registry model metadata with HuggingFace data...")
 
 	// Load HuggingFace models
@@ -72,6 +72,14 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 	regModels, err := config.LoadModelsFromYAML(modelsIndexPath)
 	if err != nil {
 		return fmt.Errorf("failed to load registry models: %v", err)
+	}
+
+	// Load vLLM recommended configurations from static files
+	vllmIndex, vllmErr := config.LoadVLLMConfigs(vllmConfigDir)
+	if vllmErr != nil {
+		log.Printf("Warning: Failed to load vLLM configs: %v", vllmErr)
+	} else {
+		log.Printf("Loaded %d vLLM recommended configurations", vllmIndex.ModelCount())
 	}
 
 	matchCount := 0
@@ -534,6 +542,14 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir strin
 
 					enriched.Tags = metadata.CreateMetadataSource(allTags, "huggingface.tags")
 					log.Printf("  Merged modelcard + repository tags: %v", allTags)
+				}
+			}
+
+			// Look up vLLM recommended configuration by exact model name match
+			if vllmIndex != nil && enriched.HuggingFaceModel != "" {
+				if vllmCfg := vllmIndex.GetConfig(enriched.HuggingFaceModel); vllmCfg != nil {
+					enriched.VLLMConfig = vllmCfg
+					log.Printf("  Found vLLM recommended config for: %s", enriched.HuggingFaceModel)
 				}
 			}
 
