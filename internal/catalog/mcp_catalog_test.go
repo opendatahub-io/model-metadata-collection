@@ -3,6 +3,7 @@ package catalog
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -232,18 +233,35 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 	t.Run("path traversal input_path is rejected", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
+		// Create a sentinel file OUTSIDE the fixture tree with unique identifiable content.
+		// It is written as valid MCP server YAML so that if the traversal guard were removed
+		// the file would parse successfully and appear in the catalog — making the regression
+		// detectable both by server count and by sentinel content in the raw catalog bytes.
+		sentinelDir := t.TempDir()
+		const sentinelMarker = "sentinel-unique-xk3mq9"
+		sentinelContent := "name: " + sentinelMarker + "\nprovider: sentinel\ndescription: sentinel\nversion: sentinel\n"
+		sentinelPath := filepath.Join(sentinelDir, "sentinel.yaml")
+		if err := os.WriteFile(sentinelPath, []byte(sentinelContent), 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		// Compute a relative path from the index directory to the sentinel — it will start with "..".
+		relPath, err := filepath.Rel(tmpDir, sentinelPath)
+		if err != nil {
+			t.Fatalf("failed to compute relative traversal path: %v", err)
+		}
+
 		index := types.MCPServersIndex{
 			Source: "Test",
 			MCPServers: []types.MCPServerEntry{
-				{Name: "traversal-attempt", InputPath: "../../etc/passwd"},
+				{Name: "traversal-attempt", InputPath: relPath},
 			},
 		}
 		indexPath := filepath.Join(tmpDir, "index.yaml")
 		writeYAML(t, indexPath, index)
 
 		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
-		err := CreateMCPServersCatalog(indexPath, catalogPath)
-		if err != nil {
+		if err := CreateMCPServersCatalog(indexPath, catalogPath); err != nil {
 			t.Fatalf("CreateMCPServersCatalog should not fail on invalid input_path: %v", err)
 		}
 
@@ -251,11 +269,16 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to read catalog: %v", err)
 		}
+
+		// Sentinel content must not appear in the catalog output.
+		if strings.Contains(string(data), sentinelMarker) {
+			t.Error("catalog contains sentinel content — path traversal guard was bypassed")
+		}
+
 		var catalog types.MCPServersCatalog
 		if err := yaml.Unmarshal(data, &catalog); err != nil {
 			t.Fatalf("Failed to parse catalog: %v", err)
 		}
-
 		if len(catalog.MCPServers) != 0 {
 			t.Errorf("expected 0 servers (path traversal rejected), got %d", len(catalog.MCPServers))
 		}
