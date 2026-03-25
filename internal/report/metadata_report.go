@@ -462,11 +462,11 @@ func writeMarkdownReport(report *MetadataReport, outputPath string) error {
 
 	// Title and generation info
 	md.WriteString("# Model Metadata Completeness Report\n\n")
-	md.WriteString(fmt.Sprintf("**Generated:** %s\n\n", report.GeneratedAt.Format("2006-01-02 15:04:05 UTC")))
+	fmt.Fprintf(&md, "**Generated:** %s\n\n", report.GeneratedAt.Format("2006-01-02 15:04:05 UTC"))
 
 	// Summary section
 	md.WriteString("## Summary\n\n")
-	md.WriteString(fmt.Sprintf("**Total Models:** %d\n\n", report.Summary.TotalModels))
+	fmt.Fprintf(&md, "**Total Models:** %d\n\n", report.Summary.TotalModels)
 
 	// Field completeness table
 	md.WriteString("### Field Completeness\n\n")
@@ -487,8 +487,8 @@ func writeMarkdownReport(report *MetadataReport, outputPath string) error {
 	})
 
 	for _, fc := range sortedFields {
-		md.WriteString(fmt.Sprintf("| %s | %d | %d | %.1f%% |\n",
-			fc.name, fc.comp.Populated, fc.comp.Null, fc.comp.Percentage))
+		fmt.Fprintf(&md, "| %s | %d | %d | %.1f%% |\n",
+			fc.name, fc.comp.Populated, fc.comp.Null, fc.comp.Percentage)
 	}
 
 	// Data sources summary
@@ -515,7 +515,7 @@ func writeMarkdownReport(report *MetadataReport, outputPath string) error {
 
 	for _, sc := range sortedSources {
 		percentage := float64(sc.count) / float64(total) * 100
-		md.WriteString(fmt.Sprintf("| %s | %d | %.1f%% |\n", sc.source, sc.count, percentage))
+		fmt.Fprintf(&md, "| %s | %d | %.1f%% |\n", sc.source, sc.count, percentage)
 	}
 
 	// Source breakdown summary
@@ -552,17 +552,17 @@ func writeMarkdownReport(report *MetadataReport, outputPath string) error {
 
 	for _, entry := range sortedBreakdown {
 		percentage := float64(entry.count) / float64(total) * 100
-		md.WriteString(fmt.Sprintf("| %s | %d | %.1f%% |\n", entry.name, entry.count, percentage))
+		fmt.Fprintf(&md, "| %s | %d | %.1f%% |\n", entry.name, entry.count, percentage)
 	}
 
 	// Individual model reports
 	md.WriteString("\n## Individual Model Reports\n\n")
 
 	for _, model := range report.Models {
-		md.WriteString(fmt.Sprintf("### %s\n\n", model.Name))
+		fmt.Fprintf(&md, "### %s\n\n", model.Name)
 
 		if model.Provider != "" {
-			md.WriteString(fmt.Sprintf("**Provider:** %s\n\n", model.Provider))
+			fmt.Fprintf(&md, "**Provider:** %s\n\n", model.Provider)
 		}
 
 		// Missing fields
@@ -580,7 +580,7 @@ func writeMarkdownReport(report *MetadataReport, outputPath string) error {
 
 		if totalFields > 0 {
 			yamlPercentage := float64(yamlFields) / float64(totalFields) * 100
-			md.WriteString(fmt.Sprintf("**YAML Frontmatter Health:** %.1f%% (%d/%d fields from YAML)\n\n", yamlPercentage, yamlFields, totalFields))
+			fmt.Fprintf(&md, "**YAML Frontmatter Health:** %.1f%% (%d/%d fields from YAML)\n\n", yamlPercentage, yamlFields, totalFields)
 		}
 
 		// Field details
@@ -605,8 +605,8 @@ func writeMarkdownReport(report *MetadataReport, outputPath string) error {
 				statusStr = "⚠️ empty"
 			}
 
-			md.WriteString(fmt.Sprintf("| %s | %s | %s | %s | %s |\n",
-				field, valueStr, status.Source, status.DetectionMethod, statusStr))
+			fmt.Fprintf(&md, "| %s | %s | %s | %s | %s |\n",
+				field, valueStr, status.Source, status.DetectionMethod, statusStr)
 		}
 
 		md.WriteString("\n")

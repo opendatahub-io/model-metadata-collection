@@ -14,11 +14,7 @@ import (
 
 func TestToolCallingIntegration_WithToolCalling(t *testing.T) {
 	// Create temp directory for test output
-	tmpDir, err := os.MkdirTemp("", "toolcalling-test-*")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 
 	// Setup test data with tool-calling config
 	registryModel := "registry.redhat.io/rhai/modelcar-mistral-7b:1.0"
@@ -81,8 +77,7 @@ This is a base model for testing.`
 	}
 
 	// Execute UpdateModelMetadataFile
-	err = UpdateModelMetadataFile(registryModel, enrichedData, tmpDir)
-	if err != nil {
+	if err := UpdateModelMetadataFile(registryModel, enrichedData, tmpDir); err != nil {
 		t.Fatalf("UpdateModelMetadataFile() failed: %v", err)
 	}
 
@@ -128,11 +123,7 @@ This is a base model for testing.`
 
 func TestToolCallingIntegration_WithoutToolCalling(t *testing.T) {
 	// Create temp directory for test output
-	tmpDir, err := os.MkdirTemp("", "toolcalling-test-no-config-*")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 
 	// Setup test data WITHOUT tool-calling config
 	registryModel := "registry.redhat.io/rhai/modelcar-granite-3b:1.0"
@@ -184,8 +175,7 @@ This is a model without tool calling support.`
 	}
 
 	// Execute UpdateModelMetadataFile
-	err = UpdateModelMetadataFile(registryModel, enrichedData, tmpDir)
-	if err != nil {
+	if err := UpdateModelMetadataFile(registryModel, enrichedData, tmpDir); err != nil {
 		t.Fatalf("UpdateModelMetadataFile() failed: %v", err)
 	}
 
@@ -217,11 +207,7 @@ This is a model without tool calling support.`
 
 func TestToolCallingIntegration_EmptyConfig(t *testing.T) {
 	// Test with empty config (no supported fields set)
-	tmpDir, err := os.MkdirTemp("", "toolcalling-test-empty-*")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 
 	registryModel := "registry.redhat.io/rhai/modelcar-test:1.0"
 	enrichedData := &types.EnrichedModelMetadata{
@@ -274,8 +260,7 @@ Basic test model.`
 	}
 
 	// Execute
-	err = UpdateModelMetadataFile(registryModel, enrichedData, tmpDir)
-	if err != nil {
+	if err := UpdateModelMetadataFile(registryModel, enrichedData, tmpDir); err != nil {
 		t.Fatalf("UpdateModelMetadataFile() failed: %v", err)
 	}
 
@@ -297,11 +282,7 @@ Basic test model.`
 func TestToolCallingIntegration_WithoutValidatedOn(t *testing.T) {
 	// CRITICAL TEST: Verify tool-calling extraction works WITHOUT validated_on field
 	// This tests the bug fix where tool-calling was incorrectly nested inside validated_on block
-	tmpDir, err := os.MkdirTemp("", "toolcalling-test-no-validated-*")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tmpDir)
+	tmpDir := t.TempDir()
 
 	// Setup test data with tool-calling config but NO validated_on
 	registryModel := "registry.redhat.io/rhai/modelcar-qwen-7b:1.0"
@@ -360,8 +341,7 @@ This model supports tool calling without validated_on field.`
 	}
 
 	// Execute UpdateModelMetadataFile
-	err = UpdateModelMetadataFile(registryModel, enrichedData, tmpDir)
-	if err != nil {
+	if err := UpdateModelMetadataFile(registryModel, enrichedData, tmpDir); err != nil {
 		t.Fatalf("UpdateModelMetadataFile() failed: %v", err)
 	}
 

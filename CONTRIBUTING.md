@@ -56,7 +56,7 @@ Run the model extractor with default settings:
 make run
 ```
 
-Process all model indexes (RedHat, validated, other):
+Process all model indexes (Red Hat, validated, other):
 
 ```bash
 make process
@@ -141,7 +141,7 @@ make ci       # Runs deps, check, test, build
 
 This project follows the [Conventional Commits](https://www.conventionalcommits.org/) standard:
 
-```
+```text
 {type}({scope}): {description}
 
 [optional body]

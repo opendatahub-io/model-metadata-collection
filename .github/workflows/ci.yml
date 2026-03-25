@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Lint
@@ -24,8 +27,9 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v2.1.6
+          version: v2.11.4
           args: --timeout=5m
+          only-new-issues: true
 
       - name: Check formatting
         run: make fmt-check

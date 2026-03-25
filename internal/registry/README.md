@@ -12,8 +12,9 @@ The `registry` package handles container registry operations for OCI/Docker imag
 
 ## Key Functions
 
-- `FetchManifestSrcAndLayers()` - Fetches manifest metadata and layer info for an image
-- `parseRegistryImageRef()` - Parses image references into structured components
+- `FetchRegistryMetadata()` - Fetches registry-level metadata (tags, creation dates) for an image
+- `AddArchitectureToArtifactProps()` - Adds architecture info to OCI artifact properties
+- `ExtractOCIArtifactsFromRegistry()` - Extracts OCI artifact metadata from a manifest reference
 
 ## Dependencies
 

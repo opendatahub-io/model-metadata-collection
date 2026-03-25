@@ -77,8 +77,12 @@ presets:
         cli-args:
           - --tensor-parallel-size 1
 `
-		os.WriteFile(filepath.Join(tmpDir, "model-a.yaml"), []byte(yaml1), 0644)
-		os.WriteFile(filepath.Join(tmpDir, "model-b.yaml"), []byte(yaml2), 0644)
+		if err := os.WriteFile(filepath.Join(tmpDir, "model-a.yaml"), []byte(yaml1), 0644); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(tmpDir, "model-b.yaml"), []byte(yaml2), 0644); err != nil {
+			t.Fatal(err)
+		}
 
 		index, err := LoadVLLMConfigs(tmpDir)
 		if err != nil {
@@ -98,7 +102,9 @@ presets:
 	t.Run("invalid YAML is skipped", func(t *testing.T) {
 		tmpDir := t.TempDir()
 
-		os.WriteFile(filepath.Join(tmpDir, "bad.yaml"), []byte("not: [valid: yaml: {{"), 0644)
+		if err := os.WriteFile(filepath.Join(tmpDir, "bad.yaml"), []byte("not: [valid: yaml: {{"), 0644); err != nil {
+			t.Fatal(err)
+		}
 
 		index, err := LoadVLLMConfigs(tmpDir)
 		if err != nil {
@@ -122,7 +128,9 @@ presets:
       - optimization: low-latency
         hardware: H200
 `
-		os.WriteFile(filepath.Join(tmpDir, "invalid.yaml"), []byte(invalidYAML), 0644)
+		if err := os.WriteFile(filepath.Join(tmpDir, "invalid.yaml"), []byte(invalidYAML), 0644); err != nil {
+			t.Fatal(err)
+		}
 
 		index, err := LoadVLLMConfigs(tmpDir)
 		if err != nil {
@@ -171,7 +179,9 @@ presets:
 
 	t.Run("exact match hit", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		os.WriteFile(filepath.Join(tmpDir, "llama.yaml"), []byte(llamaYAML), 0644)
+		if err := os.WriteFile(filepath.Join(tmpDir, "llama.yaml"), []byte(llamaYAML), 0644); err != nil {
+			t.Fatal(err)
+		}
 
 		index, _ := LoadVLLMConfigs(tmpDir)
 		cfg := index.GetConfig("RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic")
@@ -182,7 +192,9 @@ presets:
 
 	t.Run("exact match miss", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		os.WriteFile(filepath.Join(tmpDir, "llama.yaml"), []byte(llamaYAML), 0644)
+		if err := os.WriteFile(filepath.Join(tmpDir, "llama.yaml"), []byte(llamaYAML), 0644); err != nil {
+			t.Fatal(err)
+		}
 
 		index, _ := LoadVLLMConfigs(tmpDir)
 		cfg := index.GetConfig("RedHatAI/Llama-3.3-70B-Instruct")
