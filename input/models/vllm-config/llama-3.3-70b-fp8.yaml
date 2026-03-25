@@ -9,7 +9,6 @@ presets:
         description: "Low latency for online serving"
         cli-args:
           - --tensor-parallel-size 1
-          - --max-num-batched-tokens 1024
           - --gpu-memory-utilization 0.92
           - --kv-cache-dtype fp8
         recommendations:
@@ -21,7 +20,6 @@ presets:
         description: "High throughput for offline serving"
         cli-args:
           - --tensor-parallel-size 1
-          - --max-num-batched-tokens 1024
           - --gpu-memory-utilization 0.92
           - --kv-cache-dtype fp8
         recommendations:
