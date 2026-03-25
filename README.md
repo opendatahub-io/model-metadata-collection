@@ -119,6 +119,11 @@ Generate metadata completeness reports:
 
 # Skip default static catalog but include custom ones
 ./build/model-extractor --skip-default-static-catalog --static-catalog-files custom.yaml
+
+# Generate MCP servers catalog only (no model processing)
+./build/model-extractor \
+    --mcp-index data/redhat-mcp-servers-index.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
 ```
 
 ### CLI Options
@@ -134,6 +139,8 @@ Generate metadata completeness reports:
 | `--skip-catalog` | Skip catalog generation | `false` |
 | `--static-catalog-files` | Comma-separated list of static catalog files | `""` |
 | `--skip-default-static-catalog` | Skip processing default input/supplemental-catalog.yaml | `false` |
+| `--mcp-index` | Path to MCP servers index YAML file (enables MCP catalog generation) | `""` |
+| `--mcp-catalog-output` | Path for the generated MCP servers catalog | `data/redhat-mcp-servers-catalog.yaml` |
 | `--help` | Show help message | `false` |
 
 ### Metadata Report CLI Options
@@ -495,7 +502,7 @@ Runs formatting, vetting, testing, and building in sequence.
 | `ci` | Full CI pipeline |
 | `release` | Create optimized release build |
 | `run` | Run with default settings |
-| `process` | Run with custom input/output paths |
+| `process` | Process all model indexes and MCP server catalogs |
 | `report` | Generate metadata completeness reports |
 | `docker-build` | Build Docker container image |
 

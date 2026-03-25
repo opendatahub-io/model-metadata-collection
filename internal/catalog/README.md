@@ -16,3 +16,4 @@ The `catalog` package handles model catalog generation and management.
 - `CreateModelsCatalog()` - Creates catalog from processed model output directory
 - `CreateModelsCatalogWithStatic()` - Creates catalog merging dynamic and static model entries
 - `CreateModelsCatalogWithStaticFromResults()` - Creates catalog from explicit model refs and static entries
+- `CreateMCPServersCatalog()` - Reads MCP servers index, loads input files, and writes aggregated MCP catalog

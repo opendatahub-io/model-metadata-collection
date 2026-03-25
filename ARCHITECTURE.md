@@ -23,6 +23,9 @@ flowchart TD
     K --> L[Catalog Generation]
     M[Supplemental Static Catalog] --> L
     L --> N[models-catalog.yaml]
+
+    O[MCP Server Index] --> P[Load MCP Input Files]
+    P --> Q[redhat-mcp-servers-catalog.yaml]
 ```
 
 ## Package Structure
@@ -58,7 +61,7 @@ Main CLI application. Orchestrates the full pipeline: HuggingFace collection pro
 
 ### `internal/catalog/`
 
-Catalog generation and management. Loads static catalogs, merges extracted metadata from processed models, deduplicates entries, and writes the final `models-catalog.yaml` output.
+Catalog generation and management. Loads static catalogs, merges extracted metadata from processed models, deduplicates entries, and writes the final `models-catalog.yaml` output. Also handles MCP server catalog generation by aggregating individual server input files into `redhat-mcp-servers-catalog.yaml`.
 
 ### `internal/config/`
 
@@ -82,7 +85,7 @@ Container registry operations using `github.com/containers/image/v5`. Fetches OC
 
 ### `pkg/types/`
 
-Shared type definitions used across packages: `CatalogMetadata`, `ModelMetadata`, `HFCollection`, `VLLMConfig`, and related structs.
+Shared type definitions used across packages: `CatalogMetadata`, `ModelMetadata`, `HFCollection`, `VLLMConfig`, `MCPServerMetadata`, `MCPServersCatalog`, and related structs.
 
 ### `pkg/utils/`
 
@@ -130,5 +133,9 @@ output/{sanitized-manifest-ref}/
 data/
   models-catalog.yaml              # Final merged catalog
   validated-models-catalog.yaml    # Validated models catalog
+  redhat-mcp-servers-catalog.yaml  # MCP servers catalog
   hugging-face-redhat-ai-validated-v*.yaml  # Version-specific HF indices
+
+input/mcp_servers/
+  *.yaml                           # Individual MCP server metadata files
 ```

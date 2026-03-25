@@ -22,6 +22,8 @@ OTHER_MODELS_INDEX_PATH=data/other-models-index.yaml
 REDHAT_CATALOG_OUTPUT_PATH=data/models-catalog.yaml
 VALIDATED_CATALOG_OUTPUT_PATH=data/validated-models-catalog.yaml
 OTHER_CATALOG_OUTPUT_PATH=data/other-models-catalog.yaml
+MCP_SERVERS_INDEX_PATH=data/redhat-mcp-servers-index.yaml
+MCP_SERVERS_CATALOG_OUTPUT_PATH=data/redhat-mcp-servers-catalog.yaml
 
 # Container parameters
 CONTAINER_RUNTIME?=$(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null || echo docker)
@@ -59,6 +61,7 @@ clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf output/
 	rm -f data/hugging-face-redhat-ai-validated-*.yaml
+	rm -f $(MCP_SERVERS_CATALOG_OUTPUT_PATH)
 
 # Run tests
 test:
@@ -137,6 +140,11 @@ process: build
 		--output-dir output/other \
 		--catalog-output $(OTHER_CATALOG_OUTPUT_PATH) \
 		--skip-default-static-catalog
+	@echo "Processing MCP servers catalog..."
+	./$(BUILD_DIR)/$(BINARY_NAME) \
+		--mcp-index $(MCP_SERVERS_INDEX_PATH) \
+		--mcp-catalog-output $(MCP_SERVERS_CATALOG_OUTPUT_PATH) \
+		--skip-huggingface --skip-enrichment --skip-catalog
 
 # Generate metadata completeness report
 report: build-report

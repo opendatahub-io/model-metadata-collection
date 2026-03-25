@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -43,6 +44,8 @@ var (
 	skipCatalog              = flag.Bool("skip-catalog", false, "Skip catalog generation")
 	staticCatalogFiles       = flag.String("static-catalog-files", "", "Comma-separated list of static catalog files to include")
 	skipDefaultStaticCatalog = flag.Bool("skip-default-static-catalog", false, "Skip processing the default supplemental-catalog.yaml from the input directory")
+	mcpIndexPath             = flag.String("mcp-index", "", "Path to MCP servers index YAML file (if set, generates MCP catalog)")
+	mcpCatalogOutputPath     = flag.String("mcp-catalog-output", "data/redhat-mcp-servers-catalog.yaml", "Path for the generated MCP servers catalog")
 	help                     = flag.Bool("help", false, "Show help message")
 )
 
@@ -71,111 +74,132 @@ func main() {
 	log.Printf("  Skip Catalog: %v", *skipCatalog)
 	log.Printf("  Static Catalog Files: %s", *staticCatalogFiles)
 	log.Printf("  Skip Default Static Catalog: %v", *skipDefaultStaticCatalog)
+	log.Printf("  MCP Index: %s", *mcpIndexPath)
+	log.Printf("  MCP Catalog Output: %s", *mcpCatalogOutputPath)
 
-	// Ensure output directory exists
-	if err := os.MkdirAll(*outputDir, 0755); err != nil {
-		log.Fatalf("Failed to create output directory: %v", err)
-	}
+	// Determine if model processing should run.
+	// Skip when all model pipeline steps are disabled, regardless of MCP processing.
+	skipModels := *skipHuggingFace && *skipEnrichment && *skipCatalog
 
-	// Ensure catalog output directory exists
-	catalogDir := filepath.Dir(*catalogOutputPath)
-	if err := os.MkdirAll(catalogDir, 0755); err != nil {
-		log.Fatalf("Failed to create catalog output directory: %v", err)
-	}
-
-	// Process HuggingFace collections (unless skipped)
-	if !*skipHuggingFace {
-		log.Println("Processing HuggingFace collections...")
-		err := huggingface.ProcessCollections()
-		if err != nil {
-			log.Printf("Warning: Failed to process HuggingFace collections: %v", err)
-			log.Println("Falling back to existing models-index.yaml")
+	if !skipModels {
+		// Ensure output directory exists
+		if err := os.MkdirAll(*outputDir, 0755); err != nil {
+			log.Fatalf("Failed to create output directory: %v", err)
 		}
-	}
 
-	// Load models from configuration file
-	modelEntries, err := loadModelsWithMetadata(*modelsIndexPath)
-	if err != nil {
-		log.Fatalf("Failed to load models: %v", err)
-	}
+		// Ensure catalog output directory exists
+		catalogDir := filepath.Dir(*catalogOutputPath)
+		if err := os.MkdirAll(catalogDir, 0755); err != nil {
+			log.Fatalf("Failed to create catalog output directory: %v", err)
+		}
 
-	log.Printf("Processing %d models...", len(modelEntries))
-
-	// Process models in parallel
-	modelResults := processModelsInParallelWithMetadata(modelEntries, *maxConcurrent)
-
-	// Generate manifests.yaml
-	err = generateManifestsYAML(modelResults, *outputDir)
-	if err != nil {
-		log.Fatalf("Failed to generate manifests.yaml: %v", err)
-	}
-
-	log.Printf("All manifest processing completed")
-
-	// Enrich registry model metadata with HuggingFace data (unless skipped)
-	// This happens AFTER model processing to enrich the extracted metadata
-	if !*skipEnrichment {
-		log.Println("Enriching extracted metadata with HuggingFace data...")
-
-		// Determine HuggingFace index file to use
-		// Prefer merged index file to ensure all models from all collections are available for matching
-		hfIndexFile := "data/hugging-face-redhat-ai-validated-merged.yaml"
-		if _, err := os.Stat(hfIndexFile); err != nil {
-			// Fallback to latest version-specific file if merged doesn't exist
-			log.Printf("Warning: Merged index file not found, falling back to latest version file")
-			hfIndexFile, err = getLatestVersionIndexFile()
+		// Process HuggingFace collections (unless skipped)
+		if !*skipHuggingFace {
+			log.Println("Processing HuggingFace collections...")
+			err := huggingface.ProcessCollections()
 			if err != nil {
-				log.Printf("Warning: Could not find HuggingFace index file: %v", err)
-				// Use default fallback path
-				hfIndexFile = "data/hugging-face-redhat-ai-validated-v1-0.yaml"
+				log.Printf("Warning: Failed to process HuggingFace collections: %v", err)
+				log.Println("Falling back to existing models-index.yaml")
 			}
 		}
 
-		log.Printf("Using HuggingFace index file: %s", hfIndexFile)
-		err := enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir, filepath.Join(*inputDir, "models", "vllm-config"))
+		// Load models from configuration file
+		modelEntries, err := loadModelsWithMetadata(*modelsIndexPath)
 		if err != nil {
-			log.Printf("Warning: Failed to enrich metadata: %v", err)
+			log.Fatalf("Failed to load models: %v", err)
 		}
 
-		// Update all existing models with OCI artifact metadata
-		err = enrichment.UpdateAllModelsWithOCIArtifacts(*modelsIndexPath, *outputDir)
+		log.Printf("Processing %d models...", len(modelEntries))
+
+		// Process models in parallel
+		modelResults := processModelsInParallelWithMetadata(modelEntries, *maxConcurrent)
+
+		// Generate manifests.yaml
+		err = generateManifestsYAML(modelResults, *outputDir)
 		if err != nil {
-			log.Printf("Warning: Failed to update OCI artifacts: %v", err)
+			log.Fatalf("Failed to generate manifests.yaml: %v", err)
 		}
-	}
 
-	// Create the models catalog (unless skipped)
-	if !*skipCatalog {
-		// Load static catalogs
-		staticCatalogPaths := getStaticCatalogPaths(*staticCatalogFiles, *skipDefaultStaticCatalog)
+		log.Printf("All manifest processing completed")
 
-		var staticModels []types.CatalogMetadata
-		if len(staticCatalogPaths) > 0 {
-			log.Printf("Loading static catalogs...")
-			loadedStaticModels, err := catalog.LoadStaticCatalogs(staticCatalogPaths)
+		// Enrich registry model metadata with HuggingFace data (unless skipped)
+		// This happens AFTER model processing to enrich the extracted metadata
+		if !*skipEnrichment {
+			log.Println("Enriching extracted metadata with HuggingFace data...")
+
+			// Determine HuggingFace index file to use
+			// Prefer merged index file to ensure all models from all collections are available for matching
+			hfIndexFile := "data/hugging-face-redhat-ai-validated-merged.yaml"
+			if _, err := os.Stat(hfIndexFile); err != nil {
+				// Fallback to latest version-specific file if merged doesn't exist
+				log.Printf("Warning: Merged index file not found, falling back to latest version file")
+				hfIndexFile, err = getLatestVersionIndexFile()
+				if err != nil {
+					log.Printf("Warning: Could not find HuggingFace index file: %v", err)
+					// Use default fallback path
+					hfIndexFile = "data/hugging-face-redhat-ai-validated-v1-0.yaml"
+				}
+			}
+
+			log.Printf("Using HuggingFace index file: %s", hfIndexFile)
+			err := enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir, filepath.Join(*inputDir, "models", "vllm-config"))
 			if err != nil {
-				log.Printf("Warning: Failed to load static catalogs: %v", err)
-				staticModels = []types.CatalogMetadata{} // Continue with empty static models
+				log.Printf("Warning: Failed to enrich metadata: %v", err)
+			}
+
+			// Update all existing models with OCI artifact metadata
+			err = enrichment.UpdateAllModelsWithOCIArtifacts(*modelsIndexPath, *outputDir)
+			if err != nil {
+				log.Printf("Warning: Failed to update OCI artifacts: %v", err)
+			}
+		}
+
+		// Create the models catalog (unless skipped)
+		if !*skipCatalog {
+			// Load static catalogs
+			staticCatalogPaths := getStaticCatalogPaths(*staticCatalogFiles, *skipDefaultStaticCatalog)
+
+			var staticModels []types.CatalogMetadata
+			if len(staticCatalogPaths) > 0 {
+				log.Printf("Loading static catalogs...")
+				loadedStaticModels, err := catalog.LoadStaticCatalogs(staticCatalogPaths)
+				if err != nil {
+					log.Printf("Warning: Failed to load static catalogs: %v", err)
+					staticModels = []types.CatalogMetadata{} // Continue with empty static models
+				} else {
+					staticModels = loadedStaticModels
+				}
 			} else {
-				staticModels = loadedStaticModels
+				log.Printf("No static catalog files to process")
+				staticModels = []types.CatalogMetadata{}
 			}
-		} else {
-			log.Printf("No static catalog files to process")
-			staticModels = []types.CatalogMetadata{}
+
+			// Create the models catalog with both dynamic and static models
+			log.Printf("Creating models catalog...")
+
+			// Extract model references from the entries that were processed in this run
+			var processedModelRefs []string
+			for _, entry := range modelEntries {
+				processedModelRefs = append(processedModelRefs, entry.URI)
+			}
+
+			err = catalog.CreateModelsCatalogWithStaticFromResults(*outputDir, *catalogOutputPath, processedModelRefs, staticModels)
+			if err != nil {
+				log.Fatalf("Failed to create models catalog: %v", err)
+			}
 		}
+	} else {
+		log.Println("Skipping model processing (MCP-only mode)")
+	}
 
-		// Create the models catalog with both dynamic and static models
-		log.Printf("Creating models catalog...")
-
-		// Extract model references from the entries that were processed in this run
-		var processedModelRefs []string
-		for _, entry := range modelEntries {
-			processedModelRefs = append(processedModelRefs, entry.URI)
-		}
-
-		err = catalog.CreateModelsCatalogWithStaticFromResults(*outputDir, *catalogOutputPath, processedModelRefs, staticModels)
+	// Process MCP servers catalog (if index path is provided).
+	// Fatal on error: this is a simple file-aggregation step that should not fail
+	// in normal operation — a failure here indicates a misconfiguration.
+	if *mcpIndexPath != "" {
+		log.Printf("Processing MCP servers catalog from: %s", *mcpIndexPath)
+		err := catalog.CreateMCPServersCatalog(*mcpIndexPath, *mcpCatalogOutputPath)
 		if err != nil {
-			log.Fatalf("Failed to create models catalog: %v", err)
+			log.Fatalf("Failed to create MCP servers catalog: %v", err)
 		}
 	}
 
@@ -211,6 +235,9 @@ func printHelp() {
 	fmt.Println("")
 	fmt.Println("  # Skip default static catalog but include custom ones")
 	fmt.Printf("  %s --skip-default-static-catalog --static-catalog-files custom.yaml\n", os.Args[0])
+	fmt.Println("")
+	fmt.Println("  # Generate MCP servers catalog only (no model processing)")
+	fmt.Printf("  %s --mcp-index data/redhat-mcp-servers-index.yaml --skip-huggingface --skip-enrichment --skip-catalog\n", os.Args[0])
 }
 
 // getStaticCatalogPaths returns the list of static catalog files to process
@@ -287,7 +314,6 @@ func getLatestVersionIndexFile() (string, error) {
 	return files[len(files)-1], nil
 }
 
-// processModelsInParallel processes multiple models concurrently
 // processModelsInParallelWithMetadata processes multiple models concurrently with metadata support
 func processModelsInParallelWithMetadata(modelEntries []types.ModelEntry, maxConcurrent int) []ModelResult {
 	// Extract URIs for processing
@@ -398,7 +424,7 @@ func addModelLabelTags(manifestRef string, entry types.ModelEntry) {
 
 	// Add each label from the model entry as a tag if not already present
 	for _, label := range entry.Labels {
-		if label != "" && !contains(metadata.Tags, label) {
+		if label != "" && !slices.Contains(metadata.Tags, label) {
 			metadata.Tags = append(metadata.Tags, label)
 			changed = true
 			log.Printf("Added '%s' tag to %s", label, manifestRef)
@@ -419,16 +445,6 @@ func addModelLabelTags(manifestRef string, entry types.ModelEntry) {
 			return
 		}
 	}
-}
-
-// contains checks if a slice contains a string
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
 }
 
 // scanLayersForModelCard scans container layers for model card content

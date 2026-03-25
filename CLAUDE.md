@@ -14,7 +14,7 @@ Go application that extracts model metadata (model cards) from Red Hat AI ModelC
 - `make check` - Run all checks (fmt-check, vet, lint)
 - `make dev` - Quick development iteration (fmt, vet, test, build)
 - `make ci` - Full CI pipeline (deps, check, test, build)
-- `make process` - Process all model indexes
+- `make process` - Process all model indexes and MCP server catalogs
 - `make docker-build` - Build Docker container image
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full development setup, testing, and debugging instructions.
@@ -133,6 +133,27 @@ make build
 - [ ] Verify generated index file exists with correct version prefix
 - [ ] Test enrichment for at least one model in isolation
 - [ ] Verify all models appear in catalog with proper names (not `null`)
+
+## MCP Server Metadata
+
+Individual MCP server YAML files live in `input/mcp_servers/`. The index `data/redhat-mcp-servers-index.yaml` references each by `input_path`. During `make process`, these are aggregated into `data/redhat-mcp-servers-catalog.yaml`. Types are in `pkg/types/mcpserver.go`, generation logic in `internal/catalog/mcp_catalog.go`.
+
+### Adding a New MCP Server
+
+1. Create `input/mcp_servers/<server-name>.yaml` (use an existing file as template)
+2. Add an entry to `data/redhat-mcp-servers-index.yaml`
+3. Run `make process`
+4. Verify: `grep "name:" data/redhat-mcp-servers-catalog.yaml`
+
+### MCP-Only Processing
+
+```bash
+./build/model-extractor \
+    --mcp-index data/redhat-mcp-servers-index.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+```
+
+**Note:** Setting all three skip flags bypasses model processing regardless of whether `--mcp-index` is provided.
 
 ## Tool-Calling Metadata Extraction
 

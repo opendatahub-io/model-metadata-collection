@@ -56,7 +56,7 @@ Run the model extractor with default settings:
 make run
 ```
 
-Process all model indexes (Red Hat, validated, other):
+Process all model indexes and MCP server catalogs:
 
 ```bash
 make process

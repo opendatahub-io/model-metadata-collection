@@ -1,0 +1,138 @@
+name: kubernetes-mcp-server
+provider: Red Hat
+license: apache-2.0
+license_link: https://www.apache.org/licenses/LICENSE-2.0
+description: >-
+  Kubernetes and OpenShift cluster management via the MCP Lifecycle Operator.
+  Allows agents to list resources, inspect workloads, and read logs across
+  namespaces using a read-only service account.
+readme: |-
+  # Kubernetes MCP Server
+
+  **MCP Server Summary:**
+  Access Kubernetes and OpenShift clusters through natural language using the
+  official `kubernetes_mcp_server` image deployed via the MCP Lifecycle Operator.
+
+  ## Features
+  - List and inspect pods, deployments, services, and namespaces
+  - Retrieve pod logs for troubleshooting
+  - Browse ConfigMaps and cluster configuration
+  - Read-only mode enforced via server configuration
+
+  ## Prerequisites
+  - MCP Lifecycle Operator installed on the cluster
+  - `mcp-viewer` ServiceAccount with read-only RBAC
+
+  ## Configuration
+  The server runs with `read_only: true` and exposes toolsets `core` and `config`.
+  See the MCP Lifecycle Operator docs for full deployment instructions.
+version: "latest"
+transports:
+  - http
+logo: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzOCIgaGVpZ2h0PSIzOCIgdmlld0JveD0iMCAwIDM4IDM4Ij4KICA8dGl0bGU+TUNQIFNlcnZlciBpY29uPC90aXRsZT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmJne2ZpbGw6I2ZmZjt9CiAgICAgIC5ib3JkZXJ7ZmlsbDojZTBlMGUwO30KICAgICAgLmFjY2VudHtmaWxsOiMwMDY2Y2M7fQogICAgICAubm9kZXtmaWxsOiMwMDY2Y2M7fQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9ImJvcmRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjM4IiBoZWlnaHQ9IjM4IiByeD0iNCIgcnk9IjQiLz4KICA8cmVjdCBjbGFzcz0iYmciIHg9IjEiIHk9IjEiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjMiIHJ5PSIzIi8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjE5IiBjeT0iMTkiIHI9IjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMTkiIGN5PSI3IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMjkiIGN5PSIxMyIgcj0iMi41Ii8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjI5IiBjeT0iMjUiIHI9IjIuNSIvPgogIDxjaXJjbGUgY2xhc3M9Im5vZGUiIGN4PSIxOSIgY3k9IjMxIiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjI1IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjEzIiByPSIyLjUiLz4KICA8bGluZSB4MT0iMTkiIHkxPSIxNCIgeDI9IjE5IiB5Mj0iOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjE2IiB4Mj0iMjciIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjIyIiB4Mj0iMjciIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxOSIgeTE9IjI0IiB4Mj0iMTkiIHkyPSIyOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjIyIiB4Mj0iMTEiIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjE2IiB4Mj0iMTEiIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4K
+repositoryUrl: https://github.com/manusa/kubernetes-mcp-server
+sourceCode: manusa/kubernetes-mcp-server
+publishedDate: "2025-03-01T00:00:00Z"
+tools:
+  - name: list_pods
+    description: List pods in a namespace
+    accessType: read_only
+    parameters:
+      - name: namespace
+        type: string
+        description: Kubernetes namespace (omit for all namespaces)
+        required: false
+  - name: list_deployments
+    description: List deployments in a namespace
+    accessType: read_only
+    parameters:
+      - name: namespace
+        type: string
+        description: Kubernetes namespace
+        required: true
+  - name: list_services
+    description: List services in a namespace
+    accessType: read_only
+    parameters:
+      - name: namespace
+        type: string
+        description: Kubernetes namespace
+        required: true
+  - name: get_logs
+    description: Retrieve logs from a pod
+    accessType: read_only
+    parameters:
+      - name: namespace
+        type: string
+        description: Kubernetes namespace
+        required: true
+      - name: pod_name
+        type: string
+        description: Name of the pod
+        required: true
+      - name: container
+        type: string
+        description: Container name (optional if pod has only one container)
+        required: false
+  - name: list_namespaces
+    description: List all namespaces in the cluster
+    accessType: read_only
+    parameters: []
+  - name: get_configmap
+    description: Retrieve a ConfigMap by name
+    accessType: read_only
+    parameters:
+      - name: namespace
+        type: string
+        description: Kubernetes namespace
+        required: true
+      - name: name
+        type: string
+        description: ConfigMap name
+        required: true
+artifacts:
+  - uri: oci://quay.io/containers/kubernetes_mcp_server:latest
+    createTimeSinceEpoch: "1740787200000"
+    lastUpdateTimeSinceEpoch: "1740787200000"
+runtimeMetadata:
+  defaultPort: 8080
+  mcpPath: /mcp
+  prerequisites:
+    serviceAccount:
+      required: true
+      hint: "Needs 'view' ClusterRole for read-only K8s access"
+      suggestedName: mcp-viewer
+    configMaps:
+      - name: kubernetes-mcp-server-config
+        description: Optional configuration for MCP server settings
+        mountAsFile: true
+        mountPath: /etc/mcp-config
+        keys:
+          - key: config.toml
+            description: Server configuration file
+            defaultContent: |
+              log_level = 5
+              port = "8080"
+              read_only = true
+              toolsets = ["core", "config"]
+            required: false
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  sast: true
+  readOnlyTools: true
+customProperties:
+  kubernetes:
+    metadataType: MetadataStringValue
+    string_value: ""
+  openshift:
+    metadataType: MetadataStringValue
+    string_value: ""
+  containers:
+    metadataType: MetadataStringValue
+    string_value: ""
+  infrastructure:
+    metadataType: MetadataStringValue
+    string_value: ""
+createTimeSinceEpoch: "1740787200000"
+lastUpdateTimeSinceEpoch: "1740787200000"

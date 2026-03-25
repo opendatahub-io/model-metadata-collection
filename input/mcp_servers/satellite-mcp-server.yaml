@@ -1,0 +1,122 @@
+name: satellite-mcp-server
+provider: Red Hat
+license: apache-2.0
+license_link: https://www.apache.org/licenses/LICENSE-2.0
+description: >-
+  Red Hat Satellite (Foreman) integration via the MCP Lifecycle Operator.
+  Enables agents to query host inventory, content views, and errata from
+  a Satellite instance using TLS-secured Foreman API calls.
+readme: |-
+  # Red Hat Satellite MCP Server
+
+  **MCP Server Summary:**
+  Connect AI agents to Red Hat Satellite for host lifecycle and content
+  management through the Foreman API.
+
+  ## Features
+  - List managed hosts and their status
+  - Retrieve host details including OS, subscriptions, and facts
+  - Browse content views and lifecycle environments
+  - Query applicable errata for hosts
+
+  ## Prerequisites
+  - Red Hat Satellite 6.18+ instance
+  - CA bundle certificate for TLS validation
+  - Kubernetes secret `satellite-ca` with the `ca.pem` key
+
+  ## Configuration
+  ```bash
+  kubectl create secret generic satellite-ca \
+    --from-file=ca.pem=/path/to/satellite-ca.pem
+  ```
+  The server is configured with `--foreman-url https://satellite.example.com`.
+version: "6.18"
+transports:
+  - http
+logo: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzOCIgaGVpZ2h0PSIzOCIgdmlld0JveD0iMCAwIDM4IDM4Ij4KICA8dGl0bGU+TUNQIFNlcnZlciBpY29uPC90aXRsZT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmJne2ZpbGw6I2ZmZjt9CiAgICAgIC5ib3JkZXJ7ZmlsbDojZTBlMGUwO30KICAgICAgLmFjY2VudHtmaWxsOiMwMDY2Y2M7fQogICAgICAubm9kZXtmaWxsOiMwMDY2Y2M7fQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9ImJvcmRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjM4IiBoZWlnaHQ9IjM4IiByeD0iNCIgcnk9IjQiLz4KICA8cmVjdCBjbGFzcz0iYmciIHg9IjEiIHk9IjEiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjMiIHJ5PSIzIi8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjE5IiBjeT0iMTkiIHI9IjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMTkiIGN5PSI3IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMjkiIGN5PSIxMyIgcj0iMi41Ii8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjI5IiBjeT0iMjUiIHI9IjIuNSIvPgogIDxjaXJjbGUgY2xhc3M9Im5vZGUiIGN4PSIxOSIgY3k9IjMxIiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjI1IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjEzIiByPSIyLjUiLz4KICA8bGluZSB4MT0iMTkiIHkxPSIxNCIgeDI9IjE5IiB5Mj0iOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjE2IiB4Mj0iMjciIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjIyIiB4Mj0iMjciIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxOSIgeTE9IjI0IiB4Mj0iMTkiIHkyPSIyOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjIyIiB4Mj0iMTEiIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjE2IiB4Mj0iMTEiIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4K
+documentationUrl: https://docs.redhat.com/en/documentation/red_hat_satellite
+repositoryUrl: https://github.com/theforeman/foreman-mcp-server
+sourceCode: theforeman/foreman-mcp-server
+publishedDate: "2025-02-15T00:00:00Z"
+tools:
+  - name: list_hosts
+    description: List managed hosts registered with Satellite
+    accessType: read_only
+    parameters:
+      - name: search
+        type: string
+        description: "Foreman search query (e.g., \"os=RHEL 9\", \"hostgroup=webservers\")"
+        required: false
+  - name: get_host
+    description: Retrieve detailed information about a specific host
+    accessType: read_only
+    parameters:
+      - name: hostname
+        type: string
+        description: Fully qualified domain name or ID of the host
+        required: true
+  - name: list_content_views
+    description: List content views in a Satellite organization
+    accessType: read_only
+    parameters:
+      - name: organization_id
+        type: string
+        description: Organization ID (defaults to the configured organization)
+        required: false
+  - name: list_errata
+    description: List applicable errata for a host or across the organization
+    accessType: read_only
+    parameters:
+      - name: hostname
+        type: string
+        description: Limit errata to a specific host (optional)
+        required: false
+      - name: type
+        type: string
+        description: "Errata type filter: security, bugfix, enhancement"
+        required: false
+  - name: list_activation_keys
+    description: List activation keys available in an organization
+    accessType: read_only
+    parameters:
+      - name: organization_id
+        type: string
+        description: Organization ID
+        required: false
+artifacts:
+  - uri: oci://registry.redhat.io/satellite/foreman-mcp-server-rhel9:6.18
+    createTimeSinceEpoch: "1739577600000"
+    lastUpdateTimeSinceEpoch: "1739577600000"
+runtimeMetadata:
+  defaultPort: 8080
+  mcpPath: /mcp
+  prerequisites:
+    secrets:
+      - name: satellite-ca
+        description: kubectl create secret generic satellite-ca --from-file=ca.pem=/path/to/satellite-ca-bundle.pem
+        keys:
+          - key: ca.pem
+            description: Satellite CA certificate bundle for TLS validation
+            required: true
+        mountAsFile: true
+        mountPath: /app
+customProperties:
+  satellite:
+    metadataType: MetadataStringValue
+    string_value: ""
+  lifecycle:
+    metadataType: MetadataStringValue
+    string_value: ""
+  patch-management:
+    metadataType: MetadataStringValue
+    string_value: ""
+  infrastructure:
+    metadataType: MetadataStringValue
+    string_value: ""
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  sast: true
+  readOnlyTools: true
+createTimeSinceEpoch: "1739577600000"
+lastUpdateTimeSinceEpoch: "1739577600000"

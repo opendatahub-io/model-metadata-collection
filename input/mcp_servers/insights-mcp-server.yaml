@@ -1,0 +1,129 @@
+name: insights-mcp-server
+provider: Red Hat
+license: apache-2.0
+license_link: https://www.apache.org/licenses/LICENSE-2.0
+description: >-
+  Red Hat Insights integration via the Lightspeed MCP server. Gives agents
+  access to proactive recommendations, vulnerability advisories, and system
+  health data from the Red Hat Insights cloud service.
+readme: |-
+  # Red Hat Insights MCP Server
+
+  **MCP Server Summary:**
+  Access Red Hat Insights through the Lightspeed MCP server to surface
+  proactive recommendations and vulnerability data for your RHEL fleet.
+
+  ## Features
+  - Retrieve Insights recommendations for registered systems
+  - Query CVE and vulnerability advisories
+  - Get system health and compliance status
+  - Fetch patch advisories applicable to your environment
+
+  ## Prerequisites
+  - Systems registered to Red Hat Insights via `insights-client`
+  - Service account credentials from console.redhat.com
+  - Kubernetes secret `insights-credentials` with `client-id` and `client-secret`
+
+  ## Configuration
+  ```bash
+  kubectl create secret generic insights-credentials \
+    --from-literal=client-id=your-client-id \
+    --from-literal=client-secret=your-client-secret
+  ```
+  The server exposes an HTTP endpoint on port 8000.
+version: "latest"
+transports:
+  - http
+logo: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzOCIgaGVpZ2h0PSIzOCIgdmlld0JveD0iMCAwIDM4IDM4Ij4KICA8dGl0bGU+TUNQIFNlcnZlciBpY29uPC90aXRsZT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmJne2ZpbGw6I2ZmZjt9CiAgICAgIC5ib3JkZXJ7ZmlsbDojZTBlMGUwO30KICAgICAgLmFjY2VudHtmaWxsOiMwMDY2Y2M7fQogICAgICAubm9kZXtmaWxsOiMwMDY2Y2M7fQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9ImJvcmRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjM4IiBoZWlnaHQ9IjM4IiByeD0iNCIgcnk9IjQiLz4KICA8cmVjdCBjbGFzcz0iYmciIHg9IjEiIHk9IjEiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjMiIHJ5PSIzIi8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjE5IiBjeT0iMTkiIHI9IjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMTkiIGN5PSI3IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMjkiIGN5PSIxMyIgcj0iMi41Ii8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjI5IiBjeT0iMjUiIHI9IjIuNSIvPgogIDxjaXJjbGUgY2xhc3M9Im5vZGUiIGN4PSIxOSIgY3k9IjMxIiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjI1IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjEzIiByPSIyLjUiLz4KICA8bGluZSB4MT0iMTkiIHkxPSIxNCIgeDI9IjE5IiB5Mj0iOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjE2IiB4Mj0iMjciIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjIyIiB4Mj0iMjciIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxOSIgeTE9IjI0IiB4Mj0iMTkiIHkyPSIyOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjIyIiB4Mj0iMTEiIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjE2IiB4Mj0iMTEiIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4K
+documentationUrl: https://docs.redhat.com/en/documentation/red_hat_insights
+repositoryUrl: https://github.com/RedHatInsights/red-hat-lightspeed-mcp
+sourceCode: RedHatInsights/red-hat-lightspeed-mcp
+publishedDate: "2025-03-15T00:00:00Z"
+tools:
+  - name: get_recommendations
+    description: Retrieve Insights recommendations for registered systems
+    accessType: read_only
+    parameters:
+      - name: system_id
+        type: string
+        description: Insights system UUID (optional, returns all if omitted)
+        required: false
+      - name: category
+        type: string
+        description: "Filter by category: Availability, Performance, Security, Stability"
+        required: false
+  - name: get_advisories
+    description: Retrieve applicable patch and security advisories
+    accessType: read_only
+    parameters:
+      - name: system_id
+        type: string
+        description: Insights system UUID (optional)
+        required: false
+      - name: advisory_type
+        type: string
+        description: "Advisory type: security, bugfix, enhancement"
+        required: false
+  - name: get_vulnerability_report
+    description: Get CVE exposure and vulnerability details for your environment
+    accessType: read_only
+    parameters:
+      - name: cve_id
+        type: string
+        description: Specific CVE identifier (optional, returns all if omitted)
+        required: false
+  - name: get_system_status
+    description: Retrieve health and compliance status for a registered system
+    accessType: read_only
+    parameters:
+      - name: system_id
+        type: string
+        description: Insights system UUID
+        required: true
+artifacts:
+  - uri: oci://ghcr.io/redhatinsights/red-hat-lightspeed-mcp:latest
+    createTimeSinceEpoch: "1742000000000"
+    lastUpdateTimeSinceEpoch: "1742000000000"
+runtimeMetadata:
+  defaultPort: 8000
+  mcpPath: /mcp
+  prerequisites:
+    secrets:
+      - name: insights-credentials
+        description: kubectl create secret generic insights-credentials --from-literal=client-id=<your-client-id> --from-literal=client-secret=<your-client-secret>
+        keys:
+          - key: client-id
+            description: Service account client ID from console.redhat.com
+            envVarName: LIGHTSPEED_CLIENT_ID
+            required: true
+          - key: client-secret
+            description: Service account client secret from console.redhat.com
+            envVarName: LIGHTSPEED_CLIENT_SECRET
+            required: true
+        mountAsFile: false
+    environmentVariables:
+      - name: LIGHTSPEED_CLIENT_ID
+        description: Service account client ID (from secret insights-credentials)
+        required: true
+        type: string
+      - name: LIGHTSPEED_CLIENT_SECRET
+        description: Service account client secret (from secret insights-credentials)
+        required: true
+        type: string
+customProperties:
+  insights:
+    metadataType: MetadataStringValue
+    string_value: ""
+  security:
+    metadataType: MetadataStringValue
+    string_value: ""
+  observability:
+    metadataType: MetadataStringValue
+    string_value: ""
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  sast: true
+  readOnlyTools: true
+createTimeSinceEpoch: "1742000000000"
+lastUpdateTimeSinceEpoch: "1742000000000"
