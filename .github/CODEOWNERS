@@ -1,0 +1,14 @@
+# Default owners for the repository
+* @opendatahub-io/model-metadata-maintainers
+
+# Granular rules below use the same team for now.
+# Kept for future differentiation as the team grows.
+
+# CI/CD workflows
+.github/ @opendatahub-io/model-metadata-maintainers
+
+# Core extraction logic
+internal/ @opendatahub-io/model-metadata-maintainers
+
+# Data and catalogs
+data/ @opendatahub-io/model-metadata-maintainers
