@@ -282,7 +282,7 @@ mcp_servers:
         ## Configuration
         ```bash
         kubectl create secret generic satellite-ca \
-          --from-file=ca.pem=/path/to/satellite-ca.pem
+          --from-file=ca.pem=/path/to/satellite-ca-bundle.pem
         ```
         The server is configured with `--foreman-url https://satellite.example.com`.
       version: "6.18"

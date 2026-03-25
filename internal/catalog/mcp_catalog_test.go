@@ -103,9 +103,10 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		}
 
 		server := types.MCPServerMetadata{
-			Name:     "good-server",
-			Provider: "Red Hat",
-			Version:  "latest",
+			Name:        "good-server",
+			Provider:    "Red Hat",
+			Description: "Good test server",
+			Version:     "latest",
 		}
 		writeYAML(t, filepath.Join(inputDir, "good-server.yaml"), server)
 
@@ -225,6 +226,80 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		err := CreateMCPServersCatalog(filepath.Join(tmpDir, "nonexistent.yaml"), catalogPath)
 		if err == nil {
 			t.Fatal("expected error for missing index file")
+		}
+	})
+
+	t.Run("path traversal input_path is rejected", func(t *testing.T) {
+		tmpDir := t.TempDir()
+
+		index := types.MCPServersIndex{
+			Source: "Test",
+			MCPServers: []types.MCPServerEntry{
+				{Name: "traversal-attempt", InputPath: "../../etc/passwd"},
+			},
+		}
+		indexPath := filepath.Join(tmpDir, "index.yaml")
+		writeYAML(t, indexPath, index)
+
+		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
+		err := CreateMCPServersCatalog(indexPath, catalogPath)
+		if err != nil {
+			t.Fatalf("CreateMCPServersCatalog should not fail on invalid input_path: %v", err)
+		}
+
+		data, err := os.ReadFile(catalogPath)
+		if err != nil {
+			t.Fatalf("Failed to read catalog: %v", err)
+		}
+		var catalog types.MCPServersCatalog
+		if err := yaml.Unmarshal(data, &catalog); err != nil {
+			t.Fatalf("Failed to parse catalog: %v", err)
+		}
+
+		if len(catalog.MCPServers) != 0 {
+			t.Errorf("expected 0 servers (path traversal rejected), got %d", len(catalog.MCPServers))
+		}
+	})
+
+	t.Run("input with missing required fields is skipped", func(t *testing.T) {
+		tmpDir := t.TempDir()
+
+		inputDir := filepath.Join(tmpDir, "input")
+		if err := os.MkdirAll(inputDir, 0755); err != nil {
+			t.Fatal(err)
+		}
+
+		// Write a YAML with only name — missing provider, description, version
+		if err := os.WriteFile(filepath.Join(inputDir, "minimal.yaml"), []byte("name: minimal-server\n"), 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		index := types.MCPServersIndex{
+			Source: "Test",
+			MCPServers: []types.MCPServerEntry{
+				{Name: "minimal-server", InputPath: filepath.Join(inputDir, "minimal.yaml")},
+			},
+		}
+		indexPath := filepath.Join(tmpDir, "index.yaml")
+		writeYAML(t, indexPath, index)
+
+		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
+		err := CreateMCPServersCatalog(indexPath, catalogPath)
+		if err != nil {
+			t.Fatalf("CreateMCPServersCatalog should not fail on incomplete input: %v", err)
+		}
+
+		data, err := os.ReadFile(catalogPath)
+		if err != nil {
+			t.Fatalf("Failed to read catalog: %v", err)
+		}
+		var catalog types.MCPServersCatalog
+		if err := yaml.Unmarshal(data, &catalog); err != nil {
+			t.Fatalf("Failed to parse catalog: %v", err)
+		}
+
+		if len(catalog.MCPServers) != 0 {
+			t.Errorf("expected 0 servers (missing required fields rejected), got %d", len(catalog.MCPServers))
 		}
 	})
 }

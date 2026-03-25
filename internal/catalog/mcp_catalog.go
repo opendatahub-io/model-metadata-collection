@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -30,7 +31,12 @@ func CreateMCPServersCatalog(indexPath, catalogPath string) error {
 	// Load each input file referenced by the index
 	var servers []types.MCPServerMetadata
 	for _, entry := range index.MCPServers {
-		server, err := loadMCPServerInput(entry.InputPath)
+		cleaned := filepath.Clean(entry.InputPath)
+		if !filepath.IsAbs(cleaned) && strings.HasPrefix(cleaned, "..") {
+			log.Printf("Warning: skipping MCP server %q: invalid input_path %q (relative path traversal not allowed)", entry.Name, entry.InputPath)
+			continue
+		}
+		server, err := loadMCPServerInput(cleaned)
 		if err != nil {
 			log.Printf("Warning: skipping MCP server %q: %v", entry.Name, err)
 			continue
@@ -77,8 +83,21 @@ func loadMCPServerInput(inputPath string) (*types.MCPServerMetadata, error) {
 		return nil, fmt.Errorf("error parsing input file %s: %v", inputPath, err)
 	}
 
+	var missing []string
 	if server.Name == "" {
-		return nil, fmt.Errorf("input file %s missing required 'name' field", inputPath)
+		missing = append(missing, "name")
+	}
+	if server.Provider == "" {
+		missing = append(missing, "provider")
+	}
+	if server.Description == "" {
+		missing = append(missing, "description")
+	}
+	if server.Version == "" {
+		missing = append(missing, "version")
+	}
+	if len(missing) > 0 {
+		return nil, fmt.Errorf("input file %s missing required field(s): %s", inputPath, strings.Join(missing, ", "))
 	}
 
 	return &server, nil
