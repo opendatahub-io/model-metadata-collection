@@ -183,7 +183,10 @@ presets:
 			t.Fatal(err)
 		}
 
-		index, _ := LoadVLLMConfigs(tmpDir)
+		index, err := LoadVLLMConfigs(tmpDir)
+		if err != nil {
+			t.Fatalf("LoadVLLMConfigs() error = %v", err)
+		}
 		cfg := index.GetConfig("RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic")
 		if cfg == nil {
 			t.Fatal("GetConfig() returned nil for exact match")
@@ -196,7 +199,10 @@ presets:
 			t.Fatal(err)
 		}
 
-		index, _ := LoadVLLMConfigs(tmpDir)
+		index, err := LoadVLLMConfigs(tmpDir)
+		if err != nil {
+			t.Fatalf("LoadVLLMConfigs() error = %v", err)
+		}
 		cfg := index.GetConfig("RedHatAI/Llama-3.3-70B-Instruct")
 		if cfg != nil {
 			t.Error("GetConfig() should return nil for non-exact match")
