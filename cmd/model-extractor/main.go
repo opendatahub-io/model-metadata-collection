@@ -46,6 +46,7 @@ var (
 	skipDefaultStaticCatalog = flag.Bool("skip-default-static-catalog", false, "Skip processing the default supplemental-catalog.yaml from the input directory")
 	mcpIndexPath             = flag.String("mcp-index", "", "Path to MCP servers index YAML file (if set, generates MCP catalog)")
 	mcpCatalogOutputPath     = flag.String("mcp-catalog-output", "data/redhat-mcp-servers-catalog.yaml", "Path for the generated MCP servers catalog")
+	skipMCPEnrichment        = flag.Bool("skip-mcp-enrichment", false, "Skip MCP server OCI image enrichment (architectures, timestamps)")
 	help                     = flag.Bool("help", false, "Show help message")
 )
 
@@ -76,6 +77,7 @@ func main() {
 	log.Printf("  Skip Default Static Catalog: %v", *skipDefaultStaticCatalog)
 	log.Printf("  MCP Index: %s", *mcpIndexPath)
 	log.Printf("  MCP Catalog Output: %s", *mcpCatalogOutputPath)
+	log.Printf("  Skip MCP Enrichment: %v", *skipMCPEnrichment)
 
 	// Determine if model processing should run.
 	// Skip when all model pipeline steps are disabled, regardless of MCP processing.
@@ -193,9 +195,16 @@ func main() {
 	}
 
 	// Process MCP servers catalog (if index path is provided).
-	// Fatal on error: this is a simple file-aggregation step that should not fail
-	// in normal operation — a failure here indicates a misconfiguration.
 	if *mcpIndexPath != "" {
+		// Step 1: Enrich MCP servers from OCI registry (unless skipped)
+		if !*skipMCPEnrichment {
+			log.Printf("Enriching MCP servers from OCI registry...")
+			if err := catalog.EnrichMCPServersFromRegistry(*mcpIndexPath); err != nil {
+				log.Printf("Warning: MCP server enrichment failed: %v", err)
+			}
+		}
+
+		// Step 2: Generate catalog from (potentially enriched) input files
 		log.Printf("Processing MCP servers catalog from: %s", *mcpIndexPath)
 		err := catalog.CreateMCPServersCatalog(*mcpIndexPath, *mcpCatalogOutputPath)
 		if err != nil {
@@ -236,8 +245,11 @@ func printHelp() {
 	fmt.Println("  # Skip default static catalog but include custom ones")
 	fmt.Printf("  %s --skip-default-static-catalog --static-catalog-files custom.yaml\n", os.Args[0])
 	fmt.Println("")
-	fmt.Println("  # Generate MCP servers catalog only (no model processing)")
+	fmt.Println("  # Generate MCP servers catalog with OCI enrichment (no model processing)")
 	fmt.Printf("  %s --mcp-index data/redhat-mcp-servers-index.yaml --skip-huggingface --skip-enrichment --skip-catalog\n", os.Args[0])
+	fmt.Println("")
+	fmt.Println("  # Generate MCP servers catalog without OCI enrichment (offline)")
+	fmt.Printf("  %s --mcp-index data/redhat-mcp-servers-index.yaml --skip-huggingface --skip-enrichment --skip-catalog --skip-mcp-enrichment\n", os.Args[0])
 }
 
 // getStaticCatalogPaths returns the list of static catalog files to process

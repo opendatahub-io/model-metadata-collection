@@ -3,24 +3,36 @@ provider: Red Hat
 license: apache-2.0
 license_link: https://www.apache.org/licenses/LICENSE-2.0
 description: >-
-  Red Hat Insights integration via the Lightspeed MCP server. Gives agents
-  access to proactive recommendations, vulnerability advisories, and system
-  health data from the Red Hat Insights cloud service.
+  Red Hat Lightspeed MCP server connecting AI agents to Red Hat Insights services.
+  Provides toolsets for advisor recommendations, system inventory, vulnerability
+  assessment, remediations, image building, RHEL lifecycle planning, content
+  sources, RBAC, and subscription management. Read-only by default with optional
+  write tools via --all-tools flag.
 readme: |-
-  # Red Hat Insights MCP Server
+  # Red Hat Lightspeed MCP Server
 
   **MCP Server Summary:**
-  Access Red Hat Insights through the Lightspeed MCP server to surface
-  proactive recommendations and vulnerability data for your RHEL fleet.
+  Connect AI agents to Red Hat Lightspeed services for natural language
+  interactions with Red Hat Insights, vulnerability management, image building,
+  and RHEL lifecycle planning.
 
-  ## Features
-  - Retrieve Insights recommendations for registered systems
-  - Query CVE and vulnerability advisories
-  - Get system health and compliance status
-  - Fetch patch advisories applicable to your environment
+  ## Toolsets
+  - **Advisor** — Configuration assessment recommendations
+  - **Inventory** — System management and host visibility
+  - **Vulnerability** — CVE assessment and affected system tracking
+  - **Remediations** — Playbook creation for issue resolution
+  - **Image Builder** — Custom RHEL image blueprint management
+  - **Planning** — RHEL lifecycle and upcoming changes
+  - **Content Sources** — Repository listing and management
+  - **RBAC** — Access information for Insights applications
+  - **RHSM** — Activation key management
+
+  ## Security Model
+  - Read-only tools enabled by default
+  - Write tools (image builder, remediations) require `--all-tools` flag
+  - RBAC support restricts access based on console.redhat.com permissions
 
   ## Prerequisites
-  - Systems registered to Red Hat Insights via `insights-client`
   - Service account credentials from console.redhat.com
   - Kubernetes secret `insights-credentials` with `client-id` and `client-secret`
 
@@ -30,56 +42,174 @@ readme: |-
     --from-literal=client-id=your-client-id \
     --from-literal=client-secret=your-client-secret
   ```
-  The server exposes an HTTP endpoint on port 8000.
-version: "latest"
+  The server exposes an HTTP endpoint on port 8000 and SSE on port 9000.
+version: latest
 transports:
   - http
-logo: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzOCIgaGVpZ2h0PSIzOCIgdmlld0JveD0iMCAwIDM4IDM4Ij4KICA8dGl0bGU+TUNQIFNlcnZlciBpY29uPC90aXRsZT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmJne2ZpbGw6I2ZmZjt9CiAgICAgIC5ib3JkZXJ7ZmlsbDojZTBlMGUwO30KICAgICAgLmFjY2VudHtmaWxsOiMwMDY2Y2M7fQogICAgICAubm9kZXtmaWxsOiMwMDY2Y2M7fQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9ImJvcmRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjM4IiBoZWlnaHQ9IjM4IiByeD0iNCIgcnk9IjQiLz4KICA8cmVjdCBjbGFzcz0iYmciIHg9IjEiIHk9IjEiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjMiIHJ5PSIzIi8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjE5IiBjeT0iMTkiIHI9IjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMTkiIGN5PSI3IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMjkiIGN5PSIxMyIgcj0iMi41Ii8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjI5IiBjeT0iMjUiIHI9IjIuNSIvPgogIDxjaXJjbGUgY2xhc3M9Im5vZGUiIGN4PSIxOSIgY3k9IjMxIiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjI1IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjEzIiByPSIyLjUiLz4KICA8bGluZSB4MT0iMTkiIHkxPSIxNCIgeDI9IjE5IiB5Mj0iOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjE2IiB4Mj0iMjciIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjIyIiB4Mj0iMjciIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxOSIgeTE9IjI0IiB4Mj0iMTkiIHkyPSIyOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjIyIiB4Mj0iMTEiIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjE2IiB4Mj0iMTEiIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4K
+  - sse
+logo: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgaWQ9ImI2YmRkMmI0LTUyYWItNDg4YS05YTMwLTFlNmQxZDdkZDJkNCIKICAgZGF0YS1uYW1lPSJMYXllciAxIgogICB2aWV3Qm94PSIwIDAgMTkyLjMwMDAxIDE0NiIKICAgdmVyc2lvbj0iMS4xIgogICBzb2RpcG9kaTpkb2NuYW1lPSJsb2dvLnN2ZyIKICAgd2lkdGg9IjE5Mi4zIgogICBoZWlnaHQ9IjE0NiIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC45Mi41ICgyMDYwZWMxZjlmLCAyMDIwLTA0LTA4KSI+CiAgPG1ldGFkYXRhCiAgICAgaWQ9Im1ldGFkYXRhMTUiPgogICAgPHJkZjpSREY+CiAgICAgIDxjYzpXb3JrCiAgICAgICAgIHJkZjphYm91dD0iIj4KICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3N2Zyt4bWw8L2RjOmZvcm1hdD4KICAgICAgICA8ZGM6dHlwZQogICAgICAgICAgIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiIC8+CiAgICAgICAgPGRjOnRpdGxlPjwvZGM6dGl0bGU+CiAgICAgIDwvY2M6V29yaz4KICAgIDwvcmRmOlJERj4KICA8L21ldGFkYXRhPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMSIKICAgICBvYmplY3R0b2xlcmFuY2U9IjEwIgogICAgIGdyaWR0b2xlcmFuY2U9IjEwIgogICAgIGd1aWRldG9sZXJhbmNlPSIxMCIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMCIKICAgICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlkPSJuYW1lZHZpZXcxMyIKICAgICBzaG93Z3JpZD0iZmFsc2UiCiAgICAgZml0LW1hcmdpbi10b3A9IjEiCiAgICAgZml0LW1hcmdpbi1yaWdodD0iMSIKICAgICBmaXQtbWFyZ2luLWJvdHRvbT0iMSIKICAgICBmaXQtbWFyZ2luLWxlZnQ9IjEiCiAgICAgaW5rc2NhcGU6em9vbT0iMC40NTkzMDA0MyIKICAgICBpbmtzY2FwZTpjeD0iMzA2Ljg5OTk5IgogICAgIGlua3NjYXBlOmN5PSI3MyIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9ImI2YmRkMmI0LTUyYWItNDg4YS05YTMwLTFlNmQxZDdkZDJkNCIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzNCI+CiAgICA8c3R5bGUKICAgICAgIGlkPSJzdHlsZTIiPi5hNzM3NDU5Yy1lOGM3LTRhZmEtODAwOC1mNmNmZDE1Y2NkYTJ7ZmlsbDojZTAwO308L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aAogICAgIGNsYXNzPSJhNzM3NDU5Yy1lOGM3LTRhZmEtODAwOC1mNmNmZDE1Y2NkYTIiCiAgICAgZD0ibSAxMjgsODQgYyAxMi41LDAgMzAuNiwtMi42IDMwLjYsLTE3LjUgYSAxOS41MywxOS41MyAwIDAgMCAtMC4zLC0zLjQgTCAxNTAuOSwzMC43IEMgMTQ5LjIsMjMuNiAxNDcuNywyMC4zIDEzNS4yLDE0LjEgMTI1LjUsOS4xIDEwNC40LDEgOTguMSwxIDkyLjIsMSA5MC41LDguNSA4My42LDguNSA3Ni45LDguNSA3MiwyLjkgNjUuNywyLjkgYyAtNiwwIC05LjksNC4xIC0xMi45LDEyLjUgMCwwIC04LjQsMjMuNyAtOS41LDI3LjIgYSA2LjE1LDYuMTUgMCAwIDAgLTAuMiwxLjkgQyA0Myw1My43IDc5LjMsODMuOSAxMjgsODQgbSAzMi41LC0xMS40IGMgMS43LDguMiAxLjcsOS4xIDEuNywxMC4xIDAsMTQgLTE1LjcsMjEuOCAtMzYuNCwyMS44IEMgNzksMTA0LjUgMzguMSw3Ny4xIDM4LjEsNTkgYSAxOC4zNSwxOC4zNSAwIDAgMSAxLjUsLTcuMyBDIDIyLjgsNTIuNSAxLDU1LjUgMSw3NC43IDEsMTA2LjIgNzUuNiwxNDUgMTM0LjYsMTQ1IGMgNDUuMywwIDU2LjcsLTIwLjUgNTYuNywtMzYuNyAwLC0xMi43IC0xMSwtMjcuMSAtMzAuOCwtMzUuNyIKICAgICBpZD0icGF0aDgiCiAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICBzdHlsZT0iZmlsbDojZWUwMDAwIiAvPgogIDxwYXRoCiAgICAgZD0ibSAxNjAuNSw3Mi42IGMgMS43LDguMiAxLjcsOS4xIDEuNywxMC4xIDAsMTQgLTE1LjcsMjEuOCAtMzYuNCwyMS44IEMgNzksMTA0LjUgMzguMSw3Ny4xIDM4LjEsNTkgYSAxOC4zNSwxOC4zNSAwIDAgMSAxLjUsLTcuMyBsIDMuNywtOS4xIGEgNi4xNSw2LjE1IDAgMCAwIC0wLjIsMS45IGMgMCw5LjIgMzYuMywzOS40IDg0LjksMzkuNCAxMi41LDAgMzAuNiwtMi42IDMwLjYsLTE3LjUgQSAxOS41MywxOS41MyAwIDAgMCAxNTguMyw2MyBaIgogICAgIGlkPSJwYXRoMTAiCiAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIgLz4KPC9zdmc+Cg==
 documentationUrl: https://docs.redhat.com/en/documentation/red_hat_insights
-repositoryUrl: https://github.com/RedHatInsights/red-hat-lightspeed-mcp
-sourceCode: RedHatInsights/red-hat-lightspeed-mcp
+repositoryUrl: https://github.com/RedHatInsights/insights-mcp
+sourceCode: RedHatInsights/insights-mcp
 publishedDate: "2025-03-15T00:00:00Z"
 tools:
-  - name: get_recommendations
-    description: Retrieve Insights recommendations for registered systems
+  # image-builder toolset
+  - name: get_blueprint_details
+    description: Get blueprint details
     accessType: read_only
-    parameters:
-      - name: system_id
-        type: string
-        description: Insights system UUID (optional, returns all if omitted)
-        required: false
-      - name: category
-        type: string
-        description: "Filter by category: Availability, Performance, Security, Stability"
-        required: false
-  - name: get_advisories
-    description: Retrieve applicable patch and security advisories
+    parameters: []
+  - name: get_blueprints
+    description: Show user's image blueprints (saved image templates/configurations)
     accessType: read_only
-    parameters:
-      - name: system_id
-        type: string
-        description: Insights system UUID (optional)
-        required: false
-      - name: advisory_type
-        type: string
-        description: "Advisory type: security, bugfix, enhancement"
-        required: false
-  - name: get_vulnerability_report
-    description: Get CVE exposure and vulnerability details for your environment
+    parameters: []
+  - name: get_compose_details
+    description: Get detailed information about a specific image build
     accessType: read_only
-    parameters:
-      - name: cve_id
-        type: string
-        description: Specific CVE identifier (optional, returns all if omitted)
-        required: false
-  - name: get_system_status
-    description: Retrieve health and compliance status for a registered system
+    parameters: []
+  - name: get_composes
+    description: Get a list of all image builds (composes) with their UUIDs and basic status
     accessType: read_only
-    parameters:
-      - name: system_id
-        type: string
-        description: Insights system UUID
-        required: true
+    parameters: []
+  - name: get_distributions
+    description: Get the list of distributions available to build images with
+    accessType: read_only
+    parameters: []
+  - name: get_openapi
+    description: Get OpenAPI spec for image builder details
+    accessType: read_only
+    parameters: []
+  - name: get_org_id
+    description: Get the organization ID for RHEL image registration/subscription
+    accessType: read_only
+    parameters: []
+  - name: blueprint_compose
+    description: Compose an image from a blueprint UUID created with create_blueprint
+    accessType: read_write
+    parameters: []
+  - name: create_blueprint
+    description: Create a custom Linux image blueprint
+    accessType: read_write
+    parameters: []
+  - name: update_blueprint
+    description: Update a blueprint
+    accessType: read_write
+    parameters: []
+  # rhsm toolset
+  - name: get_activation_key
+    description: Get a specific activation key by name
+    accessType: read_only
+    parameters: []
+  - name: get_activation_keys
+    description: Get the list of activation keys available to the authenticated user
+    accessType: read_only
+    parameters: []
+  # vulnerability toolset
+  - name: explain_cves
+    description: Explain why CVEs are affecting my environment
+    accessType: read_only
+    parameters: []
+  - name: get_cve
+    description: Get details about a specific CVE
+    accessType: read_only
+    parameters: []
+  - name: get_cve_systems
+    description: Get list of systems affected by a given CVE
+    accessType: read_only
+    parameters: []
+  - name: get_cves
+    description: Get list of CVEs affecting the account
+    accessType: read_only
+    parameters: []
+  - name: get_system_cves
+    description: Get list of CVEs affecting a given system
+    accessType: read_only
+    parameters: []
+  - name: get_systems
+    description: Get list of systems in Vulnerability inventory
+    accessType: read_only
+    parameters: []
+  # remediations toolset
+  - name: create_vuln_playbook
+    description: Create remediation playbook for given CVEs on given systems to mitigate
+    accessType: read_write
+    parameters: []
+  # advisor toolset
+  - name: get_active_rules
+    description: Get Active Advisor Recommendations for Account
+    accessType: read_only
+    parameters: []
+  - name: get_hosts_details_for_rule
+    description: Get Detailed System Information for Advisor Recommendation
+    accessType: read_only
+    parameters: []
+  - name: get_hosts_hitting_a_rule
+    description: Get Systems Affected by Advisor Recommendation
+    accessType: read_only
+    parameters: []
+  - name: get_recommendations_stats
+    description: Get Statistics of Recommendations Across Categories and Risks
+    accessType: read_only
+    parameters: []
+  - name: get_rule_by_text_search
+    description: Find Advisor Recommendations by Text Search
+    accessType: read_only
+    parameters: []
+  - name: get_rule_details
+    description: Get Detailed Advisor Recommendation Information
+    accessType: read_only
+    parameters: []
+  - name: get_rule_from_node_id
+    description: Find Advisor Recommendations using Knowledge Base solution ID or article ID
+    accessType: read_only
+    parameters: []
+  # inventory toolset
+  - name: find_host_by_name
+    description: Find a host by its hostname/display name
+    accessType: read_only
+    parameters: []
+  - name: get_host_details
+    description: Get detailed information for specific hosts by their IDs
+    accessType: read_only
+    parameters: []
+  - name: get_host_system_profile
+    description: Get detailed system profile information for specific hosts
+    accessType: read_only
+    parameters: []
+  - name: get_host_tags
+    description: Get tags for specific hosts
+    accessType: read_only
+    parameters: []
+  - name: list_hosts
+    description: List hosts with filtering and sorting options
+    accessType: read_only
+    parameters: []
+  # content-sources toolset
+  - name: list_repositories
+    description: List repositories with filtering and pagination options
+    accessType: read_only
+    parameters: []
+  # rbac toolset
+  - name: get_all_access
+    description: Get access information for all Red Hat Insights applications
+    accessType: read_only
+    parameters: []
+  # planning toolset
+  - name: get_appstreams_lifecycle
+    description: Get Application Streams lifecycle information
+    accessType: read_only
+    parameters: []
+  - name: get_relevant_upcoming
+    description: List relevant upcoming package changes, deprecations, additions and enhancements
+    accessType: read_only
+    parameters: []
+  - name: get_rhel_lifecycle
+    description: Returns life cycle dates for all RHEL majors and minors
+    accessType: read_only
+    parameters: []
+  - name: get_upcoming_changes
+    description: List upcoming package changes, deprecations, additions and enhancements
+    accessType: read_only
+    parameters: []
 artifacts:
   - uri: oci://ghcr.io/redhatinsights/red-hat-lightspeed-mcp:latest
     createTimeSinceEpoch: "1742000000000"
@@ -110,20 +240,35 @@ runtimeMetadata:
         description: Service account client secret (from secret insights-credentials)
         required: true
         type: string
+      - name: LIGHTSPEED_BASE_URL
+        description: Override the default Lightspeed API endpoint
+        required: false
+        type: string
+      - name: LIGHTSPEED_SSO_BASE_URL
+        description: Override the default SSO endpoint
+        required: false
+        type: string
+      - name: LIGHTSPEED_PROXY_URL
+        description: Override the default proxy endpoint
+        required: false
+        type: string
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  sast: true
+  readOnlyTools: false
 customProperties:
-  insights:
+  architecture:
     metadataType: MetadataStringValue
-    string_value: ""
-  security:
+    string_value: "[\"amd64\",\"arm64\"]"
+  insights:
     metadataType: MetadataStringValue
     string_value: ""
   observability:
     metadataType: MetadataStringValue
     string_value: ""
-securityIndicators:
-  verifiedSource: true
-  secureEndpoint: true
-  sast: true
-  readOnlyTools: true
-createTimeSinceEpoch: "1742000000000"
+  security:
+    metadataType: MetadataStringValue
+    string_value: ""
+createTimeSinceEpoch: "1741996800000"
 lastUpdateTimeSinceEpoch: "1742000000000"

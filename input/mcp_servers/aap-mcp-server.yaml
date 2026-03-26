@@ -3,21 +3,30 @@ provider: Red Hat
 license: apache-2.0
 license_link: https://www.apache.org/licenses/LICENSE-2.0
 description: >-
-  Ansible Automation Platform integration via the MCP Lifecycle Operator.
-  Allows agents to trigger job templates, query inventory, and monitor
-  automation job status using OAuth2 bearer token authentication.
+  Ansible Automation Platform MCP server providing AI agent access to AAP APIs
+  through OpenAPI specifications. Supports controller, galaxy, gateway, and EDA
+  services with role-based toolsets, session management, and optional Prometheus
+  metrics. Write operations disabled by default.
 readme: |-
   # Ansible Automation Platform MCP Server
 
   **MCP Server Summary:**
-  Connect AI agents to your Ansible Automation Platform instance to trigger
-  automation jobs and query inventory through the AAP Gateway API.
+  Connect AI agents to your Ansible Automation Platform instance through
+  dynamically generated tools derived from AAP OpenAPI specifications.
+
+  ## Services
+  - **Controller** — Job templates, workflow jobs, inventories, hosts, groups, projects, organizations
+  - **Galaxy** — Collection discovery and version management
+  - **Gateway** — User, team, and organization administration, activity streams
+  - **EDA** — Event-Driven Ansible activations, rulebooks, decision environments
 
   ## Features
-  - Launch job templates by name or ID
-  - List inventories and host groups
-  - Poll job execution status and retrieve results
-  - List available credentials (read-only)
+  - Dynamic tool generation from OpenAPI specs for each AAP service
+  - Role-based toolsets for permission-based tool filtering
+  - Session management with automatic permission detection
+  - Prometheus metrics for monitoring (opt-in)
+  - Health check endpoint at `/api/v1/health`
+  - Write operations controlled via `ALLOW_WRITE_OPERATIONS` (disabled by default)
 
   ## Prerequisites
   - Running Ansible Automation Platform instance
@@ -30,49 +39,56 @@ readme: |-
     --from-literal=base-url=https://your-aap-instance.example.com \
     --from-literal=token=your-oauth2-bearer-token
   ```
-version: "latest"
+version: latest
 transports:
   - http
-logo: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzOCIgaGVpZ2h0PSIzOCIgdmlld0JveD0iMCAwIDM4IDM4Ij4KICA8dGl0bGU+TUNQIFNlcnZlciBpY29uPC90aXRsZT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmJne2ZpbGw6I2ZmZjt9CiAgICAgIC5ib3JkZXJ7ZmlsbDojZTBlMGUwO30KICAgICAgLmFjY2VudHtmaWxsOiMwMDY2Y2M7fQogICAgICAubm9kZXtmaWxsOiMwMDY2Y2M7fQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9ImJvcmRlciIgeD0iMCIgeT0iMCIgd2lkdGg9IjM4IiBoZWlnaHQ9IjM4IiByeD0iNCIgcnk9IjQiLz4KICA8cmVjdCBjbGFzcz0iYmciIHg9IjEiIHk9IjEiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjMiIHJ5PSIzIi8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjE5IiBjeT0iMTkiIHI9IjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMTkiIGN5PSI3IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iMjkiIGN5PSIxMyIgcj0iMi41Ii8+CiAgPGNpcmNsZSBjbGFzcz0ibm9kZSIgY3g9IjI5IiBjeT0iMjUiIHI9IjIuNSIvPgogIDxjaXJjbGUgY2xhc3M9Im5vZGUiIGN4PSIxOSIgY3k9IjMxIiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjI1IiByPSIyLjUiLz4KICA8Y2lyY2xlIGNsYXNzPSJub2RlIiBjeD0iOSIgY3k9IjEzIiByPSIyLjUiLz4KICA8bGluZSB4MT0iMTkiIHkxPSIxNCIgeDI9IjE5IiB5Mj0iOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjE2IiB4Mj0iMjciIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIyMyIgeTE9IjIyIiB4Mj0iMjciIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxOSIgeTE9IjI0IiB4Mj0iMTkiIHkyPSIyOSIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjIyIiB4Mj0iMTEiIHkyPSIyNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgogIDxsaW5lIHgxPSIxNSIgeTE9IjE2IiB4Mj0iMTEiIHkyPSIxNCIgc3Ryb2tlPSIjMDA2NmNjIiBzdHJva2Utd2lkdGg9IjEuNSIvPgo8L3N2Zz4K
+logo: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgaWQ9ImI2YmRkMmI0LTUyYWItNDg4YS05YTMwLTFlNmQxZDdkZDJkNCIKICAgZGF0YS1uYW1lPSJMYXllciAxIgogICB2aWV3Qm94PSIwIDAgMTkyLjMwMDAxIDE0NiIKICAgdmVyc2lvbj0iMS4xIgogICBzb2RpcG9kaTpkb2NuYW1lPSJsb2dvLnN2ZyIKICAgd2lkdGg9IjE5Mi4zIgogICBoZWlnaHQ9IjE0NiIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC45Mi41ICgyMDYwZWMxZjlmLCAyMDIwLTA0LTA4KSI+CiAgPG1ldGFkYXRhCiAgICAgaWQ9Im1ldGFkYXRhMTUiPgogICAgPHJkZjpSREY+CiAgICAgIDxjYzpXb3JrCiAgICAgICAgIHJkZjphYm91dD0iIj4KICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3N2Zyt4bWw8L2RjOmZvcm1hdD4KICAgICAgICA8ZGM6dHlwZQogICAgICAgICAgIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiIC8+CiAgICAgICAgPGRjOnRpdGxlPjwvZGM6dGl0bGU+CiAgICAgIDwvY2M6V29yaz4KICAgIDwvcmRmOlJERj4KICA8L21ldGFkYXRhPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMSIKICAgICBvYmplY3R0b2xlcmFuY2U9IjEwIgogICAgIGdyaWR0b2xlcmFuY2U9IjEwIgogICAgIGd1aWRldG9sZXJhbmNlPSIxMCIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMCIKICAgICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlkPSJuYW1lZHZpZXcxMyIKICAgICBzaG93Z3JpZD0iZmFsc2UiCiAgICAgZml0LW1hcmdpbi10b3A9IjEiCiAgICAgZml0LW1hcmdpbi1yaWdodD0iMSIKICAgICBmaXQtbWFyZ2luLWJvdHRvbT0iMSIKICAgICBmaXQtbWFyZ2luLWxlZnQ9IjEiCiAgICAgaW5rc2NhcGU6em9vbT0iMC40NTkzMDA0MyIKICAgICBpbmtzY2FwZTpjeD0iMzA2Ljg5OTk5IgogICAgIGlua3NjYXBlOmN5PSI3MyIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9ImI2YmRkMmI0LTUyYWItNDg4YS05YTMwLTFlNmQxZDdkZDJkNCIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzNCI+CiAgICA8c3R5bGUKICAgICAgIGlkPSJzdHlsZTIiPi5hNzM3NDU5Yy1lOGM3LTRhZmEtODAwOC1mNmNmZDE1Y2NkYTJ7ZmlsbDojZTAwO308L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aAogICAgIGNsYXNzPSJhNzM3NDU5Yy1lOGM3LTRhZmEtODAwOC1mNmNmZDE1Y2NkYTIiCiAgICAgZD0ibSAxMjgsODQgYyAxMi41LDAgMzAuNiwtMi42IDMwLjYsLTE3LjUgYSAxOS41MywxOS41MyAwIDAgMCAtMC4zLC0zLjQgTCAxNTAuOSwzMC43IEMgMTQ5LjIsMjMuNiAxNDcuNywyMC4zIDEzNS4yLDE0LjEgMTI1LjUsOS4xIDEwNC40LDEgOTguMSwxIDkyLjIsMSA5MC41LDguNSA4My42LDguNSA3Ni45LDguNSA3MiwyLjkgNjUuNywyLjkgYyAtNiwwIC05LjksNC4xIC0xMi45LDEyLjUgMCwwIC04LjQsMjMuNyAtOS41LDI3LjIgYSA2LjE1LDYuMTUgMCAwIDAgLTAuMiwxLjkgQyA0Myw1My43IDc5LjMsODMuOSAxMjgsODQgbSAzMi41LC0xMS40IGMgMS43LDguMiAxLjcsOS4xIDEuNywxMC4xIDAsMTQgLTE1LjcsMjEuOCAtMzYuNCwyMS44IEMgNzksMTA0LjUgMzguMSw3Ny4xIDM4LjEsNTkgYSAxOC4zNSwxOC4zNSAwIDAgMSAxLjUsLTcuMyBDIDIyLjgsNTIuNSAxLDU1LjUgMSw3NC43IDEsMTA2LjIgNzUuNiwxNDUgMTM0LjYsMTQ1IGMgNDUuMywwIDU2LjcsLTIwLjUgNTYuNywtMzYuNyAwLC0xMi43IC0xMSwtMjcuMSAtMzAuOCwtMzUuNyIKICAgICBpZD0icGF0aDgiCiAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICBzdHlsZT0iZmlsbDojZWUwMDAwIiAvPgogIDxwYXRoCiAgICAgZD0ibSAxNjAuNSw3Mi42IGMgMS43LDguMiAxLjcsOS4xIDEuNywxMC4xIDAsMTQgLTE1LjcsMjEuOCAtMzYuNCwyMS44IEMgNzksMTA0LjUgMzguMSw3Ny4xIDM4LjEsNTkgYSAxOC4zNSwxOC4zNSAwIDAgMSAxLjUsLTcuMyBsIDMuNywtOS4xIGEgNi4xNSw2LjE1IDAgMCAwIC0wLjIsMS45IGMgMCw5LjIgMzYuMywzOS40IDg0LjksMzkuNCAxMi41LDAgMzAuNiwtMi42IDMwLjYsLTE3LjUgQSAxOS41MywxOS41MyAwIDAgMCAxNTguMyw2MyBaIgogICAgIGlkPSJwYXRoMTAiCiAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIgLz4KPC9zdmc+Cg==
 documentationUrl: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform
 repositoryUrl: https://github.com/ansible/aap-mcp-server
 sourceCode: ansible/aap-mcp-server
 publishedDate: "2025-04-01T00:00:00Z"
 tools:
-  - name: list_job_templates
-    description: List available job templates in Ansible Automation Platform
-    accessType: read_only
-    parameters:
-      - name: name
-        type: string
-        description: Filter by template name (optional)
-        required: false
-  - name: launch_job_template
-    description: Launch an Ansible job template by ID or name
+  # job_management toolset
+  - name: controller.job_templates_launch_create
+    description: Launch an Ansible job template
     accessType: read_write
-    parameters:
-      - name: template_id
-        type: string
-        description: Job template ID or name
-        required: true
-      - name: extra_vars
-        type: object
-        description: Extra variables to pass to the job (optional)
-        required: false
-  - name: get_job_status
-    description: Retrieve the status and output of an Ansible job
+    parameters: []
+  - name: controller.workflow_job_templates_launch_create
+    description: Launch an Ansible workflow job template
+    accessType: read_write
+    parameters: []
+  - name: controller.jobs_read
+    description: Retrieve the status and details of a job
     accessType: read_only
-    parameters:
-      - name: job_id
-        type: string
-        description: Job ID returned by launch_job_template
-        required: true
-  - name: list_inventories
+    parameters: []
+  - name: controller.workflow_jobs_read
+    description: Retrieve the status and details of a workflow job
+    accessType: read_only
+    parameters: []
+  # inventory_management toolset
+  - name: controller.inventories_list
     description: List available inventories in Ansible Automation Platform
     accessType: read_only
     parameters: []
-  - name: list_credentials
-    description: List available credentials (names and types only, no secret values)
+  - name: controller.hosts_list
+    description: List hosts in an inventory
+    accessType: read_only
+    parameters: []
+  - name: controller.groups_list
+    description: List groups in an inventory
+    accessType: read_only
+    parameters: []
+  # system_monitoring toolset
+  - name: controller.ping_list
+    description: Check AAP controller availability and status
+    accessType: read_only
+    parameters: []
+  - name: controller.config_list
+    description: Retrieve AAP controller configuration
+    accessType: read_only
+    parameters: []
+  - name: gateway.activitystream_list
+    description: List activity stream events from the AAP gateway
     accessType: read_only
     parameters: []
 artifacts:
@@ -105,20 +121,35 @@ runtimeMetadata:
         description: OAuth2 bearer token (from secret aap-credentials)
         required: true
         type: string
+      - name: MCP_PORT
+        description: Server port override (default 3000)
+        required: false
+        type: string
+      - name: ENABLE_METRICS
+        description: Enable Prometheus metrics export at /metrics
+        required: false
+        type: string
+      - name: ALLOW_WRITE_OPERATIONS
+        description: Enable write operations (disabled by default)
+        required: false
+        type: string
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  sast: true
+  readOnlyTools: false
 customProperties:
   ansible:
     metadataType: MetadataStringValue
     string_value: ""
+  architecture:
+    metadataType: MetadataStringValue
+    string_value: "[\"amd64\",\"arm64\",\"ppc64le\",\"s390x\"]"
   automation:
     metadataType: MetadataStringValue
     string_value: ""
   infrastructure:
     metadataType: MetadataStringValue
     string_value: ""
-securityIndicators:
-  verifiedSource: true
-  secureEndpoint: true
-  sast: true
-  readOnlyTools: false
 createTimeSinceEpoch: "1743465600000"
 lastUpdateTimeSinceEpoch: "1743465600000"

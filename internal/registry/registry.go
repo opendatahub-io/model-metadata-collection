@@ -72,8 +72,9 @@ type manifestListSchema struct {
 	Manifests     []manifestListEntry `json:"manifests"`
 }
 
-// fetchImageArchitectures inspects an OCI image reference and returns all supported architectures
-func fetchImageArchitectures(imageRef string) ([]string, error) {
+// FetchImageArchitectures inspects an OCI image reference and returns all supported architectures.
+// Used by model catalog enrichment and MCP server enrichment.
+func FetchImageArchitectures(imageRef string) ([]string, error) {
 	// Parse the image reference
 	ref, err := docker.ParseReference("//" + imageRef)
 	if err != nil {
@@ -159,6 +160,61 @@ func fetchImageArchitectures(imageRef string) ([]string, error) {
 	return architectures, nil
 }
 
+// FetchImageTimestamps fetches creation and last-update timestamps from an OCI
+// image's config blob. Returns epoch milliseconds or nil if unavailable.
+func FetchImageTimestamps(imageRef string) (createTime *int64, updateTime *int64, err error) {
+	ref, err := docker.ParseReference("//" + imageRef)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to parse reference: %v", err)
+	}
+
+	// Use explicit platform choice to avoid manifest list resolution failures
+	// on hosts whose native arch/OS (e.g., darwin/arm64) is absent from the image.
+	sys := &containertypes.SystemContext{
+		ArchitectureChoice: "amd64",
+		OSChoice:           "linux",
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	img, err := ref.NewImage(ctx, sys)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create image: %v", err)
+	}
+	defer func() { _ = img.Close() }()
+
+	configBlob, err := img.ConfigBlob(ctx)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to get config blob: %v", err)
+	}
+
+	var config struct {
+		Created string `json:"created"`
+		History []struct {
+			Created string `json:"created"`
+		} `json:"history"`
+	}
+	if err := json.Unmarshal(configBlob, &config); err != nil {
+		return nil, nil, fmt.Errorf("failed to parse config blob: %v", err)
+	}
+
+	createTime = utils.ParseTimeToEpochInt64(config.Created)
+
+	// Copy createTime so the two return values are independent pointers
+	if createTime != nil {
+		v := *createTime
+		updateTime = &v
+	}
+	if len(config.History) > 0 {
+		last := config.History[len(config.History)-1]
+		if lastUpdate := utils.ParseTimeToEpochInt64(last.Created); lastUpdate != nil {
+			updateTime = lastUpdate
+		}
+	}
+
+	return createTime, updateTime, nil
+}
+
 // AddArchitectureToArtifactProps fetches architectures and adds them to artifact custom properties (exported)
 // Returns true if architecture was successfully added, false otherwise.
 func AddArchitectureToArtifactProps(imageRef string, customProps map[string]interface{}) bool {
@@ -172,7 +228,7 @@ func addArchitectureToCustomProps(imageRef string, customProps map[string]interf
 	architectures, err := utils.RetryWithExponentialBackoff(
 		utils.DefaultRetryConfig,
 		func() ([]string, error) {
-			return fetchImageArchitectures(imageRef)
+			return FetchImageArchitectures(imageRef)
 		},
 		fmt.Sprintf("fetch architectures for %s", imageRef),
 	)

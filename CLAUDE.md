@@ -136,7 +136,7 @@ make build
 
 ## MCP Server Metadata
 
-Individual MCP server YAML files live in `input/mcp_servers/`. The index `data/redhat-mcp-servers-index.yaml` references each by `input_path`. During `make process`, these are aggregated into `data/redhat-mcp-servers-catalog.yaml`. Types are in `pkg/types/mcpserver.go`, generation logic in `internal/catalog/mcp_catalog.go`.
+Individual MCP server YAML files live in `input/mcp_servers/`. The index `data/redhat-mcp-servers-index.yaml` references each by `input_path`. During `make process`, artifacts are enriched from OCI registries (architectures, timestamps) then aggregated into `data/redhat-mcp-servers-catalog.yaml`. Types are in `pkg/types/mcpserver.go`, catalog in `internal/catalog/mcp_catalog.go`, enrichment in `internal/catalog/mcp_enrichment.go`. Use `--skip-mcp-enrichment` to bypass registry calls.
 
 ### Adding a New MCP Server
 

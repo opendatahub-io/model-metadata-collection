@@ -1,7 +1,7 @@
 source: Red Hat MCP
 mcp_servers:
-  - name: kubernetes-mcp-server
-    input_path: input/mcp_servers/kubernetes-mcp-server.yaml
+  - name: openshift-mcp-server
+    input_path: input/mcp_servers/openshift-mcp-server.yaml
   - name: aap-mcp-server
     input_path: input/mcp_servers/aap-mcp-server.yaml
   - name: satellite-mcp-server

@@ -679,7 +679,7 @@ func TestFetchImageArchitectures(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			architectures, err := fetchImageArchitectures(tt.imageRef)
+			architectures, err := FetchImageArchitectures(tt.imageRef)
 
 			if tt.expectError {
 				if err == nil {
@@ -784,7 +784,7 @@ func TestFetchImageArchitectures_ErrorHandling(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := fetchImageArchitectures(tt.imageRef)
+			_, err := FetchImageArchitectures(tt.imageRef)
 			if err == nil {
 				t.Error("Expected error for invalid input but got none")
 			}
@@ -793,6 +793,124 @@ func TestFetchImageArchitectures_ErrorHandling(t *testing.T) {
 }
 
 // TestArchitectureJSONFormatting verifies JSON array formatting
+func TestFetchImageTimestamps(t *testing.T) {
+	t.Skip("Skipping integration test that makes network calls - should be run separately with -integration flag")
+
+	tests := []struct {
+		name        string
+		imageRef    string
+		expectError bool
+	}{
+		{
+			name:        "valid quay.io image",
+			imageRef:    "quay.io/redhat-user-workloads/crt-nshift-lightspeed-tenant/openshift-mcp-server:latest",
+			expectError: false,
+		},
+		{
+			name:        "invalid reference",
+			imageRef:    "invalid/ref",
+			expectError: true,
+		},
+		{
+			name:        "non-existent image",
+			imageRef:    "registry.redhat.io/nonexistent/image:latest",
+			expectError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			createTime, updateTime, err := FetchImageTimestamps(tt.imageRef)
+
+			if tt.expectError {
+				if err == nil {
+					t.Error("Expected error but got none")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+
+			if createTime == nil {
+				t.Error("Expected non-nil createTime")
+			}
+			if updateTime == nil {
+				t.Error("Expected non-nil updateTime")
+			}
+
+			if createTime != nil && *createTime <= 0 {
+				t.Errorf("Expected positive createTime, got %d", *createTime)
+			}
+			if updateTime != nil && *updateTime <= 0 {
+				t.Errorf("Expected positive updateTime, got %d", *updateTime)
+			}
+
+			// Verify that createTime and updateTime are independent pointers
+			if createTime != nil && updateTime != nil && createTime == updateTime {
+				t.Error("createTime and updateTime must be independent pointers (not aliased)")
+			}
+		})
+	}
+}
+
+func TestFetchImageTimestamps_PointerIndependence(t *testing.T) {
+	// Unit test: verify that even when create == update, the pointers are independent.
+	// We test this by calling with a known image that has history entries.
+	// Since we can't easily mock the registry, we test the contract by verifying
+	// that FetchImageTimestamps returns non-aliased pointers.
+	t.Skip("Skipping integration test that makes network calls - should be run separately with -integration flag")
+
+	createTime, updateTime, err := FetchImageTimestamps(
+		"quay.io/redhat-user-workloads/crt-nshift-lightspeed-tenant/openshift-mcp-server:latest",
+	)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if createTime == nil || updateTime == nil {
+		t.Fatal("Expected non-nil timestamps")
+	}
+
+	// Even if values are equal, pointers must be different
+	if createTime == updateTime {
+		t.Error("createTime and updateTime pointers are aliased — mutating one would affect the other")
+	}
+
+	// Mutate one and verify the other is unaffected
+	originalCreate := *createTime
+	*updateTime = 0
+	if *createTime != originalCreate {
+		t.Error("Mutating updateTime affected createTime — pointers are aliased")
+	}
+}
+
+func TestFetchImageTimestamps_ErrorHandling(t *testing.T) {
+	tests := []struct {
+		name     string
+		imageRef string
+	}{
+		{
+			name:     "empty reference",
+			imageRef: "",
+		},
+		{
+			name:     "malformed reference",
+			imageRef: ":::invalid",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, _, err := FetchImageTimestamps(tt.imageRef)
+			if err == nil {
+				t.Error("Expected error for invalid input but got none")
+			}
+		})
+	}
+}
+
 func TestArchitectureJSONFormatting(t *testing.T) {
 	tests := []struct {
 		name          string

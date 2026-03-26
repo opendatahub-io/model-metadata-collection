@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
+	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
 
 // CreateMCPServersCatalog reads an MCP servers index file, loads each referenced
@@ -58,7 +59,7 @@ func CreateMCPServersCatalog(indexPath, catalogPath string) error {
 	}
 
 	// Marshal and write
-	output, err := yaml.Marshal(&catalog)
+	output, err := utils.MarshalYAMLWithNewline(&catalog)
 	if err != nil {
 		return fmt.Errorf("error marshaling MCP catalog: %v", err)
 	}
