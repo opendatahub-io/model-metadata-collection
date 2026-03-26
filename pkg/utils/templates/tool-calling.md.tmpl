@@ -26,6 +26,7 @@ This model uses the `{{ .Config.ToolCallParser }}` tool call parser.
 {{if .HasTemplateFile}}
 ### Chat Template
 
-Chat template file: `{{ .Config.ChatTemplateFile }}`{{if .ProcessedPath}}
+Chat template file: `{{ .Config.ChatTemplateFile }}`
+{{if .ProcessedPath}}
 Template path: `{{ .ProcessedPath }}`{{end}}
 {{end}}

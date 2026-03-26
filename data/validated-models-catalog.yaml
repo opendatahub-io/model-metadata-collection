@@ -10,7 +10,6 @@ models:
       tasks:
         - text-to-text
         - text-generation
-        - tool-calling
       createTimeSinceEpoch: "1758153600000"
       lastUpdateTimeSinceEpoch: "1758153600000"
       customProperties:
@@ -2211,6 +2210,7 @@ models:
         ### Chat Template
 
         Chat template file: `tool_chat_template_llama3.1_json.jinja`
+
         Template path: `opt/app-root/template/tool_chat_template_llama3.1_json.jinja`
 
       language:
@@ -3705,8 +3705,8 @@ models:
         - text-to-text
         - text-generation
         - image-to-text
-        - tool-calling
         - reasoning
+        - tool-calling
       createTimeSinceEpoch: "1754345689000"
       lastUpdateTimeSinceEpoch: "1767895335000"
       customProperties:
