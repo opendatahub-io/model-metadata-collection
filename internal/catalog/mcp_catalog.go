@@ -33,8 +33,8 @@ func CreateMCPServersCatalog(indexPath, catalogPath string) error {
 	var servers []types.MCPServerMetadata
 	for _, entry := range index.MCPServers {
 		cleaned := filepath.Clean(entry.InputPath)
-		if !filepath.IsAbs(cleaned) && strings.HasPrefix(cleaned, "..") {
-			log.Printf("Warning: skipping MCP server %q: invalid input_path %q (relative path traversal not allowed)", entry.Name, entry.InputPath)
+		if filepath.IsAbs(cleaned) || strings.HasPrefix(cleaned, "..") {
+			log.Printf("Warning: skipping MCP server %q: invalid input_path %q (absolute or traversal path not allowed)", entry.Name, entry.InputPath)
 			continue
 		}
 		server, err := loadMCPServerInput(cleaned)

@@ -200,7 +200,7 @@ func main() {
 		if !*skipMCPEnrichment {
 			log.Printf("Enriching MCP servers from OCI registry...")
 			if err := catalog.EnrichMCPServersFromRegistry(*mcpIndexPath); err != nil {
-				log.Printf("Warning: MCP server enrichment failed: %v", err)
+				log.Fatalf("MCP server enrichment failed: %v", err)
 			}
 		}
 

@@ -33,13 +33,18 @@ func TestMarshalYAMLWithNewline(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
+		foundLogo := false
 		for _, line := range strings.Split(string(data), "\n") {
 			if strings.HasPrefix(line, "logo:") {
+				foundLogo = true
 				if !strings.Contains(line, longValue) {
 					t.Errorf("long string was wrapped; logo line: %s", line)
 				}
 				break
 			}
+		}
+		if !foundLogo {
+			t.Fatal("expected 'logo:' field in YAML output, but it was not found")
 		}
 	})
 

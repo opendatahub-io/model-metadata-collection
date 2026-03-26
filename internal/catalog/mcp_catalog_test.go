@@ -14,9 +14,10 @@ import (
 func TestCreateMCPServersCatalog(t *testing.T) {
 	t.Run("happy path with valid index and inputs", func(t *testing.T) {
 		tmpDir := t.TempDir()
+		t.Chdir(tmpDir)
 
-		// Create input files
-		inputDir := filepath.Join(tmpDir, "input", "mcp_servers")
+		// Create input files using relative paths (mirrors production layout)
+		inputDir := filepath.Join("input", "mcp_servers")
 		if err := os.MkdirAll(inputDir, 0755); err != nil {
 			t.Fatal(err)
 		}
@@ -45,7 +46,7 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		writeYAML(t, filepath.Join(inputDir, "test-server-1.yaml"), server1)
 		writeYAML(t, filepath.Join(inputDir, "test-server-2.yaml"), server2)
 
-		// Create index file
+		// Create index file with relative input paths
 		index := types.MCPServersIndex{
 			Source: "Red Hat MCP",
 			MCPServers: []types.MCPServerEntry{
@@ -53,11 +54,11 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 				{Name: "test-server-2", InputPath: filepath.Join(inputDir, "test-server-2.yaml")},
 			},
 		}
-		indexPath := filepath.Join(tmpDir, "index.yaml")
+		indexPath := "index.yaml"
 		writeYAML(t, indexPath, index)
 
 		// Generate catalog
-		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
+		catalogPath := "catalog.yaml"
 		err := CreateMCPServersCatalog(indexPath, catalogPath)
 		if err != nil {
 			t.Fatalf("CreateMCPServersCatalog failed: %v", err)
@@ -96,9 +97,10 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 
 	t.Run("missing input file is skipped", func(t *testing.T) {
 		tmpDir := t.TempDir()
+		t.Chdir(tmpDir)
 
 		// Create one valid input file
-		inputDir := filepath.Join(tmpDir, "input")
+		inputDir := "input"
 		if err := os.MkdirAll(inputDir, 0755); err != nil {
 			t.Fatal(err)
 		}
@@ -119,10 +121,10 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 				{Name: "missing-server", InputPath: filepath.Join(inputDir, "missing-server.yaml")},
 			},
 		}
-		indexPath := filepath.Join(tmpDir, "index.yaml")
+		indexPath := "index.yaml"
 		writeYAML(t, indexPath, index)
 
-		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
+		catalogPath := "catalog.yaml"
 		err := CreateMCPServersCatalog(indexPath, catalogPath)
 		if err != nil {
 			t.Fatalf("CreateMCPServersCatalog should not fail on missing input: %v", err)
@@ -148,9 +150,10 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 
 	t.Run("invalid YAML input is skipped", func(t *testing.T) {
 		tmpDir := t.TempDir()
+		t.Chdir(tmpDir)
 
 		// Write invalid YAML
-		inputDir := filepath.Join(tmpDir, "input")
+		inputDir := "input"
 		if err := os.MkdirAll(inputDir, 0755); err != nil {
 			t.Fatal(err)
 		}
@@ -164,10 +167,10 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 				{Name: "bad-server", InputPath: filepath.Join(inputDir, "bad.yaml")},
 			},
 		}
-		indexPath := filepath.Join(tmpDir, "index.yaml")
+		indexPath := "index.yaml"
 		writeYAML(t, indexPath, index)
 
-		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
+		catalogPath := "catalog.yaml"
 		err := CreateMCPServersCatalog(indexPath, catalogPath)
 		if err != nil {
 			t.Fatalf("CreateMCPServersCatalog should not fail on invalid input: %v", err)
@@ -286,8 +289,9 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 
 	t.Run("input with missing required fields is skipped", func(t *testing.T) {
 		tmpDir := t.TempDir()
+		t.Chdir(tmpDir)
 
-		inputDir := filepath.Join(tmpDir, "input")
+		inputDir := "input"
 		if err := os.MkdirAll(inputDir, 0755); err != nil {
 			t.Fatal(err)
 		}
@@ -303,10 +307,10 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 				{Name: "minimal-server", InputPath: filepath.Join(inputDir, "minimal.yaml")},
 			},
 		}
-		indexPath := filepath.Join(tmpDir, "index.yaml")
+		indexPath := "index.yaml"
 		writeYAML(t, indexPath, index)
 
-		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
+		catalogPath := "catalog.yaml"
 		err := CreateMCPServersCatalog(indexPath, catalogPath)
 		if err != nil {
 			t.Fatalf("CreateMCPServersCatalog should not fail on incomplete input: %v", err)

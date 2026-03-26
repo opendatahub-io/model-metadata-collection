@@ -42,7 +42,7 @@ func EnrichMCPServersFromRegistry(indexPath string) error {
 	enrichedCount := 0
 	for _, entry := range index.MCPServers {
 		cleaned := filepath.Clean(entry.InputPath)
-		if !filepath.IsAbs(cleaned) && strings.HasPrefix(cleaned, "..") {
+		if filepath.IsAbs(cleaned) || strings.HasPrefix(cleaned, "..") {
 			log.Printf("Warning: skipping MCP server %q enrichment: invalid input_path %q", entry.Name, entry.InputPath)
 			continue
 		}
