@@ -24,6 +24,10 @@ VALIDATED_CATALOG_OUTPUT_PATH=data/validated-models-catalog.yaml
 OTHER_CATALOG_OUTPUT_PATH=data/other-models-catalog.yaml
 REDHAT_MCP_SERVERS_INDEX_PATH=data/redhat-mcp-servers-index.yaml
 REDHAT_MCP_SERVERS_CATALOG_OUTPUT_PATH=data/redhat-mcp-servers-catalog.yaml
+PARTNER_MCP_SERVERS_INDEX_PATH=data/partner-mcp-servers-index.yaml
+PARTNER_MCP_SERVERS_CATALOG_OUTPUT_PATH=data/partner-mcp-servers-catalog.yaml
+COMMUNITY_MCP_SERVERS_INDEX_PATH=data/community-mcp-servers-index.yaml
+COMMUNITY_MCP_SERVERS_CATALOG_OUTPUT_PATH=data/community-mcp-servers-catalog.yaml
 
 # Container parameters
 CONTAINER_RUNTIME?=$(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null || echo docker)
@@ -31,7 +35,7 @@ DOCKER_IMAGE_NAME?=quay.io/opendatahub/odh-model-metadata-collection
 DOCKER_IMAGE_TAG?=latest
 DOCKER_FULL_IMAGE_NAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 
-.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-redhat-mcp report run-with-report docker-build
+.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-redhat-mcp process-partner-mcp process-community-mcp report run-with-report docker-build
 
 # Default target
 all: check build
@@ -62,6 +66,8 @@ clean:
 	rm -rf output/
 	rm -f data/hugging-face-redhat-ai-validated-*.yaml
 	rm -f $(REDHAT_MCP_SERVERS_CATALOG_OUTPUT_PATH)
+	rm -f $(PARTNER_MCP_SERVERS_CATALOG_OUTPUT_PATH)
+	rm -f $(COMMUNITY_MCP_SERVERS_CATALOG_OUTPUT_PATH)
 
 # Run tests
 test:
@@ -145,12 +151,28 @@ process-models: build
 process-redhat-mcp: build
 	@echo "Processing Red Hat MCP servers catalog..."
 	./$(BUILD_DIR)/$(BINARY_NAME) \
-		--mcp-index $(REDHAT_MCP_SERVERS_INDEX_PATH) \
-		--mcp-catalog-output $(REDHAT_MCP_SERVERS_CATALOG_OUTPUT_PATH) \
-		--skip-huggingface --skip-enrichment --skip-catalog
+	  	--mcp-index $(REDHAT_MCP_SERVERS_INDEX_PATH) \
+	  	--mcp-catalog-output $(REDHAT_MCP_SERVERS_CATALOG_OUTPUT_PATH) \
+	  	--skip-huggingface --skip-enrichment --skip-catalog
+
+# Process Partner MCP servers with input/output paths
+process-partner-mcp: build
+	@echo "Processing Partner MCP servers catalog..."
+	./$(BUILD_DIR)/$(BINARY_NAME) \
+	  	--mcp-index $(PARTNER_MCP_SERVERS_INDEX_PATH) \
+	  	--mcp-catalog-output $(PARTNER_MCP_SERVERS_CATALOG_OUTPUT_PATH) \
+	  	--skip-huggingface --skip-enrichment --skip-catalog
+
+# Process Community MCP servers with input/output paths
+process-community-mcp: build
+	@echo "Processing Community MCP servers catalog..."
+	./$(BUILD_DIR)/$(BINARY_NAME) \
+	  	--mcp-index $(COMMUNITY_MCP_SERVERS_INDEX_PATH) \
+	  	--mcp-catalog-output $(COMMUNITY_MCP_SERVERS_CATALOG_OUTPUT_PATH) \
+	  	--skip-huggingface --skip-enrichment --skip-catalog
 
 # Process all model indexes and MCP server catalogs
-process: process-models process-redhat-mcp
+process: process-models process-redhat-mcp process-partner-mcp process-community-mcp
 
 # Generate metadata completeness report
 report: build-report
@@ -236,6 +258,8 @@ help:
 	@echo "  process      - Process all model indexes and MCP server catalogs"
 	@echo "  process-models          - Process model indexes (redhat, validated, other)"
 	@echo "  process-redhat-mcp      - Process Red Hat MCP servers catalog"
+	@echo "  process-partner-mcp     - Process Partner MCP servers catalog"
+	@echo "  process-community-mcp   - Process Community MCP servers catalog"
 	@echo "  report       - Generate metadata completeness report"
 	@echo "  run-with-report - Run extraction then generate report"
 	@echo "  dev          - Quick development iteration"

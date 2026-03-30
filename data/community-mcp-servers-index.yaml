@@ -1,0 +1,6 @@
+source: Community MCP
+mcp_servers:
+  - name: mariadb-mcp
+    input_path: input/mcp_servers/community/mariadb-mcp.yaml
+  - name: mongodb-js-mongodb-mcp-server
+    input_path: input/mcp_servers/community/mongodb-js-mongodb-mcp-server.yaml

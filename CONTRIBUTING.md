@@ -65,7 +65,28 @@ make process
 Process Red Hat MCP servers only (with OCI enrichment for architectures and timestamps):
 
 ```bash
-make process-redhat-mcp
+./build/model-extractor \
+    --mcp-index data/redhat-mcp-servers-index.yaml \
+    --mcp-catalog-output data/redhat-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+```
+
+Process Partner MCP servers only:
+
+```bash
+./build/model-extractor \
+    --mcp-index data/partner-mcp-servers-index.yaml \
+    --mcp-catalog-output data/partner-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+```
+
+Process Community MCP servers only:
+
+```bash
+./build/model-extractor \
+    --mcp-index data/community-mcp-servers-index.yaml \
+    --mcp-catalog-output data/community-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
 ```
 
 Process Red Hat MCP servers without OCI enrichment (offline/CI without registry access):

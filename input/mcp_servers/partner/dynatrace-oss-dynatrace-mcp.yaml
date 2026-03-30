@@ -1,0 +1,189 @@
+name: dynatrace-oss/dynatrace-mcp
+displayName: Dynatrace MCP Server
+provider: Dynatrace
+logo: data:image/png;base64,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
+version: 1.4.0
+documentationUrl: https://www.dynatrace.com/hub/detail/dynatrace-mcp-server/
+repositoryUrl: https://github.com/dynatrace-oss/dynatrace-mcp
+license: MIT
+description: >-
+  AI Assistants can interact with the Dynatrace observability platform, bringing real-time observability data directly
+  into your development workflow. Query logs, events, spans, metrics via DQL.
+transports:
+  - stdio
+  - http
+deploymentMode: local
+toolCount: 20
+artifacts:
+  - uri: oci://quay.io/rhoai-partner-mcp/ubi10-dynatrace-oss-mcp:1773859835
+tags:
+  - dynatrace
+  - observability
+  - monitoring
+  - apm
+  - dql
+  - logs
+  - metrics
+  - traces
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  readOnlyTools: false
+tools:
+  - name: execute_dql
+    description: >-
+      Query Dynatrace using natural language or DQL (Dynatrace Query Language) statements; retrieves logs, events, spans, and metrics
+    accessType: read_only
+    parameters:
+      - name: query
+        type: string
+        required: true
+        description: >-
+          DQL query or natural language description of data to retrieve
+  - name: list_problems
+    description: >-
+      Identify service issues from monitored infrastructure
+    accessType: read_only
+    parameters:
+      - name: timeframe
+        type: string
+        required: false
+        description: >-
+          Time range for problem search
+      - name: status
+        type: string
+        required: false
+        description: >-
+          Filter by problem status
+  - name: send_event
+    description: >-
+      Transmit custom event data to Dynatrace for ingestion
+    accessType: execute
+    parameters:
+      - name: event
+        type: object
+        required: true
+        description: >-
+          Event data to send to Dynatrace
+  - name: get_environment_info
+    description: >-
+      Retrieve Dynatrace environment information
+    accessType: read_only
+    parameters: [ ]
+  - name: list_vulnerabilities
+    description: >-
+      List security vulnerabilities detected by Dynatrace
+    accessType: read_only
+    parameters: [ ]
+  - name: find_entity_by_name
+    description: >-
+      Find entities by name in Dynatrace
+    accessType: read_only
+    parameters: [ ]
+  - name: send_slack_message
+    description: >-
+      Send notification message to Slack
+    accessType: execute
+    parameters: [ ]
+  - name: verify_dql
+    description: >-
+      Verify DQL query syntax
+    accessType: read_only
+    parameters: [ ]
+  - name: generate_dql_from_natural_language
+    description: >-
+      Generate DQL query from natural language description
+    accessType: read_only
+    parameters: [ ]
+  - name: explain_dql_in_natural_language
+    description: >-
+      Explain DQL query in natural language
+    accessType: read_only
+    parameters: [ ]
+  - name: chat_with_davis_copilot
+    description: >-
+      Interact with Davis AI Copilot
+    accessType: read_only
+    parameters: [ ]
+  - name: create_workflow_for_notification
+    description: >-
+      Create Dynatrace workflow for notifications
+    accessType: read_write
+    parameters: [ ]
+  - name: make_workflow_public
+    description: >-
+      Make Dynatrace workflow public
+    accessType: read_write
+    parameters: [ ]
+  - name: get_kubernetes_events
+    description: >-
+      Retrieve Kubernetes events from Dynatrace
+    accessType: read_only
+    parameters: [ ]
+  - name: reset_grail_budget
+    description: >-
+      Reset Grail budget limits
+    accessType: execute
+    parameters: [ ]
+  - name: send_email
+    description: >-
+      Send email notification
+    accessType: execute
+    parameters: [ ]
+  - name: list_exceptions
+    description: >-
+      List exceptions detected by Dynatrace
+    accessType: read_only
+    parameters: [ ]
+  - name: list_davis_analyzers
+    description: >-
+      List available Davis analyzers
+    accessType: read_only
+    parameters: [ ]
+  - name: execute_davis_analyzer
+    description: >-
+      Execute Davis analyzer for root cause analysis
+    accessType: execute
+    parameters: [ ]
+  - name: create_dynatrace_notebook
+    description: >-
+      Create new Dynatrace notebook
+    accessType: read_write
+    parameters: [ ]
+runtimeMetadata:
+  defaultArgs:
+    - "node"
+    - "dist/index.js"
+    - "--http"
+    - "--port"
+    - "3000"
+    - "--host"
+    - "0.0.0.0"
+  requiredEnvironmentVariables:
+    - name: DT_ENVIRONMENT
+      description: >-
+        Dynatrace Platform URL
+      type: config
+      required: true
+    - name: DT_PLATFORM_TOKEN
+      description: >-
+        Dynatrace Platform API token
+      type: secret
+      required: false
+    - name: OAUTH_CLIENT_ID
+      description: >-
+        OAuth client ID for Dynatrace authentication
+      type: secret
+      required: false
+    - name: OAUTH_CLIENT_SECRET
+      description: >-
+        OAuth client secret for Dynatrace authentication
+      type: secret
+      required: false
+  recommendedResources:
+    minimal:
+      cpu: 100m
+      memory: 128Mi
+    recommended:
+      cpu: 250m
+      memory: 256Mi

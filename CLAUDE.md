@@ -138,19 +138,58 @@ make build
 
 ## MCP Server Metadata
 
-Individual MCP server YAML files live in `input/mcp_servers/`. The index `data/redhat-mcp-servers-index.yaml` references each by `input_path`. During `make process-redhat-mcp`, artifacts are enriched from OCI registries (architectures, timestamps) then aggregated into `data/redhat-mcp-servers-catalog.yaml`. Types are in `pkg/types/mcpserver.go`, catalog in `internal/catalog/mcp_catalog.go`, enrichment in `internal/catalog/mcp_enrichment.go`. Use `--skip-mcp-enrichment` to bypass registry calls.
+Individual MCP server YAML files live in `input/mcp_servers/` organized into subdirectories:
+- `input/mcp_servers/redhat/` - Red Hat MCP servers
+- `input/mcp_servers/partner/` - Partner MCP servers
+- `input/mcp_servers/community/` - Community MCP servers
+
+Each catalog has its own index file that references servers by `input_path`:
+- `data/redhat-mcp-servers-index.yaml` → `data/redhat-mcp-servers-catalog.yaml`
+- `data/partner-mcp-servers-index.yaml` → `data/partner-mcp-servers-catalog.yaml`
+- `data/community-mcp-servers-index.yaml` → `data/community-mcp-servers-catalog.yaml`
+
+During `make process`, artifacts are enriched from OCI registries (architectures, timestamps) then aggregated into their respective catalog files. Types are in `pkg/types/mcpserver.go`, catalog in `internal/catalog/mcp_catalog.go`, enrichment in `internal/catalog/mcp_enrichment.go`. Use `--skip-mcp-enrichment` to bypass registry calls.
 
 ### Adding a New MCP Server
 
-1. Create `input/mcp_servers/<server-name>.yaml` (use an existing file as template)
+**For Red Hat MCP servers:**
+1. Create `input/mcp_servers/redhat/<server-name>.yaml` (use an existing file as template)
 2. Add an entry to `data/redhat-mcp-servers-index.yaml`
-3. Run `make process-redhat-mcp`
+3. Run `make process` (or `make process-redhat-mcp` for MCP-only)
 4. Verify: `grep "name:" data/redhat-mcp-servers-catalog.yaml`
+
+**For Partner MCP servers:**
+1. Create `input/mcp_servers/partner/<server-name>.yaml` (use an existing file as template)
+2. Add an entry to `data/partner-mcp-servers-index.yaml`
+3. Run `make process` (or `make process-partner-mcp` for MCP-only)
+4. Verify: `grep "name:" data/partner-mcp-servers-catalog.yaml`
+
+**For Community MCP servers:**
+1. Create `input/mcp_servers/community/<server-name>.yaml` (use an existing file as template)
+2. Add an entry to `data/community-mcp-servers-index.yaml`
+3. Run `make process` (or `make process-community-mcp` for MCP-only)
+4. Verify: `grep "name:" data/community-mcp-servers-catalog.yaml`
 
 ### MCP-Only Processing
 
 ```bash
-make process-redhat-mcp
+# Process Red Hat MCP servers only
+./build/model-extractor \
+    --mcp-index data/redhat-mcp-servers-index.yaml \
+    --mcp-catalog-output data/redhat-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+
+# Process Partner MCP servers only
+./build/model-extractor \
+    --mcp-index data/partner-mcp-servers-index.yaml \
+    --mcp-catalog-output data/partner-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+
+# Process Community MCP servers only
+./build/model-extractor \
+    --mcp-index data/community-mcp-servers-index.yaml \
+    --mcp-catalog-output data/community-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
 ```
 
 ## Tool-Calling Metadata Extraction

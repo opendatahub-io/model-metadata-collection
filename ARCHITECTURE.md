@@ -24,8 +24,14 @@ flowchart TD
     M[Supplemental Static Catalog] --> L
     L --> N[models-catalog.yaml]
 
-    O[MCP Server Index] --> P[Load MCP Input Files]
+    O[Red Hat MCP Index] --> P[Load MCP Input Files]
     P --> Q[redhat-mcp-servers-catalog.yaml]
+
+    R[Partner MCP Index] --> S[Load MCP Input Files]
+    S --> T[partner-mcp-servers-catalog.yaml]
+
+    U[Community MCP Index] --> V[Load MCP Input Files]
+    V --> W[community-mcp-servers-catalog.yaml]
 ```
 
 ## Package Structure
@@ -61,7 +67,7 @@ Main CLI application. Orchestrates the full pipeline: HuggingFace collection pro
 
 ### `internal/catalog/`
 
-Catalog generation and management. Loads static catalogs, merges extracted metadata from processed models, deduplicates entries, and writes the final `models-catalog.yaml` output. Also handles MCP server catalog generation by aggregating individual server input files into `redhat-mcp-servers-catalog.yaml`.
+Catalog generation and management. Loads static catalogs, merges extracted metadata from processed models, deduplicates entries, and writes the final `models-catalog.yaml` output. Also handles MCP server catalog generation by aggregating individual server input files into `redhat-mcp-servers-catalog.yaml`, `partner-mcp-servers-catalog.yaml`, and `community-mcp-servers-catalog.yaml`.
 
 ### `internal/config/`
 
@@ -133,9 +139,16 @@ output/{sanitized-manifest-ref}/
 data/
   models-catalog.yaml              # Final merged catalog
   validated-models-catalog.yaml    # Validated models catalog
-  redhat-mcp-servers-catalog.yaml  # MCP servers catalog
+  redhat-mcp-servers-catalog.yaml  # Red Hat MCP servers catalog
+  partner-mcp-servers-catalog.yaml # Partner MCP servers catalog
+  community-mcp-servers-catalog.yaml # Community MCP servers catalog
   hugging-face-redhat-ai-validated-v*.yaml  # Version-specific HF indices
 
 input/mcp_servers/
-  *.yaml                           # Individual MCP server metadata files
+  redhat/                          # Red Hat MCP server metadata files
+    *.yaml
+  partner/                         # Partner MCP server metadata files
+    *.yaml
+  community/                       # Community MCP server metadata files
+    *.yaml
 ```

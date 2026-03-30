@@ -1,0 +1,104 @@
+name: confluentinc/mcp-confluent
+displayName: Confluent MCP Server
+provider: Confluent
+logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABcMAAAMqCAYAAABOi1k/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAXHNJREFUeNrs3T+TG0iaH+Bc3RlnbMTxLFysszhP3jQDjrwBvZM1TU+yiPLkkTRlsWnKYvMTALQUZ7HnExDjyUFMzycYrLUBa7nGRqwsqZJIDJvNZjcq6w8KqOeJqEUPiSpUZ2VVbPzw8s0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOJjfGQIAAMgzmhTj8mWc/vNRuZ3fest36c+r+Fhuv9z6s+v059F6s5qvjT4AAFQjDAcAgG8YTYpp+Bxy/3P4HHZPe3KKy/Qaw/K/ptePm9V86eoBAMCXhOEAAAzaaFLswu64/fHGz4+O/FeLleTXafvT7ufNav7RVQcAYIiE4QAADMaN4Hsati1M4s/jgQ3DOmyD8diKZRkE5AAADIQwHACAk5V6ek/L7fvwueKbr+0qyH8qt6We5AAAnAxhOAAAJ+NW+B1fx0Ylyzpsq8aF4wAAnAxhOADASUsL/VBGKr/baztOGAPAiwdPLgDh8OqUR7M6XoiaB6CbGtts4cLzwbtv1N8Z7hiv+Rsi823xzb0KRB8T7gMA3jxj59dcZoz3snBUY+VpCmD7boutXGcva2Aog8Siqa/Hov1sbuAxJZXgHC/o1Hz0Ehgsmn71/FIxaXz0AAwS8sj0ihYAcBb5CVJ9weFnwLnR1K6PHgC9FyJsFCVwq+9afAQlIITbnxXMjv+6222dh4/VtAAAAABJRU5ErkJggg==
+version: 1.0.0
+documentationUrl: https://github.com/confluentinc/mcp-confluent
+repositoryUrl: https://github.com/confluentinc/mcp-confluent
+license: Unknown
+description: >-
+  Manage Confluent Cloud resources through the Confluent Cloud REST API. Provides cluster management, environment management,
+  connector operations, and billing cost visibility.
+transports:
+  - stdio
+  - http
+  - sse
+deploymentMode: local
+toolCount: 7
+artifacts:
+  - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:1773859835
+tags:
+  - kafka
+  - confluent
+  - streaming
+  - flink
+  - schema-registry
+  - connectors
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  readOnlyTools: false
+tools:
+  - name: list-connectors
+    description: >-
+      List Kafka connectors
+    accessType: read_only
+    parameters: [ ]
+  - name: read-connector
+    description: >-
+      Read connector configuration
+    accessType: read_only
+    parameters: [ ]
+  - name: delete-connector
+    description: >-
+      Delete a Kafka connector
+    accessType: read_write
+    parameters: [ ]
+  - name: list-clusters
+    description: >-
+      List Confluent Cloud clusters
+    accessType: read_only
+    parameters: [ ]
+  - name: list-environments
+    description: >-
+      List Confluent Cloud environments
+    accessType: read_only
+    parameters: [ ]
+  - name: read-environment
+    description: >-
+      Read environment details
+    accessType: read_only
+    parameters: [ ]
+  - name: list-billing-costs
+    description: >-
+      List billing costs for Confluent Cloud
+    accessType: read_only
+    parameters: [ ]
+runtimeMetadata:
+  requiredEnvironmentVariables:
+    - name: CONFLUENT_CLOUD_API_KEY
+      description: >-
+        Master API key for Confluent Cloud
+      type: secret
+      required: true
+    - name: CONFLUENT_CLOUD_API_SECRET
+      description: >-
+        Master API secret for Confluent Cloud
+      type: secret
+      required: true
+    - name: MCP_API_KEY
+      description: >-
+        API key for HTTP/SSE authentication. Generate using --generate-key. Required when auth is enabled.
+      type: secret
+    - name: MCP_ALLOWED_HOSTS
+      description: >-
+        Comma-separated list of allowed Host header values for DNS rebinding protection.
+      type: secret
+      required: true
+    - name: HTTP_HOST
+      description: >-
+        Host to bind for HTTP transport. Defaults to localhost only for security.
+      type: secret
+      required: true
+    - name: HTTP_PORT
+      description: >-
+        HTTP port for the server
+      type: config
+      required: true
+  recommendedResources:
+    minimal:
+      cpu: 100m
+      memory: 256Mi
+    recommended:
+      cpu: 500m
+      memory: 512Mi

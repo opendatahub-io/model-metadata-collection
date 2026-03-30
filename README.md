@@ -120,9 +120,22 @@ Generate metadata completeness reports:
 # Skip default static catalog but include custom ones
 ./build/model-extractor --skip-default-static-catalog --static-catalog-files custom.yaml
 
-# Generate MCP servers catalog only (no model processing)
+# Generate Red Hat MCP servers catalog only (no model processing)
 ./build/model-extractor \
     --mcp-index data/redhat-mcp-servers-index.yaml \
+    --mcp-catalog-output data/redhat-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+
+# Generate Partner MCP servers catalog only (no model processing)
+./build/model-extractor \
+    --mcp-index data/partner-mcp-servers-index.yaml \
+    --mcp-catalog-output data/partner-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+
+# Generate Community MCP servers catalog only (no model processing)
+./build/model-extractor \
+    --mcp-index data/community-mcp-servers-index.yaml \
+    --mcp-catalog-output data/community-mcp-servers-catalog.yaml \
     --skip-huggingface --skip-enrichment --skip-catalog
 ```
 
@@ -141,6 +154,7 @@ Generate metadata completeness reports:
 | `--skip-default-static-catalog` | Skip processing default input/supplemental-catalog.yaml | `false` |
 | `--mcp-index` | Path to MCP servers index YAML file (enables MCP catalog generation) | `""` |
 | `--mcp-catalog-output` | Path for the generated MCP servers catalog | `data/redhat-mcp-servers-catalog.yaml` |
+| `--skip-mcp-enrichment` | Skip MCP server OCI image enrichment (architectures, timestamps) | `false` |
 | `--help` | Show help message | `false` |
 
 ### Metadata Report CLI Options

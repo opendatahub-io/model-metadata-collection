@@ -1,0 +1,12 @@
+source: Partner MCP
+mcp_servers:
+  - name: confluentinc-mcp-confluent
+    input_path: input/mcp_servers/partner/confluentinc-mcp-confluent.yaml
+  - name: dynatrace-oss-dynatrace-mcp
+    input_path: input/mcp_servers/partner/dynatrace-oss-dynatrace-mcp.yaml
+  - name: hashicorp-terraform-mcp-server
+    input_path: input/mcp_servers/partner/hashicorp-terraform-mcp-server.yaml
+  - name: microsoft-azure-mcp-server
+    input_path: input/mcp_servers/partner/microsoft-azure-mcp-server.yaml
+  - name: enterprisedb-pg-airman-mcp
+    input_path: input/mcp_servers/partner/enterprisedb-pg-airman-mcp.yaml

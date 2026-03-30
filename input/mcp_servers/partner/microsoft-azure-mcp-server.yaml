@@ -1,0 +1,382 @@
+name: microsoft/azure-mcp-server
+displayName: Azure MCP Server
+provider: Microsoft
+logo: data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgcm9sZT0icHJlc2VudGF0aW9uIiBkYXRhLXNsdWctaWQ9ImF6dXJlIiB2aWV3Qm94PSIwIDAgMjU2IDI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCiAgPGRlZnM+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhenVyZV9hYjQwYjM4NS1mOTU4LTQyMGYtYmZhYi03MTRiZTE2Nzc0MjYtZDllM2U4NDQiIHgxPSItOTYwLjYwNiIgeTE9IjI4My4zOTciIHgyPSItMTAzMi41MTEiIHkyPSI3MC45NzIiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMTA3NSAzMTgpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+DQogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxMTRhOGIiPjwvc3RvcD4NCiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzA2NjliYyI+PC9zdG9wPg0KICAgIDwvbGluZWFyR3JhZGllbnQ+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhenVyZV9mNDBhZjkwZC03MmViLTQ5YjMtOTRiMi0yNTEwZjEwNzE3MjItZjhkODYzNjEiIHgxPSItOTM4LjE0NCIgeTE9IjE4NC40MDIiIHgyPSItOTU0Ljc3OCIgeTI9IjE3OC43NzgiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMTA3NSAzMTgpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+DQogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3Atb3BhY2l0eT0iLjMiPjwvc3RvcD4NCiAgICAgIDxzdG9wIG9mZnNldD0iLjA3MSIgc3RvcC1vcGFjaXR5PSIuMiI+PC9zdG9wPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuMzIxIiBzdG9wLW9wYWNpdHk9Ii4xIj48L3N0b3A+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii42MjMiIHN0b3Atb3BhY2l0eT0iLjA1Ij48L3N0b3A+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3Atb3BhY2l0eT0iMCI+PC9zdG9wPg0KICAgIDwvbGluZWFyR3JhZGllbnQ+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhenVyZV9lMzgyZDc0Mi03ZDUxLTQ5NzQtYTI1Ni0yNGUxODJlZWYwNTMtZWE4MGZmYzciIHgxPSItOTQ3LjI5MiIgeTE9IjI4OS41OTQiIHgyPSItODY4LjM2MyIgeTI9Ijc5LjMwOCIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAtMSAxMDc1IDMxOCkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzNjY2JmNCI+PC9zdG9wPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjg5MmRmIj48L3N0b3A+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgPC9kZWZzPg0KICA8cGF0aCBkPSJNODkuMTU4IDE4LjI2Nmg2OS4yMzhMODYuNTIzIDIzMS4yMjRhMTEuMDQxIDExLjA0MSAwIDAxLTEwLjQ2MSA3LjUxSDIyLjE3OWExMS4wMjMgMTEuMDIzIDAgMDEtMTAuNDQ1LTE0LjU0OGw2Ni45NjMtMTk4LjQxYTExLjA0IDExLjA0IDAgMDExMC40NjEtNy41MXoiIGZpbGw9InVybCgjYXp1cmVfYWI0MGIzODUtZjk1OC00MjBmLWJmYWItNzE0YmUxNjc3NDI2LWQ5ZTNlODQ0KSI+PC9wYXRoPg0KICA8cGF0aCBkPSJNMTg5Ljc3IDE2MS4xMDRINzkuOTc2YTUuMDgzIDUuMDgzIDAgMDAtMy40NjggOC44bDcwLjU1MiA2NS44NDdhMTEuMDkxIDExLjA5MSAwIDAwNy41NjcgMi45ODNoNjIuMTY3eiIgZmlsbD0iIzAwNzhkNCI+PC9wYXRoPg0KICA8cGF0aCBkPSJNODkuMTU4IDE4LjI2NmExMC45NSAxMC45NSAwIDAwLTEwLjQ4MyA3LjY1NEwxMS44MTcgMjI0LjAwNmExMS4wMSAxMS4wMSAwIDAwMTAuMzkzIDE0LjcyOGg1NS4yNzRhMTEuODE0IDExLjgxNCAwIDAwOS4wNjktNy43MTRsMTMuMzMtMzkuMjkgNDcuNjI1IDQ0LjQxOGExMS4yNjcgMTEuMjY3IDAgMDA3LjA4OSAyLjU4Nmg2MS45MzdsLTI3LjE2Ni03Ny42My03OS4xOS4wMTggNDguNDctMTQyLjg1NnoiIGZpbGw9InVybCgjYXp1cmVfZjQwYWY5MGQtNzJlYi00OWIzLTk0YjItMjUxMGYxMDcxNzIyLWY4ZDg2MzYxKSI+PC9wYXRoPg0KICA8cGF0aCBkPSJNMTc3LjU5MiAyNS43NjRhMTEuMDIzIDExLjAyMyAwIDAwLTEwLjQ0NC03LjQ5OEg4OS45ODRhMTEuMDI0IDExLjAyNCAwIDAxMTAuNDQ1IDcuNDk4bDY2Ljk2NyAxOTguNDIxYTExLjAyNCAxMS4wMjQgMCAwMS0xMC40NDUgMTQuNTQ5aDc3LjE2NGExMS4wMjQgMTEuMDI0IDAgMDAxMC40NDQtMTQuNTQ5eiIgZmlsbD0idXJsKCNhenVyZV9lMzgyZDc0Mi03ZDUxLTQ5NzQtYTI1Ni0yNGUxODJlZWYwNTMtZWE4MGZmYzcpIj48L3BhdGg+DQo8L3N2Zz4=
+version: 2.0.0-beta
+documentationUrl: https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/
+repositoryUrl: https://github.com/microsoft/mcp/tree/main/servers/Azure.Mcp.Server
+license: MIT
+description: >-
+  Enables AI agents and MCP clients to interact with Azure resources through natural language commands. Provides tools for
+  Azure Storage, Cosmos DB, Key Vault, Azure Monitor, AKS, SQL, and 30+ other Azure services.
+transports:
+  - stdio
+  - http
+deploymentMode: local
+toolCount: 55
+artifacts:
+  - uri: oci://quay.io/rhoai-partner-mcp/ubi10-ms-azure-mcp-server:1774539732-dotnet-builder
+tags:
+  - azure
+  - microsoft
+  - cloud-management
+  - multi-service
+  - cosmos-db
+  - key-vault
+  - storage
+  - aks
+securityIndicators:
+  verifiedSource: true
+  secureEndpoint: true
+  readOnlyTools: false
+tools:
+  - name: cosmos
+    description: >-
+      Work with Azure Cosmos DB accounts, databases, containers, and documents
+    accessType: read_write
+    parameters: [ ]
+  - name: keyvault
+    description: >-
+      List and create keys, secrets, certificates in Azure Key Vault
+    accessType: read_write
+    parameters: [ ]
+  - name: storage
+    description: >-
+      Manage Azure Storage accounts, containers, blobs, and tables
+    accessType: read_write
+    parameters: [ ]
+  - name: aks
+    description: >-
+      List Azure Kubernetes Service clusters
+    accessType: read_only
+    parameters: [ ]
+  - name: sql
+    description: >-
+      Work with Azure SQL Database servers, databases, firewall rules
+    accessType: read_write
+    parameters: [ ]
+  - name: documentation
+    description: >-
+      Access Azure documentation
+    accessType: read_only
+    parameters: [ ]
+  - name: azd
+    description: >-
+      Azure Developer CLI operations
+    accessType: execute
+    parameters: [ ]
+  - name: foundry
+    description: >-
+      Azure Foundry operations
+    accessType: read_write
+    parameters: [ ]
+  - name: get_azure_bestpractices
+    description: >-
+      Retrieve Azure best practices
+    accessType: read_only
+    parameters: [ ]
+  - name: appconfig
+    description: >-
+      Manage Azure App Configuration
+    accessType: read_write
+    parameters: [ ]
+  - name: applens
+    description: >-
+      Access Azure App Lens diagnostics
+    accessType: read_only
+    parameters: [ ]
+  - name: appservice
+    description: >-
+      Manage Azure App Service
+    accessType: read_write
+    parameters: [ ]
+  - name: role
+    description: >-
+      Manage Azure RBAC roles
+    accessType: read_write
+    parameters: [ ]
+  - name: datadog
+    description: >-
+      Manage Datadog integration
+    accessType: read_write
+    parameters: [ ]
+  - name: managedlustre
+    description: >-
+      Manage Azure Managed Lustre
+    accessType: read_write
+    parameters: [ ]
+  - name: azureterraformbestpractices
+    description: >-
+      Retrieve Terraform best practices for Azure
+    accessType: read_only
+    parameters: [ ]
+  - name: deploy
+    description: >-
+      Deploy Azure resources
+    accessType: execute
+    parameters: [ ]
+  - name: deviceregistry
+    description: >-
+      Manage Azure Device Registry
+    accessType: read_write
+    parameters: [ ]
+  - name: eventgrid
+    description: >-
+      Manage Azure Event Grid
+    accessType: read_write
+    parameters: [ ]
+  - name: acr
+    description: >-
+      Manage Azure Container Registry
+    accessType: read_write
+    parameters: [ ]
+  - name: advisor
+    description: >-
+      Access Azure Advisor recommendations
+    accessType: read_only
+    parameters: [ ]
+  - name: bicepschema
+    description: >-
+      Access Bicep schema definitions
+    accessType: read_only
+    parameters: [ ]
+  - name: cloudarchitect
+    description: >-
+      Azure Cloud Architect guidance
+    accessType: read_only
+    parameters: [ ]
+  - name: communication
+    description: >-
+      Manage Azure Communication Services
+    accessType: read_write
+    parameters: [ ]
+  - name: compute
+    description: >-
+      Manage Azure Compute resources
+    accessType: read_write
+    parameters: [ ]
+  - name: confidentialledger
+    description: >-
+      Manage Azure Confidential Ledger
+    accessType: read_write
+    parameters: [ ]
+  - name: eventhubs
+    description: >-
+      Manage Azure Event Hubs
+    accessType: read_write
+    parameters: [ ]
+  - name: fileshares
+    description: >-
+      Manage Azure File Shares
+    accessType: read_write
+    parameters: [ ]
+  - name: foundryextensions
+    description: >-
+      Manage Azure Foundry extensions
+    accessType: read_write
+    parameters: [ ]
+  - name: functionapp
+    description: >-
+      Manage Azure Function Apps
+    accessType: read_write
+    parameters: [ ]
+  - name: functions
+    description: >-
+      Manage Azure Functions
+    accessType: read_write
+    parameters: [ ]
+  - name: grafana
+    description: >-
+      Manage Azure Managed Grafana
+    accessType: read_write
+    parameters: [ ]
+  - name: kusto
+    description: >-
+      Manage Azure Data Explorer (Kusto)
+    accessType: read_write
+    parameters: [ ]
+  - name: loadtesting
+    description: >-
+      Manage Azure Load Testing
+    accessType: read_write
+    parameters: [ ]
+  - name: marketplace
+    description: >-
+      Access Azure Marketplace
+    accessType: read_only
+    parameters: [ ]
+  - name: quota
+    description: >-
+      Manage Azure quotas
+    accessType: read_write
+    parameters: [ ]
+  - name: monitor
+    description: >-
+      Manage Azure Monitor
+    accessType: read_write
+    parameters: [ ]
+  - name: applicationinsights
+    description: >-
+      Manage Application Insights
+    accessType: read_write
+    parameters: [ ]
+  - name: mysql
+    description: >-
+      Manage Azure Database for MySQL
+    accessType: read_write
+    parameters: [ ]
+  - name: policy
+    description: >-
+      Manage Azure Policy
+    accessType: read_write
+    parameters: [ ]
+  - name: postgres
+    description: >-
+      Manage Azure Database for PostgreSQL
+    accessType: read_write
+    parameters: [ ]
+  - name: pricing
+    description: >-
+      Access Azure pricing information
+    accessType: read_only
+    parameters: [ ]
+  - name: redis
+    description: >-
+      Manage Azure Cache for Redis
+    accessType: read_write
+    parameters: [ ]
+  - name: resourcehealth
+    description: >-
+      Check Azure Resource Health
+    accessType: read_only
+    parameters: [ ]
+  - name: search
+    description: >-
+      Manage Azure AI Search
+    accessType: read_write
+    parameters: [ ]
+  - name: servicebus
+    description: >-
+      Manage Azure Service Bus
+    accessType: read_write
+    parameters: [ ]
+  - name: servicefabric
+    description: >-
+      Manage Azure Service Fabric
+    accessType: read_write
+    parameters: [ ]
+  - name: signalr
+    description: >-
+      Manage Azure SignalR Service
+    accessType: read_write
+    parameters: [ ]
+  - name: storagesync
+    description: >-
+      Manage Azure File Sync
+    accessType: read_write
+    parameters: [ ]
+  - name: virtualdesktop
+    description: >-
+      Manage Azure Virtual Desktop
+    accessType: read_write
+    parameters: [ ]
+  - name: wellarchitectedframework
+    description: >-
+      Access Azure Well-Architected Framework
+    accessType: read_only
+    parameters: [ ]
+  - name: workbooks
+    description: >-
+      Manage Azure Workbooks
+    accessType: read_write
+    parameters: [ ]
+  - name: group_list
+    description: >-
+      List Azure resource groups
+    accessType: read_only
+    parameters: [ ]
+  - name: subscription_list
+    description: >-
+      List Azure subscriptions
+    accessType: read_only
+    parameters: [ ]
+  - name: extension_cli_generate
+    description: >-
+      Generate Azure CLI extension code
+    accessType: execute
+    parameters: [ ]
+runtimeMetadata:
+  defaultArgs:
+    - "--transport"
+    - "http"
+  requiredEnvironmentVariables:
+    - name: AZURE_TENANT_ID
+      description: >-
+        Azure Entra ID tenant identifier
+      type: config
+      required: true
+    - name: AZURE_CLIENT_ID
+      description: >-
+        Azure Service Principal client ID
+      type: secret
+      required: true
+    - name: AZURE_CLIENT_SECRET
+      description: >-
+        Azure Service Principal client secret
+      type: secret
+      required: true
+    - name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
+      description: >-
+        A writable extraction directory
+      required: true
+      type: secret
+      default: "/tmp/.net"
+    - name: HOME
+      description: >-
+        Used for ASP.NET DataProtection key storage
+      required: true
+      type: secret
+      default: "/tmp"
+    - name: ALLOW_INSECURE_EXTERNAL_BINDING
+      description: >-
+        .NET defaults to binding on localhost only, making it unreachable from the Service.
+      required: true
+      type: secret
+      default: "true"
+    - name: ASPNETCORE_URLS
+      description: >-
+        ASP.NET Core URLs configuration
+      type: config
+      required: true
+    - name: AzureAd_Instance
+      description: >-
+        Azure AD instance URL
+      type: config
+      required: true
+    - name: AzureAd_TenantId
+      description: >-
+        Azure AD tenant ID
+      type: secret
+      required: true
+    - name: AzureAd_ClientId
+      description: >-
+        Azure AD client ID
+      type: secret
+      required: true
+    - name: AzureAd_Audience
+      description: >-
+        Azure AD audience
+      type: config
+      required: true
+    - name: AZURE_SUBSCRIPTION_ID
+      description: >-
+        Azure subscription ID
+      type: secret
+      required: true
+  recommendedResources:
+    minimal:
+      cpu: 100m
+      memory: 256Mi
+    recommended:
+      cpu: 500m
+      memory: 512Mi
