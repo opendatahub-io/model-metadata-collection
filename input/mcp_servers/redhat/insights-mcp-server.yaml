@@ -198,8 +198,8 @@ tools:
       parameters: []
 artifacts:
     - uri: oci://ghcr.io/redhatinsights/red-hat-lightspeed-mcp:latest
-      createTimeSinceEpoch: "1774521298000"
-      lastUpdateTimeSinceEpoch: "1774521298000"
+      createTimeSinceEpoch: "1775137811000"
+      lastUpdateTimeSinceEpoch: "1775137811000"
 runtimeMetadata:
     defaultPort: 8000
     mcpPath: /mcp
@@ -257,4 +257,4 @@ customProperties:
         metadataType: MetadataStringValue
         string_value: ""
 createTimeSinceEpoch: "1741996800000"
-lastUpdateTimeSinceEpoch: "1774521298000"
+lastUpdateTimeSinceEpoch: "1775137811000"

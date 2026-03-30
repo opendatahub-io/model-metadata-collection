@@ -62,11 +62,21 @@ Process all model indexes and MCP server catalogs:
 make process
 ```
 
-Process MCP servers only (with OCI enrichment for architectures and timestamps):
+Process Red Hat MCP servers only (with OCI enrichment for architectures and timestamps):
 
 ```bash
 ./build/model-extractor \
     --mcp-index data/redhat-mcp-servers-index.yaml \
+    --mcp-catalog-output data/redhat-mcp-servers-catalog.yaml \
+    --skip-huggingface --skip-enrichment --skip-catalog
+```
+
+Process Partner MCP servers only:
+
+```bash
+./build/model-extractor \
+    --mcp-index data/partner-mcp-servers-index.yaml \
+    --mcp-catalog-output data/partner-mcp-servers-catalog.yaml \
     --skip-huggingface --skip-enrichment --skip-catalog
 ```
 
@@ -75,6 +85,7 @@ Process MCP servers without OCI enrichment (offline/CI without registry access):
 ```bash
 ./build/model-extractor \
     --mcp-index data/redhat-mcp-servers-index.yaml \
+    --mcp-catalog-output data/redhat-mcp-servers-catalog.yaml \
     --skip-huggingface --skip-enrichment --skip-catalog \
     --skip-mcp-enrichment
 ```
