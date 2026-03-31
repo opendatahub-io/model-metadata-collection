@@ -21,16 +21,24 @@ import (
 // - internal/enrichment/enrichment.go: extractModelFamily() for cross-family matching prevention
 // - pkg/utils/text.go: NormalizeModelName() for version normalization regex
 var SupportedModelFamilies = []string{
+	"apertus",
 	"deepseek",
+	"devstral",
 	"gemma",
+	"gpt",
 	"granite",
 	"kimi",
 	"llama",
 	"minimax",
+	"ministral",
 	"mistral",
 	"mixtral",
+	"nemotron",
 	"phi",
 	"qwen",
+	"sarvam",
+	"voxtral",
+	"whisper",
 }
 
 // IsModelFamily checks if a token matches any supported model family

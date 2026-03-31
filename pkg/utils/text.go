@@ -163,6 +163,22 @@ func GenerateDescriptionFromModelName(modelName string) string {
 // Pre-compiled regex for version normalization (performance optimization)
 var versionDotRegex = regexp.MustCompile(`(\d+)\.(\d+)`)
 
+// compoundVersionMidRegex and compoundVersionEndRegex normalize sub-versions in compound
+// model names where the major version digit is fused to the family name
+// (e.g. "qwen3-5-35b" → "qwen3v5-35b"). Two patterns are required because Go's regexp
+// package (RE2) does not support lookaheads:
+//   - Mid: sub-version immediately followed by another hyphen (e.g. "qwen3-5-")
+//   - End: sub-version at the end of the string (e.g. "qwen3-5")
+//
+// Parameter-count suffixes like "8b", "70b" are naturally excluded because they attach
+// the unit letter directly to the digit without an intervening hyphen (e.g. "qwen3-8b"
+// has "b" after "8", not "-", so neither pattern matches).
+// These run after the family-based hyphen regex to catch patterns that regex misses.
+var (
+	compoundVersionMidRegex = regexp.MustCompile(`([a-z]{3,}\d+)-(\d+)(-)`)
+	compoundVersionEndRegex = regexp.MustCompile(`([a-z]{3,}\d+)-(\d+)$`)
+)
+
 // normalizeModelName normalizes model names for comparison
 // This function preserves version numbers as complete tokens to prevent
 // version mismatching (e.g., 3.1 vs 3.3)
@@ -179,8 +195,9 @@ func NormalizeModelName(name string) string {
 
 	// Remove RedHatAI prefix
 	normalized = strings.TrimPrefix(normalized, "redhatai/")
-	normalized = strings.TrimPrefix(normalized, "meta-llama/")
 	normalized = strings.TrimPrefix(normalized, "ibm-granite/")
+	normalized = strings.TrimPrefix(normalized, "meta-llama/")
+	normalized = strings.TrimPrefix(normalized, "mistralai/")
 
 	// Remove version tags (e.g., :1.5, :3.0)
 	if idx := strings.LastIndex(normalized, ":"); idx != -1 {
@@ -196,6 +213,13 @@ func NormalizeModelName(name string) string {
 	// The pattern (\w?\d+) handles both standard versions (e.g., "3") and prefixed versions (e.g., "m2")
 	versionHyphenRegex := config.GetModelFamilyRegex()
 	normalized = versionHyphenRegex.ReplaceAllString(normalized, "${1}-${2}v${3}")
+
+	// Third, protect compound sub-versions not covered by the family regex above.
+	// Handles names like "qwen3-5" → "qwen3v5" where the major version digit is fused
+	// to the family name. Parameter-count suffixes (e.g. "qwen3-8b") are excluded because
+	// the unit letter attaches directly to the digit, preventing a trailing hyphen match.
+	normalized = compoundVersionMidRegex.ReplaceAllString(normalized, "${1}v${2}${3}")
+	normalized = compoundVersionEndRegex.ReplaceAllString(normalized, "${1}v${2}")
 
 	// Replace various separators with hyphens for consistency
 	normalized = strings.ReplaceAll(normalized, "_", "-")

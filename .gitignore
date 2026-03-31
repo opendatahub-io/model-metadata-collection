@@ -1,6 +1,9 @@
 # destination of modelcard files
 output
 
+# local environment variables (secrets/tokens - never commit)
+.env
+
 # build artifacts
 model-metadata-collection
 *.exe

@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -23,10 +24,37 @@ var httpClient = &http.Client{
 	Timeout: 30 * time.Second,
 }
 
+// hfToken caches the HuggingFace API token, read lazily on first use via sync.Once.
+// Lazy init is required because main() loads .env before any HuggingFace calls,
+// but after Go's init() functions have already run.
+var (
+	hfToken     string
+	hfTokenOnce sync.Once
+)
+
+func getHFToken() string {
+	hfTokenOnce.Do(func() {
+		hfToken = os.Getenv("HF_TOKEN")
+	})
+	return hfToken
+}
+
+// doGet performs an authenticated GET request, adding the Bearer header when HF_TOKEN is set.
+func doGet(url string) (*http.Response, error) {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	if token := getHFToken(); token != "" {
+		req.Header.Set("Authorization", "Bearer "+token)
+	}
+	return httpClient.Do(req)
+}
+
 // FetchCollections fetches collections from HuggingFace
 func FetchCollections() ([]types.HFCollection, error) {
 	// Fetch collections list from RedHatAI
-	resp, err := httpClient.Get("https://huggingface.co/api/collections?search=red-hat-ai-validated-models")
+	resp, err := doGet("https://huggingface.co/api/collections?search=red-hat-ai-validated-models")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch collections: %v", err)
 	}
@@ -49,7 +77,7 @@ func FetchCollections() ([]types.HFCollection, error) {
 // FetchCollectionDetails fetches detailed information for a specific collection
 func FetchCollectionDetails(collectionID string) (*types.HFCollection, error) {
 	url := fmt.Sprintf("https://huggingface.co/api/collections/%s", collectionID)
-	resp, err := httpClient.Get(url)
+	resp, err := doGet(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch collection details: %v", err)
 	}
@@ -72,7 +100,7 @@ func FetchCollectionDetails(collectionID string) (*types.HFCollection, error) {
 // DiscoverValidatedModelCollections finds all Red Hat AI validated model collections
 func DiscoverValidatedModelCollections() ([]string, error) {
 	// Fetch collections from RedHatAI user
-	resp, err := httpClient.Get("https://huggingface.co/api/users/RedHatAI/collections")
+	resp, err := doGet("https://huggingface.co/api/users/RedHatAI/collections")
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch user collections: %v", err)
 	}
@@ -113,7 +141,7 @@ func DiscoverValidatedModelCollections() ([]string, error) {
 // FetchModelDetails fetches detailed metadata for a specific model
 func FetchModelDetails(modelName string) (*types.HFModelDetails, error) {
 	url := fmt.Sprintf("https://huggingface.co/api/models/%s", modelName)
-	resp, err := httpClient.Get(url)
+	resp, err := doGet(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch model details: %v", err)
 	}
@@ -140,7 +168,7 @@ func FetchModelDetails(modelName string) (*types.HFModelDetails, error) {
 // FetchReadme fetches the README content from HuggingFace
 func FetchReadme(modelName string) (string, error) {
 	url := fmt.Sprintf("https://huggingface.co/%s/raw/main/README.md", modelName)
-	resp, err := httpClient.Get(url)
+	resp, err := doGet(url)
 	if err != nil {
 		return "", fmt.Errorf("failed to fetch README: %v", err)
 	}

@@ -211,7 +211,6 @@ func TestIsModelFamily(t *testing.T) {
 	unsupported := []string{
 		"unknown",
 		"claude",
-		"gpt",
 		"bert",
 		"",
 	}

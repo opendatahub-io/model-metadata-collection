@@ -192,7 +192,7 @@ func ProcessCollections() error {
 	collectionSlugs, err := DiscoverValidatedModelCollections()
 	if err != nil {
 		log.Printf("Failed to discover collections, using known collections: %v", err)
-		// Fall back to known collections - include May, September, October 2025 and January, February, March 2026, plus Granite Quantized and Embedding Models
+		// Fall back to known collections - include May, September, October 2025 and January through May 2026, plus Granite Quantized and Embedding Models
 		collectionSlugs = []string{
 			"RedHatAI/red-hat-ai-validated-models-may-2025-682613dc19c4a596dbac9437",
 			"RedHatAI/red-hat-ai-validated-models-september-2025-68cc3d7a8a272f6beae3e9a7",
@@ -200,6 +200,7 @@ func ProcessCollections() error {
 			"RedHatAI/red-hat-ai-validated-models-january-2026-69652094dc3429e12c32ad49",
 			"RedHatAI/red-hat-ai-validated-models-february-2026-699c6b8ade9c198927302989",
 			"RedHatAI/red-hat-ai-validated-models-march-2026-69b0697e7f157651f5c0f5ac",
+			"RedHatAI/red-hat-ai-validated-models-may-2026",
 			"RedHatAI/granite-quantized",
 			"RedHatAI/embedding-models",
 		}

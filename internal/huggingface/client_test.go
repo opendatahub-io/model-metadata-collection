@@ -1,15 +1,86 @@
 package huggingface
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
+
+func TestDoGet_AuthHeader(t *testing.T) {
+	tests := []struct {
+		name       string
+		token      string
+		wantHeader bool
+	}{
+		{
+			name:       "token set adds Authorization header",
+			token:      "hf_test_token_123",
+			wantHeader: true,
+		},
+		{
+			name:       "empty token sends no Authorization header",
+			token:      "",
+			wantHeader: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Reset the sync.Once so the token is re-read from env.
+			// NOTE: This direct reset is safe only because subtests run sequentially;
+			// do not use t.Parallel() here without introducing a proper test helper.
+			hfTokenOnce = sync.Once{}
+			hfToken = ""
+
+			// Save and restore env
+			orig := os.Getenv("HF_TOKEN")
+			defer func() {
+				_ = os.Setenv("HF_TOKEN", orig)
+				hfTokenOnce = sync.Once{}
+				hfToken = ""
+			}()
+
+			if tt.token != "" {
+				_ = os.Setenv("HF_TOKEN", tt.token)
+			} else {
+				_ = os.Unsetenv("HF_TOKEN")
+			}
+
+			// Start a test server that captures the request
+			var gotAuth string
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				gotAuth = r.Header.Get("Authorization")
+				w.WriteHeader(http.StatusOK)
+			}))
+			defer srv.Close()
+
+			resp, err := doGet(srv.URL)
+			if err != nil {
+				t.Fatalf("doGet() error: %v", err)
+			}
+			defer func() { _ = resp.Body.Close() }()
+
+			if tt.wantHeader {
+				expected := "Bearer " + tt.token
+				if gotAuth != expected {
+					t.Errorf("Authorization header = %q, want %q", gotAuth, expected)
+				}
+			} else {
+				if gotAuth != "" {
+					t.Errorf("Authorization header = %q, want empty", gotAuth)
+				}
+			}
+		})
+	}
+}
 
 func TestFetchCollections(t *testing.T) {
 	// Test basic function structure - network calls will likely fail in test environment

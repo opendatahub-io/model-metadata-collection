@@ -379,8 +379,10 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 				if err == nil {
 					log.Printf("  Successfully extracted YAML frontmatter from HF README")
 
-					// Always use name from HuggingFace YAML (highest priority)
-					if frontmatter.Name != "" {
+					// Use name from HuggingFace YAML only when no canonical API name is available.
+					// The huggingface.api source provides the canonical model path (e.g. "RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic"),
+					// which must not be overridden by the README's human-readable display name.
+					if frontmatter.Name != "" && enriched.Name.Source != "huggingface.api" {
 						enriched.Name = metadata.CreateMetadataSource(frontmatter.Name, "huggingface.yaml")
 						log.Printf("  Found name in YAML frontmatter: %s", frontmatter.Name)
 					}

@@ -57,12 +57,55 @@ type ModelResult struct {
 	Metadata       types.ModelMetadata
 }
 
+// loadDotEnv reads a .env file and sets any unset environment variables from it.
+// Variables already present in the environment take precedence over .env values.
+func loadDotEnv(path string) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return // .env is optional; silently skip if absent
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		// Strip optional "export " prefix (e.g. "export KEY=value")
+		line = strings.TrimPrefix(line, "export ")
+
+		key, value, found := strings.Cut(line, "=")
+		if !found {
+			continue
+		}
+		key = strings.TrimSpace(key)
+		value = strings.TrimSpace(value)
+		if key == "" {
+			continue
+		}
+		// Strip surrounding quotes (supports KEY="value" and KEY='value')
+		if len(value) >= 2 &&
+			((value[0] == '"' && value[len(value)-1] == '"') ||
+				(value[0] == '\'' && value[len(value)-1] == '\'')) {
+			value = value[1 : len(value)-1]
+		}
+		// Only set if not already present so shell exports take precedence
+		if os.Getenv(key) == "" {
+			_ = os.Setenv(key, value)
+		}
+	}
+}
+
 func main() {
+	loadDotEnv(".env")
+
 	flag.Parse()
 
 	if *help {
 		printHelp()
 		return
+	}
+
+	if os.Getenv("HF_TOKEN") != "" {
+		log.Println("HuggingFace token detected: authenticated requests enabled")
 	}
 
 	log.Printf("Starting model metadata collection with configuration:")

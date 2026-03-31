@@ -225,6 +225,56 @@ func TestNormalizeModelName(t *testing.T) {
 			input:    "minimax-m2-5-instruct",
 			expected: "minimax-m2v5-instruct",
 		},
+		{
+			name:     "ministral 3.14b from container",
+			input:    "registry.redhat.io/rhai/modelcar-ministral-3-14b-instruct-2512:3.0",
+			expected: "ministral-3v14b-instruct-2512",
+		},
+		{
+			name:     "ministral 3.14b from HuggingFace with dot",
+			input:    "mistralai/Ministral-3.14B-Instruct-2512",
+			expected: "ministral-3v14b-instruct-2512",
+		},
+		{
+			name:     "ministral 3.3b from container",
+			input:    "registry.redhat.io/rhai/modelcar-ministral-3-3b-instruct-2512:3.0",
+			expected: "ministral-3v3b-instruct-2512",
+		},
+		{
+			name:     "qwen3.5 from container (compound sub-version)",
+			input:    "registry.redhat.io/rhai/modelcar-qwen3-5-35b-a3b-fp8-dynamic:3.0",
+			expected: "qwen3v5-35b-a3b-fp8-dynamic",
+		},
+		{
+			name:     "qwen3.5 from HuggingFace with dot",
+			input:    "RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic",
+			expected: "qwen3v5-35b-a3b-fp8-dynamic",
+		},
+		{
+			name:     "qwen2.5 from container (compound sub-version)",
+			input:    "registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct:1.5",
+			expected: "qwen2v5-7b-instruct",
+		},
+		{
+			name:     "qwen3 plain (parameter count suffix, no sub-version normalization)",
+			input:    "registry.redhat.io/rhelai1/modelcar-qwen3-8b-fp8-dynamic:1.5",
+			expected: "qwen3-8b-fp8-dynamic",
+		},
+		{
+			name:     "short prefix not normalized (fp8 is 2 letters but compound regex requires family-like prefix)",
+			input:    "fp8-2-way-quantized",
+			expected: "fp8-2-way-quantized",
+		},
+		{
+			name:     "single-letter prefix not normalized",
+			input:    "a3-5-something",
+			expected: "a3-5-something",
+		},
+		{
+			name:     "v1 prefix not normalized",
+			input:    "v1-2-test",
+			expected: "v1-2-test",
+		},
 	}
 
 	for _, tt := range tests {
