@@ -4,7 +4,5 @@ mcp_servers:
     input_path: input/mcp_servers/openshift-mcp-server.yaml
   - name: aap-mcp-server
     input_path: input/mcp_servers/aap-mcp-server.yaml
-  - name: satellite-mcp-server
-    input_path: input/mcp_servers/satellite-mcp-server.yaml
   - name: insights-mcp-server
     input_path: input/mcp_servers/insights-mcp-server.yaml
