@@ -1,0 +1,485 @@
+source: Partner MCP
+mcp_servers:
+    - name: dynatrace-oss/dynatrace-mcp
+      provider: Dynatrace
+      license: MIT
+      license_link: ""
+      description: AI Assistants can interact with the Dynatrace observability platform, bringing real-time observability data directly  into your development workflow. Query logs, events, spans, metrics via DQL.
+      version: 1.4.0
+      transports:
+        - stdio
+        - http
+      logo: data:image/png;base64,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
+      documentationUrl: https://www.dynatrace.com/hub/detail/dynatrace-mcp-server/
+      repositoryUrl: https://github.com/dynatrace-oss/dynatrace-mcp
+      tools:
+        - name: execute_dql
+          description: Query Dynatrace using natural language or DQL (Dynatrace Query Language) statements; retrieves logs, events, spans, and metrics
+          accessType: read_only
+          parameters:
+            - name: query
+              type: string
+              description: DQL query or natural language description of data to retrieve
+              required: true
+        - name: list_problems
+          description: Identify service issues from monitored infrastructure
+          accessType: read_only
+          parameters:
+            - name: timeframe
+              type: string
+              description: Time range for problem search
+              required: false
+            - name: status
+              type: string
+              description: Filter by problem status
+              required: false
+        - name: get_problem_details
+          description: Deep-dive into specific problems with full context
+          accessType: read_only
+          parameters:
+            - name: problem_id
+              type: string
+              description: ID of the problem to investigate
+              required: true
+        - name: list_security_problems
+          description: Track vulnerabilities and security events
+          accessType: read_only
+          parameters: []
+        - name: get_entity_details
+          description: Retrieve comprehensive information about monitored services, hosts, and applications
+          accessType: read_only
+          parameters:
+            - name: entity_id
+              type: string
+              description: ID of the entity to inspect
+              required: true
+        - name: send_event
+          description: Transmit custom event data to Dynatrace for ingestion
+          accessType: execute
+          parameters:
+            - name: event
+              type: object
+              description: Event data to send to Dynatrace
+              required: true
+        - name: list_documents
+          description: Retrieve Notebooks, Dashboards, and Launchpads from Dynatrace
+          accessType: read_only
+          parameters: []
+        - name: create_document
+          description: Generate new documents in Dynatrace
+          accessType: read_write
+          parameters:
+            - name: content
+              type: object
+              description: Document content to create
+              required: true
+      artifacts:
+        - uri: oci://quay.io/mcp-servers/dynatrace-mcp:10-01-2025@sha256:f72c1d456fe9101d2742c17f6000a56e53976e45fb401ed817f38ef49056e1a9
+      runtimeMetadata:
+        defaultArgs:
+            - --http
+            - --port
+            - "8585"
+            - --host
+            - 0.0.0.0
+        defaultPort: 8585
+        recommendedResources:
+            minimal:
+                cpu: 100m
+                memory: 128Mi
+            recommended:
+                cpu: 250m
+                memory: 256Mi
+        requiredEnvironmentVariables:
+            - description: Dynatrace Platform URL
+              name: DT_ENVIRONMENT
+              required: true
+              type: config
+            - description: Dynatrace Platform API token
+              name: DT_PLATFORM_TOKEN
+              required: false
+              type: secret
+            - description: OAuth client ID for Dynatrace authentication
+              name: OAUTH_CLIENT_ID
+              required: false
+              type: secret
+            - description: OAuth client secret for Dynatrace authentication
+              name: OAUTH_CLIENT_SECRET
+              required: false
+              type: secret
+      securityIndicators:
+        readOnlyTools: false
+        secureEndpoint: true
+        verifiedSource: true
+    - name: hashicorp/terraform-mcp-server
+      provider: HashiCorp
+      license: MPL-2.0
+      license_link: ""
+      description: 'Gain real-time access to current Terraform provider documentation, modules, and policies from the Terraform registry. v Supports HCP Terraform and Terraform Enterprise workspace management. NOTE: Beta software - do not use in production environments.'
+      version: 0.4.0
+      transports:
+        - stdio
+        - http
+      logo: data:image/png;base64,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
+      documentationUrl: https://developer.hashicorp.com/terraform/docs/tools/mcp-server
+      repositoryUrl: https://github.com/hashicorp/terraform-mcp-server
+      tools:
+        - name: search_providers
+          description: Search for Terraform providers in the registry
+          accessType: read_only
+          parameters:
+            - name: query
+              type: string
+              description: Search query for providers
+              required: true
+        - name: get_provider_details
+          description: Get details about a specific Terraform provider
+          accessType: read_only
+          parameters:
+            - name: provider
+              type: string
+              description: Provider namespace/name
+              required: true
+        - name: search_modules
+          description: Search for Terraform modules in the registry
+          accessType: read_only
+          parameters:
+            - name: query
+              type: string
+              description: Search query for modules
+              required: true
+        - name: get_module_details
+          description: Get details about a specific Terraform module
+          accessType: read_only
+          parameters:
+            - name: module
+              type: string
+              description: Module namespace/name/provider
+              required: true
+        - name: list_workspaces
+          description: List workspaces in a Terraform organization
+          accessType: read_only
+          parameters:
+            - name: organization
+              type: string
+              description: Organization name
+              required: true
+        - name: create_workspace
+          description: Create a new workspace in HCP Terraform/TFE
+          accessType: read_write
+          parameters:
+            - name: organization
+              type: string
+              description: Organization name
+              required: true
+            - name: name
+              type: string
+              description: Workspace name
+              required: true
+        - name: get_workspace_details
+          description: Get details of a specific workspace
+          accessType: read_only
+          parameters:
+            - name: workspace
+              type: string
+              description: Workspace name or ID
+              required: true
+        - name: list_runs
+          description: List runs in a workspace
+          accessType: read_only
+          parameters:
+            - name: workspace
+              type: string
+              description: Workspace name or ID
+              required: true
+        - name: create_run
+          description: Create a new run in a workspace
+          accessType: execute
+          parameters:
+            - name: workspace
+              type: string
+              description: Workspace name or ID
+              required: true
+        - name: search_policies
+          description: Search for Sentinel policies in the registry
+          accessType: read_only
+          parameters:
+            - name: query
+              type: string
+              description: Search query for policies
+              required: true
+      artifacts:
+        - uri: oci://quay.io/mcp-servers/terraform-mcp-server:10-03-2025@sha256:3ee433bce1b3e5856d83e366dbb368ebdd8a73b39670152fd20d2d1506f0c937
+      runtimeMetadata:
+        defaultArgs:
+            - streamable-http
+        defaultPort: 8080
+        optionalEnvironmentVariables:
+            - description: HCP Terraform/TFE API authentication token
+              name: TFE_TOKEN
+              required: false
+              type: secret
+        recommendedResources:
+            minimal:
+                cpu: 100m
+                memory: 128Mi
+            recommended:
+                cpu: 250m
+                memory: 256Mi
+        requiredEnvironmentVariables:
+            - description: Transport protocol mode
+              name: TRANSPORT_MODE
+              required: true
+              type: config
+            - description: HTTP server bind address
+              name: TRANSPORT_HOST
+              required: true
+              type: config
+      securityIndicators:
+        readOnlyTools: false
+        secureEndpoint: true
+        verifiedSource: true
+    - name: mariadb/mcp
+      provider: MariaDB
+      license: MIT
+      license_link: ""
+      description: A standard interface for managing and querying MariaDB databases. Supports SQL operations, schema inspection, and optional vector/embedding-based semantic search. Includes comprehensive vector search capabilities with support for OpenAI, Gemini, and Hugging Face embeddings.
+      version: 1.0.0
+      transports:
+        - stdio
+        - http
+        - sse
+      logo: data:image/png;base64,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
+      documentationUrl: https://github.com/mariadb/mcp
+      repositoryUrl: https://github.com/mariadb/mcp
+      tools:
+        - name: list_databases
+          description: Enumerate all accessible databases on the MariaDB server
+          accessType: read_only
+          parameters: []
+        - name: list_tables
+          description: Show all tables in a specified database
+          accessType: read_only
+          parameters:
+            - name: database
+              type: string
+              description: Database name to list tables from
+              required: true
+        - name: get_table_schema
+          description: Retrieve column definitions, types, and keys for a table
+          accessType: read_only
+          parameters:
+            - name: table
+              type: string
+              description: Table name to get schema for
+              required: true
+        - name: get_table_schema_with_relations
+          description: Retrieve table schema including foreign key relationships
+          accessType: read_only
+          parameters:
+            - name: table
+              type: string
+              description: Table name to get schema with relations for
+              required: true
+        - name: execute_sql
+          description: Run SQL queries (read-only mode by default, controlled by MCP_READ_ONLY env var)
+          accessType: read_write
+          parameters:
+            - name: query
+              type: string
+              description: SQL query to execute
+              required: true
+        - name: create_database
+          description: Create a new database on the MariaDB server
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Name of the database to create
+              required: true
+        - name: create_vector_store
+          description: Initialize embedding storage with configurable distance functions
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Name for the vector store
+              required: true
+        - name: delete_vector_store
+          description: Remove a vector store table
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Name of the vector store to delete
+              required: true
+        - name: list_vector_stores
+          description: Display all available vector stores
+          accessType: read_only
+          parameters: []
+        - name: insert_docs_vector_store
+          description: Batch insert documents with optional metadata into a vector store
+          accessType: read_write
+          parameters:
+            - name: store_name
+              type: string
+              description: Target vector store name
+              required: true
+            - name: documents
+              type: array
+              description: Documents to insert with optional metadata
+              required: true
+        - name: search_vector_store
+          description: Perform semantic similarity search across vector store documents
+          accessType: read_only
+          parameters:
+            - name: store_name
+              type: string
+              description: Vector store to search
+              required: true
+            - name: query
+              type: string
+              description: Search query text
+              required: true
+      artifacts:
+        - uri: oci://quay.io/mcp-servers/mariadb-mcp:10-3-2025@sha256:95c179d08dad661bfb8fc0f6959976f9ad3f90d70a8ccb831978958e58bca73e
+      runtimeMetadata:
+        defaultPort: 9001
+        optionalEnvironmentVariables:
+            - default: "3306"
+              description: MariaDB server port
+              name: DB_PORT
+              type: config
+            - default: "true"
+              description: Enforce read-only mode for SQL queries
+              name: MCP_READ_ONLY
+              type: config
+            - description: Embedding provider for vector operations (openai, gemini, huggingface)
+              name: EMBEDDING_PROVIDER
+              type: config
+        recommendedResources:
+            minimal:
+                cpu: 250m
+                memory: 512Mi
+            recommended:
+                cpu: 500m
+                memory: 1Gi
+        requiredEnvironmentVariables:
+            - description: MariaDB server hostname
+              name: DB_HOST
+              required: true
+              type: config
+            - description: MariaDB username
+              name: DB_USER
+              required: true
+              type: secret
+            - description: MariaDB password
+              name: DB_PASSWORD
+              required: true
+              type: secret
+      securityIndicators:
+        readOnlyTools: false
+        secureEndpoint: true
+        verifiedSource: true
+    - name: mongodb-js/mongodb-mcp-server
+      provider: MongoDB
+      license: Apache-2.0
+      license_link: ""
+      description: Interact with MongoDB databases and MongoDB Atlas. Provides database operations, Atlas cluster management, performance analysis, and query execution capabilities.
+      version: 1.0.0
+      transports:
+        - stdio
+        - http
+      logo: data:image/png;base64,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mrIHXO4A/U+GbMqu5Kcp5HLA+xl9UwbovQWCq/XeGvs4fQBS1FXiBjg4BIbzlL3m8e7O1t7+PdPo7wdVb3KbaWTEXAAADRxpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDQuNC4wLUV4aXYyIj4KIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+CiAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIKICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgIHhtbG5zOkdJTVA9Imh0dHA6Ly93d3cuZ2ltcC5vcmcveG1wLyIKICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgogICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICB4bXBNTTpEb2N1bWVudElEPSJnaW1wOmRvY2lkOmdpbXA6ZDk1YjhmMjctMWM0NS00YjU1LWEwZTMtNmNmMjM0Yzk1ZWVkIgogICB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOmVhMGY5MTI5LWJlMDItNDVjOS1iNGU4LTU3N2MxZTBiZGJhNyIKICAgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAuZGlkOjcyNmY4ZGFlLTM4ZTYtNGQ4Ni1hNTI4LWM0NTc4ZGE4ODA0NSIKICAgZGM6Rm9ybWF0PSJpbWFnZS9wbmciCiAgIEdJTVA6QVBJPSIyLjAiCiAgIEdJTVA6UGxhdGZvcm09Ik1hYyBPUyIKICAgR0lNUDpUaW1lU3RhbXA9IjE2MzQ4MzgwMTYyMTQ2MTMiCiAgIEdJTVA6VmVyc2lvbj0iMi4xMC4yNCIKICAgdGlmZjpPcmllbnRhdGlvbj0iMSIKICAgeG1wOkNyZWF0b3JUb29sPSJHSU1QIDIuMTAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo1YWNhZmVhMC0xZmY5LTRiMmUtYmY0NC02NTM3MzYwMGQzNjEiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAgMi4xMCAoTWFjIE9TKSIKICAgICAgc3RFdnQ6d2hlbj0iMjAyMS0xMC0yMVQxODo0MDoxNiswMTowMCIvPgogICAgPC9yZGY6U2VxPgogICA8L3htcE1NOkhpc3Rvcnk+CiAgPC9yZGY6RGVzY3JpcHRpb24+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBhY2tldCBlbmQ9InciPz6528V0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAB3RJTUUH5QoVESgQ+iToFAAAA8xJREFUeNrlW01PU0EUPTPV+oqb4h+wENYKXbmzsjLEKPAHwB1xQ6N7adiboBtrSAT5AaQmBpuYSN25MS17k5Zf0MemFGznungttCkf782bmTels2w6mbnnnnPv3DvzYrBhrMytIT01gz9/f5temkVv/NMUwKsg1MFEGvlizeTy3ALj9zuuGAf4T2QzydEBACwHINXzwwSOE29N7iAWqe7BsoOYsEdITx2ZigcsIupnzqh/8SC0/6Wx+aNy8yTg6X7rWsfEbu96/71JAGQzyY7n/Rg2AcZ3dQdFswA0Exs+je8KYUZ3UDQXA1bmlgFsScwkMFrEx++F4QXgPN/LaZpQR6IxiY2SO6QSGMj3Qd00jpPE5+FkgDz1B3kAMYt8sTQ8AGQzSTTHyqG83z+qcBpplVLQK4Hm2KpC473U2BzLDgcDwgY+QwFRIwP4knLjuwFRIQv0MGB5PgnntKwFAMUs0MMA53Rem/Ge25I4ufvCXgkQVrVXsSSW7JTAq7lpCJQNnK4IEJNhW2jqGdDGsrH6QrB5GyXwWMKXLoi5gdnL8dwuCXjRvy4xs0vjVGDonMa9MNlALQPiJxlJOcvruOlM2yMBzuQ3Q3Al44BFADA8lJ9LrtSKnD2wBwAhe/hhIVIZpWxiQJgG5qHkohYBoPP4q6tks2Qfh1GBzu3xhWQckM0eWgAIfprrBE+SN4LZBACTNIQzF4KO5EAnmxgQwhtckj2WMeBA8gARpqQ9sAcAAfnrbLk4QGBUsQcAHmIzXFLLrbZFDMgXS1KZoN2W1DHVwj6iUH8O4FQKPCcWc3t6AkGCTin0dpUDQPhq6OREgNixD4BmvBBYBlKNTaqpuChVD8B2wQWj98EnOrVA3hf4YHExJLb1l3FUsBeAfLEG0Bef//Y8H28FqSW2VT2p1VgNUi5QLKC4z1qCqoBYt78fkC/WfMWCwMUM21H5oFrzA4n4xrUt724xQy0fxRRVkd/LKQ0lWgHYLrgAvfQXN1vXSYAAmlUeS7VH63yxBMIVUvDdB1jX8S2BmZbYp70scNkRmXtXaQkOXN4b3FJNfbMAAEDzzoLcFRhV4TReaztOGAPAiwdPLgDh8OqUR7M6XoiaB6CbGtts4cLzwbtv1N8Z7hiv+Rsi823xzb0KRB8T7gMA3jxj59dcZoz3snBUY+VpCmD7nautXGcva2Aog8Siqa/Hov1sbuAxJZXgHC/o1Hz0Ehgsmn71/FIxaXz0AAwS8sj0ihYAcBb5CVJ9weFnwLnR1K6PHgC9FyJsFCVwq+9afAQlIITbnxXMjv+6222dh4/VtAAAAABJRU5ErkJggg==
+      documentationUrl: https://www.mongodb.com/docs/mcp-server/get-started/
+      repositoryUrl: https://github.com/mongodb-js/mongodb-mcp-server
+      tools:
+        - name: find
+          description: Run a find query against a MongoDB collection
+          accessType: read_only
+          parameters: []
+        - name: aggregate
+          description: Run an aggregation against a MongoDB collection
+          accessType: read_only
+          parameters: []
+        - name: insert-many
+          description: Insert an array of documents into a MongoDB collection
+          accessType: read_write
+          parameters: []
+        - name: update-many
+          description: Updates all documents matching the specified filter
+          accessType: read_write
+          parameters: []
+        - name: delete-many
+          description: Removes all documents matching the filter from a collection
+          accessType: read_write
+          parameters: []
+        - name: list-databases
+          description: List all databases for a MongoDB connection
+          accessType: read_only
+          parameters: []
+        - name: list-collections
+          description: List all collections for a given database
+          accessType: read_only
+          parameters: []
+        - name: collection-schema
+          description: Describe the schema for a collection
+          accessType: read_only
+          parameters: []
+        - name: collection-indexes
+          description: Describe the indexes for a collection
+          accessType: read_only
+          parameters: []
+        - name: create-index
+          description: Create an index for a collection
+          accessType: read_write
+          parameters: []
+        - name: atlas-list-clusters
+          description: List MongoDB Atlas clusters
+          accessType: read_only
+          parameters: []
+        - name: atlas-get-performance-advisor
+          description: Retrieve performance suggestions including index recommendations and slow query logs
+          accessType: read_only
+          parameters: []
+        - name: atlas-list-alerts
+          description: List MongoDB Atlas alerts
+          accessType: read_only
+          parameters: []
+      artifacts:
+        - uri: oci://quay.io/mcp-servers/mongodb-mcp-server:10-01-2025@sha256:db0af62ed8a85eb694969c167031129cfec7c6e12ab59fbb79317e7702355079
+      runtimeMetadata:
+        defaultArgs:
+            - --transport
+            - http
+            - --httpHost
+            - 0.0.0.0
+            - --httpPort
+            - "9002"
+            - --readOnly
+        defaultPort: 9002
+        optionalEnvironmentVariables:
+            - description: MongoDB Atlas Service Account Client ID
+              name: MDB_MCP_API_CLIENT_ID
+              required: false
+              type: secret
+            - description: MongoDB Atlas Service Account Client Secret
+              name: MDB_MCP_API_CLIENT_SECRET
+              required: false
+              type: secret
+        recommendedResources:
+            minimal:
+                cpu: 100m
+                memory: 256Mi
+            recommended:
+                cpu: 500m
+                memory: 512Mi
+        requiredEnvironmentVariables:
+            - description: MongoDB connection URI
+              name: MDB_MCP_CONNECTION_STRING
+              required: true
+              type: secret
+      securityIndicators:
+        readOnlyTools: false
+        secureEndpoint: true
+        verifiedSource: true

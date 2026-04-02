@@ -1,0 +1,22 @@
+source: Partner MCP
+mcp_servers:
+  - name: cloudera-iceberg-mcp-server
+    input_path: input/mcp_servers/partner/cloudera-iceberg-mcp-server.yaml
+  - name: confluentinc-mcp-confluent
+    input_path: input/mcp_servers/partner/confluentinc-mcp-confluent.yaml
+  - name: cyberark-cyberark-sca-mcp-server
+    input_path: input/mcp_servers/partner/cyberark-cyberark-sca-mcp-server.yaml
+  - name: dynatrace-oss-dynatrace-mcp
+    input_path: input/mcp_servers/partner/dynatrace-oss-dynatrace-mcp.yaml
+  - name: enterprisedb-postgres-mcp
+    input_path: input/mcp_servers/partner/enterprisedb-postgres-mcp.yaml
+  - name: hashicorp-terraform-mcp-server
+    input_path: input/mcp_servers/partner/hashicorp-terraform-mcp-server.yaml
+  - name: mariadb-mcp
+    input_path: input/mcp_servers/partner/mariadb-mcp.yaml
+  - name: microsoft-azure-mcp-server
+    input_path: input/mcp_servers/partner/microsoft-azure-mcp-server.yaml
+  - name: mongodb-js-mongodb-mcp-server
+    input_path: input/mcp_servers/partner/mongodb-js-mongodb-mcp-server.yaml
+  - name: oracle-oci-cloud-mcp-server
+    input_path: input/mcp_servers/partner/oracle-oci-cloud-mcp-server.yaml
