@@ -2,19 +2,19 @@ name: openshift-mcp-server
 provider: Red Hat
 license: apache-2.0
 license_link: https://www.apache.org/licenses/LICENSE-2.0
-description: OpenShift and Kubernetes cluster management MCP server. Allows agents to manage pods, inspect workloads, view logs, list events, and interact with cluster resources using direct Kubernetes API access.
+description: MCP server for Red Hat OpenShift and Kubernetes cluster management. Allows agents to inspect pods, workloads, nodes, and cluster resources, view logs and events, and browse configuration using direct Kubernetes API access. Tools listed below reflect the default read-only configuration with core and config toolsets enabled.
 readme: |-
-    # OpenShift MCP Server
+    # MCP Server for Red Hat OpenShift
 
     **MCP Server Summary:**
     Access OpenShift and Kubernetes clusters through natural language using a
     native Go implementation that directly interacts with the Kubernetes API server.
 
     ## Features
-    - List, inspect, and manage pods, deployments, and other resources
-    - Retrieve pod logs and execute commands in containers
-    - Monitor cluster events and resource metrics
-    - Browse namespaces and cluster configuration
+    - List, inspect, and query pods, deployments, nodes, and other resources
+    - Retrieve pod and node logs with filtering
+    - Monitor cluster events and resource metrics (CPU/memory via Metrics Server)
+    - Browse namespaces, projects, and cluster configuration
     - Optional Helm chart management
     - Multi-cluster support with automatic kubeconfig detection
     - Read-only and disable-destructive modes for safe operation
@@ -25,7 +25,13 @@ readme: |-
 
     ## Configuration
     The server can be configured via TOML file or command-line flags.
-    Available toolsets: `core`, `config`, `helm`, `kubevirt`, `observability`, `ossm`.
+    Default toolsets: `core`, `config` (with `read_only: true`).
+    Additional toolsets: `helm`, `kubevirt`, `observability`, `ossm`, `netedge` (OCP).
+
+    The tools listed below reflect the default configuration. The actual set of
+    available tools depends on configuration — toolsets can be enabled or disabled,
+    and individual tools within a toolset can be filtered using allow/deny lists.
+    See [Tool Filtering](https://github.com/openshift/openshift-mcp-server/blob/release-0.2.0/docs/configuration.md#tool-filtering) for details.
 version: latest
 transports:
     - http
@@ -37,12 +43,16 @@ sourceCode: openshift/openshift-mcp-server
 publishedDate: "2025-07-23T00:00:00Z"
 tools:
     - name: pods_list
-      description: List pods in a namespace or across all namespaces
+      description: List all pods across namespaces or filtered by label/field selectors
       accessType: read_only
       parameters:
-        - name: namespace
+        - name: labelSelector
           type: string
-          description: Kubernetes namespace (omit for all namespaces)
+          description: Label selector to filter pods
+          required: false
+        - name: fieldSelector
+          type: string
+          description: Field selector to filter pods
           required: false
     - name: pods_get
       description: Get detailed information about a specific pod
@@ -51,7 +61,7 @@ tools:
         - name: namespace
           type: string
           description: Kubernetes namespace
-          required: true
+          required: false
         - name: name
           type: string
           description: Name of the pod
@@ -63,7 +73,7 @@ tools:
         - name: namespace
           type: string
           description: Kubernetes namespace
-          required: true
+          required: false
         - name: name
           type: string
           description: Name of the pod
@@ -72,46 +82,94 @@ tools:
           type: string
           description: Container name (optional if pod has only one container)
           required: false
-    - name: pods_exec
-      description: Execute a command in a running container
-      accessType: read_write
-      parameters:
-        - name: namespace
-          type: string
-          description: Kubernetes namespace
-          required: true
-        - name: name
-          type: string
-          description: Name of the pod
-          required: true
-        - name: command
-          type: array
-          description: Command and arguments to execute
-          required: true
-        - name: container
-          type: string
-          description: Container name (optional if pod has only one container)
+        - name: tail
+          type: integer
+          description: Number of lines to return from the end of the log (default 100)
           required: false
-    - name: pods_run
-      description: Run a new pod with a specified container image
-      accessType: read_write
+        - name: previous
+          type: boolean
+          description: Return logs from the previous container instance
+          required: false
+    - name: pods_list_in_namespace
+      description: List pods in a specific namespace
+      accessType: read_only
       parameters:
         - name: namespace
           type: string
           description: Kubernetes namespace
           required: true
+        - name: labelSelector
+          type: string
+          description: Label selector to filter pods
+          required: false
+        - name: fieldSelector
+          type: string
+          description: Field selector to filter pods
+          required: false
+    - name: pods_top
+      description: Pod CPU and memory usage via Metrics Server
+      accessType: read_only
+      parameters:
+        - name: all_namespaces
+          type: boolean
+          description: Show metrics across all namespaces (default true)
+          required: false
+        - name: namespace
+          type: string
+          description: Kubernetes namespace
+          required: false
         - name: name
           type: string
-          description: Name for the pod
-          required: true
-        - name: image
+          description: Name of a specific pod
+          required: false
+        - name: label_selector
           type: string
-          description: Container image to run
-          required: true
+          description: Label selector to filter pods
+          required: false
     - name: namespaces_list
       description: List all namespaces in the cluster
       accessType: read_only
       parameters: []
+    - name: projects_list
+      description: List OpenShift projects (OpenShift clusters only)
+      accessType: read_only
+      parameters: []
+    - name: nodes_log
+      description: Get kubelet and system logs from a node
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the node
+          required: true
+        - name: query
+          type: string
+          description: Log query filter
+          required: true
+        - name: tailLines
+          type: integer
+          description: Number of lines to return from the end (default 100)
+          required: false
+    - name: nodes_stats_summary
+      description: Detailed node resource usage stats from kubelet Summary API
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the node
+          required: true
+    - name: nodes_top
+      description: Node CPU and memory usage via Metrics Server
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of a specific node
+          required: false
+        - name: label_selector
+          type: string
+          description: Label selector to filter nodes
+          required: false
     - name: events_list
       description: List cluster events in a namespace or across all namespaces
       accessType: read_only
@@ -120,8 +178,60 @@ tools:
           type: string
           description: Kubernetes namespace (omit for all namespaces)
           required: false
+    - name: resources_get
+      description: Get a specific Kubernetes resource by apiVersion, kind, and name
+      accessType: read_only
+      parameters:
+        - name: apiVersion
+          type: string
+          description: API version of the resource (e.g. apps/v1)
+          required: true
+        - name: kind
+          type: string
+          description: Kind of the resource (e.g. Deployment)
+          required: true
+        - name: namespace
+          type: string
+          description: Kubernetes namespace (omit for cluster-scoped resources)
+          required: false
+        - name: name
+          type: string
+          description: Name of the resource
+          required: true
+    - name: resources_list
+      description: List Kubernetes resources by apiVersion and kind
+      accessType: read_only
+      parameters:
+        - name: apiVersion
+          type: string
+          description: API version of the resource (e.g. apps/v1)
+          required: true
+        - name: kind
+          type: string
+          description: Kind of the resource (e.g. Deployment)
+          required: true
+        - name: namespace
+          type: string
+          description: Kubernetes namespace (omit for cluster-scoped resources)
+          required: false
+        - name: labelSelector
+          type: string
+          description: Label selector to filter resources
+          required: false
+        - name: fieldSelector
+          type: string
+          description: Field selector to filter resources
+          required: false
     - name: configuration_view
       description: View the current kubeconfig configuration
+      accessType: read_only
+      parameters:
+        - name: minified
+          type: boolean
+          description: Return current context only (true) or all contexts (false)
+          required: false
+    - name: configuration_contexts_list
+      description: List kubeconfig context names and server URLs
       accessType: read_only
       parameters: []
 artifacts:
@@ -154,7 +264,7 @@ runtimeMetadata:
             required: true
             suggestedName: mcp-viewer
 securityIndicators:
-    readOnlyTools: false
+    readOnlyTools: true
     sast: true
     secureEndpoint: true
     verifiedSource: true
