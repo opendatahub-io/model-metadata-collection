@@ -15,6 +15,8 @@ Go application that extracts model metadata (model cards) from Red Hat AI ModelC
 - `make dev` - Quick development iteration (fmt, vet, test, build)
 - `make ci` - Full CI pipeline (deps, check, test, build)
 - `make process` - Process all model indexes and MCP server catalogs
+- `make process-models` - Process model indexes only (redhat, validated, other)
+- `make process-redhat-mcp` - Process Red Hat MCP servers catalog only
 - `make docker-build` - Build Docker container image
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full development setup, testing, and debugging instructions.
@@ -136,24 +138,20 @@ make build
 
 ## MCP Server Metadata
 
-Individual MCP server YAML files live in `input/mcp_servers/`. The index `data/redhat-mcp-servers-index.yaml` references each by `input_path`. During `make process`, artifacts are enriched from OCI registries (architectures, timestamps) then aggregated into `data/redhat-mcp-servers-catalog.yaml`. Types are in `pkg/types/mcpserver.go`, catalog in `internal/catalog/mcp_catalog.go`, enrichment in `internal/catalog/mcp_enrichment.go`. Use `--skip-mcp-enrichment` to bypass registry calls.
+Individual MCP server YAML files live in `input/mcp_servers/`. The index `data/redhat-mcp-servers-index.yaml` references each by `input_path`. During `make process-redhat-mcp`, artifacts are enriched from OCI registries (architectures, timestamps) then aggregated into `data/redhat-mcp-servers-catalog.yaml`. Types are in `pkg/types/mcpserver.go`, catalog in `internal/catalog/mcp_catalog.go`, enrichment in `internal/catalog/mcp_enrichment.go`. Use `--skip-mcp-enrichment` to bypass registry calls.
 
 ### Adding a New MCP Server
 
 1. Create `input/mcp_servers/<server-name>.yaml` (use an existing file as template)
 2. Add an entry to `data/redhat-mcp-servers-index.yaml`
-3. Run `make process`
+3. Run `make process-redhat-mcp`
 4. Verify: `grep "name:" data/redhat-mcp-servers-catalog.yaml`
 
 ### MCP-Only Processing
 
 ```bash
-./build/model-extractor \
-    --mcp-index data/redhat-mcp-servers-index.yaml \
-    --skip-huggingface --skip-enrichment --skip-catalog
+make process-redhat-mcp
 ```
-
-**Note:** Setting all three skip flags bypasses model processing regardless of whether `--mcp-index` is provided.
 
 ## Tool-Calling Metadata Extraction
 

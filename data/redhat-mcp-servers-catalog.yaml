@@ -128,8 +128,8 @@ mcp_servers:
           parameters: []
       artifacts:
         - uri: oci://quay.io/redhat-user-workloads/crt-nshift-lightspeed-tenant/openshift-mcp-server:latest
-          createTimeSinceEpoch: "1775095154000"
-          lastUpdateTimeSinceEpoch: "1775095155000"
+          createTimeSinceEpoch: "1775563963000"
+          lastUpdateTimeSinceEpoch: "1775563964000"
       runtimeMetadata:
         defaultArgs:
             - --config
@@ -177,7 +177,7 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: ""
       createTimeSinceEpoch: "1753228800000"
-      lastUpdateTimeSinceEpoch: "1775095155000"
+      lastUpdateTimeSinceEpoch: "1775563964000"
     - name: aap-mcp-server
       provider: Red Hat
       license: apache-2.0
@@ -349,7 +349,6 @@ mcp_servers:
         - **Advisor** — Configuration assessment recommendations
         - **Inventory** — System management and host visibility
         - **Vulnerability** — CVE assessment and affected system tracking
-        - **Remediations** — Playbook creation for issue resolution
         - **Image Builder** — Custom RHEL image blueprint management
         - **Planning** — RHEL lifecycle and upcoming changes
         - **Content Sources** — Repository listing and management

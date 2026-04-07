@@ -126,8 +126,8 @@ tools:
       parameters: []
 artifacts:
     - uri: oci://quay.io/redhat-user-workloads/crt-nshift-lightspeed-tenant/openshift-mcp-server:latest
-      createTimeSinceEpoch: "1775095154000"
-      lastUpdateTimeSinceEpoch: "1775095155000"
+      createTimeSinceEpoch: "1775563963000"
+      lastUpdateTimeSinceEpoch: "1775563964000"
 runtimeMetadata:
     defaultArgs:
         - --config
@@ -175,4 +175,4 @@ customProperties:
         metadataType: MetadataStringValue
         string_value: ""
 createTimeSinceEpoch: "1753228800000"
-lastUpdateTimeSinceEpoch: "1775095155000"
+lastUpdateTimeSinceEpoch: "1775563964000"

@@ -15,7 +15,6 @@ readme: |-
     - **Advisor** — Configuration assessment recommendations
     - **Inventory** — System management and host visibility
     - **Vulnerability** — CVE assessment and affected system tracking
-    - **Remediations** — Playbook creation for issue resolution
     - **Image Builder** — Custom RHEL image blueprint management
     - **Planning** — RHEL lifecycle and upcoming changes
     - **Content Sources** — Repository listing and management
