@@ -237,9 +237,9 @@ mcp_servers:
           accessType: read_only
           parameters: []
       artifacts:
-        - uri: oci://quay.io/redhat-user-workloads/crt-nshift-lightspeed-tenant/openshift-mcp-server:latest
-          createTimeSinceEpoch: "1775563963000"
-          lastUpdateTimeSinceEpoch: "1775563964000"
+        - uri: oci://registry.redhat.io/openshift-mcp-beta/openshift-mcp-server-rhel9:0.2
+          createTimeSinceEpoch: "1775549055000"
+          lastUpdateTimeSinceEpoch: "1775549056000"
       runtimeMetadata:
         defaultArgs:
             - --config
@@ -273,7 +273,7 @@ mcp_servers:
       customProperties:
         architecture:
             metadataType: MetadataStringValue
-            string_value: "[\"amd64\",\"arm64\"]"
+            string_value: "[\"amd64\",\"arm64\",\"ppc64le\",\"s390x\"]"
         containers:
             metadataType: MetadataStringValue
             string_value: ""
@@ -287,7 +287,7 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: ""
       createTimeSinceEpoch: "1753228800000"
-      lastUpdateTimeSinceEpoch: "1775563964000"
+      lastUpdateTimeSinceEpoch: "1775549056000"
     - name: aap-mcp-server
       provider: Red Hat
       license: apache-2.0
