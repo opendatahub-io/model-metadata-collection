@@ -1,8 +1,6 @@
 module github.com/opendatahub-io/model-metadata-collection
 
-go 1.24
-
-toolchain go1.24.5
+go 1.25.0
 
 require (
 	github.com/containers/image/v5 v5.36.1
@@ -36,5 +34,5 @@ require (
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/ulikunitz/xz v0.5.14 // indirect
 	github.com/vbatts/tar-split v0.12.1 // indirect
-	golang.org/x/sys v0.35.0 // indirect
+	golang.org/x/sys v0.43.0 // indirect
 )
