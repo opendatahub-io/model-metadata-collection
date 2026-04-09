@@ -28,6 +28,7 @@ presets:
         cli-args:
           - --tensor-parallel-size 4
           - --max-model-len 10240
+          - --gpu-memory-utilization 0.92
           - --kv-cache-dtype fp8
         recommendations:
           - "--async-scheduling is on by default. If not, it is recommended to enable it with --async-scheduling true"
