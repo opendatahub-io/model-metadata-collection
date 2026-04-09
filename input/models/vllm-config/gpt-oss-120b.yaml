@@ -1,4 +1,10 @@
 ---
+tested-on:
+  rhoai-version: "3.4"
+  vllm-version: "0.18.0"
+workload-profile:
+  prompt-tokens: 8000
+  output-tokens: 1000
 model:
   name: RedHatAI/gpt-oss-120b
 presets:
@@ -9,7 +15,7 @@ presets:
         description: "Low latency for online serving"
         cli-args:
           - --tensor-parallel-size 1
-          - --gpu-memory-utilization 0.92
+          - --max-model-len 10240
           - --max-cudagraph-capture-size 2048
           - --max-num-batched-tokens 8192
         recommendations:
@@ -21,7 +27,7 @@ presets:
         description: "High throughput for offline serving"
         cli-args:
           - --tensor-parallel-size 1
-          - --gpu-memory-utilization 0.92
+          - --max-model-len 10240
           - --max-cudagraph-capture-size 2048
           - --max-num-batched-tokens 8192
         recommendations:

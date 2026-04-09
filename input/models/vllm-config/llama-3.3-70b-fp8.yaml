@@ -1,4 +1,10 @@
 ---
+tested-on:
+  rhoai-version: "3.4"
+  vllm-version: "0.18.0"
+workload-profile:
+  prompt-tokens: 8000
+  output-tokens: 1000
 model:
   name: RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic
 presets:
@@ -8,7 +14,8 @@ presets:
         hardware: H200
         description: "Low latency for online serving"
         cli-args:
-          - --tensor-parallel-size 1
+          - --tensor-parallel-size 4
+          - --max-model-len 10240
           - --gpu-memory-utilization 0.92
           - --kv-cache-dtype fp8
         recommendations:
@@ -19,8 +26,8 @@ presets:
         hardware: H200
         description: "High throughput for offline serving"
         cli-args:
-          - --tensor-parallel-size 1
-          - --gpu-memory-utilization 0.92
+          - --tensor-parallel-size 4
+          - --max-model-len 10240
           - --kv-cache-dtype fp8
         recommendations:
           - "--async-scheduling is on by default. If not, it is recommended to enable it with --async-scheduling true"
