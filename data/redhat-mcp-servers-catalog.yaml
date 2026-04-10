@@ -43,6 +43,7 @@ mcp_servers:
       repositoryUrl: https://github.com/openshift/openshift-mcp-server
       sourceCode: openshift/openshift-mcp-server
       publishedDate: "2025-07-23T00:00:00Z"
+      deploymentMode: local
       tools:
         - name: pods_list
           description: List all pods across namespaces or filtered by label/field selectors
@@ -335,6 +336,7 @@ mcp_servers:
       repositoryUrl: https://github.com/ansible/aap-mcp-server
       sourceCode: ansible/aap-mcp-server
       publishedDate: "2026-02-02T00:00:00Z"
+      deploymentMode: local
       tools:
         - name: controller.job_templates_launch_create
           description: Launch an Ansible job template
@@ -490,6 +492,7 @@ mcp_servers:
       repositoryUrl: https://github.com/RedHatInsights/insights-mcp
       sourceCode: RedHatInsights/insights-mcp
       publishedDate: "2025-03-15T00:00:00Z"
+      deploymentMode: local
       tools:
         - name: get_blueprint_details
           description: Get blueprint details

@@ -27,6 +27,8 @@ type MCPServerMetadata struct {
 	RepositoryUrl            string                   `yaml:"repositoryUrl,omitempty"`
 	SourceCode               string                   `yaml:"sourceCode,omitempty"`
 	PublishedDate            string                   `yaml:"publishedDate,omitempty"`
+	DeploymentMode           string                   `yaml:"deploymentMode,omitempty"`
+	Tags                     []string                 `yaml:"tags,omitempty"`
 	Tools                    []MCPTool                `yaml:"tools,omitempty"`
 	Artifacts                []MCPArtifact            `yaml:"artifacts,omitempty"`
 	RuntimeMetadata          map[string]any           `yaml:"runtimeMetadata,omitempty"`

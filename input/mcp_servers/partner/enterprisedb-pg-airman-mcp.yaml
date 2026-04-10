@@ -1,221 +1,291 @@
 name: enterprisedb/pg-airman-mcp
-displayName: PG Airman MCP
 provider: EnterpriseDB
+license: Apache-2.0
+license_link: https://www.apache.org/licenses/LICENSE-2.0
+description: Open-source Model Context Protocol server supporting AI agents throughout the complete PostgreSQL database development lifecycle—from initial coding through testing, deployment, and production tuning and maintenance
+readme: |-
+    # PG Airman MCP
+
+    A Postgres MCP server with index tuning, explain plans, health checks, and
+    safe SQL execution.
+
+    ## Overview
+    Pg Airman MCP is an open-source MCP server built to support AI agents
+    throughout the entire PostgreSQL development lifecycle — from initial coding
+    through testing, deployment, and production tuning and maintenance.
+
+    ## Features
+    - **Database Health** — Analyze index health, connection utilization, buffer cache, vacuum health, sequence limits, replication lag, and more
+    - **Index Tuning** — Explore thousands of possible indexes to find the best solution for your workload using industrial-strength algorithms
+    - **Query Plans** — Validate and optimize performance by reviewing EXPLAIN plans and simulating the impact of hypothetical indexes
+    - **Schema Intelligence** — Context-aware SQL generation based on detailed understanding of the database schema
+    - **Safe SQL Execution** — Configurable access control with read-only mode and safe SQL parsing for both development and production
+    - **OAuth 2.0 Authentication** — Optional token-based authentication supporting RFC 7662 token introspection and local JWT validation
+
+    ## Tools
+    - list_schemas, list_objects, get_object_details — Schema exploration
+    - execute_sql — SQL execution with access mode controls
+    - explain_query — Execution plans with hypothetical index simulation
+    - get_top_queries — Slow query identification via pg_stat_statements
+    - analyze_workload_indexes, analyze_query_indexes — Index recommendations
+    - analyze_db_health — Comprehensive health checks
+    - add_comment_to_object — Metadata management
+
+    ## Prerequisites
+    - PostgreSQL database with access credentials
+    - Python 3.12+ or Docker
+    - Optional: pg_stat_statements and hypopg extensions for index tuning
+
+    ## Quick Start
+    ```bash
+    docker pull enterprisedb/pg-airman-mcp
+    ```
+
+    ## Transports
+    Supports stdio (default), SSE, and Streamable HTTP transports. Network
+    transports include optional OAuth 2.0 authentication and DNS rebinding protection.
 version: 1.0.0
+transports:
+    - stdio
+    - sse
+    - http
 documentationUrl: https://github.com/EnterpriseDB/pg-airman-mcp
 repositoryUrl: https://github.com/EnterpriseDB/pg-airman-mcp
-license: Apache-2.0
-description: >-
-  Open-source Model Context Protocol server supporting AI agents throughout the complete PostgreSQL database development lifecycle—from initial coding through testing, deployment, and production tuning and maintenance
-transports:
-  - stdio
-  - sse
-  - http
-deploymentMode: remote
-toolCount: 10
-artifacts:
-  - uri: oci://quay.io/rhoai-partner-mcp/ubi10-enterprisedb-pg-airman-mcp:1775068164
+deploymentMode: local
 tags:
-  - database
-  - postgresql
-  - sql
-  - query-optimization
-  - index-tuning
-  - database-health
-  - schema-intelligence
-  - oauth
-securityIndicators:
-  verifiedSource: true
-  secureEndpoint: true
-  sast: false
-  readOnlyTools: true
+    - database
+    - postgresql
+    - sql
+    - query-optimization
+    - index-tuning
+    - database-health
+    - schema-intelligence
+    - oauth
 tools:
-  - name: list_schemas
-    description: >-
-      Lists all database schemas available in the PostgreSQL instance
-    accessType: read_only
-    parameters: []
-  - name: list_objects
-    description: >-
-      Lists database objects (tables, views, sequences, extensions) within a specified schema
-    accessType: read_only
-    parameters:
-      - name: schema
-        type: string
-        required: true
-        description: >-
-          Schema name to list objects from
-  - name: get_object_details
-    description: >-
-      Provides information about a specific database object, including columns, constraints, and indexes
-    accessType: read_only
-    parameters:
-      - name: object
-        type: string
-        required: true
-        description: >-
-          Fully qualified object identifier
-  - name: execute_sql
-    description: >-
-      Executes SQL statements on the database with read-only limitations in restricted mode
-    accessType: read_write
-    parameters:
-      - name: sql
-        type: string
-        required: true
-        description: >-
-          SQL statement to execute
-  - name: explain_query
-    description: >-
-      Gets the execution plan for a SQL query describing how PostgreSQL will process it
-    accessType: read_only
-    parameters:
-      - name: query
-        type: string
-        required: true
-        description: >-
-          SQL query to explain
-      - name: hypothetical_indexes
-        type: array
-        required: false
-        description: >-
-          Optional list of hypothetical indexes to test
-  - name: get_top_queries
-    description: >-
-      Reports the slowest SQL queries based on total execution time using pg_stat_statements data
-    accessType: read_only
-    parameters:
-      - name: metric
-        type: string
-        required: false
-        description: >-
-          Execution time metric for ranking
-  - name: analyze_workload_indexes
-    description: >-
-      Analyzes the database workload to identify resource-intensive queries and recommends optimal indexes
-    accessType: read_only
-    parameters:
-      - name: workload_params
-        type: object
-        required: false
-        description: >-
-          Workload analysis parameters
-  - name: analyze_query_indexes
-    description: >-
-      Analyzes a list of specific SQL queries (up to 10) and recommends optimal indexes
-    accessType: read_only
-    parameters:
-      - name: queries
-        type: array
-        required: true
-        description: >-
-          List of SQL queries (max 10) to analyze
-  - name: analyze_db_health
-    description: >-
-      Performs comprehensive health checks including buffer cache hit rates, connection health, constraint validation, index health, sequence limits, and vacuum health
-    accessType: read_only
-    parameters:
-      - name: health_params
-        type: object
-        required: false
-        description: >-
-          Health check parameters
-  - name: add_comment_to_object
-    description: >-
-      Adds a comment to a table, view, or column (allowed in restricted mode if ALLOW_COMMENT_IN_RESTRICTED=true)
-    accessType: read_write
-    parameters:
-      - name: object_type
-        type: string
-        required: true
-        description: >-
-          Type of object (table, view, column)
-      - name: object_identifier
-        type: string
-        required: true
-        description: >-
-          Fully qualified object identifier
-      - name: comment
-        type: string
-        required: true
-        description: >-
-          Comment text to add
+    - name: list_schemas
+      description: Lists all database schemas available in the PostgreSQL instance
+      accessType: read_only
+      parameters: []
+    - name: list_objects
+      description: Lists database objects (tables, views, sequences, extensions) within a specified schema
+      accessType: read_only
+      parameters:
+        - name: schema
+          type: string
+          description: Schema name to list objects from
+          required: true
+    - name: get_object_details
+      description: Provides information about a specific database object, including columns, constraints, and indexes
+      accessType: read_only
+      parameters:
+        - name: object
+          type: string
+          description: Fully qualified object identifier
+          required: true
+    - name: execute_sql
+      description: Executes SQL statements on the database with read-only limitations in restricted mode
+      accessType: read_write
+      parameters:
+        - name: sql
+          type: string
+          description: SQL statement to execute
+          required: true
+    - name: explain_query
+      description: Gets the execution plan for a SQL query describing how PostgreSQL will process it
+      accessType: read_only
+      parameters:
+        - name: query
+          type: string
+          description: SQL query to explain
+          required: true
+        - name: hypothetical_indexes
+          type: array
+          description: Optional list of hypothetical indexes to test
+          required: false
+    - name: get_top_queries
+      description: Reports the slowest SQL queries based on total execution time using pg_stat_statements data
+      accessType: read_only
+      parameters:
+        - name: metric
+          type: string
+          description: Execution time metric for ranking
+          required: false
+    - name: analyze_workload_indexes
+      description: Analyzes the database workload to identify resource-intensive queries and recommends optimal indexes
+      accessType: read_only
+      parameters:
+        - name: workload_params
+          type: object
+          description: Workload analysis parameters
+          required: false
+    - name: analyze_query_indexes
+      description: Analyzes a list of specific SQL queries (up to 10) and recommends optimal indexes
+      accessType: read_only
+      parameters:
+        - name: queries
+          type: array
+          description: List of SQL queries (max 10) to analyze
+          required: true
+    - name: analyze_db_health
+      description: Performs comprehensive health checks including buffer cache hit rates, connection health, constraint validation, index health, sequence limits, and vacuum health
+      accessType: read_only
+      parameters:
+        - name: health_params
+          type: object
+          description: Health check parameters
+          required: false
+    - name: add_comment_to_object
+      description: Adds a comment to a table, view, or column (allowed in restricted mode if ALLOW_COMMENT_IN_RESTRICTED=true)
+      accessType: read_write
+      parameters:
+        - name: object_type
+          type: string
+          description: Type of object (table, view, column)
+          required: true
+        - name: object_identifier
+          type: string
+          description: Fully qualified object identifier
+          required: true
+        - name: comment
+          type: string
+          description: Comment text to add
+          required: true
+artifacts:
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-enterprisedb-pg-airman-mcp:1775068164
+      createTimeSinceEpoch: "1775067967000"
+      lastUpdateTimeSinceEpoch: "1775067967000"
 runtimeMetadata:
-  defaultPort: 8001
-  requiredEnvironmentVariables:
-    - name: AIRMAN_MCP_DATABASE_URL
-      description: >-
-        PostgreSQL connection string (postgresql://user:pass@host:port/db)
-      type: secret
-      required: true
-  optionalEnvironmentVariables:
-    - name: AIRMAN_MCP_AUTH_ENABLED
-      description: >-
-        Enable OAuth 2.0 authentication (true/false)
-      type: config
-      required: false
-    - name: AIRMAN_MCP_AUTH_SERVER_URL
-      description: >-
-        OAuth authorization server endpoint for token introspection
-      type: config
-      required: false
-    - name: AIRMAN_MCP_AUTH_REQUIRED_SCOPES
-      description: >-
-        Required OAuth scopes for access
-      type: config
-      required: false
-    - name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_ID
-      description: >-
-        OAuth client ID for token introspection
-      type: config
-      required: false
-    - name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_SECRET
-      description: >-
-        OAuth client secret for token introspection
-      type: secret
-      required: false
-    - name: AIRMAN_MCP_AUTH_VALIDATE_RESOURCE
-      description: >-
-        Enable RFC 8707 resource validation
-      type: config
-      required: false
-    - name: AIRMAN_MCP_DNS_REBINDING_PROTECTION
-      description: >-
-        Enable DNS rebinding protection for reverse proxy deployments
-      type: config
-      required: false
-    - name: AIRMAN_MCP_ALLOWED_HOSTS
-      description: >-
-        Comma-separated list of allowed Host header values
-      type: config
-      required: true
-      default: "0.0.0.0"
-    - name: AIRMAN_MCP_ALLOWED_ORIGINS
-      description: >-
-        Comma-separated list of allowed Origin header values
-      type: config
-      required: false
-    - name: AIRMAN_MCP_TRANSPORT
-      description: >-
-        MCP transport: stdio, sse, or streamable-http
-      type: config
-      required: true
-      default: "streamable-http"
-    - name: AIRMAN_MCP_ACCESS_MODE
-      description: >-
-        SQL access mode: unrestricted or restricted
-      type: config
-      required: true
-      default: "restricted"
-    - name: ALLOW_COMMENT_IN_RESTRICTED
-      description: >-
-        Allow COMMENT ON statements in restricted mode
-      type: config
-      required: false
-  recommendedResources:
-    minimal:
-      cpu: 100m
-      memory: 256Mi
-    recommended:
-      cpu: 250m
-      memory: 512Mi
+    defaultPort: 8001
+    optionalEnvironmentVariables:
+        - description: Enable OAuth 2.0 authentication (true/false)
+          name: AIRMAN_MCP_AUTH_ENABLED
+          required: false
+          type: config
+        - description: OAuth authorization server endpoint for token introspection
+          name: AIRMAN_MCP_AUTH_SERVER_URL
+          required: false
+          type: config
+        - description: Required OAuth scopes for access
+          name: AIRMAN_MCP_AUTH_REQUIRED_SCOPES
+          required: false
+          type: config
+        - description: OAuth client ID for token introspection
+          name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_ID
+          required: false
+          type: config
+        - description: OAuth client secret for token introspection
+          name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_SECRET
+          required: false
+          type: secret
+        - description: Enable RFC 8707 resource validation
+          name: AIRMAN_MCP_AUTH_VALIDATE_RESOURCE
+          required: false
+          type: config
+        - description: Enable DNS rebinding protection for reverse proxy deployments
+          name: AIRMAN_MCP_DNS_REBINDING_PROTECTION
+          required: false
+          type: config
+        - default: 0.0.0.0
+          description: Comma-separated list of allowed Host header values
+          name: AIRMAN_MCP_ALLOWED_HOSTS
+          required: true
+          type: config
+        - description: Comma-separated list of allowed Origin header values
+          name: AIRMAN_MCP_ALLOWED_ORIGINS
+          required: false
+          type: config
+        - default: streamable-http
+          description: 'MCP transport: stdio, sse, or streamable-http'
+          name: AIRMAN_MCP_TRANSPORT
+          required: true
+          type: config
+        - default: restricted
+          description: 'SQL access mode: unrestricted or restricted'
+          name: AIRMAN_MCP_ACCESS_MODE
+          required: true
+          type: config
+        - description: Allow COMMENT ON statements in restricted mode
+          name: ALLOW_COMMENT_IN_RESTRICTED
+          required: false
+          type: config
+    prerequisites:
+        environmentVariables:
+            - description: PostgreSQL connection string (from secret pg-airman-credentials)
+              name: AIRMAN_MCP_DATABASE_URL
+              required: true
+              type: string
+            - description: SQL access mode (unrestricted or restricted)
+              name: AIRMAN_MCP_ACCESS_MODE
+              required: true
+              type: string
+            - description: MCP transport (stdio, sse, or streamable-http)
+              name: AIRMAN_MCP_TRANSPORT
+              required: true
+              type: string
+            - description: Enable OAuth 2.0 authentication (true/false)
+              name: AIRMAN_MCP_AUTH_ENABLED
+              required: false
+              type: string
+            - description: OAuth authorization server endpoint
+              name: AIRMAN_MCP_AUTH_SERVER_URL
+              required: false
+              type: string
+            - description: OAuth client ID for token introspection (from secret pg-airman-auth-credentials)
+              name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_ID
+              required: false
+              type: string
+            - description: OAuth client secret for token introspection (from secret pg-airman-auth-credentials)
+              name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_SECRET
+              required: false
+              type: string
+            - description: Comma-separated list of allowed Host header values
+              name: AIRMAN_MCP_ALLOWED_HOSTS
+              required: true
+              type: string
+            - description: Allow COMMENT ON statements in restricted mode
+              name: ALLOW_COMMENT_IN_RESTRICTED
+              required: false
+              type: string
+        secrets:
+            - description: kubectl create secret generic pg-airman-credentials --from-literal=database-url=postgresql://user:pass@host:port/db
+              keys:
+                - description: PostgreSQL connection string
+                  envVarName: AIRMAN_MCP_DATABASE_URL
+                  key: database-url
+                  required: true
+              mountAsFile: false
+              name: pg-airman-credentials
+            - description: kubectl create secret generic pg-airman-auth-credentials --from-literal=client-id=<OAUTH_CLIENT_ID> --from-literal=client-secret=<OAUTH_CLIENT_SECRET>
+              keys:
+                - description: OAuth client ID for token introspection
+                  envVarName: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_ID
+                  key: client-id
+                  required: false
+                - description: OAuth client secret for token introspection
+                  envVarName: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_SECRET
+                  key: client-secret
+                  required: false
+              mountAsFile: false
+              name: pg-airman-auth-credentials
+    recommendedResources:
+        minimal:
+            cpu: 100m
+            memory: 256Mi
+        recommended:
+            cpu: 250m
+            memory: 512Mi
+    requiredEnvironmentVariables:
+        - description: PostgreSQL connection string (postgresql://user:pass@host:port/db)
+          name: AIRMAN_MCP_DATABASE_URL
+          required: true
+          type: secret
+securityIndicators:
+    readOnlyTools: true
+    sast: false
+    secureEndpoint: true
+    verifiedSource: true
+customProperties:
+    architecture:
+        metadataType: MetadataStringValue
+        string_value: "[\"amd64\"]"
+lastUpdateTimeSinceEpoch: "1775067967000"

@@ -1,104 +1,168 @@
 name: confluentinc/mcp-confluent
-displayName: Confluent MCP Server
 provider: Confluent
-logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABcMAAAMqCAYAAABOi1k/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAXHNJREFUeNrs3T+TG0iaH+Bc3RlnbMTxLFysszhP3jQDjrwBvZM1TU+yiPLkkTRlsWnKYvMTALQUZ7HnExDjyUFMzycYrLUBa7nGRqwsqZJIDJvNZjcq6w8KqOeJqEUPiSpUZ2VVbPzw8s0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOJjfGQIAAMgzmhTj8mWc/vNRuZ3fest36c+r+Fhuv9z6s+v059F6s5qvjT4AAFQjDAcAgG8YTYpp+Bxy/3P4HHZPe3KKy/Qaw/K/ptePm9V86eoBAMCXhOEAAAzaaFLswu64/fHGz4+O/FeLleTXafvT7ufNav7RVQcAYIiE4QAADMaN4Hsati1M4s/jgQ3DOmyD8diKZRkE5AAADIQwHACAk5V6ek/L7fvwueKbr+0qyH8qt6We5AAAnAxhOAAAJ+NW+B1fx0Ylyzpsq8aF4wAAnAxhOADASUsL/VBGKr/baztOGAPAiwdPLgDh8OqUR7M6XoiaB6CbGtts4cLzwbtv1N8Z7hiv+Rsi823xzb0KRB8T7gMA3jxj59dcZoz3snBUY+VpCmD7boutXGcva2Aog8Siqa/Hov1sbuAxJZXgHC/o1Hz0Ehgsmn71/FIxaXz0AAwS8sj0ihYAcBb5CVJ9weFnwLnR1K6PHgC9FyJsFCVwq+9afAQlIITbnxXMjv+6222dh4/VtAAAAABJRU5ErkJggg==
+license: MIT
+license_link: https://opensource.org/licenses/MIT
+description: Manage Confluent Cloud resources through the Confluent Cloud REST API. Provides cluster management, environment management, connector operations, and billing cost visibility.
+readme: |-
+    # Confluent MCP Server
+
+    **MCP Server Summary:**
+    An open-source MCP server that enables AI assistants to interact with
+    Confluent Cloud and Confluent Local through natural language. Provides 50+
+    tools across Kafka, Flink SQL, Schema Registry, Connectors, Tableflow, and
+    more — usable from any MCP-compatible client.
+
+    ## Tool Categories
+    - **Kafka** — Topic management, produce/consume messages, topic configuration
+    - **Flink SQL** — Create and manage Flink SQL statements
+    - **Flink Catalog** — Explore catalogs, databases, and table schemas
+    - **Flink Diagnostics** — Health checks, issue detection, and query profiling
+    - **Connectors** — Manage Kafka Connect connectors
+    - **Schema Registry** — List, inspect, and delete data schemas
+    - **Catalog & Tags** — Organize and search topics using tags
+    - **Environments & Clusters** — Discover Confluent Cloud resources
+    - **Tableflow** — Manage Tableflow-enabled topics and catalog integrations
+    - **Metrics & Billing** — Query operational metrics and billing costs
+
+    ## Prerequisites
+    - Node.js 22 or later
+    - Confluent Cloud account with appropriate API keys (for cloud tools)
+    - For local development: Kafka broker and optional Schema Registry endpoints
+
+    ## Quick Start
+    ```bash
+    npx -y @confluentinc/mcp-confluent -e /path/to/.env
+    ```
+
+    ## Transports
+    Supports stdio (default), HTTP, and SSE transports. HTTP/SSE transports
+    include API key authentication and DNS rebinding protection.
 version: 1.0.0
+transports:
+    - stdio
+    - http
+    - sse
+logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABcMAAAMqCAYAAABOi1k/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAXHNJREFUeNrs3T+TG0iaH+Bc3RlnbMTxLFysszhP3jQDjrwBvZM1TU+yiPLkkTRlsWnKYvMTALQUZ7HnExDjyUFMzycYrLUBa7nGRqwsqZJIDJvNZjcq6w8KqOeJqEUPiSpUZ2VVbPzw8s0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOJjfGQIAAMgzmhTj8mWc/vNRuZ3fest36c+r+Fhuv9z6s+v059F6s5qvjT4AAFQjDAcAgG8YTYpp+Bxy/3P4HHZPe3KKy/Qaw/K/ptePm9V86eoBAMCXhOEAAAzaaFLswu64/fHGz4+O/FeLleTXafvT7ufNav7RVQcAYIiE4QAADMaN4Hsati1M4s/jgQ3DOmyD8diKZRkE5AAADIQwHACAk5V6ek/L7fvwueKbr+0qyH8qt6We5AAAnAxhOAAAJ+NW+B1fx0Ylyzpsq8aF4wAAnAxhOADASUsL/VBGKr/baztOGAPAiwdPLgDh8OqUR7M6XoiaB6CbGtts4cLzwbtv1N8Z7hiv+Rsi823xzb0KRB8T7gMA3jxj59dcZoz3snBUY+VpCmD7boutXGcva2Aog8Siqa/Hov1sbuAxJZXgHC/o1Hz0Ehgsmn71/FIxaXz0AAwS8sj0ihYAcBb5CVJ9weFnwLnR1K6PHgC9FyJsFCVwq+9afAQlIITbnxXMjv+6222dh4/VtAAAAABJRU5ErkJggg==
 documentationUrl: https://github.com/confluentinc/mcp-confluent
 repositoryUrl: https://github.com/confluentinc/mcp-confluent
-license: Unknown
-description: >-
-  Manage Confluent Cloud resources through the Confluent Cloud REST API. Provides cluster management, environment management,
-  connector operations, and billing cost visibility.
-transports:
-  - stdio
-  - http
-  - sse
 deploymentMode: local
-toolCount: 7
-artifacts:
-  - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:1773859835
 tags:
-  - kafka
-  - confluent
-  - streaming
-  - flink
-  - schema-registry
-  - connectors
-securityIndicators:
-  verifiedSource: true
-  secureEndpoint: true
-  readOnlyTools: false
+    - kafka
+    - confluent
+    - streaming
+    - flink
+    - schema-registry
+    - connectors
 tools:
-  - name: list-connectors
-    description: >-
-      List Kafka connectors
-    accessType: read_only
-    parameters: [ ]
-  - name: read-connector
-    description: >-
-      Read connector configuration
-    accessType: read_only
-    parameters: [ ]
-  - name: delete-connector
-    description: >-
-      Delete a Kafka connector
-    accessType: read_write
-    parameters: [ ]
-  - name: list-clusters
-    description: >-
-      List Confluent Cloud clusters
-    accessType: read_only
-    parameters: [ ]
-  - name: list-environments
-    description: >-
-      List Confluent Cloud environments
-    accessType: read_only
-    parameters: [ ]
-  - name: read-environment
-    description: >-
-      Read environment details
-    accessType: read_only
-    parameters: [ ]
-  - name: list-billing-costs
-    description: >-
-      List billing costs for Confluent Cloud
-    accessType: read_only
-    parameters: [ ]
+    - name: list-connectors
+      description: List Kafka connectors
+      accessType: read_only
+      parameters: []
+    - name: read-connector
+      description: Read connector configuration
+      accessType: read_only
+      parameters: []
+    - name: delete-connector
+      description: Delete a Kafka connector
+      accessType: read_write
+      parameters: []
+    - name: list-clusters
+      description: List Confluent Cloud clusters
+      accessType: read_only
+      parameters: []
+    - name: list-environments
+      description: List Confluent Cloud environments
+      accessType: read_only
+      parameters: []
+    - name: read-environment
+      description: Read environment details
+      accessType: read_only
+      parameters: []
+    - name: list-billing-costs
+      description: List billing costs for Confluent Cloud
+      accessType: read_only
+      parameters: []
+artifacts:
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:1773859835
+      createTimeSinceEpoch: "1773865770000"
+      lastUpdateTimeSinceEpoch: "1773865770000"
 runtimeMetadata:
-  requiredEnvironmentVariables:
-    - name: CONFLUENT_CLOUD_API_KEY
-      description: >-
-        Master API key for Confluent Cloud
-      type: secret
-      required: true
-    - name: CONFLUENT_CLOUD_API_SECRET
-      description: >-
-        Master API secret for Confluent Cloud
-      type: secret
-      required: true
-    - name: MCP_API_KEY
-      description: >-
-        API key for HTTP/SSE authentication. Generate using --generate-key. Required when auth is enabled.
-      type: secret
-    - name: MCP_ALLOWED_HOSTS
-      description: >-
-        Comma-separated list of allowed Host header values for DNS rebinding protection.
-      type: secret
-      required: true
-    - name: HTTP_HOST
-      description: >-
-        Host to bind for HTTP transport. Defaults to localhost only for security.
-      type: secret
-      required: true
-    - name: HTTP_PORT
-      description: >-
-        HTTP port for the server
-      type: config
-      required: true
-  recommendedResources:
-    minimal:
-      cpu: 100m
-      memory: 256Mi
-    recommended:
-      cpu: 500m
-      memory: 512Mi
+    prerequisites:
+        environmentVariables:
+            - description: Master API key for Confluent Cloud (from secret confluent-cloud-credentials)
+              name: CONFLUENT_CLOUD_API_KEY
+              required: true
+              type: string
+            - description: Master API secret for Confluent Cloud (from secret confluent-cloud-credentials)
+              name: CONFLUENT_CLOUD_API_SECRET
+              required: true
+              type: string
+            - description: API key for HTTP/SSE authentication (generate using --generate-key)
+              name: MCP_API_KEY
+              required: false
+              type: string
+            - description: Comma-separated list of allowed Host header values for DNS rebinding protection
+              name: MCP_ALLOWED_HOSTS
+              required: true
+              type: string
+            - description: Host to bind for HTTP transport (defaults to localhost for security)
+              name: HTTP_HOST
+              required: true
+              type: string
+            - description: HTTP port for the server
+              name: HTTP_PORT
+              required: false
+              type: string
+        secrets:
+            - description: kubectl create secret generic confluent-cloud-credentials --from-literal=api-key=<CONFLUENT_CLOUD_API_KEY> --from-literal=api-secret=<CONFLUENT_CLOUD_API_SECRET>
+              keys:
+                - description: Confluent Cloud API key
+                  envVarName: CONFLUENT_CLOUD_API_KEY
+                  key: api-key
+                  required: true
+                - description: Confluent Cloud API secret
+                  envVarName: CONFLUENT_CLOUD_API_SECRET
+                  key: api-secret
+                  required: true
+              mountAsFile: false
+              name: confluent-cloud-credentials
+    recommendedResources:
+        minimal:
+            cpu: 100m
+            memory: 256Mi
+        recommended:
+            cpu: 500m
+            memory: 512Mi
+    requiredEnvironmentVariables:
+        - description: Master API key for Confluent Cloud
+          name: CONFLUENT_CLOUD_API_KEY
+          required: true
+          type: secret
+        - description: Master API secret for Confluent Cloud
+          name: CONFLUENT_CLOUD_API_SECRET
+          required: true
+          type: secret
+        - description: API key for HTTP/SSE authentication. Generate using --generate-key. Required when auth is enabled.
+          name: MCP_API_KEY
+          type: secret
+        - description: Comma-separated list of allowed Host header values for DNS rebinding protection.
+          name: MCP_ALLOWED_HOSTS
+          required: true
+          type: config
+        - description: Host to bind for HTTP transport. Defaults to localhost only for security.
+          name: HTTP_HOST
+          required: true
+          type: config
+        - description: HTTP port for the server
+          name: HTTP_PORT
+          required: true
+          type: config
+securityIndicators:
+    readOnlyTools: false
+    secureEndpoint: true
+    verifiedSource: true
+customProperties:
+    architecture:
+        metadataType: MetadataStringValue
+        string_value: "[\"amd64\"]"
+lastUpdateTimeSinceEpoch: "1773865770000"

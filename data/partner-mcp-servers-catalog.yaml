@@ -2,9 +2,43 @@ source: Partner MCP
 mcp_servers:
     - name: confluentinc/mcp-confluent
       provider: Confluent
-      license: Unknown
-      license_link: ""
+      license: MIT
+      license_link: https://opensource.org/licenses/MIT
       description: Manage Confluent Cloud resources through the Confluent Cloud REST API. Provides cluster management, environment management, connector operations, and billing cost visibility.
+      readme: |-
+        # Confluent MCP Server
+
+        **MCP Server Summary:**
+        An open-source MCP server that enables AI assistants to interact with
+        Confluent Cloud and Confluent Local through natural language. Provides 50+
+        tools across Kafka, Flink SQL, Schema Registry, Connectors, Tableflow, and
+        more — usable from any MCP-compatible client.
+
+        ## Tool Categories
+        - **Kafka** — Topic management, produce/consume messages, topic configuration
+        - **Flink SQL** — Create and manage Flink SQL statements
+        - **Flink Catalog** — Explore catalogs, databases, and table schemas
+        - **Flink Diagnostics** — Health checks, issue detection, and query profiling
+        - **Connectors** — Manage Kafka Connect connectors
+        - **Schema Registry** — List, inspect, and delete data schemas
+        - **Catalog & Tags** — Organize and search topics using tags
+        - **Environments & Clusters** — Discover Confluent Cloud resources
+        - **Tableflow** — Manage Tableflow-enabled topics and catalog integrations
+        - **Metrics & Billing** — Query operational metrics and billing costs
+
+        ## Prerequisites
+        - Node.js 22 or later
+        - Confluent Cloud account with appropriate API keys (for cloud tools)
+        - For local development: Kafka broker and optional Schema Registry endpoints
+
+        ## Quick Start
+        ```bash
+        npx -y @confluentinc/mcp-confluent -e /path/to/.env
+        ```
+
+        ## Transports
+        Supports stdio (default), HTTP, and SSE transports. HTTP/SSE transports
+        include API key authentication and DNS rebinding protection.
       version: 1.0.0
       transports:
         - stdio
@@ -13,6 +47,14 @@ mcp_servers:
       logo: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABcMAAAMqCAYAAABOi1k/AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAXHNJREFUeNrs3T+TG0iaH+Bc3RlnbMTxLFysszhP3jQDjrwBvZM1TU+yiPLkkTRlsWnKYvMTALQUZ7HnExDjyUFMzycYrLUBa7nGRqwsqZJIDJvNZjcq6w8KqOeJqEUPiSpUZ2VVbPzw8s0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOJjfGQIAAMgzmhTj8mWc/vNRuZ3fest36c+r+Fhuv9z6s+v059F6s5qvjT4AAFQjDAcAgG8YTYpp+Bxy/3P4HHZPe3KKy/Qaw/K/ptePm9V86eoBAMCXhOEAAAzaaFLswu64/fHGz4+O/FeLleTXafvT7ufNav7RVQcAYIiE4QAADMaN4Hsati1M4s/jgQ3DOmyD8diKZRkE5AAADIQwHACAk5V6ek/L7fvwueKbr+0qyH8qt6We5AAAnAxhOAAAJ+NW+B1fx0Ylyzpsq8aF4wAAnAxhOADASUsL/VBGKr/baztOGAPAiwdPLgDh8OqUR7M6XoiaB6CbGtts4cLzwbtv1N8Z7hiv+Rsi823xzb0KRB8T7gMA3jxj59dcZoz3snBUY+VpCmD7boutXGcva2Aog8Siqa/Hov1sbuAxJZXgHC/o1Hz0Ehgsmn71/FIxaXz0AAwS8sj0ihYAcBb5CVJ9weFnwLnR1K6PHgC9FyJsFCVwq+9afAQlIITbnxXMjv+6222dh4/VtAAAAABJRU5ErkJggg==
       documentationUrl: https://github.com/confluentinc/mcp-confluent
       repositoryUrl: https://github.com/confluentinc/mcp-confluent
+      deploymentMode: local
+      tags:
+        - kafka
+        - confluent
+        - streaming
+        - flink
+        - schema-registry
+        - connectors
       tools:
         - name: list-connectors
           description: List Kafka connectors
@@ -44,7 +86,48 @@ mcp_servers:
           parameters: []
       artifacts:
         - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:1773859835
+          createTimeSinceEpoch: "1773865770000"
+          lastUpdateTimeSinceEpoch: "1773865770000"
       runtimeMetadata:
+        prerequisites:
+            environmentVariables:
+                - description: Master API key for Confluent Cloud (from secret confluent-cloud-credentials)
+                  name: CONFLUENT_CLOUD_API_KEY
+                  required: true
+                  type: string
+                - description: Master API secret for Confluent Cloud (from secret confluent-cloud-credentials)
+                  name: CONFLUENT_CLOUD_API_SECRET
+                  required: true
+                  type: string
+                - description: API key for HTTP/SSE authentication (generate using --generate-key)
+                  name: MCP_API_KEY
+                  required: false
+                  type: string
+                - description: Comma-separated list of allowed Host header values for DNS rebinding protection
+                  name: MCP_ALLOWED_HOSTS
+                  required: true
+                  type: string
+                - description: Host to bind for HTTP transport (defaults to localhost for security)
+                  name: HTTP_HOST
+                  required: true
+                  type: string
+                - description: HTTP port for the server
+                  name: HTTP_PORT
+                  required: false
+                  type: string
+            secrets:
+                - description: kubectl create secret generic confluent-cloud-credentials --from-literal=api-key=<CONFLUENT_CLOUD_API_KEY> --from-literal=api-secret=<CONFLUENT_CLOUD_API_SECRET>
+                  keys:
+                    - description: Confluent Cloud API key
+                      envVarName: CONFLUENT_CLOUD_API_KEY
+                      key: api-key
+                      required: true
+                    - description: Confluent Cloud API secret
+                      envVarName: CONFLUENT_CLOUD_API_SECRET
+                      key: api-secret
+                      required: true
+                  mountAsFile: false
+                  name: confluent-cloud-credentials
         recommendedResources:
             minimal:
                 cpu: 100m
@@ -67,11 +150,11 @@ mcp_servers:
             - description: Comma-separated list of allowed Host header values for DNS rebinding protection.
               name: MCP_ALLOWED_HOSTS
               required: true
-              type: secret
+              type: config
             - description: Host to bind for HTTP transport. Defaults to localhost only for security.
               name: HTTP_HOST
               required: true
-              type: secret
+              type: config
             - description: HTTP port for the server
               name: HTTP_PORT
               required: true
@@ -80,11 +163,57 @@ mcp_servers:
         readOnlyTools: false
         secureEndpoint: true
         verifiedSource: true
+      customProperties:
+        architecture:
+            metadataType: MetadataStringValue
+            string_value: "[\"amd64\"]"
+      lastUpdateTimeSinceEpoch: "1773865770000"
     - name: dynatrace-oss/dynatrace-mcp
       provider: Dynatrace
       license: MIT
-      license_link: ""
+      license_link: https://opensource.org/licenses/MIT
       description: AI Assistants can interact with the Dynatrace observability platform, bringing real-time observability data directly into your development workflow. Query logs, events, spans, metrics via DQL.
+      readme: |-
+        # Dynatrace MCP Server
+
+        The local Dynatrace MCP server allows AI Assistants to interact with the
+        Dynatrace observability platform, bringing real-time observability data
+        directly into your development workflow.
+
+        ## Use Cases
+        - **Real-time observability** — Fetch production-level data for early detection and proactive monitoring
+        - **Contextual debugging** — Fix issues with full context from monitored exceptions, logs, and anomalies
+        - **Security insights** — Detailed vulnerability analysis and security problem tracking
+        - **Natural language queries** — AI-powered DQL generation and explanation
+        - **Multi-phase incident investigation** — Systematic approach with automated impact assessment
+        - **DevOps automation** — Deployment health gates with automated promotion/rollback logic
+
+        ## Capabilities
+        - Observability & Problem Management (list_problems, list_vulnerabilities, list_exceptions, get_kubernetes_events)
+        - Querying Data from Grail (execute_dql, verify_dql, generate_dql_from_natural_language, explain_dql_in_natural_language)
+        - Entity Discovery (find_entity_by_name)
+        - Dynatrace Intelligence (chat_with_davis_copilot, list_davis_analyzers, execute_davis_analyzer)
+        - Automation & Notifications (create_workflow_for_notification, send_slack_message, send_email, send_event)
+        - Share results (create_dynatrace_notebook)
+
+        ## Prerequisites
+        - Node.js runtime
+        - Dynatrace Platform environment URL (DT_ENVIRONMENT)
+        - Authentication via browser-based Authorization Code Flow (default), Platform Token, or OAuth Client
+
+        ## Quick Start
+        ```bash
+        npx -y @dynatrace-oss/dynatrace-mcp-server
+        ```
+
+        ## Transports
+        Supports stdio (default) and HTTP server mode. HTTP mode available via `--http` flag
+        with configurable port and host binding.
+
+        ## Costs
+        While the MCP server is free, using capabilities that query Dynatrace Grail storage
+        may incur costs based on your Dynatrace consumption model (depends on GB scanned).
+        Built-in budget tracking via DT_GRAIL_QUERY_BUDGET_GB (default: 1000 GB).
       version: 1.4.0
       transports:
         - stdio
@@ -92,6 +221,16 @@ mcp_servers:
       logo: data:image/png;base64,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
       documentationUrl: https://www.dynatrace.com/hub/detail/dynatrace-mcp-server/
       repositoryUrl: https://github.com/dynatrace-oss/dynatrace-mcp
+      deploymentMode: local
+      tags:
+        - dynatrace
+        - observability
+        - monitoring
+        - apm
+        - dql
+        - logs
+        - metrics
+        - traces
       tools:
         - name: execute_dql
           description: Query Dynatrace using natural language or DQL (Dynatrace Query Language) statements; retrieves logs, events, spans, and metrics
@@ -191,6 +330,8 @@ mcp_servers:
           parameters: []
       artifacts:
         - uri: oci://quay.io/rhoai-partner-mcp/ubi10-dynatrace-oss-mcp:1773859835
+          createTimeSinceEpoch: "1773865179000"
+          lastUpdateTimeSinceEpoch: "1773865179000"
       runtimeMetadata:
         defaultArgs:
             - node
@@ -200,6 +341,41 @@ mcp_servers:
             - "3000"
             - --host
             - 0.0.0.0
+        prerequisites:
+            environmentVariables:
+                - description: Dynatrace Platform URL (e.g., https://abc12345.apps.dynatrace.com)
+                  name: DT_ENVIRONMENT
+                  required: true
+                  type: string
+                - description: Dynatrace Platform API token (from secret dynatrace-credentials)
+                  name: DT_PLATFORM_TOKEN
+                  required: false
+                  type: string
+                - description: OAuth client ID for Dynatrace authentication (from secret dynatrace-credentials)
+                  name: OAUTH_CLIENT_ID
+                  required: false
+                  type: string
+                - description: OAuth client secret for Dynatrace authentication (from secret dynatrace-credentials)
+                  name: OAUTH_CLIENT_SECRET
+                  required: false
+                  type: string
+            secrets:
+                - description: kubectl create secret generic dynatrace-credentials --from-literal=platform-token=<DT_PLATFORM_TOKEN> --from-literal=oauth-client-id=<OAUTH_CLIENT_ID> --from-literal=oauth-client-secret=<OAUTH_CLIENT_SECRET>
+                  keys:
+                    - description: Dynatrace Platform API token
+                      envVarName: DT_PLATFORM_TOKEN
+                      key: platform-token
+                      required: false
+                    - description: OAuth client ID for Dynatrace authentication
+                      envVarName: OAUTH_CLIENT_ID
+                      key: oauth-client-id
+                      required: false
+                    - description: OAuth client secret for Dynatrace authentication
+                      envVarName: OAUTH_CLIENT_SECRET
+                      key: oauth-client-secret
+                      required: false
+                  mountAsFile: false
+                  name: dynatrace-credentials
         recommendedResources:
             minimal:
                 cpu: 100m
@@ -228,11 +404,55 @@ mcp_servers:
         readOnlyTools: false
         secureEndpoint: true
         verifiedSource: true
+      customProperties:
+        architecture:
+            metadataType: MetadataStringValue
+            string_value: "[\"amd64\"]"
+      lastUpdateTimeSinceEpoch: "1773865179000"
     - name: hashicorp/terraform-mcp-server
       provider: HashiCorp
       license: MPL-2.0
-      license_link: ""
-      description: 'Gain real-time access to current Terraform provider documentation, modules, and policies from the Terraform registry. v Supports HCP Terraform and Terraform Enterprise workspace management. NOTE: Beta software - do not use in production environments.'
+      license_link: https://www.mozilla.org/en-US/MPL/2.0/
+      description: 'Gain real-time access to current Terraform provider documentation, modules, and policies from the Terraform registry. Supports HCP Terraform and Terraform Enterprise workspace management. NOTE: Beta software - do not use in production environments.'
+      readme: |-
+        # Terraform MCP Server
+
+        The Terraform MCP Server is a Model Context Protocol (MCP) server that
+        provides seamless integration with Terraform Registry APIs, enabling
+        advanced automation and interaction capabilities for Infrastructure as
+        Code (IaC) development.
+
+        ## Features
+        - **Dual Transport Support** — Both Stdio and StreamableHTTP transports with configurable endpoints
+        - **Terraform Registry Integration** — Direct integration with public Terraform Registry APIs for providers, modules, and policies
+        - **HCP Terraform & Terraform Enterprise Support** — Full workspace management, organization/project listing, and private registry access
+        - **Workspace Operations** — Create, update, delete workspaces with support for variables, tags, and run management
+        - **OTel Metrics** — Integration with OpenTelemetry meters to track tool-call volume, latency, and failures in Streamable HTTP mode
+
+        ## Tools
+        - search_providers, get_provider_details — Terraform provider discovery
+        - search_modules, get_module_details — Module discovery
+        - list_workspaces, create_workspace, get_workspace_details — Workspace management
+        - list_runs, create_run — Run management
+        - search_policies — Sentinel policy search
+
+        ## Prerequisites
+        - Docker installed and running
+        - AI assistant that supports the Model Context Protocol (MCP)
+        - Optional: HCP Terraform or Terraform Enterprise API token (TFE_TOKEN) for workspace management and private registry access
+
+        ## Quick Start
+        ```bash
+        docker run -i --rm hashicorp/terraform-mcp-server
+        ```
+
+        ## Transports
+        Supports stdio (default) and StreamableHTTP transports. HTTP mode is enabled
+        via TRANSPORT_MODE=streamable-http with configurable host, port, and endpoint.
+
+        ## Security
+        When using StreamableHTTP transport, configure MCP_ALLOWED_ORIGINS to restrict
+        access to trusted origins. The MCP server is intended for local use only.
       version: 0.4.0
       transports:
         - stdio
@@ -240,6 +460,18 @@ mcp_servers:
       logo: data:image/png;base64,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
       documentationUrl: https://developer.hashicorp.com/terraform/docs/tools/mcp-server
       repositoryUrl: https://github.com/hashicorp/terraform-mcp-server
+      deploymentMode: local
+      tags:
+        - terraform
+        - hashicorp
+        - infrastructure-as-code
+        - iac
+        - registry
+        - providers
+        - modules
+        - workspaces
+        - hcp-terraform
+        - beta
       tools:
         - name: search_providers
           description: Search for Terraform providers in the registry
@@ -327,6 +559,8 @@ mcp_servers:
               required: true
       artifacts:
         - uri: oci://quay.io/rhoai-partner-mcp/ubi10-hashicorp-terraform-mcp-server:1773859835
+          createTimeSinceEpoch: "1773865492000"
+          lastUpdateTimeSinceEpoch: "1773865492000"
       runtimeMetadata:
         defaultArgs:
             - ./terraform-mcp-server
@@ -343,6 +577,33 @@ mcp_servers:
               name: TFE_TOKEN
               required: false
               type: secret
+        prerequisites:
+            environmentVariables:
+                - description: HCP Terraform/TFE API authentication token (from secret terraform-credentials)
+                  name: TFE_TOKEN
+                  required: false
+                  type: string
+                - description: HCP Terraform or TFE address
+                  name: TFE_ADDRESS
+                  required: false
+                  type: string
+                - description: Transport protocol mode (stdio or streamable-http)
+                  name: TRANSPORT_MODE
+                  required: true
+                  type: string
+                - description: HTTP server bind address
+                  name: TRANSPORT_HOST
+                  required: true
+                  type: string
+            secrets:
+                - description: kubectl create secret generic terraform-credentials --from-literal=tfe-token=<TFE_TOKEN>
+                  keys:
+                    - description: HCP Terraform/TFE API authentication token
+                      envVarName: TFE_TOKEN
+                      key: tfe-token
+                      required: false
+                  mountAsFile: false
+                  name: terraform-credentials
         recommendedResources:
             minimal:
                 cpu: 100m
@@ -363,11 +624,54 @@ mcp_servers:
         readOnlyTools: false
         secureEndpoint: true
         verifiedSource: true
+      customProperties:
+        architecture:
+            metadataType: MetadataStringValue
+            string_value: "[\"amd64\"]"
+      lastUpdateTimeSinceEpoch: "1773865492000"
     - name: microsoft/azure-mcp-server
       provider: Microsoft
       license: MIT
-      license_link: ""
+      license_link: https://opensource.org/licenses/MIT
       description: Enables AI agents and MCP clients to interact with Azure resources through natural language commands. Provides tools for Azure Storage, Cosmos DB, Key Vault, Azure Monitor, AKS, SQL, and 30+ other Azure services.
+      readme: |-
+        # Azure MCP Server
+
+        All Azure MCP tools in a single server. The Azure MCP Server implements
+        the MCP specification to create a seamless connection between AI agents
+        and Azure services. Supports 40+ different Azure services.
+
+        ## Features
+        - **Dual Transport Support** — Both Stdio and StreamableHTTP transports
+        - **40+ Azure Services** — Storage, Cosmos DB, Key Vault, AKS, SQL, Monitor, and more
+        - **Workspace Operations** — Full workspace management with HCP support
+        - **Sovereign Cloud Support** — Azure Public, China, and US Government clouds
+
+        ## Supported Azure Services
+        Cosmos DB, Key Vault, Storage, AKS, SQL, App Configuration, App Service,
+        Container Registry, Event Grid, Event Hubs, Functions, Grafana, Monitor,
+        MySQL, PostgreSQL, Redis, Search, Service Bus, SignalR, Virtual Desktop,
+        Compute, Communication Services, Confidential Ledger, and many more.
+
+        ## Authentication
+        Uses Azure Identity credential chain. For container deployments, set
+        AZURE_TENANT_ID, AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET environment
+        variables (service principal). For local development, authenticate via
+        Azure CLI (az login), VS Code Azure extension, or Azure PowerShell.
+
+        ## Prerequisites
+        - Azure subscription with appropriate RBAC roles on target resources
+        - Azure credentials (service principal for container deployments)
+        - .NET runtime (included in container image)
+
+        ## Quick Start
+        ```bash
+        npx -y @azure/mcp@latest server start
+        ```
+
+        ## Transports
+        Supports stdio (default) and HTTP transports. HTTP mode supports
+        Entra ID bearer token authentication for remote deployments.
       version: 2.0.0-beta
       transports:
         - stdio
@@ -375,6 +679,16 @@ mcp_servers:
       logo: data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgcm9sZT0icHJlc2VudGF0aW9uIiBkYXRhLXNsdWctaWQ9ImF6dXJlIiB2aWV3Qm94PSIwIDAgMjU2IDI1NiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCiAgPGRlZnM+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhenVyZV9hYjQwYjM4NS1mOTU4LTQyMGYtYmZhYi03MTRiZTE2Nzc0MjYtZDllM2U4NDQiIHgxPSItOTYwLjYwNiIgeTE9IjI4My4zOTciIHgyPSItMTAzMi41MTEiIHkyPSI3MC45NzIiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMTA3NSAzMTgpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+DQogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxMTRhOGIiPjwvc3RvcD4NCiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzA2NjliYyI+PC9zdG9wPg0KICAgIDwvbGluZWFyR3JhZGllbnQ+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhenVyZV9mNDBhZjkwZC03MmViLTQ5YjMtOTRiMi0yNTEwZjEwNzE3MjItZjhkODYzNjEiIHgxPSItOTM4LjE0NCIgeTE9IjE4NC40MDIiIHgyPSItOTU0Ljc3OCIgeTI9IjE3OC43NzgiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLTEgMTA3NSAzMTgpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+DQogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3Atb3BhY2l0eT0iLjMiPjwvc3RvcD4NCiAgICAgIDxzdG9wIG9mZnNldD0iLjA3MSIgc3RvcC1vcGFjaXR5PSIuMiI+PC9zdG9wPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIuMzIxIiBzdG9wLW9wYWNpdHk9Ii4xIj48L3N0b3A+DQogICAgICA8c3RvcCBvZmZzZXQ9Ii42MjMiIHN0b3Atb3BhY2l0eT0iLjA1Ij48L3N0b3A+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3Atb3BhY2l0eT0iMCI+PC9zdG9wPg0KICAgIDwvbGluZWFyR3JhZGllbnQ+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJhenVyZV9lMzgyZDc0Mi03ZDUxLTQ5NzQtYTI1Ni0yNGUxODJlZWYwNTMtZWE4MGZmYzciIHgxPSItOTQ3LjI5MiIgeTE9IjI4OS41OTQiIHgyPSItODY4LjM2MyIgeTI9Ijc5LjMwOCIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAtMSAxMDc1IDMxOCkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4NCiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzNjY2JmNCI+PC9zdG9wPg0KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMjg5MmRmIj48L3N0b3A+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgPC9kZWZzPg0KICA8cGF0aCBkPSJNODkuMTU4IDE4LjI2Nmg2OS4yMzhMODYuNTIzIDIzMS4yMjRhMTEuMDQxIDExLjA0MSAwIDAxLTEwLjQ2MSA3LjUxSDIyLjE3OWExMS4wMjMgMTEuMDIzIDAgMDEtMTAuNDQ1LTE0LjU0OGw2Ni45NjMtMTk4LjQxYTExLjA0IDExLjA0IDAgMDExMC40NjEtNy41MXoiIGZpbGw9InVybCgjYXp1cmVfYWI0MGIzODUtZjk1OC00MjBmLWJmYWItNzE0YmUxNjc3NDI2LWQ5ZTNlODQ0KSI+PC9wYXRoPg0KICA8cGF0aCBkPSJNMTg5Ljc3IDE2MS4xMDRINzkuOTc2YTUuMDgzIDUuMDgzIDAgMDAtMy40NjggOC44bDcwLjU1MiA2NS44NDdhMTEuMDkxIDExLjA5MSAwIDAwNy41NjcgMi45ODNoNjIuMTY3eiIgZmlsbD0iIzAwNzhkNCI+PC9wYXRoPg0KICA8cGF0aCBkPSJNODkuMTU4IDE4LjI2NmExMC45NSAxMC45NSAwIDAwLTEwLjQ4MyA3LjY1NEwxMS44MTcgMjI0LjAwNmExMS4wMSAxMS4wMSAwIDAwMTAuMzkzIDE0LjcyOGg1NS4yNzRhMTEuODE0IDExLjgxNCAwIDAwOS4wNjktNy43MTRsMTMuMzMtMzkuMjkgNDcuNjI1IDQ0LjQxOGExMS4yNjcgMTEuMjY3IDAgMDA3LjA4OSAyLjU4Nmg2MS45MzdsLTI3LjE2Ni03Ny42My03OS4xOS4wMTggNDguNDctMTQyLjg1NnoiIGZpbGw9InVybCgjYXp1cmVfZjQwYWY5MGQtNzJlYi00OWIzLTk0YjItMjUxMGYxMDcxNzIyLWY4ZDg2MzYxKSI+PC9wYXRoPg0KICA8cGF0aCBkPSJNMTc3LjU5MiAyNS43NjRhMTEuMDIzIDExLjAyMyAwIDAwLTEwLjQ0NC03LjQ5OEg4OS45ODRhMTEuMDI0IDExLjAyNCAwIDAxMTAuNDQ1IDcuNDk4bDY2Ljk2NyAxOTguNDIxYTExLjAyNCAxMS4wMjQgMCAwMS0xMC40NDUgMTQuNTQ5aDc3LjE2NGExMS4wMjQgMTEuMDI0IDAgMDAxMC40NDQtMTQuNTQ5eiIgZmlsbD0idXJsKCNhenVyZV9lMzgyZDc0Mi03ZDUxLTQ5NzQtYTI1Ni0yNGUxODJlZWYwNTMtZWE4MGZmYzcpIj48L3BhdGg+DQo8L3N2Zz4=
       documentationUrl: https://learn.microsoft.com/en-us/azure/developer/azure-mcp-server/
       repositoryUrl: https://github.com/microsoft/mcp/tree/main/servers/Azure.Mcp.Server
+      deploymentMode: local
+      tags:
+        - azure
+        - microsoft
+        - cloud-management
+        - multi-service
+        - cosmos-db
+        - key-vault
+        - storage
+        - aks
       tools:
         - name: cosmos
           description: Work with Azure Cosmos DB accounts, databases, containers, and documents
@@ -598,10 +912,75 @@ mcp_servers:
           parameters: []
       artifacts:
         - uri: oci://quay.io/rhoai-partner-mcp/ubi10-ms-azure-mcp-server:1774539732-dotnet-builder
+          createTimeSinceEpoch: "1774540500000"
+          lastUpdateTimeSinceEpoch: "1774540500000"
       runtimeMetadata:
         defaultArgs:
             - --transport
             - http
+        prerequisites:
+            environmentVariables:
+                - description: Azure Entra ID tenant identifier (from secret azure-sp-credentials)
+                  name: AZURE_TENANT_ID
+                  required: true
+                  type: string
+                - description: Azure Service Principal client ID (from secret azure-sp-credentials)
+                  name: AZURE_CLIENT_ID
+                  required: true
+                  type: string
+                - description: Azure Service Principal client secret (from secret azure-sp-credentials)
+                  name: AZURE_CLIENT_SECRET
+                  required: true
+                  type: string
+                - description: Azure subscription ID
+                  name: AZURE_SUBSCRIPTION_ID
+                  required: true
+                  type: string
+                - description: ASP.NET Core URLs configuration
+                  name: ASPNETCORE_URLS
+                  required: true
+                  type: string
+                - description: Azure AD instance URL
+                  name: AzureAd_Instance
+                  required: true
+                  type: string
+                - description: Azure AD tenant ID
+                  name: AzureAd_TenantId
+                  required: true
+                  type: string
+                - description: Azure AD client ID (from secret azure-ad-credentials)
+                  name: AzureAd_ClientId
+                  required: true
+                  type: string
+                - description: Azure AD audience
+                  name: AzureAd_Audience
+                  required: true
+                  type: string
+            secrets:
+                - description: kubectl create secret generic azure-sp-credentials --from-literal=tenant-id=<AZURE_TENANT_ID> --from-literal=client-id=<AZURE_CLIENT_ID> --from-literal=client-secret=<AZURE_CLIENT_SECRET>
+                  keys:
+                    - description: Azure Entra ID tenant identifier
+                      envVarName: AZURE_TENANT_ID
+                      key: tenant-id
+                      required: true
+                    - description: Azure Service Principal client ID
+                      envVarName: AZURE_CLIENT_ID
+                      key: client-id
+                      required: true
+                    - description: Azure Service Principal client secret
+                      envVarName: AZURE_CLIENT_SECRET
+                      key: client-secret
+                      required: true
+                  mountAsFile: false
+                  name: azure-sp-credentials
+                - description: kubectl create secret generic azure-ad-credentials --from-literal=ad-client-id=<AzureAd_ClientId>
+                  keys:
+                    - description: Azure AD client ID for inbound authentication
+                      envVarName: AzureAd_ClientId
+                      key: ad-client-id
+                      required: true
+                  mountAsFile: false
+                  name: azure-ad-credentials
         recommendedResources:
             minimal:
                 cpu: 100m
@@ -613,7 +992,7 @@ mcp_servers:
             - description: Azure Entra ID tenant identifier
               name: AZURE_TENANT_ID
               required: true
-              type: config
+              type: secret
             - description: Azure Service Principal client ID
               name: AZURE_CLIENT_ID
               required: true
@@ -626,17 +1005,17 @@ mcp_servers:
               description: A writable extraction directory
               name: DOTNET_BUNDLE_EXTRACT_BASE_DIR
               required: true
-              type: secret
+              type: config
             - default: /tmp
               description: Used for ASP.NET DataProtection key storage
               name: HOME
               required: true
-              type: secret
+              type: config
             - default: "true"
               description: .NET defaults to binding on localhost only, making it unreachable from the Service.
               name: ALLOW_INSECURE_EXTERNAL_BINDING
               required: true
-              type: secret
+              type: config
             - description: ASP.NET Core URLs configuration
               name: ASPNETCORE_URLS
               required: true
@@ -648,7 +1027,7 @@ mcp_servers:
             - description: Azure AD tenant ID
               name: AzureAd_TenantId
               required: true
-              type: secret
+              type: config
             - description: Azure AD client ID
               name: AzureAd_ClientId
               required: true
@@ -660,16 +1039,62 @@ mcp_servers:
             - description: Azure subscription ID
               name: AZURE_SUBSCRIPTION_ID
               required: true
-              type: secret
+              type: config
       securityIndicators:
         readOnlyTools: false
         secureEndpoint: true
         verifiedSource: true
+      customProperties:
+        architecture:
+            metadataType: MetadataStringValue
+            string_value: "[\"amd64\"]"
+      lastUpdateTimeSinceEpoch: "1774540500000"
     - name: enterprisedb/pg-airman-mcp
       provider: EnterpriseDB
       license: Apache-2.0
-      license_link: ""
+      license_link: https://www.apache.org/licenses/LICENSE-2.0
       description: Open-source Model Context Protocol server supporting AI agents throughout the complete PostgreSQL database development lifecycle—from initial coding through testing, deployment, and production tuning and maintenance
+      readme: |-
+        # PG Airman MCP
+
+        A Postgres MCP server with index tuning, explain plans, health checks, and
+        safe SQL execution.
+
+        ## Overview
+        Pg Airman MCP is an open-source MCP server built to support AI agents
+        throughout the entire PostgreSQL development lifecycle — from initial coding
+        through testing, deployment, and production tuning and maintenance.
+
+        ## Features
+        - **Database Health** — Analyze index health, connection utilization, buffer cache, vacuum health, sequence limits, replication lag, and more
+        - **Index Tuning** — Explore thousands of possible indexes to find the best solution for your workload using industrial-strength algorithms
+        - **Query Plans** — Validate and optimize performance by reviewing EXPLAIN plans and simulating the impact of hypothetical indexes
+        - **Schema Intelligence** — Context-aware SQL generation based on detailed understanding of the database schema
+        - **Safe SQL Execution** — Configurable access control with read-only mode and safe SQL parsing for both development and production
+        - **OAuth 2.0 Authentication** — Optional token-based authentication supporting RFC 7662 token introspection and local JWT validation
+
+        ## Tools
+        - list_schemas, list_objects, get_object_details — Schema exploration
+        - execute_sql — SQL execution with access mode controls
+        - explain_query — Execution plans with hypothetical index simulation
+        - get_top_queries — Slow query identification via pg_stat_statements
+        - analyze_workload_indexes, analyze_query_indexes — Index recommendations
+        - analyze_db_health — Comprehensive health checks
+        - add_comment_to_object — Metadata management
+
+        ## Prerequisites
+        - PostgreSQL database with access credentials
+        - Python 3.12+ or Docker
+        - Optional: pg_stat_statements and hypopg extensions for index tuning
+
+        ## Quick Start
+        ```bash
+        docker pull enterprisedb/pg-airman-mcp
+        ```
+
+        ## Transports
+        Supports stdio (default), SSE, and Streamable HTTP transports. Network
+        transports include optional OAuth 2.0 authentication and DNS rebinding protection.
       version: 1.0.0
       transports:
         - stdio
@@ -677,6 +1102,16 @@ mcp_servers:
         - http
       documentationUrl: https://github.com/EnterpriseDB/pg-airman-mcp
       repositoryUrl: https://github.com/EnterpriseDB/pg-airman-mcp
+      deploymentMode: local
+      tags:
+        - database
+        - postgresql
+        - sql
+        - query-optimization
+        - index-tuning
+        - database-health
+        - schema-intelligence
+        - oauth
       tools:
         - name: list_schemas
           description: Lists all database schemas available in the PostgreSQL instance
@@ -768,6 +1203,8 @@ mcp_servers:
               required: true
       artifacts:
         - uri: oci://quay.io/rhoai-partner-mcp/ubi10-enterprisedb-pg-airman-mcp:1775068164
+          createTimeSinceEpoch: "1775067967000"
+          lastUpdateTimeSinceEpoch: "1775067967000"
       runtimeMetadata:
         defaultPort: 8001
         optionalEnvironmentVariables:
@@ -822,6 +1259,65 @@ mcp_servers:
               name: ALLOW_COMMENT_IN_RESTRICTED
               required: false
               type: config
+        prerequisites:
+            environmentVariables:
+                - description: PostgreSQL connection string (from secret pg-airman-credentials)
+                  name: AIRMAN_MCP_DATABASE_URL
+                  required: true
+                  type: string
+                - description: SQL access mode (unrestricted or restricted)
+                  name: AIRMAN_MCP_ACCESS_MODE
+                  required: true
+                  type: string
+                - description: MCP transport (stdio, sse, or streamable-http)
+                  name: AIRMAN_MCP_TRANSPORT
+                  required: true
+                  type: string
+                - description: Enable OAuth 2.0 authentication (true/false)
+                  name: AIRMAN_MCP_AUTH_ENABLED
+                  required: false
+                  type: string
+                - description: OAuth authorization server endpoint
+                  name: AIRMAN_MCP_AUTH_SERVER_URL
+                  required: false
+                  type: string
+                - description: OAuth client ID for token introspection (from secret pg-airman-auth-credentials)
+                  name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_ID
+                  required: false
+                  type: string
+                - description: OAuth client secret for token introspection (from secret pg-airman-auth-credentials)
+                  name: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_SECRET
+                  required: false
+                  type: string
+                - description: Comma-separated list of allowed Host header values
+                  name: AIRMAN_MCP_ALLOWED_HOSTS
+                  required: true
+                  type: string
+                - description: Allow COMMENT ON statements in restricted mode
+                  name: ALLOW_COMMENT_IN_RESTRICTED
+                  required: false
+                  type: string
+            secrets:
+                - description: kubectl create secret generic pg-airman-credentials --from-literal=database-url=postgresql://user:pass@host:port/db
+                  keys:
+                    - description: PostgreSQL connection string
+                      envVarName: AIRMAN_MCP_DATABASE_URL
+                      key: database-url
+                      required: true
+                  mountAsFile: false
+                  name: pg-airman-credentials
+                - description: kubectl create secret generic pg-airman-auth-credentials --from-literal=client-id=<OAUTH_CLIENT_ID> --from-literal=client-secret=<OAUTH_CLIENT_SECRET>
+                  keys:
+                    - description: OAuth client ID for token introspection
+                      envVarName: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_ID
+                      key: client-id
+                      required: false
+                    - description: OAuth client secret for token introspection
+                      envVarName: AIRMAN_MCP_AUTH_INTROSPECTION_CLIENT_SECRET
+                      key: client-secret
+                      required: false
+                  mountAsFile: false
+                  name: pg-airman-auth-credentials
         recommendedResources:
             minimal:
                 cpu: 100m
@@ -839,3 +1335,8 @@ mcp_servers:
         sast: false
         secureEndpoint: true
         verifiedSource: true
+      customProperties:
+        architecture:
+            metadataType: MetadataStringValue
+            string_value: "[\"amd64\"]"
+      lastUpdateTimeSinceEpoch: "1775067967000"
