@@ -3664,7 +3664,7 @@ models:
         4. Select **REST or gRPC API**.
         5. Select **Generative AI model**.
         6. Select **Start from scratch**.
-        5. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
+        7. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
 
         ```yaml
         apiVersion: serving.kserve.io/v1alpha1
@@ -4357,7 +4357,7 @@ models:
         4. Select **REST or gRPC API**.
         5. Select **Generative AI model**.
         6. Select **Start from scratch**.
-        5. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
+        7. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
 
         ```yaml
         apiVersion: serving.kserve.io/v1alpha1
