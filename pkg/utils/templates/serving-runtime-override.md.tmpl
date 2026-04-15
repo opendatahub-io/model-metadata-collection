@@ -7,7 +7,7 @@ To deploy a model using the Red Hat AI Inference Server (RHAIIS) preview image o
 - **Registry Access**: Ensure your OpenShift cluster has a Pull Secret configured for `registry.redhat.io`.
 - **GPU Resources**: Since this is a `vllm-cuda` image, your cluster must have the NVIDIA GPU Operator installed and available nodes with GPUs.
 
-### Step 1: Create a Custom Serving Runtime
+### Create a Custom Serving Runtime
 
 The "Serving Runtime" is the template OpenShift AI uses to launch your model container.
 
