@@ -52,7 +52,7 @@ func extractModelFamily(normalizedName string) string {
 }
 
 // EnrichMetadataFromHuggingFace enriches registry model metadata using HuggingFace data
-func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllmConfigDir string) error {
+func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllmConfigDir, srtOverrideConfigPath string) error {
 	log.Println("Enriching registry model metadata with HuggingFace data...")
 
 	// Load HuggingFace models
@@ -80,6 +80,29 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 		log.Printf("Warning: Failed to load vLLM configs: %v", vllmErr)
 	} else {
 		log.Printf("Loaded %d vLLM recommended configurations", vllmIndex.ModelCount())
+	}
+
+	// Build label lookup map from full model entries (LoadModelsFromYAML drops labels)
+	modelEntries, labelErr := config.LoadModelsConfigFromYAML(modelsIndexPath)
+	labelMap := make(map[string][]string)
+	if labelErr != nil {
+		log.Printf("Warning: Failed to load model labels: %v", labelErr)
+	} else {
+		for _, entry := range modelEntries {
+			labelMap[entry.URI] = entry.Labels
+		}
+	}
+
+	// Load serving runtime override config (single file)
+	var srtOverrideConfig *types.ServingRuntimeOverrideConfig
+	if srtOverrideConfigPath != "" {
+		srtOverrideConfig, err = config.LoadServingRuntimeOverrideConfig(srtOverrideConfigPath)
+		if err != nil {
+			log.Printf("Warning: Failed to load serving runtime override config: %v", err)
+			srtOverrideConfig = nil
+		} else if srtOverrideConfig != nil {
+			log.Printf("Loaded serving runtime override config: %s", srtOverrideConfigPath)
+		}
 	}
 
 	matchCount := 0
@@ -289,6 +312,20 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 			if score > bestScore {
 				bestScore = score
 				bestMatch = hfModel
+			}
+		}
+
+		// Check if model has preview_serving_runtime_required label (unconditional —
+		// deployment override must apply even when HuggingFace matching fails)
+		if srtOverrideConfig != nil {
+			if labels, ok := labelMap[regModel]; ok {
+				for _, label := range labels {
+					if label == "preview_serving_runtime_required" {
+						enriched.ServingRuntimeOverride = srtOverrideConfig
+						log.Printf("  Model has preview_serving_runtime_required label: %s", regModel)
+						break
+					}
+				}
 			}
 		}
 
@@ -573,6 +610,14 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 			}
 
 			matchCount++
+		} else if enriched.ServingRuntimeOverride != nil {
+			// Model didn't match HuggingFace but has a serving runtime override label —
+			// still write metadata so the deployment instructions appear in the catalog
+			log.Printf("  No HuggingFace match but model has serving runtime override, writing metadata for: %s", regModel)
+			err = UpdateModelMetadataFile(regModel, &enriched, outputDir)
+			if err != nil {
+				log.Printf("  Warning: Failed to update metadata file for %s: %v", regModel, err)
+			}
 		}
 
 	}

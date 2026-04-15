@@ -440,6 +440,65 @@ func TestRenderVLLMConfigSection_MinimalConfig(t *testing.T) {
 	}
 }
 
+func TestRenderServingRuntimeOverrideSection_NoConfig(t *testing.T) {
+	got, err := RenderServingRuntimeOverrideSection(nil)
+	if err != nil {
+		t.Fatalf("Expected no error, got: %v", err)
+	}
+	if got != "" {
+		t.Errorf("Expected empty string for nil config, got: %q", got)
+	}
+}
+
+func TestRenderServingRuntimeOverrideSection_FullConfig(t *testing.T) {
+	config := &types.ServingRuntimeOverrideConfig{
+		PreviewImage: "registry.redhat.io/rhaiis-preview/vllm-cuda-rhel9:mistral-4-small",
+		Reason:       "Requires transformers v5",
+		RuntimeName:  "rhaiis-vllm-runtime",
+		DisplayName:  "RHAIIS vLLM Preview Runtime",
+	}
+
+	got, err := RenderServingRuntimeOverrideSection(config)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	expectedPhrases := []string{
+		"## Deploying with RHAIIS Preview Runtime",
+		"Custom Serving Runtime",
+		"registry.redhat.io",
+		"Pull Secret",
+		"NVIDIA GPU Operator",
+		"OpenShift AI Dashboard",
+		"Settings > Serving runtimes",
+		"Add serving runtime",
+		"Single-model serving platform",
+		"rhaiis-vllm-runtime",
+		"RHAIIS vLLM Preview Runtime",
+		"registry.redhat.io/rhaiis-preview/vllm-cuda-rhel9:mistral-4-small",
+		"vllm.entrypoints.openai.api_server",
+		"--model=/mnt/models",
+		"--port=8080",
+		"HF_HOME",
+	}
+
+	for _, phrase := range expectedPhrases {
+		if !strings.Contains(got, phrase) {
+			t.Errorf("Output missing expected phrase: %q", phrase)
+		}
+	}
+
+	// Verify YAML code block
+	if !strings.Contains(got, "```yaml") {
+		t.Error("Output missing YAML code block")
+	}
+
+	// Verify ServingRuntime kind
+	if !strings.Contains(got, "kind: ServingRuntime") {
+		t.Error("Output missing ServingRuntime kind")
+	}
+}
+
 func TestTitleCase(t *testing.T) {
 	tests := []struct {
 		input    string

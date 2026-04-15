@@ -162,3 +162,31 @@ func RenderVLLMConfigSection(config *types.VLLMRecommendedConfig) (string, error
 
 	return buf.String(), nil
 }
+
+// RenderServingRuntimeOverrideSection renders the serving runtime override section
+// Returns empty string if config is nil
+func RenderServingRuntimeOverrideSection(config *types.ServingRuntimeOverrideConfig) (string, error) {
+	if config == nil {
+		return "", nil
+	}
+
+	if templateInitError != nil {
+		return "", fmt.Errorf("templates failed to initialize: %w", templateInitError)
+	}
+
+	if templateCache == nil {
+		return "", fmt.Errorf("template cache not initialized")
+	}
+
+	tmpl := templateCache.Lookup("serving-runtime-override.md.tmpl")
+	if tmpl == nil {
+		return "", fmt.Errorf("serving-runtime-override template not found in cache")
+	}
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, config); err != nil {
+		return "", fmt.Errorf("failed to render serving-runtime-override template: %w", err)
+	}
+
+	return buf.String(), nil
+}

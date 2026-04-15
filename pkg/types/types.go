@@ -162,6 +162,9 @@ type EnrichedModelMetadata struct {
 	// vLLM recommended configuration (not exported to YAML, used during enrichment only)
 	VLLMConfig *VLLMRecommendedConfig `yaml:"-"`
 
+	// Serving runtime override (not exported to YAML, used during enrichment only)
+	ServingRuntimeOverride *ServingRuntimeOverrideConfig `yaml:"-"`
+
 	// README content from HuggingFace (not exported to YAML, used during enrichment only)
 	ReadmeContent string `yaml:"-"`
 

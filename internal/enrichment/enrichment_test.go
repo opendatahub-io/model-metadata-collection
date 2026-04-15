@@ -2,6 +2,7 @@ package enrichment
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -29,7 +30,7 @@ func TestEnrichMetadataFromHuggingFace_FilesNotExist(t *testing.T) {
 	}
 
 	// Test with missing HuggingFace index file
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
+	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "", "")
 	if err == nil {
 		t.Error("Expected error when HuggingFace index file doesn't exist")
 	}
@@ -68,7 +69,7 @@ func TestEnrichMetadataFromHuggingFace_InvalidHFFile(t *testing.T) {
 	}
 
 	// Test with invalid HuggingFace file
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
+	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "", "")
 	if err == nil {
 		t.Error("Expected error when HuggingFace index file is invalid")
 	}
@@ -122,7 +123,7 @@ func TestEnrichMetadataFromHuggingFace_MissingModelsIndex(t *testing.T) {
 	}
 
 	// Test with missing models-index.yaml
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
+	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "", "")
 	if err == nil {
 		t.Error("Expected error when models-index.yaml doesn't exist")
 	}
@@ -185,7 +186,7 @@ func TestEnrichMetadataFromHuggingFace_EmptyFiles(t *testing.T) {
 	}
 
 	// Test with empty files - should succeed
-	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "data/models-index.yaml", "output", "")
+	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "data/models-index.yaml", "output", "", "")
 	if err != nil {
 		t.Errorf("Unexpected error with empty files: %v", err)
 	}
@@ -373,6 +374,154 @@ func TestUpdateOCIArtifacts_InvalidModel(t *testing.T) {
 	err := UpdateOCIArtifacts("invalid-model-reference", "output")
 	if err == nil {
 		t.Error("Expected error for invalid model reference")
+	}
+}
+
+func TestInsertBeforeFirstSection(t *testing.T) {
+	section := "## Override Section\n\nOverride content here."
+
+	tests := []struct {
+		name          string
+		readme        string
+		expectedOrder []string
+	}{
+		{
+			name:   "with H1 heading only",
+			readme: "# Model Card\n\nSome description here.",
+			expectedOrder: []string{
+				"# Model Card",
+				"Some description here.",
+				"## Override Section",
+			},
+		},
+		{
+			name:   "without any heading",
+			readme: "Some readme without a heading.",
+			expectedOrder: []string{
+				"Some readme without a heading.",
+				"## Override Section",
+			},
+		},
+		{
+			name:   "empty readme",
+			readme: "",
+			expectedOrder: []string{
+				"## Override Section",
+			},
+		},
+		{
+			name:   "H1 heading with H2 section after",
+			readme: "# Title\n\nParagraph 1\n\n## Section 2\n\nParagraph 2",
+			expectedOrder: []string{
+				"# Title",
+				"Paragraph 1",
+				"## Override Section",
+				"## Section 2",
+			},
+		},
+		{
+			name:   "H2 heading only (no H1)",
+			readme: "## Not an H1\n\nContent",
+			expectedOrder: []string{
+				"## Override Section",
+				"## Not an H1",
+				"Content",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := insertBeforeFirstSection(tt.readme, section)
+
+			// Verify ordering of expected strings
+			lastIdx := -1
+			for _, expected := range tt.expectedOrder {
+				idx := strings.Index(result, expected)
+				if idx == -1 {
+					t.Errorf("Expected to find %q in result:\n%s", expected, result)
+					continue
+				}
+				if idx <= lastIdx {
+					t.Errorf("Expected %q to appear after previous expected string in result:\n%s", expected, result)
+				}
+				lastIdx = idx
+			}
+		})
+	}
+}
+
+func TestInsertNoteAfterH1(t *testing.T) {
+	note := "This model requires a Preview serving runtime for deployment in OpenShift AI 3.4"
+	expectedBlockquote := "> **Note**: " + note
+
+	tests := []struct {
+		name          string
+		readme        string
+		expectedOrder []string
+	}{
+		{
+			name:   "with H1 heading",
+			readme: "# Model Card\n\nSome description here.\n\n## Details",
+			expectedOrder: []string{
+				"# Model Card",
+				expectedBlockquote,
+				"Some description here.",
+				"## Details",
+			},
+		},
+		{
+			name:   "without any heading",
+			readme: "Some readme without a heading.",
+			expectedOrder: []string{
+				expectedBlockquote,
+				"Some readme without a heading.",
+			},
+		},
+		{
+			name:   "empty readme",
+			readme: "",
+			expectedOrder: []string{
+				expectedBlockquote,
+			},
+		},
+		{
+			name:   "H1 heading only",
+			readme: "# Title Only",
+			expectedOrder: []string{
+				"# Title Only",
+				expectedBlockquote,
+			},
+		},
+		{
+			name:   "H1 with multiple sections",
+			readme: "# Title\n\nIntro text\n\n## Section 1\n\nContent 1\n\n## Section 2",
+			expectedOrder: []string{
+				"# Title",
+				expectedBlockquote,
+				"Intro text",
+				"## Section 1",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := insertNoteAfterH1(tt.readme, note)
+
+			lastIdx := -1
+			for _, expected := range tt.expectedOrder {
+				idx := strings.Index(result, expected)
+				if idx == -1 {
+					t.Errorf("Expected to find %q in result:\n%s", expected, result)
+					continue
+				}
+				if idx <= lastIdx {
+					t.Errorf("Expected %q to appear after previous expected string in result:\n%s", expected, result)
+				}
+				lastIdx = idx
+			}
+		})
 	}
 }
 

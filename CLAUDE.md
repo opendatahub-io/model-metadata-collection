@@ -15,7 +15,10 @@ Go application that extracts model metadata (model cards) from Red Hat AI ModelC
 - `make dev` - Quick development iteration (fmt, vet, test, build)
 - `make ci` - Full CI pipeline (deps, check, test, build)
 - `make process` - Process all model indexes and MCP server catalogs
-- `make process-models` - Process model indexes only (redhat, validated, other)
+- `make process-models` - Process all model indexes (redhat, validated, other)
+- `make process-redhat-models` - Process Red Hat models index only
+- `make process-validated-models` - Process validated models index only
+- `make process-other-models` - Process other models index only
 - `make process-redhat-mcp` - Process Red Hat MCP servers catalog only
 - `make docker-build` - Build Docker container image
 
@@ -203,3 +206,7 @@ See `pkg/utils/templates/tool-calling.md.tmpl` for the generated template.
 ## vLLM Recommended Configurations
 
 Optimized vLLM configurations from the PSAP team are stored as YAML files in `input/models/vllm-config/`. During enrichment, these are matched by exact `model.name` and rendered as a "vLLM Recommended Configurations" markdown section appended to the model's README. See `pkg/types/vllmconfig.go` for the YAML schema and `pkg/utils/templates/vllm-config.md.tmpl` for the template.
+
+## Serving Runtime Overrides
+
+When models require a preview or non-GA vLLM image (e.g., due to transformers library version requirements), override configuration is stored in `input/models/serving-runtime-override.yaml`. Models are selected by adding the `preview_serving_runtime_required` label in `data/validated-models-index.yaml`. During enrichment, two insertions are made to the model's README: a blockquote note (from the config's `note` field) is inserted right after the H1 title, and the deployment instructions section (rendered from `pkg/utils/templates/serving-runtime-override.md.tmpl`) is inserted before the first `##` heading. See `pkg/types/servingruntimeoverride.go` for the config struct.

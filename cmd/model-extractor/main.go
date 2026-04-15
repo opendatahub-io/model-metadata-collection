@@ -187,7 +187,7 @@ func main() {
 			}
 
 			log.Printf("Using HuggingFace index file: %s", hfIndexFile)
-			err := enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir, filepath.Join(*inputDir, "models", "vllm-config"))
+			err := enrichment.EnrichMetadataFromHuggingFace(hfIndexFile, *modelsIndexPath, *outputDir, filepath.Join(*inputDir, "models", "vllm-config"), filepath.Join(*inputDir, "models", "serving-runtime-override.yaml"))
 			if err != nil {
 				log.Printf("Warning: Failed to enrich metadata: %v", err)
 			}
