@@ -3659,19 +3659,21 @@ models:
         The "Serving Runtime" is the template OpenShift AI uses to launch your model container.
 
         1. Log in to the OpenShift AI Dashboard.
-        2. Go to **Settings > Serving runtimes**.
+        2. Go to **Settings > Model resources and operations > Serving runtimes**.
         3. Click **Add serving runtime**.
-        4. Select **Single-model serving platform** and click **Start from scratch**.
+        4. Select **REST or gRPC API**.
+        5. Select **Generative AI model**.
+        6. Select **Start from scratch**.
         5. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
 
         ```yaml
         apiVersion: serving.kserve.io/v1alpha1
         kind: ServingRuntime
         metadata:
-          name: rhaiis-vllm-runtime
+          name: rhaiis-vllm-runtime-mistral4
           annotations:
             opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
-            openshift.io/display-name: "RHAIIS vLLM Preview Runtime"
+            openshift.io/display-name: "RHAIIS vLLM Preview Runtime - Mistral 4"
         spec:
           supportedModelFormats:
             - name: vLLM
@@ -3679,7 +3681,8 @@ models:
               autoSelect: true
           containers:
             - name: kserve-container
-              image: registry.redhat.io/rhaiis-preview/vllm-cuda-rhel9:mistral-4-small
+              # Use the specific image from your request
+              image: registry.redhat.io/rhaii-preview/vllm-cuda-rhel9:mistral-4-small
               command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
               args:
                 - "--model=/mnt/models"
@@ -4349,19 +4352,21 @@ models:
         The "Serving Runtime" is the template OpenShift AI uses to launch your model container.
 
         1. Log in to the OpenShift AI Dashboard.
-        2. Go to **Settings > Serving runtimes**.
+        2. Go to **Settings > Model resources and operations > Serving runtimes**.
         3. Click **Add serving runtime**.
-        4. Select **Single-model serving platform** and click **Start from scratch**.
+        4. Select **REST or gRPC API**.
+        5. Select **Generative AI model**.
+        6. Select **Start from scratch**.
         5. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
 
         ```yaml
         apiVersion: serving.kserve.io/v1alpha1
         kind: ServingRuntime
         metadata:
-          name: rhaiis-vllm-runtime
+          name: rhaiis-vllm-runtime-mistral4
           annotations:
             opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
-            openshift.io/display-name: "RHAIIS vLLM Preview Runtime"
+            openshift.io/display-name: "RHAIIS vLLM Preview Runtime - Mistral 4"
         spec:
           supportedModelFormats:
             - name: vLLM
@@ -4369,7 +4374,8 @@ models:
               autoSelect: true
           containers:
             - name: kserve-container
-              image: registry.redhat.io/rhaiis-preview/vllm-cuda-rhel9:mistral-4-small
+              # Use the specific image from your request
+              image: registry.redhat.io/rhaii-preview/vllm-cuda-rhel9:mistral-4-small
               command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
               args:
                 - "--model=/mnt/models"

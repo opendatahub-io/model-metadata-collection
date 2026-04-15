@@ -12,9 +12,11 @@ To deploy a model using the Red Hat AI Inference Server (RHAIIS) preview image o
 The "Serving Runtime" is the template OpenShift AI uses to launch your model container.
 
 1. Log in to the OpenShift AI Dashboard.
-2. Go to **Settings > Serving runtimes**.
+2. Go to **Settings > Model resources and operations > Serving runtimes**.
 3. Click **Add serving runtime**.
-4. Select **Single-model serving platform** and click **Start from scratch**.
+4. Select **REST or gRPC API**.
+5. Select **Generative AI model**.
+6. Select **Start from scratch**.
 5. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
 
 ```yaml
@@ -32,6 +34,7 @@ spec:
       autoSelect: true
   containers:
     - name: kserve-container
+      # Use the specific image from your request
       image: {{ .PreviewImage }}
       command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
       args:

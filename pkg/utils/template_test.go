@@ -454,8 +454,8 @@ func TestRenderServingRuntimeOverrideSection_FullConfig(t *testing.T) {
 	config := &types.ServingRuntimeOverrideConfig{
 		PreviewImage: "registry.redhat.io/rhaiis-preview/vllm-cuda-rhel9:mistral-4-small",
 		Reason:       "Requires transformers v5",
-		RuntimeName:  "rhaiis-vllm-runtime",
-		DisplayName:  "RHAIIS vLLM Preview Runtime",
+		RuntimeName:  "rhaiis-vllm-runtime-mistral4",
+		DisplayName:  "RHAIIS vLLM Preview Runtime - Mistral 4",
 	}
 
 	got, err := RenderServingRuntimeOverrideSection(config)
@@ -470,11 +470,12 @@ func TestRenderServingRuntimeOverrideSection_FullConfig(t *testing.T) {
 		"Pull Secret",
 		"NVIDIA GPU Operator",
 		"OpenShift AI Dashboard",
-		"Settings > Serving runtimes",
+		"Settings > Model resources and operations > Serving runtimes",
 		"Add serving runtime",
-		"Single-model serving platform",
-		"rhaiis-vllm-runtime",
-		"RHAIIS vLLM Preview Runtime",
+		"REST or gRPC API",
+		"Generative AI model",
+		"rhaiis-vllm-runtime-mistral4",
+		"RHAIIS vLLM Preview Runtime - Mistral 4",
 		"registry.redhat.io/rhaiis-preview/vllm-cuda-rhel9:mistral-4-small",
 		"vllm.entrypoints.openai.api_server",
 		"--model=/mnt/models",
