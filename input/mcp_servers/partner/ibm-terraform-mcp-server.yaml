@@ -1,0 +1,221 @@
+name: IBM/terraform-mcp-server
+provider: IBM
+license: MPL-2.0
+license_link: https://www.mozilla.org/en-US/MPL/2.0/
+description: 'Gain real-time access to current Terraform provider documentation, modules, and policies from the Terraform registry. Supports HCP Terraform and Terraform Enterprise workspace management. NOTE: Beta software - do not use in production environments.'
+readme: |-
+    # Terraform MCP Server
+
+    The Terraform MCP Server is a Model Context Protocol (MCP) server that
+    provides seamless integration with Terraform Registry APIs, enabling
+    advanced automation and interaction capabilities for Infrastructure as
+    Code (IaC) development.
+
+    ## Features
+    - **Dual Transport Support** — Both Stdio and StreamableHTTP transports with configurable endpoints
+    - **Terraform Registry Integration** — Direct integration with public Terraform Registry APIs for providers, modules, and policies
+    - **HCP Terraform & Terraform Enterprise Support** — Full workspace management, organization/project listing, and private registry access
+    - **Workspace Operations** — Create, update, delete workspaces with support for variables, tags, and run management
+    - **OTel Metrics** — Integration with OpenTelemetry meters to track tool-call volume, latency, and failures in Streamable HTTP mode
+
+    ## Tools
+    - search_providers, get_provider_details — Terraform provider discovery
+    - search_modules, get_module_details — Module discovery
+    - list_workspaces, create_workspace, get_workspace_details — Workspace management
+    - list_runs, create_run — Run management
+    - search_policies — Sentinel policy search
+
+    ## Prerequisites
+    - Docker installed and running
+    - AI assistant that supports the Model Context Protocol (MCP)
+    - Optional: HCP Terraform or Terraform Enterprise API token (TFE_TOKEN) for workspace management and private registry access
+
+    ## Quick Start
+    ```bash
+    docker run -i --rm hashicorp/terraform-mcp-server
+    ```
+
+    ## Transports
+    Supports stdio (default) and StreamableHTTP transports. HTTP mode is enabled
+    via TRANSPORT_MODE=streamable-http with configurable host, port, and endpoint.
+
+    ## Security
+    When using StreamableHTTP transport, configure MCP_ALLOWED_ORIGINS to restrict
+    access to trusted origins. The MCP server is intended for local use only.
+version: 0.4.0
+transports:
+    - stdio
+    - http
+logo: data:image/png;base64,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
+documentationUrl: https://developer.hashicorp.com/terraform/docs/tools/mcp-server
+repositoryUrl: https://github.com/hashicorp/terraform-mcp-server
+deploymentMode: local
+tags:
+    - terraform
+    - hashicorp
+    - ibm
+    - infrastructure-as-code
+    - iac
+    - registry
+    - providers
+    - modules
+    - workspaces
+    - hcp-terraform
+    - beta
+tools:
+    - name: search_providers
+      description: Search for Terraform providers in the registry
+      accessType: read_only
+      parameters:
+        - name: query
+          type: string
+          description: Search query for providers
+          required: true
+    - name: get_provider_details
+      description: Get details about a specific Terraform provider
+      accessType: read_only
+      parameters:
+        - name: provider
+          type: string
+          description: Provider namespace/name
+          required: true
+    - name: search_modules
+      description: Search for Terraform modules in the registry
+      accessType: read_only
+      parameters:
+        - name: query
+          type: string
+          description: Search query for modules
+          required: true
+    - name: get_module_details
+      description: Get details about a specific Terraform module
+      accessType: read_only
+      parameters:
+        - name: module
+          type: string
+          description: Module namespace/name/provider
+          required: true
+    - name: list_workspaces
+      description: List workspaces in a Terraform organization
+      accessType: read_only
+      parameters:
+        - name: organization
+          type: string
+          description: Organization name
+          required: true
+    - name: create_workspace
+      description: Create a new workspace in HCP Terraform/TFE
+      accessType: read_write
+      parameters:
+        - name: organization
+          type: string
+          description: Organization name
+          required: true
+        - name: name
+          type: string
+          description: Workspace name
+          required: true
+    - name: get_workspace_details
+      description: Get details of a specific workspace
+      accessType: read_only
+      parameters:
+        - name: workspace
+          type: string
+          description: Workspace name or ID
+          required: true
+    - name: list_runs
+      description: List runs in a workspace
+      accessType: read_only
+      parameters:
+        - name: workspace
+          type: string
+          description: Workspace name or ID
+          required: true
+    - name: create_run
+      description: Create a new run in a workspace
+      accessType: execute
+      parameters:
+        - name: workspace
+          type: string
+          description: Workspace name or ID
+          required: true
+    - name: search_policies
+      description: Search for Sentinel policies in the registry
+      accessType: read_only
+      parameters:
+        - name: query
+          type: string
+          description: Search query for policies
+          required: true
+artifacts:
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-hashicorp-terraform-mcp-server:1773859835
+      createTimeSinceEpoch: "1773865492000"
+      lastUpdateTimeSinceEpoch: "1773865492000"
+runtimeMetadata:
+    defaultArgs:
+        - ./terraform-mcp-server
+        - streamable-http
+        - --transport-host
+        - 0.0.0.0
+        - --transport-port
+        - "8080"
+        - --mcp-endpoint
+        - /mcp
+    defaultPort: 8080
+    optionalEnvironmentVariables:
+        - description: HCP Terraform/TFE API authentication token
+          name: TFE_TOKEN
+          required: false
+          type: secret
+    prerequisites:
+        environmentVariables:
+            - description: HCP Terraform/TFE API authentication token (from secret terraform-credentials)
+              name: TFE_TOKEN
+              required: false
+              type: string
+            - description: HCP Terraform or TFE address
+              name: TFE_ADDRESS
+              required: false
+              type: string
+            - description: Transport protocol mode (stdio or streamable-http)
+              name: TRANSPORT_MODE
+              required: true
+              type: string
+            - description: HTTP server bind address
+              name: TRANSPORT_HOST
+              required: true
+              type: string
+        secrets:
+            - description: kubectl create secret generic terraform-credentials --from-literal=tfe-token=<TFE_TOKEN>
+              keys:
+                - description: HCP Terraform/TFE API authentication token
+                  envVarName: TFE_TOKEN
+                  key: tfe-token
+                  required: false
+              mountAsFile: false
+              name: terraform-credentials
+    recommendedResources:
+        minimal:
+            cpu: 100m
+            memory: 128Mi
+        recommended:
+            cpu: 250m
+            memory: 256Mi
+    requiredEnvironmentVariables:
+        - description: Transport protocol mode
+          name: TRANSPORT_MODE
+          required: true
+          type: config
+        - description: HTTP server bind address
+          name: TRANSPORT_HOST
+          required: true
+          type: config
+securityIndicators:
+    readOnlyTools: false
+    secureEndpoint: true
+    verifiedSource: true
+customProperties:
+    architecture:
+        metadataType: MetadataStringValue
+        string_value: "[\"amd64\"]"
+lastUpdateTimeSinceEpoch: "1773865492000"
