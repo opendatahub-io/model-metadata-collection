@@ -1,8 +1,0 @@
----
-preview_image: "registry.redhat.io/rhaii-preview/vllm-cuda-rhel9:mistral-4-small"
-reason: >-
-  Mistral Small 4 requires transformers v5 which is not available in the
-  current vLLM image.
-runtime_name: "rhaiis-vllm-runtime-mistral4"
-display_name: "RHAIIS vLLM Preview Runtime - Mistral 4"
-note: "This model requires a Preview serving runtime for deployment in OpenShift AI 3.4"

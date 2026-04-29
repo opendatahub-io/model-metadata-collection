@@ -266,12 +266,10 @@ models:
   uri: registry.redhat.io/rhai/modelcar-mistral-small-4-119b-2603:3.0
   labels:
   - validated
-  - preview_serving_runtime_required
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-mistral-small-4-119b-2603-nvfp4:3.0
   labels:
   - validated
-  - preview_serving_runtime_required
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-sarvam-30b-fp8-dynamic:3.0
   labels:

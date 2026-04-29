@@ -351,41 +351,6 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 		}
 	}
 
-	// PREPEND serving runtime override section to README (before first ## heading)
-	// This goes BEFORE tool-calling and vLLM config sections since it's critical deployment info
-	// Guard against duplicate sections on re-enrichment runs
-	if enrichedData.ServingRuntimeOverride != nil {
-		alreadyPresent := existingMetadata.Readme != nil && strings.Contains(*existingMetadata.Readme, "## Deploying with RHAIIS Preview Runtime")
-		if alreadyPresent {
-			log.Printf("  Serving runtime override already present in README, skipping for: %s", registryModel)
-		} else {
-			srtSection, err := utils.RenderServingRuntimeOverrideSection(enrichedData.ServingRuntimeOverride)
-			if err != nil {
-				log.Printf("  Warning: Failed to render serving runtime override section for %s: %v", registryModel, err)
-			} else if srtSection != "" {
-				if existingMetadata.Readme == nil {
-					existingMetadata.Readme = &srtSection
-					log.Printf("  Created README with serving runtime override section for: %s", registryModel)
-				} else {
-					updatedReadme := insertBeforeFirstSection(*existingMetadata.Readme, srtSection)
-					existingMetadata.Readme = &updatedReadme
-					log.Printf("  Prepended serving runtime override section to README for: %s", registryModel)
-				}
-
-				// Insert note blockquote right after H1 heading (if configured)
-				// Only inserted when the override section was successfully rendered above
-				if enrichedData.ServingRuntimeOverride.Note != "" && existingMetadata.Readme != nil {
-					noteBlockquote := "> **Note**: " + enrichedData.ServingRuntimeOverride.Note
-					if !strings.Contains(*existingMetadata.Readme, noteBlockquote) {
-						updatedReadme := insertNoteAfterH1(*existingMetadata.Readme, enrichedData.ServingRuntimeOverride.Note)
-						existingMetadata.Readme = &updatedReadme
-						log.Printf("  Inserted serving runtime override note after title for: %s", registryModel)
-					}
-				}
-			}
-		}
-	}
-
 	// Append tool-calling section to README ONLY if tool-calling config exists
 	// Section is NOT added when ToolCallingConfig is nil or HasToolCalling() returns false
 	// Guard against duplicate sections on re-enrichment runs
@@ -483,46 +448,4 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 	}
 
 	return nil
-}
-
-// insertNoteAfterH1 inserts a blockquote note right after the first H1 heading line.
-// If no H1 heading is found, the note is prepended at the very top.
-func insertNoteAfterH1(readme, note string) string {
-	blockquote := "> **Note**: " + note
-	lines := strings.Split(readme, "\n")
-	for i, line := range lines {
-		if strings.HasPrefix(line, "# ") {
-			before := strings.Join(lines[:i+1], "\n")
-			after := strings.TrimLeft(strings.Join(lines[i+1:], "\n"), "\n")
-			if after == "" {
-				return before + "\n\n" + blockquote
-			}
-			return before + "\n\n" + blockquote + "\n\n" + after
-		}
-	}
-	// No H1 heading found, prepend at the top
-	if readme == "" {
-		return blockquote
-	}
-	return blockquote + "\n\n" + readme
-}
-
-// insertBeforeFirstSection inserts section before the first ## heading in readme,
-// keeping any title and introductory text intact above the insertion point.
-// If no ## heading is found, the section is appended at the end.
-func insertBeforeFirstSection(readme, section string) string {
-	lines := strings.Split(readme, "\n")
-	for i, line := range lines {
-		if strings.HasPrefix(line, "## ") {
-			// Insert section before this ## heading
-			before := strings.TrimRight(strings.Join(lines[:i], "\n"), "\n")
-			after := strings.Join(lines[i:], "\n")
-			if before == "" {
-				return section + "\n\n" + after
-			}
-			return before + "\n\n" + section + "\n\n" + after
-		}
-	}
-	// No ## heading found, append at the end
-	return strings.TrimRight(readme, "\n") + "\n\n" + section
 }

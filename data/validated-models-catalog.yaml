@@ -3635,8 +3635,6 @@ models:
       readme: |-
         # Mistral Small 4 119B A6B
 
-        > **Note**: This model requires a Preview serving runtime for deployment in OpenShift AI 3.4
-
         Mistral Small 4 is a powerful hybrid model capable of acting as both a general instruction model and a reasoning model. It unifies the capabilities of three different model families—**Instruct**, **Reasoning** (previously called Magistral), and **Devstral**—into a single, unified model.
 
         With its multimodal capabilities, efficient architecture, and flexible mode switching, it is a powerful general-purpose model for any task. In a latency-optimized setup, Mistral Small 4 achieves a **40% reduction in end-to-end completion time**, and in a throughput-optimized setup, it handles **3x more requests per second** compared to Mistral Small 3.
@@ -3644,57 +3642,6 @@ models:
         To further improve efficiency you can either take advantages of:
         - Speculative decoding thanks to our trained eagle head [`mistralai/Mistral-Small-4-119B-2603-eagle`](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-eagle).
         - 4 bit float precision quantization thanks to our NVFP4 checkpoint [`mistralai/Mistral-Small-4-119B-2603-NVFP4`](https://huggingface.co/mistralai/Mistral-Small-4-119B-2603-NVFP4).
-
-        ## Deploying with RHAIIS Preview Runtime
-
-        To deploy a model using the Red Hat AI Inference Server (RHAIIS) preview image on OpenShift AI, you need to create a Custom Serving Runtime. OpenShift AI doesn't include the RHAIIS tech-preview images in its default "out-of-the-box" runtimes, so you must manually point the platform to that specific `registry.redhat.io` image.
-
-        ### Prerequisites
-
-        - **Registry Access**: Ensure your OpenShift cluster has a Pull Secret configured for `registry.redhat.io`.
-        - **GPU Resources**: Since this is a `vllm-cuda` image, your cluster must have the NVIDIA GPU Operator installed and available nodes with GPUs.
-
-        ### Create a Custom Serving Runtime
-
-        The "Serving Runtime" is the template OpenShift AI uses to launch your model container.
-
-        1. Log in to the OpenShift AI Dashboard.
-        2. Go to **Settings > Model resources and operations > Serving runtimes**.
-        3. Click **Add serving runtime**.
-        4. Select **REST or gRPC API**.
-        5. Select **Generative AI model**.
-        6. Select **Start from scratch**.
-        7. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
-
-        ```yaml
-        apiVersion: serving.kserve.io/v1alpha1
-        kind: ServingRuntime
-        metadata:
-          name: rhaiis-vllm-runtime-mistral4
-          annotations:
-            opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
-            openshift.io/display-name: "RHAIIS vLLM Preview Runtime - Mistral 4"
-        spec:
-          supportedModelFormats:
-            - name: vLLM
-              version: "1"
-              autoSelect: true
-          containers:
-            - name: kserve-container
-              # Use the specific image from your request
-              image: registry.redhat.io/rhaii-preview/vllm-cuda-rhel9:mistral-4-small
-              command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
-              args:
-                - "--model=/mnt/models"
-                - "--port=8080"
-              ports:
-                - containerPort: 8080
-                  protocol: TCP
-              env:
-                - name: HF_HOME
-                  value: /tmp/hf_cache
-        ```
-
 
         ## Key Features
 
@@ -4293,9 +4240,6 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
-        preview_serving_runtime_required:
-            metadataType: MetadataStringValue
-            string_value: ""
         vLLM:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4326,8 +4270,6 @@ models:
       readme: |-
         # Mistral Small 4 119B A6B NVFP4
 
-        > **Note**: This model requires a Preview serving runtime for deployment in OpenShift AI 3.4
-
         Mistral Small 4 is a powerful hybrid model capable of acting as both a general instruction model and a reasoning model. It unifies the capabilities of three different model families—**Instruct**, **Reasoning** (previously called Magistral), and **Devstral**—into a single, unified model.
 
         With its multimodal capabilities, efficient architecture, and flexible mode switching, it is a powerful general-purpose model for any task. In a latency-optimized setup, Mistral Small 4 achieves a **40% reduction in end-to-end completion time**, and in a throughput-optimized setup, it handles **3x more requests per second** compared to Mistral Small 3.
@@ -4337,57 +4279,6 @@ models:
         > It was created using [llm-compressor](https://github.com/vllm-project/llm-compressor) as part of a collaboration with teams from vLLM & Red Hat.
         > Special thanks goes out to Dipika Sikka.
         > We also would like to thank NVIDIA for their expertise and contributions to SGLang as well as vLLM to ensure kernel optimizations.
-
-        ## Deploying with RHAIIS Preview Runtime
-
-        To deploy a model using the Red Hat AI Inference Server (RHAIIS) preview image on OpenShift AI, you need to create a Custom Serving Runtime. OpenShift AI doesn't include the RHAIIS tech-preview images in its default "out-of-the-box" runtimes, so you must manually point the platform to that specific `registry.redhat.io` image.
-
-        ### Prerequisites
-
-        - **Registry Access**: Ensure your OpenShift cluster has a Pull Secret configured for `registry.redhat.io`.
-        - **GPU Resources**: Since this is a `vllm-cuda` image, your cluster must have the NVIDIA GPU Operator installed and available nodes with GPUs.
-
-        ### Create a Custom Serving Runtime
-
-        The "Serving Runtime" is the template OpenShift AI uses to launch your model container.
-
-        1. Log in to the OpenShift AI Dashboard.
-        2. Go to **Settings > Model resources and operations > Serving runtimes**.
-        3. Click **Add serving runtime**.
-        4. Select **REST or gRPC API**.
-        5. Select **Generative AI model**.
-        6. Select **Start from scratch**.
-        7. Paste the following YAML configuration, ensuring the `image` field matches your specific RHAIIS preview tag:
-
-        ```yaml
-        apiVersion: serving.kserve.io/v1alpha1
-        kind: ServingRuntime
-        metadata:
-          name: rhaiis-vllm-runtime-mistral4
-          annotations:
-            opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
-            openshift.io/display-name: "RHAIIS vLLM Preview Runtime - Mistral 4"
-        spec:
-          supportedModelFormats:
-            - name: vLLM
-              version: "1"
-              autoSelect: true
-          containers:
-            - name: kserve-container
-              # Use the specific image from your request
-              image: registry.redhat.io/rhaii-preview/vllm-cuda-rhel9:mistral-4-small
-              command: ["python3", "-m", "vllm.entrypoints.openai.api_server"]
-              args:
-                - "--model=/mnt/models"
-                - "--port=8080"
-              ports:
-                - containerPort: 8080
-                  protocol: TCP
-              env:
-                - name: HF_HOME
-                  value: /tmp/hf_cache
-        ```
-
 
         ## Key Features
 
@@ -4801,9 +4692,6 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
-        preview_serving_runtime_required:
-            metadataType: MetadataStringValue
-            string_value: ""
         vLLM:
             metadataType: MetadataStringValue
             string_value: ""
