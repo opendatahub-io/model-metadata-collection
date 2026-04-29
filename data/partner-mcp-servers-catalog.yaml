@@ -410,7 +410,7 @@ mcp_servers:
             string_value: "[\"amd64\"]"
       lastUpdateTimeSinceEpoch: "1773865179000"
     - name: hashicorp/terraform-mcp-server
-      provider: HashiCorp
+      provider: IBM Terraform
       license: MPL-2.0
       license_link: https://www.mozilla.org/en-US/MPL/2.0/
       description: 'Gain real-time access to current Terraform provider documentation, modules, and policies from the Terraform registry. Supports HCP Terraform and Terraform Enterprise workspace management. NOTE: Beta software - do not use in production environments.'
