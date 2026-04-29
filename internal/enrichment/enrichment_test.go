@@ -2,6 +2,7 @@ package enrichment
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -67,10 +68,14 @@ func TestEnrichMetadataFromHuggingFace_InvalidHFFile(t *testing.T) {
 		t.Fatalf("Failed to create invalid HF file: %v", err)
 	}
 
-	// Test with invalid HuggingFace file
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
+	// Test with invalid HuggingFace file — must pass the prepared file so we
+	// actually exercise the YAML parse path, not a file-not-found error.
+	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "nonexistent-models.yaml", "output", "")
 	if err == nil {
 		t.Error("Expected error when HuggingFace index file is invalid")
+	}
+	if !strings.Contains(err.Error(), "failed to parse HuggingFace index") {
+		t.Errorf("Expected YAML parse error, got: %v", err)
 	}
 }
 
@@ -121,10 +126,14 @@ func TestEnrichMetadataFromHuggingFace_MissingModelsIndex(t *testing.T) {
 		t.Fatalf("Failed to create HF file: %v", err)
 	}
 
-	// Test with missing models-index.yaml
-	err = EnrichMetadataFromHuggingFace("nonexistent-hf.yaml", "nonexistent-models.yaml", "output", "")
+	// Test with missing models-index.yaml — must pass the prepared valid HF file
+	// so we exercise the models index load path, not a file-not-found on the HF file.
+	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "nonexistent-models.yaml", "output", "")
 	if err == nil {
 		t.Error("Expected error when models-index.yaml doesn't exist")
+	}
+	if !strings.Contains(err.Error(), "failed to load registry models") {
+		t.Errorf("Expected registry models load error, got: %v", err)
 	}
 }
 
