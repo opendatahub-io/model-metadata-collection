@@ -302,3 +302,11 @@ models:
   uri: registry.redhat.io/rhai/modelcar-nvidia-nemotron-3-super-120b-a12b-fp8:3.0
   labels:
   - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-gpt-oss-20b-essential:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-gpt-oss-120b-essential:3.0
+  labels:
+  - validated
