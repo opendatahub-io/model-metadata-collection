@@ -7075,13 +7075,10 @@ models:
       licenseLink: https://www.apache.org/licenses/LICENSE-2.0
       tasks:
         - text-to-text
-      createTimeSinceEpoch: "1739776988000"
+      createTimeSinceEpoch: "1754345689000"
       lastUpdateTimeSinceEpoch: "1769070167000"
       customProperties:
         conversational:
-            metadataType: MetadataStringValue
-            string_value: ""
-        featured:
             metadataType: MetadataStringValue
             string_value: ""
         granite:
@@ -7113,19 +7110,6 @@ models:
             architecture:
                 metadataType: MetadataStringValue
                 string_value: '["amd64","arm64","ppc64le"]'
-            source:
-                metadataType: MetadataStringValue
-                string_value: registry.redhat.io
-            type:
-                metadataType: MetadataStringValue
-                string_value: modelcar
-        - uri: oci://registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-starter-v2:1.5
-          createTimeSinceEpoch: "1739776988000"
-          lastUpdateTimeSinceEpoch: "1747377277000"
-          customProperties:
-            architecture:
-                metadataType: MetadataStringValue
-                string_value: '["amd64"]'
             source:
                 metadataType: MetadataStringValue
                 string_value: registry.redhat.io
