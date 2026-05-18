@@ -197,11 +197,15 @@ During `make process`, artifacts are enriched from OCI registries (architectures
 
 ## Tool-Calling Metadata Extraction
 
-Extracted from HuggingFace YAML frontmatter ONLY (not container modelcards). Fields: `tool_calling_supported`, `required_cli_args`, `chat_template_path`, `tool_call_parser`.
+Extracted from HuggingFace YAML frontmatter ONLY (not container modelcards). Fields: `tool_calling_supported`, `required_cli_args`, `chat_template_path`, `tool_call_parser`, `validated_tasks`.
 
-When found, a vLLM deployment section is automatically appended to the model's README. Chat template paths are auto-converted from `examples/` (HuggingFace) to `opt/app-root/template/` (RHOAI).
+Tool-calling configuration is output as structured YAML fields in the catalog, not rendered into README Markdown:
 
-See `pkg/utils/templates/tool-calling.md.tmpl` for the generated template.
+- **`servingConfig.toolCalling`** in `CatalogMetadata` — contains `toolCallParser`, `chatTemplate`, `enableAutoToolChoice`, and `requiredArgs` (camelCase keys matching the kubeflow/hub OpenAPI schema)
+- **`validatedTasks`** in both `ExtractedMetadata` and `CatalogMetadata` — lists tasks that have been validated (e.g., `["tool-calling"]`)
+- **`toolCallingConfig`** in `ExtractedMetadata` — intermediate extraction struct persisted for catalog generation
+
+Chat template paths are auto-converted from `examples/` (HuggingFace) to `opt/app-root/template/` (RHOAI). When tool-calling config is present, `tool-calling` is automatically injected into the `tasks` array if not already present.
 
 ## vLLM Recommended Configurations
 

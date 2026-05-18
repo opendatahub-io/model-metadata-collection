@@ -115,6 +115,7 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 		enriched.ModelSize = metadata.CreateMetadataSource(nil, "null")
 		enriched.ValidatedOn = metadata.CreateMetadataSource(nil, "null")
 		enriched.HardwareTag = metadata.CreateMetadataSource(nil, "null")
+		enriched.ValidatedTasks = metadata.CreateMetadataSource(nil, "null")
 
 		// Populate from existing modelcard metadata if available (only for non-empty values)
 		// We need to determine if the data came from YAML frontmatter or text parsing
@@ -450,6 +451,12 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 					if len(frontmatter.HardwareTag) > 0 {
 						enriched.HardwareTag = metadata.CreateMetadataSource([]string(frontmatter.HardwareTag), "huggingface.yaml")
 						log.Printf("  Extracted hardware_tag from YAML frontmatter: %v", frontmatter.HardwareTag)
+					}
+
+					// Extract validated_tasks from HuggingFace YAML (highest priority)
+					if len(frontmatter.ValidatedTasks) > 0 {
+						enriched.ValidatedTasks = metadata.CreateMetadataSource([]string(frontmatter.ValidatedTasks), "huggingface.yaml")
+						log.Printf("  Extracted validated_tasks from YAML frontmatter: %v", frontmatter.ValidatedTasks)
 					}
 
 					// Extract tool-calling configuration from HuggingFace YAML frontmatter ONLY

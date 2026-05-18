@@ -33,6 +33,7 @@ func newNullEnriched(registryModel, hfModel string) *types.EnrichedModelMetadata
 		Likes:                null,
 		ModelSize:            null,
 		ValidatedOn:          null,
+		ValidatedTasks:       null,
 	}
 }
 
@@ -288,19 +289,22 @@ func TestVLLMConfigIntegration_BothToolCallingAndVLLMConfig(t *testing.T) {
 
 	readme := *updatedMetadata.Readme
 
-	// Both sections should be present
-	if !strings.Contains(readme, "vLLM Deployment with Tool Calling") {
-		t.Error("README missing tool-calling section")
+	// Tool-calling section should NOT be in README (now structured metadata)
+	if strings.Contains(readme, "vLLM Deployment with Tool Calling") {
+		t.Error("README should not contain tool-calling Markdown section — structured servingConfig replaces it")
 	}
+
+	// vLLM Recommended Configurations section should still be present
 	if !strings.Contains(readme, "vLLM Recommended Configurations") {
 		t.Error("README missing vLLM config section")
 	}
 
-	// Tool-calling should appear before vLLM config
-	tcIdx := strings.Index(readme, "vLLM Deployment with Tool Calling")
-	vcIdx := strings.Index(readme, "vLLM Recommended Configurations")
-	if tcIdx >= vcIdx {
-		t.Error("Tool-calling section should appear before vLLM config section")
+	// Verify tool-calling config is persisted in metadata
+	if updatedMetadata.ToolCallingConfig == nil {
+		t.Fatal("ToolCallingConfig should be persisted in metadata")
+	}
+	if updatedMetadata.ToolCallingConfig.ToolCallParser != "mistral" {
+		t.Errorf("Expected ToolCallParser 'mistral', got %q", updatedMetadata.ToolCallingConfig.ToolCallParser)
 	}
 }
 
@@ -351,14 +355,22 @@ func TestVLLMConfigIntegration_IdempotentReEnrichment(t *testing.T) {
 
 	readme := *updatedMetadata.Readme
 
-	// Each section should appear exactly once
-	tcCount := strings.Count(readme, "## vLLM Deployment with Tool Calling")
-	if tcCount != 1 {
-		t.Errorf("Tool-calling section should appear exactly once, found %d times", tcCount)
+	// Tool-calling section should NOT be in README (now structured metadata)
+	if strings.Contains(readme, "## vLLM Deployment with Tool Calling") {
+		t.Error("README should not contain tool-calling Markdown section after re-enrichment")
 	}
 
+	// vLLM config section should appear exactly once
 	vcCount := strings.Count(readme, "## vLLM Recommended Configurations")
 	if vcCount != 1 {
 		t.Errorf("vLLM config section should appear exactly once, found %d times", vcCount)
+	}
+
+	// Verify tool-calling config is persisted in metadata
+	if updatedMetadata.ToolCallingConfig == nil {
+		t.Fatal("ToolCallingConfig should be persisted in metadata")
+	}
+	if updatedMetadata.ToolCallingConfig.ToolCallParser != "mistral" {
+		t.Errorf("Expected ToolCallParser 'mistral', got %q", updatedMetadata.ToolCallingConfig.ToolCallParser)
 	}
 }

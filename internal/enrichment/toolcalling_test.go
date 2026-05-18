@@ -87,37 +87,32 @@ This is a base model for testing.`
 		t.Fatalf("Failed to load updated metadata: %v", err)
 	}
 
-	// Verify README contains tool-calling section
-	if updatedMetadata.Readme == nil {
-		t.Fatal("README is nil after update")
-	}
+	// Verify README does NOT contain tool-calling section (structured data replaces it)
+	if updatedMetadata.Readme != nil {
+		readme := *updatedMetadata.Readme
+		if strings.Contains(readme, "## vLLM Deployment with Tool Calling") {
+			t.Error("README should not contain tool-calling Markdown section — structured servingConfig replaces it")
+		}
 
-	readme := *updatedMetadata.Readme
-
-	// Check for expected content
-	expectedPhrases := []string{
-		"vLLM Deployment",
-		"tool calling",
-		"--config_format mistral",
-		"--load_format mistral",
-		"opt/app-root/template/chat_template.jinja",
-		"mistral",
-	}
-
-	for _, phrase := range expectedPhrases {
-		if !strings.Contains(readme, phrase) {
-			t.Errorf("README missing expected phrase: %q", phrase)
+		// Verify original content is preserved
+		if !strings.Contains(readme, "This is a base model for testing") {
+			t.Error("Original README content was not preserved")
 		}
 	}
 
-	// Verify original content is preserved
-	if !strings.Contains(readme, "This is a base model for testing") {
-		t.Error("Original README content was not preserved")
+	// Verify tool-calling config is persisted in metadata
+	if updatedMetadata.ToolCallingConfig == nil {
+		t.Fatal("ToolCallingConfig should be persisted in metadata")
 	}
-
-	// Verify path was converted from examples/ to opt/app-root/template/
-	if strings.Contains(readme, "examples/") {
-		t.Error("Path was not converted from examples/ to opt/app-root/template/")
+	tc := updatedMetadata.ToolCallingConfig
+	if tc.ToolCallParser != "mistral" {
+		t.Errorf("Expected ToolCallParser 'mistral', got %q", tc.ToolCallParser)
+	}
+	if len(tc.RequiredCLIArgs) != 2 {
+		t.Errorf("Expected 2 RequiredCLIArgs, got %d", len(tc.RequiredCLIArgs))
+	}
+	if tc.GetProcessedTemplatePath() != "opt/app-root/template/chat_template.jinja" {
+		t.Errorf("Expected processed template path, got %q", tc.GetProcessedTemplatePath())
 	}
 }
 
@@ -351,35 +346,121 @@ This model supports tool calling without validated_on field.`
 		t.Fatalf("Failed to load updated metadata: %v", err)
 	}
 
-	// CRITICAL: Verify README contains tool-calling section even without validated_on
-	if updatedMetadata.Readme == nil {
-		t.Fatal("README is nil - tool-calling section was not added")
+	// CRITICAL: Verify tool-calling config is persisted in metadata even without validated_on
+	if updatedMetadata.ToolCallingConfig == nil {
+		t.Fatal("ToolCallingConfig should be persisted even without validated_on")
+	}
+	tc := updatedMetadata.ToolCallingConfig
+	if tc.ToolCallParser != "hermes" {
+		t.Errorf("Expected ToolCallParser 'hermes', got %q", tc.ToolCallParser)
+	}
+	if len(tc.RequiredCLIArgs) != 1 || tc.RequiredCLIArgs[0] != "--enable-prefix-caching" {
+		t.Errorf("Expected RequiredCLIArgs ['--enable-prefix-caching'], got %v", tc.RequiredCLIArgs)
+	}
+	if tc.GetProcessedTemplatePath() != "opt/app-root/template/qwen_template.jinja" {
+		t.Errorf("Expected processed template path, got %q", tc.GetProcessedTemplatePath())
 	}
 
-	readme := *updatedMetadata.Readme
-
-	// Check for expected content
-	expectedPhrases := []string{
-		"vLLM Deployment",
-		"tool calling",
-		"--enable-prefix-caching",
-		"opt/app-root/template/qwen_template.jinja",
-		"hermes",
-	}
-
-	for _, phrase := range expectedPhrases {
-		if !strings.Contains(readme, phrase) {
-			t.Errorf("README missing expected phrase: %q (tool-calling extraction may have failed)", phrase)
+	// Verify README does NOT contain tool-calling section
+	if updatedMetadata.Readme != nil {
+		readme := *updatedMetadata.Readme
+		if strings.Contains(readme, "## vLLM Deployment with Tool Calling") {
+			t.Error("README should not contain tool-calling Markdown section")
+		}
+		// Verify original content is preserved
+		if !strings.Contains(readme, "This model supports tool calling without validated_on field") {
+			t.Error("Original README content was not preserved")
 		}
 	}
+}
 
-	// Verify original content is preserved
-	if !strings.Contains(readme, "This model supports tool calling without validated_on field") {
-		t.Error("Original README content was not preserved")
+func TestToolCallingIntegration_WithValidatedTasks(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	registryModel := "registry.redhat.io/rhai/modelcar-granite-4-0:3.0"
+	enrichedData := &types.EnrichedModelMetadata{
+		RegistryModel:    registryModel,
+		HuggingFaceModel: "RedHatAI/Granite-4.0-H-Small",
+		ToolCallingConfig: &types.ToolCallingConfig{
+			Supported:      true,
+			ToolCallParser: "granite",
+			RequiredCLIArgs: []string{
+				"--config_format granite",
+			},
+		},
+		Name:                 types.MetadataSource{Source: "null"},
+		Provider:             types.MetadataSource{Source: "null"},
+		Description:          types.MetadataSource{Source: "null"},
+		License:              types.MetadataSource{Source: "null"},
+		LicenseLink:          types.MetadataSource{Source: "null"},
+		Language:             types.MetadataSource{Source: "null"},
+		Tags:                 types.MetadataSource{Source: "null"},
+		Tasks:                metadata.CreateMetadataSource([]string{"text-generation", "tool-calling"}, "huggingface.yaml"),
+		LastModified:         types.MetadataSource{Source: "null"},
+		CreateTimeSinceEpoch: types.MetadataSource{Source: "null"},
+		Downloads:            types.MetadataSource{Source: "null"},
+		Likes:                types.MetadataSource{Source: "null"},
+		ModelSize:            types.MetadataSource{Source: "null"},
+		ValidatedOn:          types.MetadataSource{Source: "null"},
+		ValidatedTasks:       metadata.CreateMetadataSource([]string{"tool-calling"}, "huggingface.yaml"),
 	}
 
-	// Verify path conversion
-	if strings.Contains(readme, "examples/") {
-		t.Error("Path was not converted from examples/ to opt/app-root/template/")
+	sanitizedName := "registry.redhat.io_rhai_modelcar-granite-4-0_3.0"
+	modelcardDir := filepath.Join(tmpDir, sanitizedName, "models")
+	if err := os.MkdirAll(modelcardDir, 0755); err != nil {
+		t.Fatalf("Failed to create modelcard dir: %v", err)
+	}
+
+	modelcardPath := filepath.Join(modelcardDir, "modelcard.md")
+	if err := os.WriteFile(modelcardPath, []byte("# Granite 4.0\n\nTest model."), 0644); err != nil {
+		t.Fatalf("Failed to write modelcard: %v", err)
+	}
+
+	initialMetadata := types.ExtractedMetadata{
+		Name: func() *string { s := "Granite 4.0"; return &s }(),
+	}
+	metadataBytes, _ := yaml.Marshal(initialMetadata)
+	metadataPath := filepath.Join(modelcardDir, "metadata.yaml")
+	if err := os.WriteFile(metadataPath, metadataBytes, 0644); err != nil {
+		t.Fatalf("Failed to write initial metadata: %v", err)
+	}
+
+	if err := UpdateModelMetadataFile(registryModel, enrichedData, tmpDir); err != nil {
+		t.Fatalf("UpdateModelMetadataFile() failed: %v", err)
+	}
+
+	updatedMetadata, err := metadata.LoadExistingMetadata(registryModel, tmpDir)
+	if err != nil {
+		t.Fatalf("Failed to load updated metadata: %v", err)
+	}
+
+	// Verify validatedTasks propagated
+	if len(updatedMetadata.ValidatedTasks) != 1 || updatedMetadata.ValidatedTasks[0] != "tool-calling" {
+		t.Errorf("Expected validatedTasks [tool-calling], got %v", updatedMetadata.ValidatedTasks)
+	}
+
+	// Verify tasks includes tool-calling
+	hasToolCalling := false
+	for _, task := range updatedMetadata.Tasks {
+		if task == "tool-calling" {
+			hasToolCalling = true
+			break
+		}
+	}
+	if !hasToolCalling {
+		t.Errorf("Expected 'tool-calling' in tasks, got %v", updatedMetadata.Tasks)
+	}
+
+	// Verify tool-calling config persisted
+	if updatedMetadata.ToolCallingConfig == nil {
+		t.Fatal("Expected ToolCallingConfig to be persisted")
+	}
+	if updatedMetadata.ToolCallingConfig.ToolCallParser != "granite" {
+		t.Errorf("Expected ToolCallParser 'granite', got %q", updatedMetadata.ToolCallingConfig.ToolCallParser)
+	}
+
+	// Verify no README tool-calling section
+	if updatedMetadata.Readme != nil && strings.Contains(*updatedMetadata.Readme, "## vLLM Deployment with Tool Calling") {
+		t.Error("README should not contain tool-calling Markdown section")
 	}
 }

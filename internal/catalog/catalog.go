@@ -273,6 +273,35 @@ func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.Cata
 	// Note: In future, this could be extracted from modelcard metadata
 	customProps["model_type"] = createMetadataValue(types.GetDefaultModelType())
 
+	// Build ServingConfig from ToolCallingConfig if present
+	var servingConfig *types.ServingConfig
+	if model.ToolCallingConfig != nil && model.ToolCallingConfig.HasToolCalling() {
+		catalogTC := &types.CatalogToolCallingConfig{
+			ToolCallParser:       model.ToolCallingConfig.ToolCallParser,
+			ChatTemplate:         model.ToolCallingConfig.GetProcessedTemplatePath(),
+			EnableAutoToolChoice: true,
+			RequiredArgs:         model.ToolCallingConfig.RequiredCLIArgs,
+		}
+		servingConfig = &types.ServingConfig{
+			ToolCalling: catalogTC,
+		}
+	}
+
+	// Ensure "tool-calling" is in tasks when servingConfig exists
+	catalogTasks := model.Tasks
+	if servingConfig != nil {
+		hasToolCalling := false
+		for _, t := range catalogTasks {
+			if t == "tool-calling" {
+				hasToolCalling = true
+				break
+			}
+		}
+		if !hasToolCalling {
+			catalogTasks = append(catalogTasks, "tool-calling")
+		}
+	}
+
 	return types.CatalogMetadata{
 		Name:                     model.Name,
 		Provider:                 model.Provider,
@@ -281,7 +310,9 @@ func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.Cata
 		Language:                 model.Language,
 		License:                  model.License,
 		LicenseLink:              model.LicenseLink,
-		Tasks:                    model.Tasks,
+		Tasks:                    catalogTasks,
+		ValidatedTasks:           model.ValidatedTasks,
+		ServingConfig:            servingConfig,
 		CreateTimeSinceEpoch:     createTimeStr,
 		LastUpdateTimeSinceEpoch: lastUpdateTimeStr,
 		CustomProperties:         customProps,
@@ -550,6 +581,12 @@ func mergeModelGroup(group []types.CatalogMetadata) types.CatalogMetadata {
 		}
 		if len(model.Tasks) > 0 {
 			merged.Tasks = mergeUniqueStrings(merged.Tasks, model.Tasks)
+		}
+		if len(model.ValidatedTasks) > 0 {
+			merged.ValidatedTasks = mergeUniqueStrings(merged.ValidatedTasks, model.ValidatedTasks)
+		}
+		if merged.ServingConfig == nil && model.ServingConfig != nil {
+			merged.ServingConfig = model.ServingConfig
 		}
 
 		// Merge custom properties

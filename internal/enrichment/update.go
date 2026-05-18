@@ -14,6 +14,24 @@ import (
 	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
 
+// normalizeAndDedup trims whitespace, removes empty strings and duplicates from a string slice.
+func normalizeAndDedup(raw []string) []string {
+	seen := map[string]struct{}{}
+	result := make([]string, 0, len(raw))
+	for _, v := range raw {
+		t := strings.TrimSpace(v)
+		if t == "" {
+			continue
+		}
+		if _, exists := seen[t]; exists {
+			continue
+		}
+		seen[t] = struct{}{}
+		result = append(result, t)
+	}
+	return result
+}
+
 // isLowQualityModelName checks if a name appears to be a document title,
 // code comment, or other non-model name that should be overridden.
 // Returns true if the name is low quality and should be replaced.
@@ -87,6 +105,7 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 			CreateTimeSinceEpoch string `yaml:"create_time_since_epoch,omitempty"`
 			ValidatedOn          string `yaml:"validated_on,omitempty"`
 			HardwareTag          string `yaml:"hardware_tag,omitempty"`
+			ValidatedTasks       string `yaml:"validated_tasks,omitempty"`
 			Readme               string `yaml:"readme,omitempty"`
 		} `yaml:"data_sources"`
 	}{}
@@ -277,23 +296,8 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 	// Handle enriched ValidatedOn data from HuggingFace YAML
 	if enrichedData.ValidatedOn.Source != "null" && enrichedData.ValidatedOn.Value != nil {
 		if raw, ok := enrichedData.ValidatedOn.Value.([]string); ok && len(raw) > 0 {
-			// normalize: trim and dedupe
-			seen := map[string]struct{}{}
-			normalized := make([]string, 0, len(raw))
-			for _, v := range raw {
-				t := strings.TrimSpace(v)
-				if t == "" {
-					continue
-				}
-				if _, exists := seen[t]; exists {
-					continue
-				}
-				seen[t] = struct{}{}
-				normalized = append(normalized, t)
-			}
-			if len(normalized) > 0 {
-				shouldOverride := len(existingMetadata.ValidatedOn) == 0 || enrichedData.ValidatedOn.Source == "huggingface.yaml"
-				if shouldOverride {
+			if normalized := normalizeAndDedup(raw); len(normalized) > 0 {
+				if len(existingMetadata.ValidatedOn) == 0 || enrichedData.ValidatedOn.Source == "huggingface.yaml" {
 					log.Printf("  Using validated_on from enrichedData: %v", normalized)
 					existingMetadata.ValidatedOn = normalized
 				}
@@ -305,28 +309,36 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 	// Handle enriched HardwareTag data from HuggingFace YAML
 	if enrichedData.HardwareTag.Source != "null" && enrichedData.HardwareTag.Value != nil {
 		if raw, ok := enrichedData.HardwareTag.Value.([]string); ok && len(raw) > 0 {
-			seen := map[string]struct{}{}
-			normalized := make([]string, 0, len(raw))
-			for _, v := range raw {
-				t := strings.TrimSpace(v)
-				if t == "" {
-					continue
-				}
-				if _, exists := seen[t]; exists {
-					continue
-				}
-				seen[t] = struct{}{}
-				normalized = append(normalized, t)
-			}
-			if len(normalized) > 0 {
-				shouldOverride := len(existingMetadata.HardwareTag) == 0 || enrichedData.HardwareTag.Source == "huggingface.yaml"
-				if shouldOverride {
+			if normalized := normalizeAndDedup(raw); len(normalized) > 0 {
+				if len(existingMetadata.HardwareTag) == 0 || enrichedData.HardwareTag.Source == "huggingface.yaml" {
 					log.Printf("  Using hardware_tag from enrichedData: %v", normalized)
 					existingMetadata.HardwareTag = normalized
 				}
 				enrichmentInfo.DataSources.HardwareTag = enrichedData.HardwareTag.Source
 			}
 		}
+	}
+
+	// Handle enriched ValidatedTasks data from HuggingFace YAML
+	if enrichedData.ValidatedTasks.Source != "null" && enrichedData.ValidatedTasks.Value != nil {
+		if raw, ok := enrichedData.ValidatedTasks.Value.([]string); ok && len(raw) > 0 {
+			if normalized := normalizeAndDedup(raw); len(normalized) > 0 {
+				if len(existingMetadata.ValidatedTasks) == 0 || enrichedData.ValidatedTasks.Source == "huggingface.yaml" {
+					log.Printf("  Using validated_tasks from enrichedData: %v", normalized)
+					existingMetadata.ValidatedTasks = normalized
+				}
+				enrichmentInfo.DataSources.ValidatedTasks = enrichedData.ValidatedTasks.Source
+			}
+		}
+	}
+
+	// Persist tool-calling config to metadata for catalog generation
+	if enrichedData.ToolCallingConfig != nil && enrichedData.ToolCallingConfig.HasToolCalling() {
+		existingMetadata.ToolCallingConfig = enrichedData.ToolCallingConfig
+		log.Printf("  Stored tool-calling config in metadata for: %s", registryModel)
+	} else if existingMetadata.ToolCallingConfig != nil {
+		existingMetadata.ToolCallingConfig = nil
+		log.Printf("  Cleared stale tool-calling config for: %s", registryModel)
 	}
 
 	// Handle enriched createTimeSinceEpoch data
@@ -376,37 +388,6 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 			existingMetadata.Readme = &readme
 			enrichmentInfo.DataSources.Readme = "modelcard.md"
 			log.Printf("  Restored readme content from modelcard.md for: %s", registryModel)
-		}
-	}
-
-	// Append tool-calling section to README ONLY if tool-calling config exists
-	// Section is NOT added when ToolCallingConfig is nil or HasToolCalling() returns false
-	// Guard against duplicate sections on re-enrichment runs
-	if enrichedData.ToolCallingConfig != nil && enrichedData.ToolCallingConfig.HasToolCalling() {
-		alreadyPresent := existingMetadata.Readme != nil && strings.Contains(*existingMetadata.Readme, "## vLLM Deployment with Tool Calling")
-		if alreadyPresent {
-			log.Printf("  Tool-calling section already present in README, skipping for: %s", registryModel)
-		} else {
-			modelName := registryModel
-			if enrichedData.HuggingFaceModel != "" {
-				modelName = enrichedData.HuggingFaceModel
-			}
-
-			// RenderToolCallingSection returns empty string if no valid config
-			toolCallingSection, err := utils.RenderToolCallingSection(enrichedData.ToolCallingConfig, modelName)
-			if err != nil {
-				log.Printf("  Warning: Failed to render tool-calling section for %s: %v", registryModel, err)
-			} else if toolCallingSection != "" {
-				// ONLY append if section was actually rendered
-				if existingMetadata.Readme == nil {
-					existingMetadata.Readme = &toolCallingSection
-					log.Printf("  Created README with tool-calling section for: %s", registryModel)
-				} else {
-					updatedReadme := *existingMetadata.Readme + "\n\n" + toolCallingSection
-					existingMetadata.Readme = &updatedReadme
-					log.Printf("  Appended tool-calling section to README for: %s", registryModel)
-				}
-			}
 		}
 	}
 

@@ -569,6 +569,32 @@ tasks:
 				}
 			},
 		},
+		{
+			name: "frontmatter with validated_tasks",
+			content: `---
+tasks:
+  - text-generation
+  - tool-calling
+validated_tasks:
+  - tool-calling
+tool_call_parser: granite
+validated_on:
+  - rhoai-3.5
+---
+# Model content`,
+			expectError: false,
+			checkFields: func(t *testing.T, fm *YAMLFrontmatter) {
+				if len(fm.ValidatedTasks) != 1 || fm.ValidatedTasks[0] != "tool-calling" {
+					t.Errorf("Expected validated_tasks [tool-calling], got %v", fm.ValidatedTasks)
+				}
+				if len(fm.Tasks) != 2 {
+					t.Errorf("Expected 2 tasks, got %d", len(fm.Tasks))
+				}
+				if fm.ToolCallParser != "granite" {
+					t.Errorf("Expected ToolCallParser 'granite', got %q", fm.ToolCallParser)
+				}
+			},
+		},
 	}
 
 	for _, tt := range tests {

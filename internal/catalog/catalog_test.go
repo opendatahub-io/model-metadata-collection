@@ -1467,3 +1467,154 @@ func TestConvertExtractedToCatalogMetadata_NoValidatedOn(t *testing.T) {
 		}
 	}
 }
+
+func TestConvertExtractedToCatalogMetadata_WithToolCalling(t *testing.T) {
+	metadata := types.ExtractedMetadata{
+		Name:           stringPtr("Granite-4.0-H-Small"),
+		Provider:       stringPtr("IBM"),
+		Tasks:          []string{"text-generation", "tool-calling"},
+		ValidatedTasks: []string{"tool-calling"},
+		ToolCallingConfig: &types.ToolCallingConfig{
+			Supported:        true,
+			ToolCallParser:   "granite",
+			ChatTemplatePath: "examples/tool_chat_template_granite.jinja",
+			RequiredCLIArgs:  []string{"--config_format granite"},
+		},
+		Tags:      []string{"validated"},
+		Artifacts: []types.OCIArtifact{},
+	}
+
+	result := convertExtractedToCatalogMetadata(metadata)
+
+	// Verify servingConfig
+	if result.ServingConfig == nil {
+		t.Fatal("Expected ServingConfig to be set")
+	}
+	if result.ServingConfig.ToolCalling == nil {
+		t.Fatal("Expected ServingConfig.ToolCalling to be set")
+	}
+	tc := result.ServingConfig.ToolCalling
+	if tc.ToolCallParser != "granite" {
+		t.Errorf("Expected toolCallParser 'granite', got %q", tc.ToolCallParser)
+	}
+	if tc.ChatTemplate != "opt/app-root/template/tool_chat_template_granite.jinja" {
+		t.Errorf("Expected chatTemplate path conversion, got %q", tc.ChatTemplate)
+	}
+	if !tc.EnableAutoToolChoice {
+		t.Error("Expected enableAutoToolChoice to be true")
+	}
+	if len(tc.RequiredArgs) != 1 || tc.RequiredArgs[0] != "--config_format granite" {
+		t.Errorf("Expected requiredArgs ['--config_format granite'], got %v", tc.RequiredArgs)
+	}
+
+	// Verify validatedTasks
+	if len(result.ValidatedTasks) != 1 || result.ValidatedTasks[0] != "tool-calling" {
+		t.Errorf("Expected validatedTasks [tool-calling], got %v", result.ValidatedTasks)
+	}
+
+	// Verify tool-calling in tasks
+	hasToolCalling := false
+	for _, task := range result.Tasks {
+		if task == "tool-calling" {
+			hasToolCalling = true
+		}
+	}
+	if !hasToolCalling {
+		t.Error("Expected 'tool-calling' in tasks")
+	}
+}
+
+func TestConvertExtractedToCatalogMetadata_WithoutToolCalling(t *testing.T) {
+	metadata := types.ExtractedMetadata{
+		Name:      stringPtr("Basic Model"),
+		Tasks:     []string{"text-generation"},
+		Tags:      []string{"validated"},
+		Artifacts: []types.OCIArtifact{},
+	}
+
+	result := convertExtractedToCatalogMetadata(metadata)
+
+	if result.ServingConfig != nil {
+		t.Error("Expected ServingConfig to be nil for model without tool-calling")
+	}
+	if len(result.ValidatedTasks) != 0 {
+		t.Errorf("Expected empty validatedTasks, got %v", result.ValidatedTasks)
+	}
+}
+
+func TestConvertExtractedToCatalogMetadata_ToolCallingPathConversion(t *testing.T) {
+	testCases := []struct {
+		name             string
+		chatTemplatePath string
+		expectedTemplate string
+	}{
+		{
+			name:             "examples path converted",
+			chatTemplatePath: "examples/tool_chat_template_granite.jinja",
+			expectedTemplate: "opt/app-root/template/tool_chat_template_granite.jinja",
+		},
+		{
+			name:             "already correct path",
+			chatTemplatePath: "opt/app-root/template/tool_chat_template_granite.jinja",
+			expectedTemplate: "opt/app-root/template/tool_chat_template_granite.jinja",
+		},
+		{
+			name:             "no chat template",
+			chatTemplatePath: "",
+			expectedTemplate: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			metadata := types.ExtractedMetadata{
+				Name:  stringPtr("Test Model"),
+				Tasks: []string{"tool-calling"},
+				ToolCallingConfig: &types.ToolCallingConfig{
+					Supported:        true,
+					ToolCallParser:   "granite",
+					ChatTemplatePath: tc.chatTemplatePath,
+				},
+				Tags:      []string{},
+				Artifacts: []types.OCIArtifact{},
+			}
+
+			result := convertExtractedToCatalogMetadata(metadata)
+
+			if result.ServingConfig == nil || result.ServingConfig.ToolCalling == nil {
+				t.Fatal("Expected ServingConfig.ToolCalling to be set")
+			}
+			if result.ServingConfig.ToolCalling.ChatTemplate != tc.expectedTemplate {
+				t.Errorf("Expected chatTemplate %q, got %q", tc.expectedTemplate, result.ServingConfig.ToolCalling.ChatTemplate)
+			}
+		})
+	}
+
+}
+
+func TestConvertExtractedToCatalogMetadata_ToolCallingInjectsTask(t *testing.T) {
+	// Model has tool-calling config but no "tool-calling" in tasks
+	metadata := types.ExtractedMetadata{
+		Name:  stringPtr("Model Missing Task"),
+		Tasks: []string{"text-generation"},
+		ToolCallingConfig: &types.ToolCallingConfig{
+			Supported:      true,
+			ToolCallParser: "openai",
+		},
+		Tags:      []string{},
+		Artifacts: []types.OCIArtifact{},
+	}
+
+	result := convertExtractedToCatalogMetadata(metadata)
+
+	// Verify tool-calling was injected into tasks
+	hasToolCalling := false
+	for _, task := range result.Tasks {
+		if task == "tool-calling" {
+			hasToolCalling = true
+		}
+	}
+	if !hasToolCalling {
+		t.Errorf("Expected 'tool-calling' to be injected into tasks, got %v", result.Tasks)
+	}
+}

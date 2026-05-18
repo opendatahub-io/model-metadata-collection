@@ -335,19 +335,20 @@ func (s *stringSlice) UnmarshalYAML(value *yaml.Node) error {
 
 // YAMLFrontmatter represents the YAML frontmatter in HuggingFace README files
 type YAMLFrontmatter struct {
-	Language    stringSlice `yaml:"language"`
-	BaseModel   stringSlice `yaml:"base_model"`
-	PipelineTag string      `yaml:"pipeline_tag"`
-	License     string      `yaml:"license"`
-	LicenseName string      `yaml:"license_name"`
-	LicenseLink string      `yaml:"license_link"`
-	Tags        []string    `yaml:"tags"`
-	Name        string      `yaml:"name"`
-	Description string      `yaml:"description"`
-	Tasks       []string    `yaml:"tasks"`
-	Provider    string      `yaml:"provider"`
-	ValidatedOn stringSlice `yaml:"validated_on"`
-	HardwareTag stringSlice `yaml:"hardware_tag"`
+	Language       stringSlice `yaml:"language"`
+	BaseModel      stringSlice `yaml:"base_model"`
+	PipelineTag    string      `yaml:"pipeline_tag"`
+	License        string      `yaml:"license"`
+	LicenseName    string      `yaml:"license_name"`
+	LicenseLink    string      `yaml:"license_link"`
+	Tags           []string    `yaml:"tags"`
+	Name           string      `yaml:"name"`
+	Description    string      `yaml:"description"`
+	Tasks          []string    `yaml:"tasks"`
+	Provider       string      `yaml:"provider"`
+	ValidatedOn    stringSlice `yaml:"validated_on"`
+	HardwareTag    stringSlice `yaml:"hardware_tag"`
+	ValidatedTasks stringSlice `yaml:"validated_tasks"`
 
 	// Tool-calling configuration fields (HuggingFace only)
 	ToolCallingSupported bool         `yaml:"tool_calling_supported"`

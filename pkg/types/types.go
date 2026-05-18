@@ -80,20 +80,22 @@ type OCIArtifact struct {
 
 // ExtractedMetadata represents the actual extracted values from the modelcard
 type ExtractedMetadata struct {
-	Name                     *string       `yaml:"name"`
-	Provider                 *string       `yaml:"provider"`
-	Description              *string       `yaml:"description"`
-	Readme                   *string       `yaml:"readme"`
-	Language                 []string      `yaml:"language"`
-	License                  *string       `yaml:"license"`
-	LicenseLink              *string       `yaml:"licenseLink"`
-	Tags                     []string      `yaml:"tags"`
-	Tasks                    []string      `yaml:"tasks"`
-	CreateTimeSinceEpoch     *int64        `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch *int64        `yaml:"lastUpdateTimeSinceEpoch"`
-	ValidatedOn              []string      `yaml:"validatedOn"`
-	HardwareTag              []string      `yaml:"hardwareTag"`
-	Artifacts                []OCIArtifact `yaml:"artifacts"`
+	Name                     *string            `yaml:"name"`
+	Provider                 *string            `yaml:"provider"`
+	Description              *string            `yaml:"description"`
+	Readme                   *string            `yaml:"readme"`
+	Language                 []string           `yaml:"language"`
+	License                  *string            `yaml:"license"`
+	LicenseLink              *string            `yaml:"licenseLink"`
+	Tags                     []string           `yaml:"tags"`
+	Tasks                    []string           `yaml:"tasks"`
+	CreateTimeSinceEpoch     *int64             `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch *int64             `yaml:"lastUpdateTimeSinceEpoch"`
+	ValidatedOn              []string           `yaml:"validatedOn"`
+	HardwareTag              []string           `yaml:"hardwareTag"`
+	ValidatedTasks           []string           `yaml:"validatedTasks,omitempty"`
+	ToolCallingConfig        *ToolCallingConfig `yaml:"toolCallingConfig,omitempty"`
+	Artifacts                []OCIArtifact      `yaml:"artifacts"`
 }
 
 // LegacyExtractedMetadata represents the old format with string artifacts
@@ -182,6 +184,7 @@ type EnrichedModelMetadata struct {
 	ModelSize            MetadataSource `yaml:"model_size"`
 	ValidatedOn          MetadataSource `yaml:"validated_on"`
 	HardwareTag          MetadataSource `yaml:"hardware_tag"`
+	ValidatedTasks       MetadataSource `yaml:"validated_tasks"`
 }
 
 // EnrichmentInfo tracks data sources for metadata fields
@@ -201,6 +204,7 @@ type EnrichmentInfo struct {
 		Artifacts                string `json:"artifacts"`
 		ValidatedOn              string `json:"validatedOn"`
 		HardwareTag              string `json:"hardwareTag"`
+		ValidatedTasks           string `json:"validatedTasks,omitempty"`
 	} `json:"dataSources"`
 }
 
@@ -250,6 +254,8 @@ type CatalogMetadata struct {
 	License                  *string                  `yaml:"license"`
 	LicenseLink              *string                  `yaml:"licenseLink"`
 	Tasks                    []string                 `yaml:"tasks"`
+	ValidatedTasks           []string                 `yaml:"validatedTasks,omitempty"`
+	ServingConfig            *ServingConfig           `yaml:"servingConfig,omitempty"`
 	CreateTimeSinceEpoch     *string                  `yaml:"createTimeSinceEpoch"`
 	LastUpdateTimeSinceEpoch *string                  `yaml:"lastUpdateTimeSinceEpoch"`
 	CustomProperties         map[string]MetadataValue `yaml:"customProperties,omitempty"`

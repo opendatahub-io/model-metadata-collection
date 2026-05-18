@@ -100,3 +100,17 @@ func (tc *ToolCallingConfig) GetProcessedTemplatePath() string {
 	// Default conversion for any other path format
 	return "opt/app-root/template/" + filepath.Base(fullPath)
 }
+
+// CatalogToolCallingConfig represents tool-calling configuration in catalog output format.
+// Field names and YAML tags match the CatalogModel OpenAPI schema (camelCase).
+type CatalogToolCallingConfig struct {
+	ToolCallParser       string   `yaml:"toolCallParser"`
+	ChatTemplate         string   `yaml:"chatTemplate,omitempty"`
+	EnableAutoToolChoice bool     `yaml:"enableAutoToolChoice"`
+	RequiredArgs         []string `yaml:"requiredArgs,omitempty"`
+}
+
+// ServingConfig contains serving and deployment configuration for a model.
+type ServingConfig struct {
+	ToolCalling *CatalogToolCallingConfig `yaml:"toolCalling,omitempty"`
+}
