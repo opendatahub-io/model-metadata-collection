@@ -1,6 +1,7 @@
 # Simplified Dockerfile for model metadata collection
 # Since models-catalog.yaml is now checked in by CI/CD, we only need to copy the files
-FROM registry.access.redhat.com/ubi9-micro:latest
+# Using ubi9-minimal (not ubi9-micro) to satisfy FIPS compliance: openssl-libs must be present
+FROM registry.access.redhat.com/ubi9-minimal:latest
 
 # Create directories for mounting by other applications
 RUN mkdir -p /app/data /app/benchmarks
