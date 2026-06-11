@@ -238,9 +238,9 @@ mcp_servers:
           accessType: read_only
           parameters: []
       artifacts:
-        - uri: oci://registry.redhat.io/openshift-mcp-beta/openshift-mcp-server-rhel9:0.2
-          createTimeSinceEpoch: "1775549055000"
-          lastUpdateTimeSinceEpoch: "1775549056000"
+        - uri: oci://registry.redhat.io/openshift-mcp-tech-preview/openshift-mcp-server-rhel9:0.3
+          createTimeSinceEpoch: "1777874265000"
+          lastUpdateTimeSinceEpoch: "1777874266000"
       runtimeMetadata:
         defaultArgs:
             - --config
@@ -288,7 +288,7 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: ""
       createTimeSinceEpoch: "1753228800000"
-      lastUpdateTimeSinceEpoch: "1775549056000"
+      lastUpdateTimeSinceEpoch: "1777874266000"
     - name: aap-mcp-server
       provider: Red Hat
       license: apache-2.0
@@ -376,8 +376,8 @@ mcp_servers:
           parameters: []
       artifacts:
         - uri: oci://registry.redhat.io/ansible-automation-platform-tech-preview/mcp-server-rhel9:latest
-          createTimeSinceEpoch: "1777386531000"
-          lastUpdateTimeSinceEpoch: "1777386532000"
+          createTimeSinceEpoch: "1779783371000"
+          lastUpdateTimeSinceEpoch: "1779783372000"
       runtimeMetadata:
         defaultPort: 3000
         mcpPath: /mcp
@@ -443,7 +443,7 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: ""
       createTimeSinceEpoch: "1769990400000"
-      lastUpdateTimeSinceEpoch: "1777386532000"
+      lastUpdateTimeSinceEpoch: "1779783372000"
     - name: insights-mcp-server
       provider: Red Hat
       license: apache-2.0
@@ -644,8 +644,8 @@ mcp_servers:
           parameters: []
       artifacts:
         - uri: oci://ghcr.io/redhatinsights/red-hat-lightspeed-mcp:latest
-          createTimeSinceEpoch: "1778666970000"
-          lastUpdateTimeSinceEpoch: "1778666970000"
+          createTimeSinceEpoch: "1780067354000"
+          lastUpdateTimeSinceEpoch: "1780067354000"
       runtimeMetadata:
         defaultPort: 8000
         mcpPath: /mcp
@@ -703,4 +703,4 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: ""
       createTimeSinceEpoch: "1741996800000"
-      lastUpdateTimeSinceEpoch: "1778666970000"
+      lastUpdateTimeSinceEpoch: "1780067354000"

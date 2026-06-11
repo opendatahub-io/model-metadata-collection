@@ -85,8 +85,8 @@ tools:
       parameters: []
 artifacts:
     - uri: oci://registry.redhat.io/ansible-automation-platform-tech-preview/mcp-server-rhel9:latest
-      createTimeSinceEpoch: "1777386531000"
-      lastUpdateTimeSinceEpoch: "1777386532000"
+      createTimeSinceEpoch: "1779783371000"
+      lastUpdateTimeSinceEpoch: "1779783372000"
 runtimeMetadata:
     defaultPort: 3000
     mcpPath: /mcp
@@ -152,4 +152,4 @@ customProperties:
         metadataType: MetadataStringValue
         string_value: ""
 createTimeSinceEpoch: "1769990400000"
-lastUpdateTimeSinceEpoch: "1777386532000"
+lastUpdateTimeSinceEpoch: "1779783372000"
