@@ -4231,6 +4231,8 @@ models:
       licenseLink: https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md
       tasks:
         - tool-calling
+      validatedTasks:
+        - tool-calling
       servingConfig:
         toolCalling:
             toolCallParser: mistral
@@ -4973,6 +4975,8 @@ models:
         - text-generation
         - image-to-text
         - reasoning
+        - tool-calling
+      validatedTasks:
         - tool-calling
       servingConfig:
         toolCalling:
@@ -6926,6 +6930,8 @@ models:
         - text-to-text
         - text-generation
         - tool-calling
+      validatedTasks:
+        - tool-calling
       servingConfig:
         toolCalling:
             toolCallParser: openai
@@ -6986,6 +6992,8 @@ models:
       tasks:
         - text-to-text
         - text-generation
+        - tool-calling
+      validatedTasks:
         - tool-calling
       servingConfig:
         toolCalling:
