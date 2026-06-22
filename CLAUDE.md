@@ -42,16 +42,18 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architecture documentation w
 
 ## HuggingFace Collection Index File Naming Convention
 
-**CRITICAL**: All index files MUST follow the glob pattern `data/hugging-face-redhat-ai-validated-v*.yaml` to be discoverable by `GetLatestVersionIndexFile()`.
+**CRITICAL**: All index files MUST follow the glob pattern `input/models/collections/hugging-face-redhat-ai-validated-v*.yaml` to be discoverable by `GetLatestVersionIndexFile()`.
+
+Path constants are centralized in `internal/huggingface/collections.go` (`CollectionsDir`, `CollectionFilePrefix`, helpers).
 
 Requirements:
-1. Prefix: `data/hugging-face-redhat-ai-validated-`
+1. Prefix: `input/models/collections/hugging-face-redhat-ai-validated-`
 2. **MUST** include `v` immediately after the prefix
 3. Extension: `.yaml`
 
 Examples:
-- `data/hugging-face-redhat-ai-validated-v2026-02.yaml` (date-based)
-- `data/hugging-face-redhat-ai-validated-v1-0-granite-quantized.yaml` (special collection)
+- `input/models/collections/hugging-face-redhat-ai-validated-v2026-02.yaml` (date-based)
+- `input/models/collections/hugging-face-redhat-ai-validated-v1-0-granite-quantized.yaml` (special collection)
 
 When adding a new special collection type in `parseVersionFromTitle()` (`internal/huggingface/collections.go`), the return value MUST start with `v`:
 
@@ -89,7 +91,7 @@ Authentication is automatically detected from `~/.docker/config.json` and secure
 
 1. Add collection slug to `internal/huggingface/collections.go` fallback list in `ProcessCollections()`
 2. Run `make process` to generate index files and updated catalogs
-3. Verify: `cat data/hugging-face-redhat-ai-validated-v{version}.yaml`
+3. Verify: `cat input/models/collections/hugging-face-redhat-ai-validated-v{version}.yaml`
 4. Ensure `data/validated-models-index.yaml` ends with a newline
 
 ### Adding a New Model Family
@@ -126,7 +128,7 @@ make build
 
 **Collection index file not found**: Missing `v` prefix in `parseVersionFromTitle()` return value.
 
-**New models not in catalog**: Check index file generation (`ls data/hugging-face-redhat-ai-validated-v*.yaml`), then check validated index (`grep -i "model-name" data/validated-models-index.yaml`), then test enrichment in isolation.
+**New models not in catalog**: Check index file generation (`ls input/models/collections/hugging-face-redhat-ai-validated-v*.yaml`), then check validated index (`grep -i "model-name" data/validated-models-index.yaml`), then test enrichment in isolation.
 
 ### Checklist for Adding New Model Collections
 

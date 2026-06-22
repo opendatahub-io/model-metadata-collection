@@ -1,0 +1,11 @@
+version: v1.0-other-embedding-models
+models:
+    - name: RedHatAI/bge-m3
+      url: https://huggingface.co/RedHatAI/bge-m3
+      readme_path: /RedHatAI/bge-m3/README.md
+    - name: RedHatAI/gte-Qwen2-7B-instruct
+      url: https://huggingface.co/RedHatAI/gte-Qwen2-7B-instruct
+      readme_path: /RedHatAI/gte-Qwen2-7B-instruct/README.md
+    - name: RedHatAI/multilingual-e5-large
+      url: https://huggingface.co/RedHatAI/multilingual-e5-large
+      readme_path: /RedHatAI/multilingual-e5-large/README.md

@@ -168,9 +168,9 @@ func TestGetLatestVersionIndexFile(t *testing.T) {
 		t.Fatalf("Failed to change to temp directory: %v", err)
 	}
 
-	err = os.MkdirAll("data", 0755)
+	err = os.MkdirAll(CollectionsDir, 0755)
 	if err != nil {
-		t.Fatalf("Failed to create data directory: %v", err)
+		t.Fatalf("Failed to create collections directory: %v", err)
 	}
 
 	// Test with no version files
@@ -181,9 +181,9 @@ func TestGetLatestVersionIndexFile(t *testing.T) {
 
 	// Create some test version files
 	testFiles := []string{
-		"data/hugging-face-redhat-ai-validated-v1-0.yaml",
-		"data/hugging-face-redhat-ai-validated-v2-0.yaml",
-		"data/hugging-face-redhat-ai-validated-v1-5.yaml",
+		CollectionFilePath("v1-0"),
+		CollectionFilePath("v2-0"),
+		CollectionFilePath("v1-5"),
 	}
 
 	for _, file := range testFiles {
@@ -200,7 +200,7 @@ func TestGetLatestVersionIndexFile(t *testing.T) {
 	}
 
 	// Should return the last file alphabetically (v2-0)
-	expected := "data/hugging-face-redhat-ai-validated-v2-0.yaml"
+	expected := CollectionFilePath("v2-0")
 	if latest != expected {
 		t.Errorf("Expected %s, got %s", expected, latest)
 	}

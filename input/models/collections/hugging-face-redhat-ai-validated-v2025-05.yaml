@@ -1,0 +1,119 @@
+version: v2025.05
+models:
+    - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-4-Scout-17B-16E-Instruct
+      readme_path: /RedHatAI/Llama-4-Scout-17B-16E-Instruct/README.md
+    - name: RedHatAI/Llama-4-Maverick-17B-128E-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-4-Maverick-17B-128E-Instruct
+      readme_path: /RedHatAI/Llama-4-Maverick-17B-128E-Instruct/README.md
+    - name: RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8
+      url: https://huggingface.co/RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8
+      readme_path: /RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-FP8-dynamic
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-FP8-dynamic/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w8a8
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w8a8/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501-FP8-dynamic
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501-FP8-dynamic/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w8a8
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w8a8/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501/README.md
+    - name: RedHatAI/phi-4
+      url: https://huggingface.co/RedHatAI/phi-4
+      readme_path: /RedHatAI/phi-4/README.md
+    - name: RedHatAI/phi-4-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/phi-4-quantized.w4a16
+      readme_path: /RedHatAI/phi-4-quantized.w4a16/README.md
+    - name: RedHatAI/phi-4-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/phi-4-quantized.w8a8
+      readme_path: /RedHatAI/phi-4-quantized.w8a8/README.md
+    - name: RedHatAI/phi-4-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/phi-4-FP8-dynamic
+      readme_path: /RedHatAI/phi-4-FP8-dynamic/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct
+      readme_path: /RedHatAI/granite-3.1-8b-instruct/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct/README.md
+    - name: RedHatAI/Llama-3.1-8B-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-3.1-8B-Instruct
+      readme_path: /RedHatAI/Llama-3.1-8B-Instruct/README.md
+    - name: RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic
+      readme_path: /RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic/README.md
+    - name: RedHatAI/Mixtral-8x7B-Instruct-v0.1
+      url: https://huggingface.co/RedHatAI/Mixtral-8x7B-Instruct-v0.1
+      readme_path: /RedHatAI/Mixtral-8x7B-Instruct-v0.1/README.md
+    - name: RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF
+      url: https://huggingface.co/RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF
+      readme_path: /RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct-quantized.w8a8
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct-quantized.w8a8/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-8b-base-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-base-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-8b-base-quantized.w4a16/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w4a16
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w4a16/README.md
+    - name: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8
+      readme_path: /RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8/README.md
+    - name: RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/gemma-2-9b-it-FP8
+      url: https://huggingface.co/RedHatAI/gemma-2-9b-it-FP8
+      readme_path: /RedHatAI/gemma-2-9b-it-FP8/README.md
+    - name: RedHatAI/gemma-2-9b-it
+      url: https://huggingface.co/RedHatAI/gemma-2-9b-it
+      readme_path: /RedHatAI/gemma-2-9b-it/README.md

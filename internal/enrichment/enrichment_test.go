@@ -7,6 +7,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/opendatahub-io/model-metadata-collection/internal/huggingface"
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
 
@@ -56,21 +57,21 @@ func TestEnrichMetadataFromHuggingFace_InvalidHFFile(t *testing.T) {
 	}
 
 	// Create data directory and invalid HF file
-	err = os.MkdirAll("data", 0755)
+	err = os.MkdirAll(huggingface.CollectionsDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create data directory: %v", err)
 	}
 
 	// Create invalid YAML file
 	invalidYAML := "invalid: yaml: content: ["
-	err = os.WriteFile("data/hugging-face-redhat-ai-validated-v1-0.yaml", []byte(invalidYAML), 0644)
+	err = os.WriteFile(huggingface.CollectionFilePath("v1-0"), []byte(invalidYAML), 0644)
 	if err != nil {
 		t.Fatalf("Failed to create invalid HF file: %v", err)
 	}
 
 	// Test with invalid HuggingFace file — must pass the prepared file so we
 	// actually exercise the YAML parse path, not a file-not-found error.
-	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "nonexistent-models.yaml", "output", "")
+	err = EnrichMetadataFromHuggingFace(huggingface.CollectionFilePath("v1-0"), "nonexistent-models.yaml", "output", "")
 	if err == nil {
 		t.Error("Expected error when HuggingFace index file is invalid")
 	}
@@ -99,7 +100,7 @@ func TestEnrichMetadataFromHuggingFace_MissingModelsIndex(t *testing.T) {
 	}
 
 	// Create data directory and valid HF file
-	err = os.MkdirAll("data", 0755)
+	err = os.MkdirAll(huggingface.CollectionsDir, 0755)
 	if err != nil {
 		t.Fatalf("Failed to create data directory: %v", err)
 	}
@@ -121,14 +122,14 @@ func TestEnrichMetadataFromHuggingFace_MissingModelsIndex(t *testing.T) {
 		t.Fatalf("Failed to marshal HF index: %v", err)
 	}
 
-	err = os.WriteFile("data/hugging-face-redhat-ai-validated-v1-0.yaml", hfData, 0644)
+	err = os.WriteFile(huggingface.CollectionFilePath("v1-0"), hfData, 0644)
 	if err != nil {
 		t.Fatalf("Failed to create HF file: %v", err)
 	}
 
 	// Test with missing models-index.yaml — must pass the prepared valid HF file
 	// so we exercise the models index load path, not a file-not-found on the HF file.
-	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "nonexistent-models.yaml", "output", "")
+	err = EnrichMetadataFromHuggingFace(huggingface.CollectionFilePath("v1-0"), "nonexistent-models.yaml", "output", "")
 	if err == nil {
 		t.Error("Expected error when models-index.yaml doesn't exist")
 	}
@@ -156,7 +157,11 @@ func TestEnrichMetadataFromHuggingFace_EmptyFiles(t *testing.T) {
 		t.Fatalf("Failed to change to temp directory: %v", err)
 	}
 
-	// Create data directory
+	// Create collections directory and data directory
+	err = os.MkdirAll(huggingface.CollectionsDir, 0755)
+	if err != nil {
+		t.Fatalf("Failed to create collections directory: %v", err)
+	}
 	err = os.MkdirAll("data", 0755)
 	if err != nil {
 		t.Fatalf("Failed to create data directory: %v", err)
@@ -173,7 +178,7 @@ func TestEnrichMetadataFromHuggingFace_EmptyFiles(t *testing.T) {
 		t.Fatalf("Failed to marshal HF index: %v", err)
 	}
 
-	err = os.WriteFile("data/hugging-face-redhat-ai-validated-v1-0.yaml", hfData, 0644)
+	err = os.WriteFile(huggingface.CollectionFilePath("v1-0"), hfData, 0644)
 	if err != nil {
 		t.Fatalf("Failed to create HF file: %v", err)
 	}
@@ -194,7 +199,7 @@ func TestEnrichMetadataFromHuggingFace_EmptyFiles(t *testing.T) {
 	}
 
 	// Test with empty files - should succeed
-	err = EnrichMetadataFromHuggingFace("data/hugging-face-redhat-ai-validated-v1-0.yaml", "data/models-index.yaml", "output", "")
+	err = EnrichMetadataFromHuggingFace(huggingface.CollectionFilePath("v1-0"), "data/models-index.yaml", "output", "")
 	if err != nil {
 		t.Errorf("Unexpected error with empty files: %v", err)
 	}
@@ -344,7 +349,11 @@ func TestUpdateAllModelsWithOCIArtifacts(t *testing.T) {
 		t.Fatalf("Failed to change to temp directory: %v", err)
 	}
 
-	// Create data directory and models-index.yaml
+	// Create directories
+	err = os.MkdirAll(huggingface.CollectionsDir, 0755)
+	if err != nil {
+		t.Fatalf("Failed to create collections directory: %v", err)
+	}
 	err = os.MkdirAll("data", 0755)
 	if err != nil {
 		t.Fatalf("Failed to create data directory: %v", err)

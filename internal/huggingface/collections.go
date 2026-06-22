@@ -14,6 +14,32 @@ import (
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
 
+const (
+	// CollectionsDir is the directory where HuggingFace collection index files are stored.
+	CollectionsDir = "input/models/collections"
+
+	// CollectionFilePrefix is the filename prefix for all HuggingFace collection index files.
+	CollectionFilePrefix = "hugging-face-redhat-ai-validated-"
+
+	// MergedFileName is the base filename of the merged collection index.
+	MergedFileName = CollectionFilePrefix + "merged.yaml"
+)
+
+// CollectionFilePath returns the full path for a collection file with the given suffix.
+func CollectionFilePath(suffix string) string {
+	return filepath.Join(CollectionsDir, CollectionFilePrefix+suffix+".yaml")
+}
+
+// CollectionGlob returns a glob pattern matching collection files with the given pattern.
+func CollectionGlob(pattern string) string {
+	return filepath.Join(CollectionsDir, CollectionFilePrefix+pattern+".yaml")
+}
+
+// MergedFilePath returns the full path for the merged collection index file.
+func MergedFilePath() string {
+	return filepath.Join(CollectionsDir, MergedFileName)
+}
+
 // parseVersionFromTitle extracts version from collection title using semver patterns and date patterns
 func parseVersionFromTitle(title string) string {
 	// Look for version patterns like "v1.0", "v2.1", "v1.0.0", etc.
@@ -74,14 +100,14 @@ func generateVersionIndex(collection *types.HFCollection, version string) error 
 		Models:  models,
 	}
 
-	// Ensure data directory exists
-	err := os.MkdirAll("data", 0755)
+	// Ensure collections directory exists
+	err := os.MkdirAll(CollectionsDir, 0755)
 	if err != nil {
-		return fmt.Errorf("failed to create data directory: %v", err)
+		return fmt.Errorf("failed to create collections directory: %v", err)
 	}
 
 	// Generate filename
-	filename := fmt.Sprintf("data/hugging-face-redhat-ai-validated-%s.yaml", strings.ReplaceAll(version, ".", "-"))
+	filename := CollectionFilePath(strings.ReplaceAll(version, ".", "-"))
 
 	// Marshal to YAML
 	yamlData, err := yaml.Marshal(versionIndex)
@@ -103,17 +129,15 @@ func generateVersionIndex(collection *types.HFCollection, version string) error 
 func generateMergedIndex() error {
 	// Find all version index files (including both dated versions and special collections)
 	// Pattern matches: v2025-05.yaml, v2026-02.yaml, granite-quantized.yaml, etc.
-	files, err := filepath.Glob("data/hugging-face-redhat-ai-validated-*.yaml")
+	files, err := filepath.Glob(CollectionGlob("*"))
 	if err != nil {
 		return fmt.Errorf("failed to find version index files: %v", err)
 	}
 
 	// Filter out the merged file itself to avoid circular inclusion
-	// Use explicit filename matching to prevent accidentally excluding valid files
-	const mergedFileName = "hugging-face-redhat-ai-validated-merged.yaml"
 	filteredFiles := make([]string, 0, len(files))
 	for _, file := range files {
-		if filepath.Base(file) != mergedFileName {
+		if filepath.Base(file) != MergedFileName {
 			filteredFiles = append(filteredFiles, file)
 		}
 	}
@@ -169,7 +193,7 @@ func generateMergedIndex() error {
 	}
 
 	// Write merged index to a separate file (not overwriting version-specific files)
-	filename := "data/hugging-face-redhat-ai-validated-merged.yaml"
+	filename := MergedFilePath()
 	yamlData, err := yaml.Marshal(mergedIndex)
 	if err != nil {
 		return fmt.Errorf("failed to marshal merged index to YAML: %v", err)

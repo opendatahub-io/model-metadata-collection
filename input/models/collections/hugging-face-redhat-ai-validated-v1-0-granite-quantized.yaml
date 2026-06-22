@@ -1,0 +1,56 @@
+version: v1.0-granite-quantized
+models:
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-2b-base-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-base-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-2b-base-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-2b-instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-instruct-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-2b-instruct-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-8b-base-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-base-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-8b-base-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-2b-instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-instruct-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-2b-instruct-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-8b-base-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-base-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-8b-base-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-2b-instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-instruct-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-2b-instruct-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-2b-base-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-base-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-2b-base-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-2b-base-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-base-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-2b-base-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-8b-base-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-base-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-8b-base-FP8-dynamic/README.md
+    - name: ibm-granite/granite-3.3-8b-instruct
+      url: https://huggingface.co/ibm-granite/granite-3.3-8b-instruct
+      readme_path: /ibm-granite/granite-3.3-8b-instruct/README.md
+    - name: RedHatAI/granite-4.0-h-small-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-small-FP8-dynamic
+      readme_path: /RedHatAI/granite-4.0-h-small-FP8-dynamic/README.md
+    - name: RedHatAI/granite-4.0-h-tiny-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-tiny-FP8-dynamic
+      readme_path: /RedHatAI/granite-4.0-h-tiny-FP8-dynamic/README.md
+    - name: RedHatAI/granite-4.0-h-small
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-small
+      readme_path: /RedHatAI/granite-4.0-h-small/README.md
+    - name: RedHatAI/granite-4.0-h-tiny
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-tiny
+      readme_path: /RedHatAI/granite-4.0-h-tiny/README.md
+    - name: RedHatAI/granite-3.3-8b-instruct
+      url: https://huggingface.co/RedHatAI/granite-3.3-8b-instruct
+      readme_path: /RedHatAI/granite-3.3-8b-instruct/README.md

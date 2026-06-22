@@ -142,13 +142,18 @@ data/
   redhat-mcp-servers-catalog.yaml  # Red Hat MCP servers catalog
   partner-mcp-servers-catalog.yaml # Partner MCP servers catalog
   community-mcp-servers-catalog.yaml # Community MCP servers catalog
-  hugging-face-redhat-ai-validated-v*.yaml  # Version-specific HF indices
 
-input/mcp_servers/
-  redhat/                          # Red Hat MCP server metadata files
-    *.yaml
-  partner/                         # Partner MCP server metadata files
-    *.yaml
-  community/                       # Community MCP server metadata files
-    *.yaml
+input/
+  models/
+    collections/                     # HuggingFace collection index files
+      hugging-face-redhat-ai-validated-v*.yaml
+    vllm-config/                     # vLLM recommended configurations
+      *.yaml
+  mcp_servers/
+    redhat/                          # Red Hat MCP server metadata files
+      *.yaml
+    partner/                         # Partner MCP server metadata files
+      *.yaml
+    community/                       # Community MCP server metadata files
+      *.yaml
 ```

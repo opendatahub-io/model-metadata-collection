@@ -9,4 +9,9 @@ models:
   uri: registry.redhat.io/rhelai1/modelcar-qwen3-embedding-8b:1.5
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-all-minilm-l6-v2:1.5
-
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-baai-bge-m3:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-alibaba-nlp-gte-qwen2-7b-instruct:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-intfloat-multilingual-e5-large:3.0

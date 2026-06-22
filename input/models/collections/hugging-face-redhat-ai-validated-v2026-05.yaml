@@ -1,0 +1,32 @@
+version: v2026.05
+models:
+    - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-BF16/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4/README.md
+    - name: RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic/README.md
+    - name: RedHatAI/Mistral-Small-4-119B-2603
+      url: https://huggingface.co/RedHatAI/Mistral-Small-4-119B-2603
+      readme_path: /RedHatAI/Mistral-Small-4-119B-2603/README.md
+    - name: RedHatAI/Mistral-Small-4-119B-2603-NVFP4
+      url: https://huggingface.co/RedHatAI/Mistral-Small-4-119B-2603-NVFP4
+      readme_path: /RedHatAI/Mistral-Small-4-119B-2603-NVFP4/README.md
+    - name: RedHatAI/sarvam-105b-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/sarvam-105b-FP8-dynamic
+      readme_path: /RedHatAI/sarvam-105b-FP8-dynamic/README.md
+    - name: RedHatAI/sarvam-30b-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/sarvam-30b-FP8-dynamic
+      readme_path: /RedHatAI/sarvam-30b-FP8-dynamic/README.md

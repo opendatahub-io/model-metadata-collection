@@ -1,0 +1,17 @@
+version: v1.0-embedding-models
+models:
+    - name: RedHatAI/embeddinggemma-300m
+      url: https://huggingface.co/RedHatAI/embeddinggemma-300m
+      readme_path: /RedHatAI/embeddinggemma-300m/README.md
+    - name: RedHatAI/Qwen3-Embedding-8B
+      url: https://huggingface.co/RedHatAI/Qwen3-Embedding-8B
+      readme_path: /RedHatAI/Qwen3-Embedding-8B/README.md
+    - name: RedHatAI/nomic-embed-text-v1.5
+      url: https://huggingface.co/RedHatAI/nomic-embed-text-v1.5
+      readme_path: /RedHatAI/nomic-embed-text-v1.5/README.md
+    - name: RedHatAI/granite-embedding-english-r2
+      url: https://huggingface.co/RedHatAI/granite-embedding-english-r2
+      readme_path: /RedHatAI/granite-embedding-english-r2/README.md
+    - name: RedHatAI/all-MiniLM-L6-v2
+      url: https://huggingface.co/RedHatAI/all-MiniLM-L6-v2
+      readme_path: /RedHatAI/all-MiniLM-L6-v2/README.md

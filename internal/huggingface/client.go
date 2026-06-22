@@ -188,7 +188,7 @@ func FetchReadme(modelName string) (string, error) {
 
 // GetLatestVersionIndexFile finds the latest version index file
 func GetLatestVersionIndexFile() (string, error) {
-	files, err := filepath.Glob("data/hugging-face-redhat-ai-validated-v*.yaml")
+	files, err := filepath.Glob(CollectionGlob("v*"))
 	if err != nil {
 		return "", fmt.Errorf("failed to find version index files: %v", err)
 	}

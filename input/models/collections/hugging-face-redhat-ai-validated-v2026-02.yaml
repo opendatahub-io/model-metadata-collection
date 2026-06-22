@@ -1,0 +1,20 @@
+version: v2026.02
+models:
+    - name: RedHatAI/Phi-4-reasoning-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Phi-4-reasoning-FP8-dynamic
+      readme_path: /RedHatAI/Phi-4-reasoning-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4
+      url: https://huggingface.co/RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4
+      readme_path: /RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4/README.md
+    - name: RedHatAI/Qwen3-Next-80B-A3B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Qwen3-Next-80B-A3B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Qwen3-Next-80B-A3B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/granite-4.0-h-tiny-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-tiny-FP8-dynamic
+      readme_path: /RedHatAI/granite-4.0-h-tiny-FP8-dynamic/README.md
+    - name: RedHatAI/granite-4.0-h-small-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-small-FP8-dynamic
+      readme_path: /RedHatAI/granite-4.0-h-small-FP8-dynamic/README.md
+    - name: RedHatAI/Ministral-3-14B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Ministral-3-14B-Instruct-2512
+      readme_path: /RedHatAI/Ministral-3-14B-Instruct-2512/README.md

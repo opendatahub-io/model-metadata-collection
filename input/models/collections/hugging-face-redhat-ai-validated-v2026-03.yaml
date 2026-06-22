@@ -1,0 +1,17 @@
+version: v2026.03
+models:
+    - name: RedHatAI/Qwen3-Coder-Next-NVFP4
+      url: https://huggingface.co/RedHatAI/Qwen3-Coder-Next-NVFP4
+      readme_path: /RedHatAI/Qwen3-Coder-Next-NVFP4/README.md
+    - name: RedHatAI/MiniMax-M2.5
+      url: https://huggingface.co/RedHatAI/MiniMax-M2.5
+      readme_path: /RedHatAI/MiniMax-M2.5/README.md
+    - name: RedHatAI/Ministral-3-3B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Ministral-3-3B-Instruct-2512
+      readme_path: /RedHatAI/Ministral-3-3B-Instruct-2512/README.md
+    - name: RedHatAI/Devstral-Small-2-24B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Devstral-Small-2-24B-Instruct-2512
+      readme_path: /RedHatAI/Devstral-Small-2-24B-Instruct-2512/README.md
+    - name: RedHatAI/Phi-4-mini-instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Phi-4-mini-instruct-FP8-dynamic
+      readme_path: /RedHatAI/Phi-4-mini-instruct-FP8-dynamic/README.md

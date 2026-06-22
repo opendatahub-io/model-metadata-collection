@@ -174,15 +174,15 @@ func main() {
 
 			// Determine HuggingFace index file to use
 			// Prefer merged index file to ensure all models from all collections are available for matching
-			hfIndexFile := "data/hugging-face-redhat-ai-validated-merged.yaml"
+			hfIndexFile := huggingface.MergedFilePath()
 			if _, err := os.Stat(hfIndexFile); err != nil {
 				// Fallback to latest version-specific file if merged doesn't exist
 				log.Printf("Warning: Merged index file not found, falling back to latest version file")
-				hfIndexFile, err = getLatestVersionIndexFile()
+				hfIndexFile, err = huggingface.GetLatestVersionIndexFile()
 				if err != nil {
 					log.Printf("Warning: Could not find HuggingFace index file: %v", err)
 					// Use default fallback path
-					hfIndexFile = "data/hugging-face-redhat-ai-validated-v1-0.yaml"
+					hfIndexFile = huggingface.CollectionFilePath("v1-0")
 				}
 			}
 
@@ -330,7 +330,7 @@ func loadModelsWithMetadata(modelsIndexPath string) ([]types.ModelEntry, error) 
 	}
 
 	// Try to load from latest version index file as fallback
-	latestIndexFile, err := getLatestVersionIndexFile()
+	latestIndexFile, err := huggingface.GetLatestVersionIndexFile()
 	if err == nil {
 		log.Printf("Using latest version index file: %s", latestIndexFile)
 		// Convert version index to model entries (all validated=true, featured=false by default)
@@ -351,22 +351,6 @@ func loadModelsWithMetadata(modelsIndexPath string) ([]types.ModelEntry, error) 
 	}
 
 	return nil, fmt.Errorf("no valid models index file found at %s and no version index files available", modelsIndexPath)
-}
-
-// getLatestVersionIndexFile finds the latest version index file
-func getLatestVersionIndexFile() (string, error) {
-	files, err := filepath.Glob("data/hugging-face-redhat-ai-validated-v*.yaml")
-	if err != nil {
-		return "", fmt.Errorf("failed to find version index files: %v", err)
-	}
-
-	if len(files) == 0 {
-		return "", fmt.Errorf("no version index files found")
-	}
-
-	// Sort files to get the latest version
-	// This is a simple sort - for production you might want more sophisticated version comparison
-	return files[len(files)-1], nil
 }
 
 // processModelsInParallelWithMetadata processes multiple models concurrently with metadata support
@@ -715,7 +699,7 @@ func tryHuggingFaceFallback(manifestRef string, outputDir string) {
 	log.Printf("  Attempting HuggingFace README fallback for: %s", manifestRef)
 
 	// Try to get the latest HuggingFace index file
-	latestIndexFile, err := getLatestVersionIndexFile()
+	latestIndexFile, err := huggingface.GetLatestVersionIndexFile()
 	if err != nil {
 		log.Printf("  Warning: Failed to find HuggingFace index file for fallback: %v", err)
 		return

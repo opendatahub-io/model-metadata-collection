@@ -7,7 +7,7 @@ The `huggingface` package provides the HuggingFace API client and collection pro
 - Discovering Red Hat AI validated model collections via the HuggingFace API
 - Fetching collection metadata and model listings
 - Parsing version information from collection titles (semver and date-based)
-- Generating version-specific index files (`data/hugging-face-redhat-ai-validated-v*.yaml`)
+- Generating version-specific index files (`input/models/collections/hugging-face-redhat-ai-validated-v*.yaml`)
 - Fetching HuggingFace README content for metadata enrichment
 
 ## Key Functions

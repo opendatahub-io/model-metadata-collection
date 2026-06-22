@@ -1,0 +1,14 @@
+version: v2026.01
+models:
+    - name: RedHatAI/Mistral-Large-3-675B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Mistral-Large-3-675B-Instruct-2512
+      readme_path: /RedHatAI/Mistral-Large-3-675B-Instruct-2512/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/README.md
+    - name: RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4
+      url: https://huggingface.co/RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4
+      readme_path: /RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4/README.md
+    - name: RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic
+      readme_path: /RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic/README.md

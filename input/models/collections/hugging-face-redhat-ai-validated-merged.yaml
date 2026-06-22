@@ -1,0 +1,293 @@
+version: v2026.05
+models:
+    - name: RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic
+      readme_path: /RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic/README.md
+    - name: RedHatAI/DeepSeek-R1-0528-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/DeepSeek-R1-0528-quantized.w4a16
+      readme_path: /RedHatAI/DeepSeek-R1-0528-quantized.w4a16/README.md
+    - name: RedHatAI/Devstral-Small-2-24B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Devstral-Small-2-24B-Instruct-2512
+      readme_path: /RedHatAI/Devstral-Small-2-24B-Instruct-2512/README.md
+    - name: RedHatAI/Kimi-K2-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Kimi-K2-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Kimi-K2-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Llama-3.1-8B-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-3.1-8B-Instruct
+      readme_path: /RedHatAI/Llama-3.1-8B-Instruct/README.md
+    - name: RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF
+      url: https://huggingface.co/RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF
+      readme_path: /RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF/README.md
+    - name: RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic
+      readme_path: /RedHatAI/Llama-3.1-Nemotron-70B-Instruct-HF-FP8-dynamic/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8
+      readme_path: /RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8/README.md
+    - name: RedHatAI/Llama-4-Maverick-17B-128E-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-4-Maverick-17B-128E-Instruct
+      readme_path: /RedHatAI/Llama-4-Maverick-17B-128E-Instruct/README.md
+    - name: RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8
+      url: https://huggingface.co/RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8
+      readme_path: /RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8/README.md
+    - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct
+      url: https://huggingface.co/RedHatAI/Llama-4-Scout-17B-16E-Instruct
+      readme_path: /RedHatAI/Llama-4-Scout-17B-16E-Instruct/README.md
+    - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Llama-4-Scout-17B-16E-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8
+      readme_path: /RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8/README.md
+    - name: RedHatAI/MiniMax-M2.5
+      url: https://huggingface.co/RedHatAI/MiniMax-M2.5
+      readme_path: /RedHatAI/MiniMax-M2.5/README.md
+    - name: RedHatAI/Ministral-3-14B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Ministral-3-14B-Instruct-2512
+      readme_path: /RedHatAI/Ministral-3-14B-Instruct-2512/README.md
+    - name: RedHatAI/Ministral-3-3B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Ministral-3-3B-Instruct-2512
+      readme_path: /RedHatAI/Ministral-3-3B-Instruct-2512/README.md
+    - name: RedHatAI/Mistral-Large-3-675B-Instruct-2512
+      url: https://huggingface.co/RedHatAI/Mistral-Large-3-675B-Instruct-2512
+      readme_path: /RedHatAI/Mistral-Large-3-675B-Instruct-2512/README.md
+    - name: RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4
+      url: https://huggingface.co/RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4
+      readme_path: /RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501-FP8-dynamic
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501-FP8-dynamic/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w4a16
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w4a16/README.md
+    - name: RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w8a8
+      readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501-quantized.w8a8/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-FP8-dynamic
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-FP8-dynamic/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16/README.md
+    - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w8a8
+      readme_path: /RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w8a8/README.md
+    - name: RedHatAI/Mistral-Small-4-119B-2603
+      url: https://huggingface.co/RedHatAI/Mistral-Small-4-119B-2603
+      readme_path: /RedHatAI/Mistral-Small-4-119B-2603/README.md
+    - name: RedHatAI/Mistral-Small-4-119B-2603-NVFP4
+      url: https://huggingface.co/RedHatAI/Mistral-Small-4-119B-2603-NVFP4
+      readme_path: /RedHatAI/Mistral-Small-4-119B-2603-NVFP4/README.md
+    - name: RedHatAI/Mixtral-8x7B-Instruct-v0.1
+      url: https://huggingface.co/RedHatAI/Mixtral-8x7B-Instruct-v0.1
+      readme_path: /RedHatAI/Mixtral-8x7B-Instruct-v0.1/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-BF16
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-BF16/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic
+      readme_path: /RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-quantized.w4a16
+      readme_path: /RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-quantized.w4a16/README.md
+    - name: RedHatAI/Phi-4-mini-instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Phi-4-mini-instruct-FP8-dynamic
+      readme_path: /RedHatAI/Phi-4-mini-instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Phi-4-reasoning-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Phi-4-reasoning-FP8-dynamic
+      readme_path: /RedHatAI/Phi-4-reasoning-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct-FP8-dynamic
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Qwen2.5-7B-Instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/Qwen2.5-7B-Instruct-quantized.w8a8
+      readme_path: /RedHatAI/Qwen2.5-7B-Instruct-quantized.w8a8/README.md
+    - name: RedHatAI/Qwen3-8B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3-8B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3-8B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8
+      url: https://huggingface.co/RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8
+      readme_path: /RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8/README.md
+    - name: RedHatAI/Qwen3-Coder-Next-NVFP4
+      url: https://huggingface.co/RedHatAI/Qwen3-Coder-Next-NVFP4
+      readme_path: /RedHatAI/Qwen3-Coder-Next-NVFP4/README.md
+    - name: RedHatAI/Qwen3-Embedding-8B
+      url: https://huggingface.co/RedHatAI/Qwen3-Embedding-8B
+      readme_path: /RedHatAI/Qwen3-Embedding-8B/README.md
+    - name: RedHatAI/Qwen3-Next-80B-A3B-Instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/Qwen3-Next-80B-A3B-Instruct-quantized.w4a16
+      readme_path: /RedHatAI/Qwen3-Next-80B-A3B-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4
+      url: https://huggingface.co/RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4
+      readme_path: /RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4/README.md
+    - name: RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.5-35B-A3B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic/README.md
+    - name: RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic
+      readme_path: /RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic/README.md
+    - name: RedHatAI/all-MiniLM-L6-v2
+      url: https://huggingface.co/RedHatAI/all-MiniLM-L6-v2
+      readme_path: /RedHatAI/all-MiniLM-L6-v2/README.md
+    - name: RedHatAI/bge-m3
+      url: https://huggingface.co/RedHatAI/bge-m3
+      readme_path: /RedHatAI/bge-m3/README.md
+    - name: RedHatAI/embeddinggemma-300m
+      url: https://huggingface.co/RedHatAI/embeddinggemma-300m
+      readme_path: /RedHatAI/embeddinggemma-300m/README.md
+    - name: RedHatAI/gemma-2-9b-it
+      url: https://huggingface.co/RedHatAI/gemma-2-9b-it
+      readme_path: /RedHatAI/gemma-2-9b-it/README.md
+    - name: RedHatAI/gemma-2-9b-it-FP8
+      url: https://huggingface.co/RedHatAI/gemma-2-9b-it-FP8
+      readme_path: /RedHatAI/gemma-2-9b-it-FP8/README.md
+    - name: RedHatAI/gemma-3n-E4B-it-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/gemma-3n-E4B-it-FP8-dynamic
+      readme_path: /RedHatAI/gemma-3n-E4B-it-FP8-dynamic/README.md
+    - name: RedHatAI/gpt-oss-120b
+      url: https://huggingface.co/RedHatAI/gpt-oss-120b
+      readme_path: /RedHatAI/gpt-oss-120b/README.md
+    - name: RedHatAI/gpt-oss-120b-essential
+      url: https://huggingface.co/RedHatAI/gpt-oss-120b-essential
+      readme_path: /RedHatAI/gpt-oss-120b-essential/README.md
+    - name: RedHatAI/gpt-oss-20b
+      url: https://huggingface.co/RedHatAI/gpt-oss-20b
+      readme_path: /RedHatAI/gpt-oss-20b/README.md
+    - name: RedHatAI/gpt-oss-20b-essential
+      url: https://huggingface.co/RedHatAI/gpt-oss-20b-essential
+      readme_path: /RedHatAI/gpt-oss-20b-essential/README.md
+    - name: RedHatAI/granite-3.1-2b-base-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-base-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-2b-base-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-2b-base-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-base-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-2b-base-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-2b-base-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-base-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-2b-base-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-2b-instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-instruct-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-2b-instruct-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-2b-instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-instruct-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-2b-instruct-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-2b-instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-2b-instruct-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-2b-instruct-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-8b-base-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-base-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-8b-base-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-8b-base-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-base-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-8b-base-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-8b-base-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-base-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-8b-base-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct
+      readme_path: /RedHatAI/granite-3.1-8b-instruct/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-FP8-dynamic
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-FP8-dynamic/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-quantized.w4a16/README.md
+    - name: RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+      readme_path: /RedHatAI/granite-3.1-8b-instruct-quantized.w8a8/README.md
+    - name: RedHatAI/granite-3.3-8b-instruct
+      url: https://huggingface.co/RedHatAI/granite-3.3-8b-instruct
+      readme_path: /RedHatAI/granite-3.3-8b-instruct/README.md
+    - name: RedHatAI/granite-4.0-h-small
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-small
+      readme_path: /RedHatAI/granite-4.0-h-small/README.md
+    - name: RedHatAI/granite-4.0-h-small-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-small-FP8-dynamic
+      readme_path: /RedHatAI/granite-4.0-h-small-FP8-dynamic/README.md
+    - name: RedHatAI/granite-4.0-h-tiny
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-tiny
+      readme_path: /RedHatAI/granite-4.0-h-tiny/README.md
+    - name: RedHatAI/granite-4.0-h-tiny-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/granite-4.0-h-tiny-FP8-dynamic
+      readme_path: /RedHatAI/granite-4.0-h-tiny-FP8-dynamic/README.md
+    - name: RedHatAI/granite-embedding-english-r2
+      url: https://huggingface.co/RedHatAI/granite-embedding-english-r2
+      readme_path: /RedHatAI/granite-embedding-english-r2/README.md
+    - name: RedHatAI/gte-Qwen2-7B-instruct
+      url: https://huggingface.co/RedHatAI/gte-Qwen2-7B-instruct
+      readme_path: /RedHatAI/gte-Qwen2-7B-instruct/README.md
+    - name: RedHatAI/multilingual-e5-large
+      url: https://huggingface.co/RedHatAI/multilingual-e5-large
+      readme_path: /RedHatAI/multilingual-e5-large/README.md
+    - name: RedHatAI/nomic-embed-text-v1.5
+      url: https://huggingface.co/RedHatAI/nomic-embed-text-v1.5
+      readme_path: /RedHatAI/nomic-embed-text-v1.5/README.md
+    - name: RedHatAI/phi-4
+      url: https://huggingface.co/RedHatAI/phi-4
+      readme_path: /RedHatAI/phi-4/README.md
+    - name: RedHatAI/phi-4-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/phi-4-FP8-dynamic
+      readme_path: /RedHatAI/phi-4-FP8-dynamic/README.md
+    - name: RedHatAI/phi-4-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/phi-4-quantized.w4a16
+      readme_path: /RedHatAI/phi-4-quantized.w4a16/README.md
+    - name: RedHatAI/phi-4-quantized.w8a8
+      url: https://huggingface.co/RedHatAI/phi-4-quantized.w8a8
+      readme_path: /RedHatAI/phi-4-quantized.w8a8/README.md
+    - name: RedHatAI/sarvam-105b-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/sarvam-105b-FP8-dynamic
+      readme_path: /RedHatAI/sarvam-105b-FP8-dynamic/README.md
+    - name: RedHatAI/sarvam-30b-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/sarvam-30b-FP8-dynamic
+      readme_path: /RedHatAI/sarvam-30b-FP8-dynamic/README.md
+    - name: RedHatAI/whisper-large-v3-turbo-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/whisper-large-v3-turbo-quantized.w4a16
+      readme_path: /RedHatAI/whisper-large-v3-turbo-quantized.w4a16/README.md
+    - name: ibm-granite/granite-3.3-8b-instruct
+      url: https://huggingface.co/ibm-granite/granite-3.3-8b-instruct
+      readme_path: /ibm-granite/granite-3.3-8b-instruct/README.md

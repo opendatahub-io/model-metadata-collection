@@ -212,7 +212,7 @@ docker images model-metadata-collection
 The tool accepts multiple input sources:
 
 ### Automatic HuggingFace Collections (Default)
-Discovers Red Hat AI validated model collections from HuggingFace and generates version-specific index files such as `data/hugging-face-redhat-ai-validated-v1-0.yaml`.
+Discovers Red Hat AI validated model collections from HuggingFace and generates version-specific index files such as `input/models/collections/hugging-face-redhat-ai-validated-v1-0.yaml`.
 
 ### Static Model Catalogs
 The tool merges static model catalogs with dynamically extracted metadata. By default, it reads `input/supplemental-catalog.yaml` automatically:
@@ -264,7 +264,7 @@ Each model entry supports the following fields:
 Generated automatically from HuggingFace collections.
 
 ```yaml
-# Example: data/hugging-face-redhat-ai-validated-v1-0.yaml
+# Example: input/models/collections/hugging-face-redhat-ai-validated-v1-0.yaml
 version: v1.0
 models:
   - name: RedHatAI/Llama-4-Scout-17B-16E-Instruct

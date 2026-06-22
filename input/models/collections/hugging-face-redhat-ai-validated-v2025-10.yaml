@@ -1,0 +1,29 @@
+version: v2025.10
+models:
+    - name: RedHatAI/gpt-oss-120b
+      url: https://huggingface.co/RedHatAI/gpt-oss-120b
+      readme_path: /RedHatAI/gpt-oss-120b/README.md
+    - name: RedHatAI/gpt-oss-20b
+      url: https://huggingface.co/RedHatAI/gpt-oss-20b
+      readme_path: /RedHatAI/gpt-oss-20b/README.md
+    - name: RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8
+      url: https://huggingface.co/RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8
+      readme_path: /RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8/README.md
+    - name: RedHatAI/whisper-large-v3-turbo-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/whisper-large-v3-turbo-quantized.w4a16
+      readme_path: /RedHatAI/whisper-large-v3-turbo-quantized.w4a16/README.md
+    - name: RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic
+      readme_path: /RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic
+      readme_path: /RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-quantized.w4a16
+      readme_path: /RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-quantized.w4a16/README.md
+    - name: RedHatAI/gpt-oss-20b-essential
+      url: https://huggingface.co/RedHatAI/gpt-oss-20b-essential
+      readme_path: /RedHatAI/gpt-oss-20b-essential/README.md
+    - name: RedHatAI/gpt-oss-120b-essential
+      url: https://huggingface.co/RedHatAI/gpt-oss-120b-essential
+      readme_path: /RedHatAI/gpt-oss-120b-essential/README.md

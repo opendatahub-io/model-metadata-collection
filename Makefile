@@ -64,7 +64,7 @@ clean:
 	$(GOCLEAN)
 	rm -rf $(BUILD_DIR)
 	rm -rf output/
-	rm -f data/hugging-face-redhat-ai-validated-*.yaml
+	rm -f input/models/collections/hugging-face-redhat-ai-validated-*.yaml
 	rm -f $(REDHAT_MCP_SERVERS_CATALOG_OUTPUT_PATH)
 	rm -f $(PARTNER_MCP_SERVERS_CATALOG_OUTPUT_PATH)
 	rm -f $(COMMUNITY_MCP_SERVERS_CATALOG_OUTPUT_PATH)
