@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -176,13 +177,14 @@ func main() {
 			// Prefer merged index file to ensure all models from all collections are available for matching
 			hfIndexFile := huggingface.MergedFilePath()
 			if _, err := os.Stat(hfIndexFile); err != nil {
+				if !errors.Is(err, os.ErrNotExist) {
+					log.Fatalf("Failed to access merged index file %s: %v", hfIndexFile, err)
+				}
 				// Fallback to latest version-specific file if merged doesn't exist
 				log.Printf("Warning: Merged index file not found, falling back to latest version file")
 				hfIndexFile, err = huggingface.GetLatestVersionIndexFile()
 				if err != nil {
-					log.Printf("Warning: Could not find HuggingFace index file: %v", err)
-					// Use default fallback path
-					hfIndexFile = huggingface.CollectionFilePath("v1-0")
+					log.Fatalf("Could not find any HuggingFace index file: %v", err)
 				}
 			}
 
