@@ -29,6 +29,8 @@ func CreateMCPServersCatalog(indexPath, catalogPath string) error {
 
 	log.Printf("Processing MCP servers index: %s (%d entries)", indexPath, len(index.MCPServers))
 
+	supportTier := supportTierFromSource(index.Source)
+
 	// Load each input file referenced by the index
 	var servers []types.MCPServerMetadata
 	for _, entry := range index.MCPServers {
@@ -42,6 +44,7 @@ func CreateMCPServersCatalog(indexPath, catalogPath string) error {
 			log.Printf("Warning: skipping MCP server %q: %v", entry.Name, err)
 			continue
 		}
+		injectSupportTier(server, supportTier)
 		servers = append(servers, *server)
 		log.Printf("  Loaded MCP server: %s", entry.Name)
 	}
@@ -102,4 +105,33 @@ func loadMCPServerInput(inputPath string) (*types.MCPServerMetadata, error) {
 	}
 
 	return &server, nil
+}
+
+// supportTierFromSource maps an index Source value to a supportTier enum string.
+func supportTierFromSource(source string) string {
+	switch strings.ToLower(source) {
+	case "red hat mcp":
+		return "red_hat_supported"
+	case "partner mcp":
+		return "partner_supported"
+	case "community mcp":
+		return "community_supported"
+	default:
+		return ""
+	}
+}
+
+// injectSupportTier sets the supportTier custom property on a server,
+// initializing CustomProperties if necessary. Does nothing when tier is empty.
+func injectSupportTier(server *types.MCPServerMetadata, tier string) {
+	if tier == "" {
+		return
+	}
+	if server.CustomProperties == nil {
+		server.CustomProperties = make(map[string]types.MetadataValue)
+	}
+	server.CustomProperties["supportTier"] = types.MetadataValue{
+		MetadataType: "MetadataStringValue",
+		StringValue:  tier,
+	}
 }

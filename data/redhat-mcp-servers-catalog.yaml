@@ -287,6 +287,9 @@ mcp_servers:
         openshift:
             metadataType: MetadataStringValue
             string_value: ""
+        supportTier:
+            metadataType: MetadataStringValue
+            string_value: "red_hat_supported"
       createTimeSinceEpoch: "1753228800000"
       lastUpdateTimeSinceEpoch: "1777874266000"
     - name: aap-mcp-server
@@ -442,6 +445,9 @@ mcp_servers:
         infrastructure:
             metadataType: MetadataStringValue
             string_value: ""
+        supportTier:
+            metadataType: MetadataStringValue
+            string_value: "red_hat_supported"
       createTimeSinceEpoch: "1769990400000"
       lastUpdateTimeSinceEpoch: "1779783372000"
     - name: insights-mcp-server
@@ -644,8 +650,8 @@ mcp_servers:
           parameters: []
       artifacts:
         - uri: oci://ghcr.io/redhatinsights/red-hat-lightspeed-mcp:latest
-          createTimeSinceEpoch: "1780067354000"
-          lastUpdateTimeSinceEpoch: "1780067354000"
+          createTimeSinceEpoch: "1782220479000"
+          lastUpdateTimeSinceEpoch: "1782220479000"
       runtimeMetadata:
         defaultPort: 8000
         mcpPath: /mcp
@@ -702,5 +708,8 @@ mcp_servers:
         security:
             metadataType: MetadataStringValue
             string_value: ""
+        supportTier:
+            metadataType: MetadataStringValue
+            string_value: "red_hat_supported"
       createTimeSinceEpoch: "1741996800000"
-      lastUpdateTimeSinceEpoch: "1780067354000"
+      lastUpdateTimeSinceEpoch: "1782220479000"
