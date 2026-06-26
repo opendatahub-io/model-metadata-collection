@@ -28,6 +28,7 @@ var SupportedModelFamilies = []string{
 	"gpt",
 	"granite",
 	"kimi",
+	"laguna",
 	"llama",
 	"minimax",
 	"ministral",

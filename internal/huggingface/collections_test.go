@@ -71,8 +71,28 @@ func TestParseVersionFromTitle(t *testing.T) {
 			expected: "v1.0-embedding-models",
 		},
 		{
+			name:     "other ea2 models collection",
+			title:    "Other EA2 Models",
+			expected: "v1.0-other-ea2-models",
+		},
+		{
+			name:     "other ea2 models with different casing",
+			title:    "OTHER EA2 MODELS",
+			expected: "v1.0-other-ea2-models",
+		},
+		{
+			name:     "other ea2 models with extra words",
+			title:    "Red Hat AI Other EA2 Models Collection",
+			expected: "v1.0-other-ea2-models",
+		},
+		{
+			name:     "embedding takes precedence over other ea2",
+			title:    "Other Embedding EA2 Models",
+			expected: "v1.0-embedding-models",
+		},
+		{
 			name:     "no matching pattern",
-			title:    "Some other collection",
+			title:    "Some random collection",
 			expected: "",
 		},
 	}
