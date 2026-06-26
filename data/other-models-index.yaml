@@ -15,3 +15,37 @@ models:
   uri: registry.redhat.io/rhai/modelcar-alibaba-nlp-gte-qwen2-7b-instruct:3.0
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-intfloat-multilingual-e5-large:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it-nvfp4:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it-fp8-dynamic:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it-fp8-block:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-26b-a4b-it-nvfp4:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-26b-a4b-it-fp8-dynamic:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b-nvfp4:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b-fp8:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b-fp8-dynamic:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-26b-a4b-it:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-google-gemma-4-e4b-it:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-vl-30b-a3b-instruct:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-super-120b-a12b-fp8:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-fp8:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-nvfp4:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-snowflake-arctic-embed-l-v2-0:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-tinyllama-1-1b-chat-v1-0:3.0

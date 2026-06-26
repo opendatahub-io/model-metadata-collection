@@ -77,6 +77,9 @@ func parseVersionFromTitle(title string) string {
 	if strings.Contains(lowerTitle, "embedding") {
 		return "v1.0-embedding-models"
 	}
+	if strings.Contains(lowerTitle, "other") && strings.Contains(lowerTitle, "ea2") {
+		return "v1.0-other-ea2-models"
+	}
 
 	return ""
 }

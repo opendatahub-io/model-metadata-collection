@@ -261,6 +261,21 @@ func TestNormalizeModelName(t *testing.T) {
 			expected: "qwen3-8b-fp8-dynamic",
 		},
 		{
+			name:     "laguna xs.2 from container",
+			input:    "registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-fp8:3.0",
+			expected: "redhatai-laguna-xs-2-fp8",
+		},
+		{
+			name:     "laguna xs.2 from HuggingFace with dot",
+			input:    "RedHatAI/Laguna-XS.2-FP8",
+			expected: "laguna-xs-2-fp8",
+		},
+		{
+			name:     "laguna xs.2 nvfp4 variant",
+			input:    "registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-nvfp4:3.0",
+			expected: "redhatai-laguna-xs-2-nvfp4",
+		},
+		{
 			name:     "short prefix not normalized (fp8 is 2 letters but compound regex requires family-like prefix)",
 			input:    "fp8-2-way-quantized",
 			expected: "fp8-2-way-quantized",
@@ -335,6 +350,13 @@ func TestCalculateSimilarity(t *testing.T) {
 			s1:       "registry.redhat.io/rhai/modelcar-minimax-m2-5:3.0",
 			s2:       "RedHatAI/MiniMax-M2.5",
 			minScore: 0.9,
+			maxScore: 1.0,
+		},
+		{
+			name:     "laguna container vs HuggingFace (high similarity)",
+			s1:       "registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-fp8:3.0",
+			s2:       "RedHatAI/Laguna-XS.2-FP8",
+			minScore: 0.8,
 			maxScore: 1.0,
 		},
 		{

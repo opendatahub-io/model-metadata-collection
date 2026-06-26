@@ -12,6 +12,12 @@ models:
     - name: RedHatAI/Kimi-K2-Instruct-quantized.w4a16
       url: https://huggingface.co/RedHatAI/Kimi-K2-Instruct-quantized.w4a16
       readme_path: /RedHatAI/Kimi-K2-Instruct-quantized.w4a16/README.md
+    - name: RedHatAI/Laguna-XS.2-FP8
+      url: https://huggingface.co/RedHatAI/Laguna-XS.2-FP8
+      readme_path: /RedHatAI/Laguna-XS.2-FP8/README.md
+    - name: RedHatAI/Laguna-XS.2-NVFP4
+      url: https://huggingface.co/RedHatAI/Laguna-XS.2-NVFP4
+      readme_path: /RedHatAI/Laguna-XS.2-NVFP4/README.md
     - name: RedHatAI/Llama-3.1-8B-Instruct
       url: https://huggingface.co/RedHatAI/Llama-3.1-8B-Instruct
       readme_path: /RedHatAI/Llama-3.1-8B-Instruct/README.md
@@ -159,6 +165,9 @@ models:
     - name: RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4
       url: https://huggingface.co/RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4
       readme_path: /RedHatAI/Qwen3-VL-235B-A22B-Instruct-NVFP4/README.md
+    - name: RedHatAI/Qwen3-VL-30B-A3B-Instruct
+      url: https://huggingface.co/RedHatAI/Qwen3-VL-30B-A3B-Instruct
+      readme_path: /RedHatAI/Qwen3-VL-30B-A3B-Instruct/README.md
     - name: RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic
       url: https://huggingface.co/RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic
       readme_path: /RedHatAI/Qwen3.5-122B-A10B-FP8-dynamic/README.md
@@ -168,6 +177,21 @@ models:
     - name: RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic
       url: https://huggingface.co/RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic
       readme_path: /RedHatAI/Qwen3.5-397B-A17B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-FP8
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-FP8
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-FP8/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-NVFP4
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-NVFP4
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-NVFP4/README.md
+    - name: RedHatAI/TinyLlama-1.1B-Chat-v1.0
+      url: https://huggingface.co/RedHatAI/TinyLlama-1.1B-Chat-v1.0
+      readme_path: /RedHatAI/TinyLlama-1.1B-Chat-v1.0/README.md
     - name: RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic
       url: https://huggingface.co/RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic
       readme_path: /RedHatAI/Voxtral-Mini-3B-2507-FP8-dynamic/README.md
@@ -189,6 +213,27 @@ models:
     - name: RedHatAI/gemma-3n-E4B-it-FP8-dynamic
       url: https://huggingface.co/RedHatAI/gemma-3n-E4B-it-FP8-dynamic
       readme_path: /RedHatAI/gemma-3n-E4B-it-FP8-dynamic/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it-NVFP4/README.md
+    - name: RedHatAI/gemma-4-31B-it-FP8-Dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-Dynamic
+      readme_path: /RedHatAI/gemma-4-31B-it-FP8-Dynamic/README.md
+    - name: RedHatAI/gemma-4-31B-it-FP8-block
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-block
+      readme_path: /RedHatAI/gemma-4-31B-it-FP8-block/README.md
+    - name: RedHatAI/gemma-4-31B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-31B-it-NVFP4/README.md
+    - name: RedHatAI/gemma-4-E4B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-E4B-it
+      readme_path: /RedHatAI/gemma-4-E4B-it/README.md
     - name: RedHatAI/gpt-oss-120b
       url: https://huggingface.co/RedHatAI/gpt-oss-120b
       readme_path: /RedHatAI/gpt-oss-120b/README.md
@@ -285,6 +330,9 @@ models:
     - name: RedHatAI/sarvam-30b-FP8-dynamic
       url: https://huggingface.co/RedHatAI/sarvam-30b-FP8-dynamic
       readme_path: /RedHatAI/sarvam-30b-FP8-dynamic/README.md
+    - name: RedHatAI/snowflake-arctic-embed-l-v2.0
+      url: https://huggingface.co/RedHatAI/snowflake-arctic-embed-l-v2.0
+      readme_path: /RedHatAI/snowflake-arctic-embed-l-v2.0/README.md
     - name: RedHatAI/whisper-large-v3-turbo-quantized.w4a16
       url: https://huggingface.co/RedHatAI/whisper-large-v3-turbo-quantized.w4a16
       readme_path: /RedHatAI/whisper-large-v3-turbo-quantized.w4a16/README.md

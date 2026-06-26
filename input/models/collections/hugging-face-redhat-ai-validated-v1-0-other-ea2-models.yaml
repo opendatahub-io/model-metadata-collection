@@ -1,0 +1,53 @@
+version: v1.0-other-ea2-models
+models:
+    - name: RedHatAI/gemma-4-31B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-31B-it-NVFP4/README.md
+    - name: RedHatAI/gemma-4-31B-it-FP8-Dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-Dynamic
+      readme_path: /RedHatAI/gemma-4-31B-it-FP8-Dynamic/README.md
+    - name: RedHatAI/gemma-4-31B-it-FP8-block
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-block
+      readme_path: /RedHatAI/gemma-4-31B-it-FP8-block/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it-NVFP4/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-NVFP4
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-NVFP4
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-NVFP4/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-FP8
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-FP8
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-FP8/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it/README.md
+    - name: RedHatAI/gemma-4-E4B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-E4B-it
+      readme_path: /RedHatAI/gemma-4-E4B-it/README.md
+    - name: RedHatAI/Qwen3-VL-30B-A3B-Instruct
+      url: https://huggingface.co/RedHatAI/Qwen3-VL-30B-A3B-Instruct
+      readme_path: /RedHatAI/Qwen3-VL-30B-A3B-Instruct/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-FP8/README.md
+    - name: RedHatAI/Laguna-XS.2-FP8
+      url: https://huggingface.co/RedHatAI/Laguna-XS.2-FP8
+      readme_path: /RedHatAI/Laguna-XS.2-FP8/README.md
+    - name: RedHatAI/Laguna-XS.2-NVFP4
+      url: https://huggingface.co/RedHatAI/Laguna-XS.2-NVFP4
+      readme_path: /RedHatAI/Laguna-XS.2-NVFP4/README.md
+    - name: RedHatAI/snowflake-arctic-embed-l-v2.0
+      url: https://huggingface.co/RedHatAI/snowflake-arctic-embed-l-v2.0
+      readme_path: /RedHatAI/snowflake-arctic-embed-l-v2.0/README.md
+    - name: RedHatAI/TinyLlama-1.1B-Chat-v1.0
+      url: https://huggingface.co/RedHatAI/TinyLlama-1.1B-Chat-v1.0
+      readme_path: /RedHatAI/TinyLlama-1.1B-Chat-v1.0/README.md
