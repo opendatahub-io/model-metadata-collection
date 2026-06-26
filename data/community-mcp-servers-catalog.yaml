@@ -209,7 +209,7 @@ mcp_servers:
             string_value: "[\"amd64\"]"
         supportTier:
             metadataType: MetadataStringValue
-            string_value: "community_supported"
+            string_value: "communitySupported"
       lastUpdateTimeSinceEpoch: "1774297749000"
     - name: mongodb-js/mongodb-mcp-server
       provider: MongoDB
@@ -418,5 +418,5 @@ mcp_servers:
             string_value: "[\"amd64\"]"
         supportTier:
             metadataType: MetadataStringValue
-            string_value: "community_supported"
+            string_value: "communitySupported"
       lastUpdateTimeSinceEpoch: "1774027075000"

@@ -289,7 +289,7 @@ mcp_servers:
             string_value: ""
         supportTier:
             metadataType: MetadataStringValue
-            string_value: "red_hat_supported"
+            string_value: "redHatSupported"
       createTimeSinceEpoch: "1753228800000"
       lastUpdateTimeSinceEpoch: "1777874266000"
     - name: aap-mcp-server
@@ -447,7 +447,7 @@ mcp_servers:
             string_value: ""
         supportTier:
             metadataType: MetadataStringValue
-            string_value: "red_hat_supported"
+            string_value: "redHatSupported"
       createTimeSinceEpoch: "1769990400000"
       lastUpdateTimeSinceEpoch: "1779783372000"
     - name: insights-mcp-server
@@ -710,6 +710,6 @@ mcp_servers:
             string_value: ""
         supportTier:
             metadataType: MetadataStringValue
-            string_value: "red_hat_supported"
+            string_value: "redHatSupported"
       createTimeSinceEpoch: "1741996800000"
       lastUpdateTimeSinceEpoch: "1782220479000"

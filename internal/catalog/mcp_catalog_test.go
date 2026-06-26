@@ -99,8 +99,8 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 			tier, ok := s.CustomProperties["supportTier"]
 			if !ok {
 				t.Errorf("server %q: expected supportTier custom property", s.Name)
-			} else if tier.StringValue != "red_hat_supported" {
-				t.Errorf("server %q: expected supportTier 'red_hat_supported', got %q", s.Name, tier.StringValue)
+			} else if tier.StringValue != "redHatSupported" {
+				t.Errorf("server %q: expected supportTier 'redHatSupported', got %q", s.Name, tier.StringValue)
 			}
 		}
 	})
@@ -346,10 +346,12 @@ func TestSupportTierFromSource(t *testing.T) {
 		source   string
 		expected string
 	}{
-		{"Red Hat MCP", "red_hat_supported"},
-		{"Partner MCP", "partner_supported"},
-		{"Community MCP", "community_supported"},
-		{"red hat mcp", "red_hat_supported"},
+		{"Red Hat MCP", "redHatSupported"},
+		{"Partner MCP", "partnerSupported"},
+		{"Community MCP", "communitySupported"},
+		{"red hat mcp", "redHatSupported"},
+		{"  Red Hat MCP  ", "redHatSupported"},
+		{"Partner MCP\n", "partnerSupported"},
 		{"Unknown", ""},
 		{"", ""},
 	}
@@ -364,14 +366,14 @@ func TestSupportTierFromSource(t *testing.T) {
 func TestInjectSupportTier(t *testing.T) {
 	t.Run("injects into nil CustomProperties", func(t *testing.T) {
 		server := &types.MCPServerMetadata{Name: "test"}
-		injectSupportTier(server, "partner_supported")
+		injectSupportTier(server, "partnerSupported")
 
 		tier, ok := server.CustomProperties["supportTier"]
 		if !ok {
 			t.Fatal("expected supportTier to be set")
 		}
-		if tier.StringValue != "partner_supported" {
-			t.Errorf("expected 'partner_supported', got %q", tier.StringValue)
+		if tier.StringValue != "partnerSupported" {
+			t.Errorf("expected 'partnerSupported', got %q", tier.StringValue)
 		}
 	})
 
@@ -382,7 +384,7 @@ func TestInjectSupportTier(t *testing.T) {
 				"architecture": {MetadataType: "MetadataStringValue", StringValue: "[\"amd64\"]"},
 			},
 		}
-		injectSupportTier(server, "community_supported")
+		injectSupportTier(server, "communitySupported")
 
 		if len(server.CustomProperties) != 2 {
 			t.Fatalf("expected 2 custom properties, got %d", len(server.CustomProperties))
@@ -390,8 +392,8 @@ func TestInjectSupportTier(t *testing.T) {
 		if server.CustomProperties["architecture"].StringValue != "[\"amd64\"]" {
 			t.Error("existing architecture property was overwritten")
 		}
-		if server.CustomProperties["supportTier"].StringValue != "community_supported" {
-			t.Errorf("expected 'community_supported', got %q", server.CustomProperties["supportTier"].StringValue)
+		if server.CustomProperties["supportTier"].StringValue != "communitySupported" {
+			t.Errorf("expected 'communitySupported', got %q", server.CustomProperties["supportTier"].StringValue)
 		}
 	})
 

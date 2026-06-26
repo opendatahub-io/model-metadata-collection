@@ -109,13 +109,13 @@ func loadMCPServerInput(inputPath string) (*types.MCPServerMetadata, error) {
 
 // supportTierFromSource maps an index Source value to a supportTier enum string.
 func supportTierFromSource(source string) string {
-	switch strings.ToLower(source) {
+	switch strings.ToLower(strings.TrimSpace(source)) {
 	case "red hat mcp":
-		return "red_hat_supported"
+		return "redHatSupported"
 	case "partner mcp":
-		return "partner_supported"
+		return "partnerSupported"
 	case "community mcp":
-		return "community_supported"
+		return "communitySupported"
 	default:
 		return ""
 	}
