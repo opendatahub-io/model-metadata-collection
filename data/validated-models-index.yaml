@@ -294,7 +294,7 @@ models:
   labels:
   - validated
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-nvidia-nemotron-3-super-120b-a12b-fp8:3.0
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-super-120b-a12b-fp8:3.0
   labels:
   - validated
 - type: oci

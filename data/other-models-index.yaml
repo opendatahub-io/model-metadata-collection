@@ -40,8 +40,6 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-vl-30b-a3b-instruct:3.0
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-super-120b-a12b-fp8:3.0
-- type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-fp8:3.0
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-nvfp4:3.0
