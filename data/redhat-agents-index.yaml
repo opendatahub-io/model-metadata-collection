@@ -1,0 +1,38 @@
+source: Red Hat Agents
+repository: red-hat-data-services/agentic-starter-kits
+branch: main
+agents:
+  # Template agents (have agent.yaml upstream — metadata auto-fetched)
+  - path: agents/langgraph/templates/react_agent
+  - path: agents/langgraph/templates/agentic_rag
+  - path: agents/langgraph/templates/react_with_database_memory
+  - path: agents/langgraph/templates/human_in_the_loop
+  - path: agents/crewai/templates/websearch_agent
+  - path: agents/llamaindex/templates/websearch_agent
+  - path: agents/vanilla_python/templates/openai_responses_agent
+  - path: agents/autogen/templates/mcp_agent
+  - path: agents/google/templates/adk
+  - path: agents/langflow/templates/simple_tool_calling_agent
+  - path: agents/a2a/templates/langgraph_crewai_agent
+
+  # Deployment-only agents (no agent.yaml upstream — metadata inline)
+  - path: agents/claude-code
+    name: claude-code
+    displayName: "Claude Code on OpenShift"
+    framework: claude-code
+    description: "Deploy Claude Code on OpenShift with multiple backend options (Anthropic API, Vertex AI, vLLM, OGX)."
+  - path: agents/openclaw/deployment
+    name: openclaw
+    displayName: "OpenClaw on OpenShift"
+    framework: openclaw
+    description: "Deploy OpenClaw on OpenShift with vLLM model serving, OAuth SSO, and production-grade security."
+  - path: agents/codex/deployment
+    name: codex
+    displayName: "Codex on OpenShift"
+    framework: codex
+    description: "Run OpenAI Codex CLI inside an OpenShell sandbox on OpenShift."
+  - path: agents/opencode/deployment
+    name: opencode
+    displayName: "OpenCode on OpenShift"
+    framework: opencode
+    description: "Run OpenCode inside an OpenShell sandbox on OpenShift."

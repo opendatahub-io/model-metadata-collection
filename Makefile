@@ -28,6 +28,8 @@ PARTNER_MCP_SERVERS_INDEX_PATH=data/partner-mcp-servers-index.yaml
 PARTNER_MCP_SERVERS_CATALOG_OUTPUT_PATH=data/partner-mcp-servers-catalog.yaml
 COMMUNITY_MCP_SERVERS_INDEX_PATH=data/community-mcp-servers-index.yaml
 COMMUNITY_MCP_SERVERS_CATALOG_OUTPUT_PATH=data/community-mcp-servers-catalog.yaml
+REDHAT_AGENTS_INDEX_PATH=data/redhat-agents-index.yaml
+REDHAT_AGENTS_CATALOG_OUTPUT_PATH=data/redhat-agents-catalog.yaml
 
 # Container parameters
 CONTAINER_RUNTIME?=$(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null || echo docker)
@@ -35,7 +37,7 @@ DOCKER_IMAGE_NAME?=quay.io/opendatahub/odh-model-metadata-collection
 DOCKER_IMAGE_TAG?=latest
 DOCKER_FULL_IMAGE_NAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 
-.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-redhat-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp report run-with-report docker-build
+.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-redhat-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents report run-with-report docker-build
 
 # Default target
 all: check build
@@ -182,8 +184,16 @@ process-community-mcp: build
 	  	--mcp-catalog-output $(COMMUNITY_MCP_SERVERS_CATALOG_OUTPUT_PATH) \
 	  	--skip-huggingface --skip-enrichment --skip-catalog
 
-# Process all model indexes and MCP server catalogs
-process: process-models process-redhat-mcp process-partner-mcp process-community-mcp
+# Process Red Hat agents catalog (fetches metadata from GitHub)
+process-agents: build
+	@echo "Processing Red Hat agents catalog..."
+	./$(BUILD_DIR)/$(BINARY_NAME) \
+	  	--agent-index $(REDHAT_AGENTS_INDEX_PATH) \
+	  	--agent-catalog-output $(REDHAT_AGENTS_CATALOG_OUTPUT_PATH) \
+	  	--skip-huggingface --skip-enrichment --skip-catalog
+
+# Process all model indexes, MCP server catalogs, and agent catalogs
+process: process-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents
 
 # Generate metadata completeness report
 report: build-report

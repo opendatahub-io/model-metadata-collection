@@ -48,6 +48,10 @@ var (
 	mcpIndexPath             = flag.String("mcp-index", "", "Path to MCP servers index YAML file (if set, generates MCP catalog)")
 	mcpCatalogOutputPath     = flag.String("mcp-catalog-output", "data/redhat-mcp-servers-catalog.yaml", "Path for the generated MCP servers catalog")
 	skipMCPEnrichment        = flag.Bool("skip-mcp-enrichment", false, "Skip MCP server OCI image enrichment (architectures, timestamps)")
+	agentIndexPath           = flag.String("agent-index", "", "Path to agents index YAML file (if set, generates agents catalog)")
+	agentCatalogOutputPath   = flag.String("agent-catalog-output", "data/redhat-agents-catalog.yaml", "Path for the generated agents catalog")
+	agentBranch              = flag.String("agent-branch", "", "Override the GitHub branch for agent metadata fetching (defaults to branch in index file)")
+	skipAgentEnrichment      = flag.Bool("skip-agent-enrichment", false, "Skip fetching agent metadata and READMEs from GitHub")
 	help                     = flag.Bool("help", false, "Show help message")
 )
 
@@ -257,6 +261,14 @@ func main() {
 		}
 	}
 
+	// Process agents catalog (if index path is provided).
+	if *agentIndexPath != "" {
+		log.Printf("Processing agents catalog from: %s", *agentIndexPath)
+		if err := catalog.CreateAgentsCatalog(*agentIndexPath, *agentCatalogOutputPath, *agentBranch, *skipAgentEnrichment); err != nil {
+			log.Fatalf("Failed to create agents catalog: %v", err)
+		}
+	}
+
 	log.Println("Model metadata collection completed successfully!")
 }
 
@@ -295,6 +307,12 @@ func printHelp() {
 	fmt.Println("")
 	fmt.Println("  # Generate MCP servers catalog without OCI enrichment (offline)")
 	fmt.Printf("  %s --mcp-index data/redhat-mcp-servers-index.yaml --skip-huggingface --skip-enrichment --skip-catalog --skip-mcp-enrichment\n", os.Args[0])
+	fmt.Println("")
+	fmt.Println("  # Generate agents catalog (fetches metadata from GitHub)")
+	fmt.Printf("  %s --agent-index data/redhat-agents-index.yaml --skip-huggingface --skip-enrichment --skip-catalog\n", os.Args[0])
+	fmt.Println("")
+	fmt.Println("  # Generate agents catalog without GitHub fetching (offline)")
+	fmt.Printf("  %s --agent-index data/redhat-agents-index.yaml --skip-huggingface --skip-enrichment --skip-catalog --skip-agent-enrichment\n", os.Args[0])
 }
 
 // getStaticCatalogPaths returns the list of static catalog files to process
