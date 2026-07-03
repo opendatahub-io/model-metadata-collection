@@ -150,9 +150,6 @@ func TestCreateAgentsCatalogSkipEnrichment(t *testing.T) {
 	if agent.Name != "claude-code" {
 		t.Errorf("expected name 'claude-code', got %q", agent.Name)
 	}
-	if agent.AgentType != "starter_kit" {
-		t.Errorf("expected agentType 'starter_kit', got %q", agent.AgentType)
-	}
 	if agent.RepositoryUrl != "https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/claude-code" {
 		t.Errorf("unexpected repositoryUrl: %q", agent.RepositoryUrl)
 	}

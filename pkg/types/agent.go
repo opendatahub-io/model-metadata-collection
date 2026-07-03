@@ -19,7 +19,9 @@ type AgentsIndex struct {
 	Agents    []AgentIndexEntry  `yaml:"agents"`
 }
 
-// UpstreamAgentYAML represents the agent.yaml format in the agentic-starter-kits repo.
+// UpstreamAgentYAML represents the known fields from agent.yaml in the
+// agentic-starter-kits repo. Any fields not listed here are captured in
+// Extra and forwarded as customProperties in the catalog output.
 type UpstreamAgentYAML struct {
 	Name        string `yaml:"name"`
 	DisplayName string `yaml:"displayName"`
@@ -29,6 +31,14 @@ type UpstreamAgentYAML struct {
 		Required []string `yaml:"required"`
 		Optional []string `yaml:"optional"`
 	} `yaml:"env"`
+	Extra map[string]interface{} `yaml:"-"`
+}
+
+// KnownUpstreamFields lists the agent.yaml keys that are handled explicitly
+// and should NOT be forwarded into customProperties.
+var KnownUpstreamFields = map[string]bool{
+	"name": true, "displayName": true, "framework": true,
+	"description": true, "env": true,
 }
 
 // AgentEnvVar represents an environment variable for an agent.
@@ -52,11 +62,8 @@ type AgentMetadata struct {
 	Description              string                   `yaml:"description"`
 	Readme                   string                   `yaml:"readme,omitempty"`
 	RepositoryUrl            string                   `yaml:"repositoryUrl,omitempty"`
-	PublishedDate            string                   `yaml:"publishedDate,omitempty"`
 	Framework                string                   `yaml:"framework"`
-	AgentType                string                   `yaml:"agentType"`
-	Tags                     []string                 `yaml:"tags,omitempty"`
-	Models                   []string                 `yaml:"models,omitempty"`
+	Labels                   []string                 `yaml:"labels,omitempty"`
 	Logo                     string                   `yaml:"logo,omitempty"`
 	Env                      []AgentEnvVar            `yaml:"env,omitempty"`
 	Artifacts                []AgentArtifact          `yaml:"artifacts,omitempty"`

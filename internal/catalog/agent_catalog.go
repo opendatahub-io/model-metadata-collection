@@ -1,6 +1,8 @@
 package catalog
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -8,8 +10,6 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
-
-	"errors"
 
 	"github.com/opendatahub-io/model-metadata-collection/internal/github"
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
@@ -84,9 +84,7 @@ func CreateAgentsCatalog(indexPath, catalogPath, branchOverride string, skipEnri
 // buildAgentMetadata constructs an AgentMetadata by fetching from GitHub or
 // falling back to inline overrides from the index entry.
 func buildAgentMetadata(repo, branch string, entry types.AgentIndexEntry, skipEnrichment bool) (*types.AgentMetadata, error) {
-	agent := &types.AgentMetadata{
-		AgentType: "starter_kit",
-	}
+	agent := &types.AgentMetadata{}
 
 	if !skipEnrichment {
 		upstream, err := github.FetchAgentYAML(repo, branch, entry.Path)
@@ -100,6 +98,7 @@ func buildAgentMetadata(repo, branch string, entry types.AgentIndexEntry, skipEn
 			agent.Framework = upstream.Framework
 			agent.Description = upstream.Description
 			agent.Env = transformEnvVars(upstream)
+			forwardExtraAsCustomProperties(agent, upstream.Extra)
 		}
 
 		readme, err := github.FetchReadme(repo, branch, entry.Path)
@@ -155,6 +154,36 @@ func transformEnvVars(upstream *types.UpstreamAgentYAML) []types.AgentEnvVar {
 		envVars = append(envVars, types.AgentEnvVar{Name: name, Required: false})
 	}
 	return envVars
+}
+
+// forwardExtraAsCustomProperties takes unknown fields from the upstream agent.yaml
+// and adds them to the agent's customProperties as MetadataStringValue entries.
+// Arrays and objects are JSON-encoded; scalars are converted to strings.
+func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string]interface{}) {
+	if len(extra) == 0 {
+		return
+	}
+	if agent.CustomProperties == nil {
+		agent.CustomProperties = make(map[string]types.MetadataValue)
+	}
+	for key, val := range extra {
+		var strVal string
+		switch v := val.(type) {
+		case string:
+			strVal = v
+		default:
+			jsonBytes, err := json.Marshal(v)
+			if err != nil {
+				log.Printf("  Warning: could not serialize extra field %q: %v", key, err)
+				continue
+			}
+			strVal = string(jsonBytes)
+		}
+		agent.CustomProperties[key] = types.MetadataValue{
+			MetadataType: "MetadataStringValue",
+			StringValue:  strVal,
+		}
+	}
 }
 
 // agentSupportTierFromSource maps an index Source value to a supportTier string.

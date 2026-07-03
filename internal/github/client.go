@@ -97,6 +97,20 @@ func FetchAgentYAML(repo, branch, agentPath string) (*types.UpstreamAgentYAML, e
 		return nil, fmt.Errorf("error parsing agent.yaml from %s: %v", agentPath, err)
 	}
 
+	// Capture fields not in the struct as Extra for customProperties forwarding.
+	var raw map[string]interface{}
+	if err := yaml.Unmarshal(body, &raw); err == nil {
+		extra := make(map[string]interface{})
+		for k, v := range raw {
+			if !types.KnownUpstreamFields[k] {
+				extra[k] = v
+			}
+		}
+		if len(extra) > 0 {
+			agent.Extra = extra
+		}
+	}
+
 	return &agent, nil
 }
 

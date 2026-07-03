@@ -283,7 +283,6 @@ agents:
         - [Ollama Documentation](https://ollama.com/docs)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/react_agent
       framework: langgraph
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -707,7 +706,6 @@ agents:
         - [Milvus Documentation](https://milvus.io/docs)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/agentic_rag
       framework: langgraph
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -1198,7 +1196,6 @@ agents:
         - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/react_with_database_memory
       framework: langgraph
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -1718,7 +1715,6 @@ agents:
         - [Ollama Documentation](https://ollama.com/docs)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/human_in_the_loop
       framework: langgraph
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -2072,7 +2068,6 @@ agents:
         - [CrewAI Tools](https://docs.crewai.com/concepts/tools)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/crewai/templates/websearch_agent
       framework: crewai
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -2402,7 +2397,6 @@ agents:
         - [Ollama Documentation](https://ollama.com/docs)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/llamaindex/templates/websearch_agent
       framework: llamaindex
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -2693,7 +2687,6 @@ agents:
         - [OpenAI Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/vanilla_python/templates/openai_responses_agent
       framework: vanilla_python
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -3164,7 +3157,6 @@ agents:
         - MCP server in this repo: `mcp_automl_template/` (README, tool configuration, deploy)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/autogen/templates/mcp_agent
       framework: autogen
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -3543,7 +3535,6 @@ agents:
         MIT License
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/google/templates/adk
       framework: google-adk
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -3852,7 +3843,10 @@ agents:
         - [National Park Service API](https://developer.nps.gov) — Park search and alerts (free key required)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langflow/templates/simple_tool_calling_agent
       framework: langflow
-      agentType: starter_kit
+      customProperties:
+        deploymentModel:
+            metadataType: MetadataStringValue
+            string_value: "flow-import"
     - name: a2a-langgraph-crewai
       displayName: A2A LangGraph ↔ CrewAI
       description: A2A demo — CrewAI specialist and LangGraph orchestrator (one Dockerfile; two tags / image refs for deploy).
@@ -4282,7 +4276,6 @@ agents:
         - Related patterns: `agents/google/templates/adk/` (Helm + `make build` / `make push` / `make deploy`), `agents/llamaindex/templates/websearch_agent/`, `agents/langgraph/templates/react_agent/`
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/a2a/templates/langgraph_crewai_agent
       framework: a2a
-      agentType: starter_kit
       env:
         - name: API_KEY
           required: true
@@ -5354,7 +5347,6 @@ agents:
         Use `LLMInferenceService` when you need the llm-d router/scheduler for multi-replica intelligent routing. Use standalone Deployment for single-replica setups or when the init container stalls.
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/claude-code
       framework: claude-code
-      agentType: starter_kit
     - name: openclaw
       displayName: OpenClaw on OpenShift
       description: Deploy OpenClaw on OpenShift with vLLM model serving, OAuth SSO, and production-grade security.
@@ -5491,7 +5483,6 @@ agents:
         - Tested on OpenShell v0.0.58, OpenShift 4.21 (June 2026).
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/openclaw/deployment
       framework: openclaw
-      agentType: starter_kit
     - name: codex
       displayName: Codex on OpenShift
       description: Run OpenAI Codex CLI inside an OpenShell sandbox on OpenShift.
@@ -5527,7 +5518,6 @@ agents:
         - Tested on OpenShell v0.0.58, OpenShift 4.21 (June 2026). Codex CLI version 0.139.0.
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/codex/deployment
       framework: codex
-      agentType: starter_kit
     - name: opencode
       displayName: OpenCode on OpenShift
       description: Run OpenCode inside an OpenShell sandbox on OpenShift.
@@ -5567,4 +5557,3 @@ agents:
         - Tested on OpenShell v0.0.58, OpenShift 4.21 (June 2026). OpenCode version 1.17.1.
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/opencode/deployment
       framework: opencode
-      agentType: starter_kit
