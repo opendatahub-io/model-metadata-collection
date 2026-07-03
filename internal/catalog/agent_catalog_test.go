@@ -102,7 +102,7 @@ func TestCreateAgentsCatalogSkipEnrichment(t *testing.T) {
 	index := types.AgentsIndex{
 		Source:     "Red Hat Agents",
 		Repository: "red-hat-data-services/agentic-starter-kits",
-		Branch:    "main",
+		Branch:     "main",
 		Agents: []types.AgentIndexEntry{
 			{
 				Path:        "agents/claude-code",
@@ -185,8 +185,8 @@ func TestCreateAgentsCatalogEmptyIndex(t *testing.T) {
 	index := types.AgentsIndex{
 		Source:     "Empty",
 		Repository: "org/repo",
-		Branch:    "main",
-		Agents:    []types.AgentIndexEntry{},
+		Branch:     "main",
+		Agents:     []types.AgentIndexEntry{},
 	}
 	indexPath := filepath.Join(tmpDir, "index.yaml")
 	writeYAML(t, indexPath, index)
@@ -263,7 +263,7 @@ func TestCreateAgentsCatalogBranchOverride(t *testing.T) {
 	index := types.AgentsIndex{
 		Source:     "Test",
 		Repository: "org/repo",
-		Branch:    "main",
+		Branch:     "main",
 		Agents: []types.AgentIndexEntry{
 			{
 				Path:        "agents/test",
@@ -306,7 +306,7 @@ func TestCreateAgentsCatalogNonExistentBranch(t *testing.T) {
 	index := types.AgentsIndex{
 		Source:     "Test",
 		Repository: "red-hat-data-services/agentic-starter-kits",
-		Branch:    "main",
+		Branch:     "main",
 		Agents: []types.AgentIndexEntry{
 			{Path: "agents/langgraph/templates/react_agent"},
 		},

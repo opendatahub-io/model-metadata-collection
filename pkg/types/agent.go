@@ -14,9 +14,9 @@ type AgentIndexEntry struct {
 // AgentsIndex represents the agents index file structure.
 type AgentsIndex struct {
 	Source     string            `yaml:"source"`
-	Repository string           `yaml:"repository"`
-	Branch    string             `yaml:"branch"`
-	Agents    []AgentIndexEntry  `yaml:"agents"`
+	Repository string            `yaml:"repository"`
+	Branch     string            `yaml:"branch"`
+	Agents     []AgentIndexEntry `yaml:"agents"`
 }
 
 // UpstreamAgentYAML represents the known fields from agent.yaml in the
