@@ -126,6 +126,10 @@ func main() {
 	log.Printf("  MCP Index: %s", *mcpIndexPath)
 	log.Printf("  MCP Catalog Output: %s", *mcpCatalogOutputPath)
 	log.Printf("  Skip MCP Enrichment: %v", *skipMCPEnrichment)
+	log.Printf("  Agent Index: %s", *agentIndexPath)
+	log.Printf("  Agent Catalog Output: %s", *agentCatalogOutputPath)
+	log.Printf("  Agent Branch Override: %s", *agentBranch)
+	log.Printf("  Skip Agent Enrichment: %v", *skipAgentEnrichment)
 
 	// Determine if model processing should run.
 	// Skip when all model pipeline steps are disabled, regardless of MCP processing.

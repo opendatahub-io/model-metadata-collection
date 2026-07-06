@@ -185,12 +185,14 @@ process-community-mcp: build
 	  	--skip-huggingface --skip-enrichment --skip-catalog
 
 # Process Red Hat agents catalog (fetches metadata from GitHub)
+# Set SKIP_AGENT_ENRICHMENT=true for offline runs (skips GitHub API calls)
 process-agents: build
 	@echo "Processing Red Hat agents catalog..."
 	./$(BUILD_DIR)/$(BINARY_NAME) \
-	  	--agent-index $(REDHAT_AGENTS_INDEX_PATH) \
-	  	--agent-catalog-output $(REDHAT_AGENTS_CATALOG_OUTPUT_PATH) \
-	  	--skip-huggingface --skip-enrichment --skip-catalog
+	  	--agent-index "$(REDHAT_AGENTS_INDEX_PATH)" \
+	  	--agent-catalog-output "$(REDHAT_AGENTS_CATALOG_OUTPUT_PATH)" \
+	  	--skip-huggingface --skip-enrichment --skip-catalog \
+	  	$(if $(filter true,$(SKIP_AGENT_ENRICHMENT)),--skip-agent-enrichment)
 
 # Process all model indexes, MCP server catalogs, and agent catalogs
 process: process-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents

@@ -41,15 +41,21 @@ func CreateAgentsCatalog(indexPath, catalogPath, branchOverride string, skipEnri
 	log.Printf("Processing agents index: %s (%d entries, repo: %s, branch: %s)",
 		indexPath, len(index.Agents), index.Repository, index.Branch)
 
+	// When enrichment is enabled, resolve the branch to a commit SHA so that
+	// raw.githubusercontent.com URLs work for slash-containing branch names
+	// (e.g. releases/rhoai-2.18).
+	var rawRef string
 	if !skipEnrichment {
-		if err := github.ValidateBranch(index.Repository, index.Branch); err != nil {
+		sha, err := github.ValidateBranch(index.Repository, index.Branch)
+		if err != nil {
 			return fmt.Errorf("branch validation failed: %v", err)
 		}
+		rawRef = sha
 	}
 
 	var agents []types.AgentMetadata
 	for _, entry := range index.Agents {
-		agent, err := buildAgentMetadata(index.Repository, index.Branch, entry, skipEnrichment)
+		agent, err := buildAgentMetadata(index.Repository, index.Branch, rawRef, entry, skipEnrichment)
 		if err != nil {
 			log.Printf("Warning: skipping agent at path %q: %v", entry.Path, err)
 			continue
@@ -83,11 +89,13 @@ func CreateAgentsCatalog(indexPath, catalogPath, branchOverride string, skipEnri
 
 // buildAgentMetadata constructs an AgentMetadata by fetching from GitHub or
 // falling back to inline overrides from the index entry.
-func buildAgentMetadata(repo, branch string, entry types.AgentIndexEntry, skipEnrichment bool) (*types.AgentMetadata, error) {
+// rawRef is the commit SHA used for raw.githubusercontent.com URLs (safe for
+// slash-containing branch names); branch is used for the human-readable tree URL.
+func buildAgentMetadata(repo, branch, rawRef string, entry types.AgentIndexEntry, skipEnrichment bool) (*types.AgentMetadata, error) {
 	agent := &types.AgentMetadata{}
 
 	if !skipEnrichment {
-		upstream, err := github.FetchAgentYAML(repo, branch, entry.Path)
+		upstream, err := github.FetchAgentYAML(repo, rawRef, entry.Path)
 		if errors.Is(err, github.ErrNotFound) {
 			log.Printf("  No agent.yaml at %s, using index overrides", entry.Path)
 		} else if err != nil {
@@ -101,7 +109,7 @@ func buildAgentMetadata(repo, branch string, entry types.AgentIndexEntry, skipEn
 			forwardExtraAsCustomProperties(agent, upstream.Extra)
 		}
 
-		readme, err := github.FetchReadme(repo, branch, entry.Path)
+		readme, err := github.FetchReadme(repo, rawRef, entry.Path)
 		if err != nil {
 			log.Printf("  Warning: failed to fetch README for %s: %v", entry.Path, err)
 		} else if readme != "" {

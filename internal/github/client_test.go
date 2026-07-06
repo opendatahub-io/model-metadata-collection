@@ -45,16 +45,20 @@ func TestRawGitHubURLConstruction(t *testing.T) {
 const testRepo = "red-hat-data-services/agentic-starter-kits"
 
 func TestValidateBranchMain(t *testing.T) {
-
-	err := ValidateBranch(testRepo, "main")
+	sha, err := ValidateBranch(testRepo, "main")
 	if err != nil {
 		t.Fatalf("expected main branch to be valid, got error: %v", err)
+	}
+	if sha == "" {
+		t.Fatal("expected non-empty commit SHA")
+	}
+	if len(sha) != 40 {
+		t.Errorf("expected 40-char SHA, got %d chars: %s", len(sha), sha)
 	}
 }
 
 func TestValidateBranchNonExistent(t *testing.T) {
-
-	err := ValidateBranch(testRepo, "this-branch-does-not-exist-xyz-12345")
+	_, err := ValidateBranch(testRepo, "this-branch-does-not-exist-xyz-12345")
 	if err == nil {
 		t.Fatal("expected error for non-existent branch")
 	}

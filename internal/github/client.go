@@ -1,9 +1,11 @@
 package github
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"sync"
 	"time"
@@ -12,6 +14,8 @@ import (
 
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
+
+const maxResponseSize = 5 * 1024 * 1024 // 5 MiB safety cap for HTTP response bodies
 
 var httpClient = &http.Client{
 	Timeout: 30 * time.Second,
@@ -48,26 +52,44 @@ func buildRawURL(repo, branch, agentPath, filename string) string {
 var ErrNotFound = fmt.Errorf("not found")
 
 // ValidateBranch checks that a branch exists in the given GitHub repository.
-// Returns nil if the branch exists, an error otherwise.
-func ValidateBranch(repo, branch string) error {
-	url := fmt.Sprintf("https://api.github.com/repos/%s/branches/%s", repo, branch)
+// Returns the resolved commit SHA on success (safe for use in raw URLs even
+// when the branch name contains slashes), or an error if the branch does not exist.
+func ValidateBranch(repo, branch string) (string, error) {
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/branches/%s", repo, url.PathEscape(branch))
 
-	resp, err := doGet(url)
+	resp, err := doGet(apiURL)
 	if err != nil {
-		return fmt.Errorf("failed to validate branch %q: %v", branch, err)
+		return "", fmt.Errorf("failed to validate branch %q: %v", branch, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
-	// drain body so the connection can be reused
-	_, _ = io.Copy(io.Discard, resp.Body)
 
 	if resp.StatusCode == http.StatusNotFound {
-		return fmt.Errorf("branch %q does not exist in repository %q", branch, repo)
+		_, _ = io.Copy(io.Discard, resp.Body)
+		return "", fmt.Errorf("branch %q does not exist in repository %q", branch, repo)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status %d when validating branch %q in %q", resp.StatusCode, branch, repo)
+		_, _ = io.Copy(io.Discard, resp.Body)
+		return "", fmt.Errorf("unexpected status %d when validating branch %q in %q", resp.StatusCode, branch, repo)
 	}
 
-	return nil
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
+	if err != nil {
+		return "", fmt.Errorf("failed to read branch response for %q: %v", branch, err)
+	}
+
+	var branchInfo struct {
+		Commit struct {
+			SHA string `json:"sha"`
+		} `json:"commit"`
+	}
+	if err := json.Unmarshal(body, &branchInfo); err != nil {
+		return "", fmt.Errorf("failed to parse branch response for %q: %v", branch, err)
+	}
+	if branchInfo.Commit.SHA == "" {
+		return "", fmt.Errorf("branch %q in %q has no commit SHA", branch, repo)
+	}
+
+	return branchInfo.Commit.SHA, nil
 }
 
 // FetchAgentYAML fetches and parses an agent.yaml file from a GitHub repository.
@@ -87,7 +109,7 @@ func FetchAgentYAML(repo, branch, agentPath string) (*types.UpstreamAgentYAML, e
 		return nil, fmt.Errorf("unexpected status %d from %s", resp.StatusCode, url)
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
 	if err != nil {
 		return nil, fmt.Errorf("error reading response from %s: %v", url, err)
 	}
@@ -132,7 +154,7 @@ func FetchReadme(repo, branch, agentPath string) (string, error) {
 		return "", fmt.Errorf("unexpected status %d from %s", resp.StatusCode, url)
 	}
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
 	if err != nil {
 		return "", fmt.Errorf("error reading response from %s: %v", url, err)
 	}
