@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -48,6 +49,26 @@ func buildRawURL(repo, branch, agentPath, filename string) string {
 	return fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/%s", repo, branch, agentPath, filename)
 }
 
+// escapeRepoPath splits an "owner/repo" string and URL-escapes each segment
+// individually so the slash between them is preserved as a path separator.
+func escapeRepoPath(repo string) string {
+	owner, name, _ := strings.Cut(repo, "/")
+	return url.PathEscape(owner) + "/" + url.PathEscape(name)
+}
+
+// readLimitedBody reads up to maxResponseSize bytes from r and returns an
+// explicit error if the response exceeds the cap (instead of silently truncating).
+func readLimitedBody(r io.Reader) ([]byte, error) {
+	body, err := io.ReadAll(io.LimitReader(r, maxResponseSize+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(body) > maxResponseSize {
+		return nil, fmt.Errorf("response exceeds max size of %d bytes", maxResponseSize)
+	}
+	return body, nil
+}
+
 // ErrNotFound is returned when a requested file does not exist (HTTP 404).
 var ErrNotFound = fmt.Errorf("not found")
 
@@ -55,7 +76,7 @@ var ErrNotFound = fmt.Errorf("not found")
 // Returns the resolved commit SHA on success (safe for use in raw URLs even
 // when the branch name contains slashes), or an error if the branch does not exist.
 func ValidateBranch(repo, branch string) (string, error) {
-	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/branches/%s", repo, url.PathEscape(branch))
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/branches/%s", escapeRepoPath(repo), url.PathEscape(branch))
 
 	resp, err := doGet(apiURL)
 	if err != nil {
@@ -72,7 +93,7 @@ func ValidateBranch(repo, branch string) (string, error) {
 		return "", fmt.Errorf("unexpected status %d when validating branch %q in %q", resp.StatusCode, branch, repo)
 	}
 
-	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
+	body, err := readLimitedBody(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to read branch response for %q: %v", branch, err)
 	}
@@ -109,7 +130,7 @@ func FetchAgentYAML(repo, branch, agentPath string) (*types.UpstreamAgentYAML, e
 		return nil, fmt.Errorf("unexpected status %d from %s", resp.StatusCode, url)
 	}
 
-	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
+	body, err := readLimitedBody(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading response from %s: %v", url, err)
 	}
@@ -154,7 +175,7 @@ func FetchReadme(repo, branch, agentPath string) (string, error) {
 		return "", fmt.Errorf("unexpected status %d from %s", resp.StatusCode, url)
 	}
 
-	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
+	body, err := readLimitedBody(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("error reading response from %s: %v", url, err)
 	}
