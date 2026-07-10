@@ -18,6 +18,7 @@ COPY data/partner-mcp-servers-catalog.yaml /app/data/
 COPY data/partner-mcp-servers-index.yaml /app/data/
 COPY data/community-mcp-servers-catalog.yaml /app/data/
 COPY data/community-mcp-servers-index.yaml /app/data/
+COPY data/redhat-agents-catalog.yaml /app/data/
 
 # Copy sample data for benchmarks
 COPY sample-data/ /app/benchmarks/
@@ -29,6 +30,7 @@ RUN chmod 644 /app/data/models-catalog.yaml /app/data/models-index.yaml && \
     chmod 644 /app/data/redhat-mcp-servers-catalog.yaml /app/data/redhat-mcp-servers-index.yaml && \
     chmod 644 /app/data/partner-mcp-servers-catalog.yaml /app/data/partner-mcp-servers-index.yaml && \
     chmod 644 /app/data/community-mcp-servers-catalog.yaml /app/data/community-mcp-servers-index.yaml && \
+    chmod 644 /app/data/redhat-agents-catalog.yaml && \
     chmod -R 755 /app/benchmarks && \
     chmod 644 /app/benchmarks/manifest.json && \
     /bin/sh -c 'for f in /app/benchmarks/models/*/*/*/*; do [ -f "$f" ] && chmod 644 "$f" || true; done'

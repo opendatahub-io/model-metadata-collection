@@ -23,22 +23,25 @@ type AgentsIndex struct {
 // agentic-starter-kits repo. Any fields not listed here are captured in
 // Extra and forwarded as customProperties in the catalog output.
 type UpstreamAgentYAML struct {
-	Name        string `yaml:"name"`
-	DisplayName string `yaml:"displayName"`
-	Framework   string `yaml:"framework"`
-	Description string `yaml:"description"`
+	Name        string   `yaml:"name"`
+	DisplayName string   `yaml:"displayName"`
+	Framework   string   `yaml:"framework"`
+	Description string   `yaml:"description"`
+	Labels      []string `yaml:"labels"`
+	Logo        string   `yaml:"logo"`
 	Env         struct {
 		Required []string `yaml:"required"`
 		Optional []string `yaml:"optional"`
 	} `yaml:"env"`
-	Extra map[string]interface{} `yaml:"-"`
+	Extra      map[string]interface{} `yaml:"-"`
+	RawContent map[string]interface{} `yaml:"-"`
 }
 
 // KnownUpstreamFields lists the agent.yaml keys that are handled explicitly
 // and should NOT be forwarded into customProperties.
 var KnownUpstreamFields = map[string]bool{
 	"name": true, "displayName": true, "framework": true,
-	"description": true, "env": true,
+	"description": true, "labels": true, "logo": true, "env": true,
 }
 
 // AgentEnvVar represents an environment variable for an agent.
@@ -54,6 +57,13 @@ type AgentArtifact struct {
 	LastUpdateTimeSinceEpoch string `yaml:"lastUpdateTimeSinceEpoch,omitempty"`
 }
 
+// AgentTemplate represents a deployment template artifact for an agent.
+// Content holds the full agent.yaml specification as a JSON-encoded string.
+type AgentTemplate struct {
+	Name    string `yaml:"name,omitempty"`
+	Content string `yaml:"content"`
+}
+
 // AgentMetadata represents the full metadata for a single agent in the catalog.
 type AgentMetadata struct {
 	Name                     string                   `yaml:"name"`
@@ -67,6 +77,7 @@ type AgentMetadata struct {
 	Logo                     string                   `yaml:"logo,omitempty"`
 	Env                      []AgentEnvVar            `yaml:"env,omitempty"`
 	Artifacts                []AgentArtifact          `yaml:"artifacts,omitempty"`
+	Templates                []AgentTemplate          `yaml:"templates,omitempty"`
 	CustomProperties         map[string]MetadataValue `yaml:"customProperties,omitempty"`
 	CreateTimeSinceEpoch     string                   `yaml:"createTimeSinceEpoch,omitempty"`
 	LastUpdateTimeSinceEpoch string                   `yaml:"lastUpdateTimeSinceEpoch,omitempty"`

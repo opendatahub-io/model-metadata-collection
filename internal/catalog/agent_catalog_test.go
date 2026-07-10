@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,6 +10,119 @@ import (
 
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
+
+func TestBuildTemplateArtifacts(t *testing.T) {
+	t.Run("generates JSON template from raw content", func(t *testing.T) {
+		raw := map[string]interface{}{
+			"name":        "test-agent",
+			"displayName": "Test Agent",
+			"framework":   "langgraph",
+			"description": "A test agent.",
+			"labels":      []interface{}{"tool-calling", "react"},
+			"logo":        "data:image/svg+xml;base64,abc123",
+		}
+		templates := buildTemplateArtifacts(raw)
+		if len(templates) != 1 {
+			t.Fatalf("expected 1 template, got %d", len(templates))
+		}
+		if templates[0].Name != "agent.yaml" {
+			t.Errorf("expected template name 'agent.yaml', got %q", templates[0].Name)
+		}
+		// Verify content is valid JSON containing the original fields
+		var parsed map[string]interface{}
+		if err := json.Unmarshal([]byte(templates[0].Content), &parsed); err != nil {
+			t.Fatalf("template content is not valid JSON: %v", err)
+		}
+		if parsed["name"] != "test-agent" {
+			t.Errorf("expected name 'test-agent' in template content, got %v", parsed["name"])
+		}
+		if parsed["framework"] != "langgraph" {
+			t.Errorf("expected framework 'langgraph' in template content, got %v", parsed["framework"])
+		}
+	})
+
+	t.Run("returns nil for empty raw content", func(t *testing.T) {
+		templates := buildTemplateArtifacts(nil)
+		if templates != nil {
+			t.Errorf("expected nil templates for nil input, got %v", templates)
+		}
+		templates = buildTemplateArtifacts(map[string]interface{}{})
+		if templates != nil {
+			t.Errorf("expected nil templates for empty map, got %v", templates)
+		}
+	})
+}
+
+func TestLabelsLogoMapping(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	index := types.AgentsIndex{
+		Source:     "Test",
+		Repository: "org/repo",
+		Branch:     "main",
+		Agents: []types.AgentIndexEntry{
+			{
+				Path:        "agents/test",
+				Name:        "test-agent",
+				Framework:   "langgraph",
+				Description: "A test agent.",
+			},
+		},
+	}
+	indexPath := filepath.Join(tmpDir, "index.yaml")
+	writeYAML(t, indexPath, index)
+
+	catalogPath := filepath.Join(tmpDir, "catalog.yaml")
+	err := CreateAgentsCatalog(indexPath, catalogPath, "", true)
+	if err != nil {
+		t.Fatalf("CreateAgentsCatalog failed: %v", err)
+	}
+
+	data, err := os.ReadFile(catalogPath)
+	if err != nil {
+		t.Fatalf("Failed to read catalog: %v", err)
+	}
+	var catalog types.AgentsCatalog
+	if err := yaml.Unmarshal(data, &catalog); err != nil {
+		t.Fatalf("Failed to parse catalog: %v", err)
+	}
+
+	agent := catalog.Agents[0]
+	// With skipEnrichment=true, labels/logo should be empty (no upstream fetch)
+	if len(agent.Labels) != 0 {
+		t.Errorf("expected empty labels with skipEnrichment, got %v", agent.Labels)
+	}
+	if agent.Logo != "" {
+		t.Errorf("expected empty logo with skipEnrichment, got %q", agent.Logo)
+	}
+}
+
+func TestLabelsLogoNotInCustomProperties(t *testing.T) {
+	upstream := &types.UpstreamAgentYAML{
+		Extra: map[string]interface{}{
+			"deploymentModel": "flow-import",
+		},
+	}
+	// Labels and logo should NOT appear in Extra because they are in KnownUpstreamFields
+	if types.KnownUpstreamFields["labels"] != true {
+		t.Error("expected 'labels' in KnownUpstreamFields")
+	}
+	if types.KnownUpstreamFields["logo"] != true {
+		t.Error("expected 'logo' in KnownUpstreamFields")
+	}
+
+	agent := &types.AgentMetadata{}
+	forwardExtraAsCustomProperties(agent, upstream.Extra)
+	if _, found := agent.CustomProperties["labels"]; found {
+		t.Error("labels should not be in customProperties")
+	}
+	if _, found := agent.CustomProperties["logo"]; found {
+		t.Error("logo should not be in customProperties")
+	}
+	if _, found := agent.CustomProperties["deploymentModel"]; !found {
+		t.Error("deploymentModel should be in customProperties")
+	}
+}
 
 func TestTransformEnvVars(t *testing.T) {
 	upstream := &types.UpstreamAgentYAML{}

@@ -105,8 +105,11 @@ func buildAgentMetadata(repo, branch, rawRef string, entry types.AgentIndexEntry
 			agent.DisplayName = upstream.DisplayName
 			agent.Framework = upstream.Framework
 			agent.Description = upstream.Description
+			agent.Labels = upstream.Labels
+			agent.Logo = upstream.Logo
 			agent.Env = transformEnvVars(upstream)
 			forwardExtraAsCustomProperties(agent, upstream.Extra)
+			agent.Templates = buildTemplateArtifacts(upstream.RawContent)
 		}
 
 		readme, err := github.FetchReadme(repo, rawRef, entry.Path)
@@ -192,6 +195,23 @@ func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string
 			StringValue:  strVal,
 		}
 	}
+}
+
+// buildTemplateArtifacts serializes the full upstream agent.yaml content as a
+// JSON-encoded template artifact for the catalog output.
+func buildTemplateArtifacts(rawContent map[string]interface{}) []types.AgentTemplate {
+	if len(rawContent) == 0 {
+		return nil
+	}
+	jsonBytes, err := json.Marshal(rawContent)
+	if err != nil {
+		log.Printf("  Warning: could not serialize agent.yaml for template artifact: %v", err)
+		return nil
+	}
+	return []types.AgentTemplate{{
+		Name:    "agent.yaml",
+		Content: string(jsonBytes),
+	}}
 }
 
 // agentSupportTierFromSource maps an index Source value to a supportTier string.
