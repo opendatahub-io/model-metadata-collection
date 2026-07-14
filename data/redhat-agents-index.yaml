@@ -15,7 +15,6 @@ agents:
   - path: agents/langflow/templates/simple_tool_calling_agent
   - path: agents/a2a/templates/langgraph_crewai_agent
 
-  - path: agents/claude-code/templates/claude_code
-  - path: agents/openclaw/templates/openclaw
-  - path: agents/codex/templates/codex
-  - path: agents/opencode/templates/opencode
+  - path: agents/claude-code/templates/claude_code_agent
+  - path: agents/openclaw/templates/openclaw_agent
+  - path: agents/opencode/templates/opencode_agent
