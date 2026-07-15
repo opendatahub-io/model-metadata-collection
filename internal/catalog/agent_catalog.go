@@ -112,7 +112,11 @@ func buildAgentMetadata(repo, branch, rawRef string, entry types.AgentIndexEntry
 			agent.Templates = buildTemplateArtifacts(upstream.RawContent)
 		}
 
-		readme, err := github.FetchReadme(repo, rawRef, entry.Path)
+		readmePath := entry.Path
+		if entry.ReadmePath != "" {
+			readmePath = entry.ReadmePath
+		}
+		readme, err := github.FetchReadme(repo, rawRef, readmePath)
 		if err != nil {
 			log.Printf("  Warning: failed to fetch README for %s: %v", entry.Path, err)
 		} else if readme != "" {

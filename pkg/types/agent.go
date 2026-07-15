@@ -5,6 +5,7 @@ package types
 // For deployment-only agents without agent.yaml, metadata fields are provided inline.
 type AgentIndexEntry struct {
 	Path        string `yaml:"path"`
+	ReadmePath  string `yaml:"readmePath,omitempty"`
 	Name        string `yaml:"name,omitempty"`
 	DisplayName string `yaml:"displayName,omitempty"`
 	Framework   string `yaml:"framework,omitempty"`
