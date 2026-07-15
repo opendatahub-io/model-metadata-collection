@@ -290,6 +290,16 @@ func TestNormalizeModelName(t *testing.T) {
 			input:    "v1-2-test",
 			expected: "v1-2-test",
 		},
+		{
+			name:     "tinyllama OCI v1-0 suffix normalized to v1v0",
+			input:    "registry.redhat.io/rhai/modelcar-redhatai-tinyllama-1-1b-chat-v1-0:3.0",
+			expected: "redhatai-tinyllama-1v1b-chat-v1v0",
+		},
+		{
+			name:     "mistral v0-3 suffix normalized to v0v3",
+			input:    "registry.redhat.io/rhai/modelcar-mistral-7b-instruct-v0-3:3.0",
+			expected: "mistral-7b-instruct-v0v3",
+		},
 	}
 
 	for _, tt := range tests {
@@ -364,6 +374,13 @@ func TestCalculateSimilarity(t *testing.T) {
 			s1:       "minimax-m2-5",
 			s2:       "MiniMax-M2.5",
 			minScore: 0.9,
+			maxScore: 1.0,
+		},
+		{
+			name:     "tinyllama OCI v1-0 vs HF v1.0 (high confidence)",
+			s1:       "registry.redhat.io/rhai/modelcar-redhatai-tinyllama-1-1b-chat-v1-0:3.0",
+			s2:       "RedHatAI/TinyLlama-1.1B-Chat-v1.0",
+			minScore: 0.8,
 			maxScore: 1.0,
 		},
 	}

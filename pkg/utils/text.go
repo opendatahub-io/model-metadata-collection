@@ -177,6 +177,10 @@ var versionDotRegex = regexp.MustCompile(`(\d+)\.(\d+)`)
 var (
 	compoundVersionMidRegex = regexp.MustCompile(`([a-z]{3,}\d+)-(\d+)(-)`)
 	compoundVersionEndRegex = regexp.MustCompile(`([a-z]{3,}\d+)-(\d+)$`)
+	// Matches OCI-style v-prefixed versions like "-v1-0" → "-v1v0" to align with
+	// how versionDotRegex handles "v1.0" → "v1v0". Requires a hyphen before "v"
+	// to avoid touching digits already placed by earlier normalization (e.g. "3v1").
+	vPrefixVersionRegex = regexp.MustCompile(`(-v\d+)-(\d+)`)
 )
 
 // normalizeModelName normalizes model names for comparison
@@ -220,6 +224,9 @@ func NormalizeModelName(name string) string {
 	// the unit letter attaches directly to the digit, preventing a trailing hyphen match.
 	normalized = compoundVersionMidRegex.ReplaceAllString(normalized, "${1}v${2}${3}")
 	normalized = compoundVersionEndRegex.ReplaceAllString(normalized, "${1}v${2}")
+
+	// Fourth, align OCI-style v-prefixed versions: "-v1-0" → "-v1v0"
+	normalized = vPrefixVersionRegex.ReplaceAllString(normalized, "${1}v${2}")
 
 	// Replace various separators with hyphens for consistency
 	normalized = strings.ReplaceAll(normalized, "_", "-")
@@ -266,10 +273,7 @@ func CalculateSimilarity(s1, s2 string) float64 {
 		}
 	}
 
-	maxTokens := len(s1Tokens)
-	if len(s2Tokens) > maxTokens {
-		maxTokens = len(s2Tokens)
-	}
+	maxTokens := max(len(s2Tokens), len(s1Tokens))
 
 	if maxTokens == 0 {
 		return 0.0

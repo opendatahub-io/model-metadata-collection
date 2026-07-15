@@ -34,7 +34,7 @@ func TestMarshalYAMLWithNewline(t *testing.T) {
 		}
 
 		foundLogo := false
-		for _, line := range strings.Split(string(data), "\n") {
+		for line := range strings.SplitSeq(string(data), "\n") {
 			if strings.HasPrefix(line, "logo:") {
 				foundLogo = true
 				if !strings.Contains(line, longValue) {
