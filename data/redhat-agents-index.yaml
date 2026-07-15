@@ -15,9 +15,8 @@ agents:
   - path: agents/langflow/templates/simple_tool_calling_agent
   - path: agents/a2a/templates/langgraph_crewai_agent
 
+  # If an agent's README lives outside its agent.yaml directory, set:
+  #   readmePath: path/to/readme/directory
   - path: agents/claude-code/templates/claude_code_agent
-    readmePath: agents/claude-code
   - path: agents/openclaw/templates/openclaw_agent
-    readmePath: agents/openclaw/deployment
   - path: agents/opencode/templates/opencode_agent
-    readmePath: agents/opencode/deployment
