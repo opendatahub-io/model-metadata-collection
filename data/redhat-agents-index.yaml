@@ -16,5 +16,8 @@ agents:
   - path: agents/a2a/templates/langgraph_crewai_agent
 
   - path: agents/claude-code/templates/claude_code_agent
+    readmePath: agents/claude-code
   - path: agents/openclaw/templates/openclaw_agent
+    readmePath: agents/openclaw/deployment
   - path: agents/opencode/templates/opencode_agent
+    readmePath: agents/opencode/deployment
