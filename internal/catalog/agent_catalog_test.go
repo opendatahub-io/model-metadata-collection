@@ -11,6 +11,31 @@ import (
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
 
+func TestStripRelativeLinks(t *testing.T) {
+	tests := []struct {
+		name, input, want string
+	}{
+		{"relative path", "[guide](docs/setup.md)", "guide"},
+		{"relative with anchor", "[section](../README.md#install)", "section"},
+		{"absolute https", "[site](https://example.com)", "[site](https://example.com)"},
+		{"absolute http", "[site](http://example.com)", "[site](http://example.com)"},
+		{"protocol-relative", "[site](//cdn.example.com/a.js)", "[site](//cdn.example.com/a.js)"},
+		{"mailto", "[email](mailto:a@b.com)", "[email](mailto:a@b.com)"},
+		{"image relative", "![logo](/images/logo.svg)", "logo"},
+		{"image absolute", "![logo](https://example.com/logo.svg)", "![logo](https://example.com/logo.svg)"},
+		{"mixed", "See [docs](docs/api.md) and [site](https://example.com).", "See docs and [site](https://example.com)."},
+		{"no links", "plain text", "plain text"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := stripRelativeLinks(tt.input)
+			if got != tt.want {
+				t.Errorf("stripRelativeLinks(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}
+
 func TestBuildTemplateArtifacts(t *testing.T) {
 	t.Run("generates JSON template from raw content", func(t *testing.T) {
 		raw := map[string]interface{}{

@@ -6,7 +6,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![LangGraph Logo](/images/langgraph_logo.svg)
+        LangGraph Logo
 
         # ReACT Agent
 
@@ -53,7 +53,7 @@ agents:
 
         ### Tracing (optional)
 
-        Tracing is optional. If MLflow tracing is required, enable it by uncommenting and setting the following environment variables in the `.env` file. For how tracing works under the hood (span structure, autolog behavior, verification steps), see [tracing.md](../../../../tracing.md).
+        Tracing is optional. If MLflow tracing is required, enable it by uncommenting and setting the following environment variables in the `.env` file. For how tracing works under the hood (span structure, autolog behavior, verification steps), see tracing.md.
 
         #### Tracing with a local MLflow server
 
@@ -76,7 +76,7 @@ agents:
 
         #### Tracing with MLflow on OpenShift (RHOAI)
 
-        See `.env.example` for the supported configurations (local dev with manual token, in-pod with K8s service account auth). For TLS, authentication, and RBAC setup, see [MLflow on OpenShift: Authentication and TLS](../../../../docs/mlflow-openshift-auth-and-tls.md).
+        See `.env.example` for the supported configurations (local dev with manual token, in-pod with K8s service account auth). For TLS, authentication, and RBAC setup, see MLflow on OpenShift: Authentication and TLS.
 
         **Notes:**
 
@@ -232,7 +232,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ## Tests
 
@@ -313,7 +313,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![LangGraph Logo](/images/langgraph_logo.svg)
+        LangGraph Logo
 
         # RAG Agent
 
@@ -629,7 +629,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ## Tests
 
@@ -750,7 +750,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![LangGraph Logo](/images/langgraph_logo.svg)
+        LangGraph Logo
 
         # ReACT Agent with Database Memory
 
@@ -1050,7 +1050,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ## Tests
 
@@ -1247,7 +1247,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![LangGraph Logo](/images/langgraph_logo.svg)
+        LangGraph Logo
 
         # Human-in-the-Loop Agent
 
@@ -1502,7 +1502,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ### Testing on OpenShift
 
@@ -1763,7 +1763,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![CrewAI Logo](/images/crewai_logo.svg)
+        CrewAI Logo
 
         # WebSearch Agent
 
@@ -1804,7 +1804,7 @@ agents:
 
         Edit `.env` with your configuration, then:
 
-        See [Local Development](../../../docs/local-development.md) for Ollama + OGX setup for local model serving.
+        See Local Development for Ollama + OGX setup for local model serving.
 
         ### Pointing to a remotely hosted model
 
@@ -2034,7 +2034,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ## Tests
 
@@ -2123,7 +2123,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![LlamaIndex Logo](/images/llamaindex_logo.svg)
+        LlamaIndex Logo
 
         # WebSearch Agent
 
@@ -2361,7 +2361,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ## Tests
 
@@ -2459,7 +2459,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![OpenAI Logo](/images/openai_logo.svg)
+        OpenAI Logo
 
         # Pure Responses Agent
 
@@ -2683,7 +2683,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ## Tests
 
@@ -2756,7 +2756,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        ![AutoGen Logo](/images/autogen_logo.svg)
+        AutoGen Logo
 
         # AutoGen Agent (MCP)
 
@@ -2774,7 +2774,7 @@ agents:
 
         - Discovers and loads tools from an MCP server at startup
         - Uses `reflect_on_tool_use=True` so the LLM reasons about tool results before responding
-        - Supports both streaming (SSE) and non-streaming responses (streaming auto-adjusts when MLflow tracing is enabled; see [Tracing](#tracing-optional) section)
+        - Supports both streaming (SSE) and non-streaming responses (streaming auto-adjusts when MLflow tracing is enabled; see Tracing section)
         - Includes an interactive web playground with an MCP tools panel
         - Extends OpenAI streaming with `mcp.tool_usage` events and `tool_invocations` in JSON responses
 
@@ -2998,7 +2998,7 @@ agents:
         ## Deploying to OpenShift
 
         > **Before you begin:** Log in to OpenShift (`oc login`) and, if using local build + push, your container registry (`podman login`).
-        > See [OpenShift Deployment](../../../docs/openshift-deployment.md) for full prerequisites and step-by-step instructions.
+        > See OpenShift Deployment for full prerequisites and step-by-step instructions.
 
         ### Step 1: Deploy the MCP server
 
@@ -3196,7 +3196,7 @@ agents:
         The MCP AutoML server (`mcp_automl_template/`) provides the tools that this agent uses. It exposes machine learning
         tools (e.g. churn prediction) via the Model Context Protocol over SSE.
 
-        See [`mcp_automl_template/README.md`](mcp_automl_template/README.md) for setup, tool configuration, and deployment
+        See `mcp_automl_template/README.md` for setup, tool configuration, and deployment
         instructions.
 
         ---
@@ -3425,7 +3425,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ## Tests
 
@@ -3749,7 +3749,7 @@ agents:
 
         ### Pointing to a locally hosted model
 
-        See [Local Development](../../../docs/local-development.md) for Ollama + OGX setup for local model serving.
+        See Local Development for Ollama + OGX setup for local model serving.
 
         **Notes:**
 
@@ -3975,11 +3975,11 @@ agents:
         make init        # creates .env from template.env if missing
         ```
 
-        Edit `.env` with your configuration (see [Configuration](#configuration) below).
+        Edit `.env` with your configuration (see Configuration below).
 
         #### Creating environment
 
-        Install dependencies with `make env`, same idea as the Google ADK agent ([Creating environment](../../google/adk/README.md#creating-environment)):
+        Install dependencies with `make env`, same idea as the Google ADK agent (Creating environment):
 
         ```bash
         make env
@@ -4005,7 +4005,7 @@ agents:
         LANGGRAPH_A2A_PORT=9200
         ```
 
-        See [Local Development](../../../docs/local-development.md) for Ollama + OGX setup for local model serving.
+        See Local Development for Ollama + OGX setup for local model serving.
 
         #### OpenShift cluster (values for `make build` / `make push` / `make deploy`)
 
@@ -4273,7 +4273,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](../../../docs/openshift-deployment.md) for more details.
+        See OpenShift Deployment for more details.
 
         ---
 
@@ -4384,8 +4384,8 @@ agents:
         ## Resources
 
         - [A2A Python SDK](https://pypi.org/project/a2a-sdk/)
-        - [Deploying to OpenShift (generic)](../../../docs/openshift-deployment.md)
-        - [Local Development](../../../docs/local-development.md)
+        - Deploying to OpenShift (generic)
+        - Local Development
         - Related patterns: `agents/google/templates/adk/` (Helm + `make build` / `make push` / `make deploy`), `agents/llamaindex/templates/websearch_agent/`, `agents/langgraph/templates/react_agent/`
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/a2a/templates/langgraph_crewai_agent
       framework: a2a
@@ -4438,7 +4438,7 @@ agents:
 
         ## Deployment
 
-        For full deployment instructions, see the [deployment guide](../../README.md).
+        For full deployment instructions, see the deployment guide.
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/claude-code/templates/claude_code_agent
       framework: claude-code
       labels:
@@ -4503,7 +4503,7 @@ agents:
 
         ## Deployment
 
-        For full deployment instructions, see the [deployment guide](../../deployment/README.md).
+        For full deployment instructions, see the deployment guide.
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/openclaw/templates/openclaw_agent
       framework: openclaw
       labels:
@@ -4550,7 +4550,7 @@ agents:
 
         ## Deployment
 
-        For full deployment instructions, see the [deployment guide](../../README.md).
+        For full deployment instructions, see the deployment guide.
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/opencode/templates/opencode_agent
       framework: opencode
       labels:

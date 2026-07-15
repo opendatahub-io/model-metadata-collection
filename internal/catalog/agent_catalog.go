@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -120,7 +121,7 @@ func buildAgentMetadata(repo, branch, rawRef string, entry types.AgentIndexEntry
 		if err != nil {
 			log.Printf("  Warning: failed to fetch README for %s: %v", entry.Path, err)
 		} else if readme != "" {
-			agent.Readme = readme
+			agent.Readme = stripRelativeLinks(readme)
 		}
 	}
 
@@ -199,6 +200,23 @@ func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string
 			StringValue:  strVal,
 		}
 	}
+}
+
+var mdLinkRe = regexp.MustCompile(`!?\[([^\]]+)\]\(([^)]+)\)`)
+
+// stripRelativeLinks removes markdown links and images with relative URLs,
+// keeping the link text. Absolute URLs (http, https, ftp, mailto, //) are left intact.
+func stripRelativeLinks(s string) string {
+	return mdLinkRe.ReplaceAllStringFunc(s, func(match string) string {
+		parts := mdLinkRe.FindStringSubmatch(match)
+		url := parts[2]
+		if strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") ||
+			strings.HasPrefix(url, "ftp://") || strings.HasPrefix(url, "mailto:") ||
+			strings.HasPrefix(url, "//") {
+			return match
+		}
+		return parts[1]
+	})
 }
 
 // buildTemplateArtifacts serializes the full upstream agent.yaml content as a
