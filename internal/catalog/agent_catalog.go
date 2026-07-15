@@ -119,7 +119,7 @@ func buildAgentMetadata(repo, branch, rawRef string, entry types.AgentIndexEntry
 		}
 		readme, err := github.FetchReadme(repo, rawRef, readmePath)
 		if err != nil {
-			log.Printf("  Warning: failed to fetch README for %s: %v", entry.Path, err)
+			log.Printf("  Warning: failed to fetch README for %s: %v", readmePath, err)
 		} else if readme != "" {
 			agent.Readme = stripRelativeLinks(readme)
 		}
