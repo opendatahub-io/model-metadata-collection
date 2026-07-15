@@ -212,9 +212,10 @@ func resolveReadmeLinks(s, baseURL string) string {
 	base, _ := url.Parse(baseURL)
 	return mdLinkRe.ReplaceAllStringFunc(s, func(match string) string {
 		parts := mdLinkRe.FindStringSubmatch(match)
-		isImage, text, href := parts[1] == "!", parts[2], parts[3]
-		if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") ||
-			strings.HasPrefix(href, "ftp://") || strings.HasPrefix(href, "mailto:") ||
+		isImage, text, href := parts[1] == "!", parts[2], strings.TrimSpace(parts[3])
+		lower := strings.ToLower(href)
+		if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") ||
+			strings.HasPrefix(lower, "ftp://") || strings.HasPrefix(lower, "mailto:") ||
 			strings.HasPrefix(href, "//") {
 			return match
 		}
