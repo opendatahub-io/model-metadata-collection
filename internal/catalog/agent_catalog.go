@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -121,7 +122,8 @@ func buildAgentMetadata(repo, branch, rawRef string, entry types.AgentIndexEntry
 		if err != nil {
 			log.Printf("  Warning: failed to fetch README for %s: %v", readmePath, err)
 		} else if readme != "" {
-			agent.Readme = stripRelativeLinks(readme)
+			baseURL := fmt.Sprintf("https://github.com/%s/tree/%s/%s/", repo, branch, readmePath)
+			agent.Readme = resolveReadmeLinks(readme, baseURL)
 		}
 	}
 
@@ -202,20 +204,28 @@ func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string
 	}
 }
 
-var mdLinkRe = regexp.MustCompile(`!?\[([^\]]+)\]\(([^)]+)\)`)
+var mdLinkRe = regexp.MustCompile(`(!?)\[([^\]]+)\]\(([^)]+)\)`)
 
-// stripRelativeLinks removes markdown links and images with relative URLs,
-// keeping the link text. Absolute URLs (http, https, ftp, mailto, //) are left intact.
-func stripRelativeLinks(s string) string {
+// resolveReadmeLinks rewrites relative markdown links to absolute GitHub URLs
+// and removes relative images. Absolute URLs are left unchanged.
+func resolveReadmeLinks(s, baseURL string) string {
+	base, _ := url.Parse(baseURL)
 	return mdLinkRe.ReplaceAllStringFunc(s, func(match string) string {
 		parts := mdLinkRe.FindStringSubmatch(match)
-		url := parts[2]
-		if strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") ||
-			strings.HasPrefix(url, "ftp://") || strings.HasPrefix(url, "mailto:") ||
-			strings.HasPrefix(url, "//") {
+		isImage, text, href := parts[1] == "!", parts[2], parts[3]
+		if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") ||
+			strings.HasPrefix(href, "ftp://") || strings.HasPrefix(href, "mailto:") ||
+			strings.HasPrefix(href, "//") {
 			return match
 		}
-		return parts[1]
+		if isImage {
+			return text
+		}
+		ref, err := url.Parse(href)
+		if err != nil {
+			return text
+		}
+		return fmt.Sprintf("[%s](%s)", text, base.ResolveReference(ref).String())
 	})
 }
 

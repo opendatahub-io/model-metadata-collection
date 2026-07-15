@@ -11,26 +11,28 @@ import (
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 )
 
-func TestStripRelativeLinks(t *testing.T) {
+func TestResolveReadmeLinks(t *testing.T) {
+	base := "https://github.com/org/repo/tree/main/agents/test/"
 	tests := []struct {
 		name, input, want string
 	}{
-		{"relative path", "[guide](docs/setup.md)", "guide"},
-		{"relative with anchor", "[section](../README.md#install)", "section"},
+		{"relative path", "[guide](docs/setup.md)", "[guide](https://github.com/org/repo/tree/main/agents/test/docs/setup.md)"},
+		{"relative parent", "[up](../README.md)", "[up](https://github.com/org/repo/tree/main/agents/README.md)"},
+		{"relative with anchor", "[section](docs/setup.md#install)", "[section](https://github.com/org/repo/tree/main/agents/test/docs/setup.md#install)"},
 		{"absolute https", "[site](https://example.com)", "[site](https://example.com)"},
 		{"absolute http", "[site](http://example.com)", "[site](http://example.com)"},
 		{"protocol-relative", "[site](//cdn.example.com/a.js)", "[site](//cdn.example.com/a.js)"},
 		{"mailto", "[email](mailto:a@b.com)", "[email](mailto:a@b.com)"},
 		{"image relative", "![logo](/images/logo.svg)", "logo"},
 		{"image absolute", "![logo](https://example.com/logo.svg)", "![logo](https://example.com/logo.svg)"},
-		{"mixed", "See [docs](docs/api.md) and [site](https://example.com).", "See docs and [site](https://example.com)."},
+		{"mixed", "See [docs](docs/api.md) and [site](https://example.com).", "See [docs](https://github.com/org/repo/tree/main/agents/test/docs/api.md) and [site](https://example.com)."},
 		{"no links", "plain text", "plain text"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := stripRelativeLinks(tt.input)
+			got := resolveReadmeLinks(tt.input, base)
 			if got != tt.want {
-				t.Errorf("stripRelativeLinks(%q) = %q, want %q", tt.input, got, tt.want)
+				t.Errorf("resolveReadmeLinks(%q) = %q, want %q", tt.input, got, tt.want)
 			}
 		})
 	}
