@@ -83,9 +83,9 @@ tools:
       accessType: read_only
       parameters: []
 artifacts:
-    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:1773859835
-      createTimeSinceEpoch: "1773865770000"
-      lastUpdateTimeSinceEpoch: "1773865770000"
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:79e94f5f27a982f7baf84de11ac0ea5b279f07fa
+      createTimeSinceEpoch: "1784301797000"
+      lastUpdateTimeSinceEpoch: "1784301797000"
 runtimeMetadata:
     prerequisites:
         environmentVariables:
@@ -165,4 +165,4 @@ customProperties:
     architecture:
         metadataType: MetadataStringValue
         string_value: "[\"amd64\"]"
-lastUpdateTimeSinceEpoch: "1773865770000"
+lastUpdateTimeSinceEpoch: "1784301797000"

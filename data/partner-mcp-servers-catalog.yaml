@@ -85,9 +85,9 @@ mcp_servers:
           accessType: read_only
           parameters: []
       artifacts:
-        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:1773859835
-          createTimeSinceEpoch: "1773865770000"
-          lastUpdateTimeSinceEpoch: "1773865770000"
+        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-confluentinc-mcp-confluent:79e94f5f27a982f7baf84de11ac0ea5b279f07fa
+          createTimeSinceEpoch: "1784301797000"
+          lastUpdateTimeSinceEpoch: "1784301797000"
       runtimeMetadata:
         prerequisites:
             environmentVariables:
@@ -170,7 +170,7 @@ mcp_servers:
         supportTier:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
-      lastUpdateTimeSinceEpoch: "1773865770000"
+      lastUpdateTimeSinceEpoch: "1784301797000"
     - name: dynatrace-oss/dynatrace-mcp
       provider: Dynatrace
       license: MIT
@@ -332,9 +332,9 @@ mcp_servers:
           accessType: read_write
           parameters: []
       artifacts:
-        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-dynatrace-oss-mcp:1773859835
-          createTimeSinceEpoch: "1773865179000"
-          lastUpdateTimeSinceEpoch: "1773865179000"
+        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-dynatrace-oss-mcp:06005916c27923f410f2165ca0045435dc38bd97
+          createTimeSinceEpoch: "1784301820000"
+          lastUpdateTimeSinceEpoch: "1784301820000"
       runtimeMetadata:
         defaultArgs:
             - node
@@ -362,6 +362,10 @@ mcp_servers:
                   name: OAUTH_CLIENT_SECRET
                   required: false
                   type: string
+                - description: MCP Bearer token is required when running in HTTP mode. The server will refuse to start if this variable is not set.
+                  name: MCP_BEARER_TOKEN
+                  required: true
+                  type: string
             secrets:
                 - description: kubectl create secret generic dynatrace-credentials --from-literal=platform-token=<DT_PLATFORM_TOKEN> --from-literal=oauth-client-id=<OAUTH_CLIENT_ID> --from-literal=oauth-client-secret=<OAUTH_CLIENT_SECRET>
                   keys:
@@ -377,6 +381,10 @@ mcp_servers:
                       envVarName: OAUTH_CLIENT_SECRET
                       key: oauth-client-secret
                       required: false
+                    - description: MCP Bearer token is required when running in HTTP mode.
+                      envVarName: MCP_BEARER_TOKEN
+                      key: mcp-bearer-token
+                      required: true
                   mountAsFile: false
                   name: dynatrace-credentials
         recommendedResources:
@@ -403,6 +411,10 @@ mcp_servers:
               name: OAUTH_CLIENT_SECRET
               required: false
               type: secret
+            - description: MCP Bearer token is required when running in HTTP mode. The server will refuse to start if this variable is not set.
+              name: MCP_BEARER_TOKEN
+              required: true
+              type: secret
       securityIndicators:
         readOnlyTools: false
         secureEndpoint: true
@@ -414,7 +426,7 @@ mcp_servers:
         supportTier:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
-      lastUpdateTimeSinceEpoch: "1773865179000"
+      lastUpdateTimeSinceEpoch: "1784301820000"
     - name: hashicorp/terraform-mcp-server
       provider: IBM Terraform
       license: MPL-2.0
@@ -564,9 +576,9 @@ mcp_servers:
               description: Search query for policies
               required: true
       artifacts:
-        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-hashicorp-terraform-mcp-server:1773859835
-          createTimeSinceEpoch: "1773865492000"
-          lastUpdateTimeSinceEpoch: "1773865492000"
+        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-hashicorp-terraform-mcp-server:75735827e3086ccadef7f88ee99ecae9887bb916
+          createTimeSinceEpoch: "1784301817000"
+          lastUpdateTimeSinceEpoch: "1784301817000"
       runtimeMetadata:
         defaultArgs:
             - ./terraform-mcp-server
@@ -637,7 +649,7 @@ mcp_servers:
         supportTier:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
-      lastUpdateTimeSinceEpoch: "1773865492000"
+      lastUpdateTimeSinceEpoch: "1784301817000"
     - name: microsoft/azure-mcp-server
       provider: Microsoft
       license: MIT
@@ -920,9 +932,9 @@ mcp_servers:
           accessType: execute
           parameters: []
       artifacts:
-        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-ms-azure-mcp-server:1774539732-dotnet-builder
-          createTimeSinceEpoch: "1774540500000"
-          lastUpdateTimeSinceEpoch: "1774540500000"
+        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-ms-azure-mcp-server:179bf673b67187aba0ba230e7c3bd96028e27b48
+          createTimeSinceEpoch: "1784302076000"
+          lastUpdateTimeSinceEpoch: "1784302076000"
       runtimeMetadata:
         defaultArgs:
             - --transport
@@ -1060,7 +1072,7 @@ mcp_servers:
         supportTier:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
-      lastUpdateTimeSinceEpoch: "1774540500000"
+      lastUpdateTimeSinceEpoch: "1784302076000"
     - name: enterprisedb/pg-airman-mcp
       provider: EnterpriseDB
       license: Apache-2.0
@@ -1215,9 +1227,9 @@ mcp_servers:
               description: Comment text to add
               required: true
       artifacts:
-        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-enterprisedb-pg-airman-mcp:1775068164
-          createTimeSinceEpoch: "1775067967000"
-          lastUpdateTimeSinceEpoch: "1775067967000"
+        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-enterprisedb-pg-airman-mcp:efbae1e31682d204857d7e93814e4c2547663560
+          createTimeSinceEpoch: "1784301764000"
+          lastUpdateTimeSinceEpoch: "1784301764000"
       runtimeMetadata:
         defaultPort: 8001
         optionalEnvironmentVariables:
@@ -1355,4 +1367,4 @@ mcp_servers:
         supportTier:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
-      lastUpdateTimeSinceEpoch: "1775067967000"
+      lastUpdateTimeSinceEpoch: "1784301764000"

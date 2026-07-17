@@ -103,9 +103,9 @@ tools:
           description: Name of the database to create
           required: true
 artifacts:
-    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mariadb-mcp:1774297776
-      createTimeSinceEpoch: "1774297749000"
-      lastUpdateTimeSinceEpoch: "1774297749000"
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mariadb-mcp:f94b043241c702c607e88274da83f8482e3e7d56
+      createTimeSinceEpoch: "1784302696000"
+      lastUpdateTimeSinceEpoch: "1784302696000"
 runtimeMetadata:
     defaultArgs:
         - python
@@ -205,4 +205,4 @@ customProperties:
     architecture:
         metadataType: MetadataStringValue
         string_value: "[\"amd64\"]"
-lastUpdateTimeSinceEpoch: "1774297749000"
+lastUpdateTimeSinceEpoch: "1784302696000"

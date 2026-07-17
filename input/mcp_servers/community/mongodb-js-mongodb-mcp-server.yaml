@@ -126,9 +126,9 @@ tools:
       accessType: read_only
       parameters: []
 artifacts:
-    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mongodb-mcp-server:1774027206
-      createTimeSinceEpoch: "1774027075000"
-      lastUpdateTimeSinceEpoch: "1774027075000"
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mongodb-mcp-server:450a14399cc7bd6c7d633e7a44d32b80a7694b73
+      createTimeSinceEpoch: "1784301778000"
+      lastUpdateTimeSinceEpoch: "1784301778000"
 runtimeMetadata:
     defaultArgs:
         - --transport
@@ -203,4 +203,4 @@ customProperties:
     architecture:
         metadataType: MetadataStringValue
         string_value: "[\"amd64\"]"
-lastUpdateTimeSinceEpoch: "1774027075000"
+lastUpdateTimeSinceEpoch: "1784301778000"

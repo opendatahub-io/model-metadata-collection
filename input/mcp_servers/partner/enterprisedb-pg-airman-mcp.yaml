@@ -152,9 +152,9 @@ tools:
           description: Comment text to add
           required: true
 artifacts:
-    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-enterprisedb-pg-airman-mcp:1775068164
-      createTimeSinceEpoch: "1775067967000"
-      lastUpdateTimeSinceEpoch: "1775067967000"
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-enterprisedb-pg-airman-mcp:efbae1e31682d204857d7e93814e4c2547663560
+      createTimeSinceEpoch: "1784301764000"
+      lastUpdateTimeSinceEpoch: "1784301764000"
 runtimeMetadata:
     defaultPort: 8001
     optionalEnvironmentVariables:
@@ -289,4 +289,4 @@ customProperties:
     architecture:
         metadataType: MetadataStringValue
         string_value: "[\"amd64\"]"
-lastUpdateTimeSinceEpoch: "1775067967000"
+lastUpdateTimeSinceEpoch: "1784301764000"

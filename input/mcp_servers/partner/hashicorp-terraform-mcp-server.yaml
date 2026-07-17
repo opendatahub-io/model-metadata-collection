@@ -147,9 +147,9 @@ tools:
           description: Search query for policies
           required: true
 artifacts:
-    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-hashicorp-terraform-mcp-server:1773859835
-      createTimeSinceEpoch: "1773865492000"
-      lastUpdateTimeSinceEpoch: "1773865492000"
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-hashicorp-terraform-mcp-server:75735827e3086ccadef7f88ee99ecae9887bb916
+      createTimeSinceEpoch: "1784301817000"
+      lastUpdateTimeSinceEpoch: "1784301817000"
 runtimeMetadata:
     defaultArgs:
         - ./terraform-mcp-server
@@ -217,4 +217,4 @@ customProperties:
     architecture:
         metadataType: MetadataStringValue
         string_value: "[\"amd64\"]"
-lastUpdateTimeSinceEpoch: "1773865492000"
+lastUpdateTimeSinceEpoch: "1784301817000"

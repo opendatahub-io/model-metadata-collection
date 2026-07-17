@@ -280,9 +280,9 @@ tools:
       accessType: execute
       parameters: []
 artifacts:
-    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-ms-azure-mcp-server:1774539732-dotnet-builder
-      createTimeSinceEpoch: "1774540500000"
-      lastUpdateTimeSinceEpoch: "1774540500000"
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-ms-azure-mcp-server:179bf673b67187aba0ba230e7c3bd96028e27b48
+      createTimeSinceEpoch: "1784302076000"
+      lastUpdateTimeSinceEpoch: "1784302076000"
 runtimeMetadata:
     defaultArgs:
         - --transport
@@ -417,4 +417,4 @@ customProperties:
     architecture:
         metadataType: MetadataStringValue
         string_value: "[\"amd64\"]"
-lastUpdateTimeSinceEpoch: "1774540500000"
+lastUpdateTimeSinceEpoch: "1784302076000"

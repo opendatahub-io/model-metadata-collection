@@ -159,9 +159,9 @@ tools:
       accessType: read_write
       parameters: []
 artifacts:
-    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-dynatrace-oss-mcp:1773859835
-      createTimeSinceEpoch: "1773865179000"
-      lastUpdateTimeSinceEpoch: "1773865179000"
+    - uri: oci://quay.io/rhoai-partner-mcp/ubi10-dynatrace-oss-mcp:06005916c27923f410f2165ca0045435dc38bd97
+      createTimeSinceEpoch: "1784301820000"
+      lastUpdateTimeSinceEpoch: "1784301820000"
 runtimeMetadata:
     defaultArgs:
         - node
@@ -189,6 +189,10 @@ runtimeMetadata:
               name: OAUTH_CLIENT_SECRET
               required: false
               type: string
+            - description: MCP Bearer token is required when running in HTTP mode. The server will refuse to start if this variable is not set.
+              name: MCP_BEARER_TOKEN
+              required: true
+              type: string
         secrets:
             - description: kubectl create secret generic dynatrace-credentials --from-literal=platform-token=<DT_PLATFORM_TOKEN> --from-literal=oauth-client-id=<OAUTH_CLIENT_ID> --from-literal=oauth-client-secret=<OAUTH_CLIENT_SECRET>
               keys:
@@ -204,6 +208,10 @@ runtimeMetadata:
                   envVarName: OAUTH_CLIENT_SECRET
                   key: oauth-client-secret
                   required: false
+                - description: MCP Bearer token is required when running in HTTP mode.
+                  envVarName: MCP_BEARER_TOKEN
+                  key: mcp-bearer-token
+                  required: true
               mountAsFile: false
               name: dynatrace-credentials
     recommendedResources:
@@ -230,6 +238,10 @@ runtimeMetadata:
           name: OAUTH_CLIENT_SECRET
           required: false
           type: secret
+        - description: MCP Bearer token is required when running in HTTP mode. The server will refuse to start if this variable is not set.
+          name: MCP_BEARER_TOKEN
+          required: true
+          type: secret
 securityIndicators:
     readOnlyTools: false
     secureEndpoint: true
@@ -238,4 +250,4 @@ customProperties:
     architecture:
         metadataType: MetadataStringValue
         string_value: "[\"amd64\"]"
-lastUpdateTimeSinceEpoch: "1773865179000"
+lastUpdateTimeSinceEpoch: "1784301820000"

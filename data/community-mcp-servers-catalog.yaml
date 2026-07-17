@@ -105,9 +105,9 @@ mcp_servers:
               description: Name of the database to create
               required: true
       artifacts:
-        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mariadb-mcp:1774297776
-          createTimeSinceEpoch: "1774297749000"
-          lastUpdateTimeSinceEpoch: "1774297749000"
+        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mariadb-mcp:f94b043241c702c607e88274da83f8482e3e7d56
+          createTimeSinceEpoch: "1784302696000"
+          lastUpdateTimeSinceEpoch: "1784302696000"
       runtimeMetadata:
         defaultArgs:
             - python
@@ -210,7 +210,7 @@ mcp_servers:
         supportTier:
             metadataType: MetadataStringValue
             string_value: "communitySupported"
-      lastUpdateTimeSinceEpoch: "1774297749000"
+      lastUpdateTimeSinceEpoch: "1784302696000"
     - name: mongodb-js/mongodb-mcp-server
       provider: MongoDB
       license: Apache-2.0
@@ -339,9 +339,9 @@ mcp_servers:
           accessType: read_only
           parameters: []
       artifacts:
-        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mongodb-mcp-server:1774027206
-          createTimeSinceEpoch: "1774027075000"
-          lastUpdateTimeSinceEpoch: "1774027075000"
+        - uri: oci://quay.io/rhoai-partner-mcp/ubi10-mongodb-mcp-server:450a14399cc7bd6c7d633e7a44d32b80a7694b73
+          createTimeSinceEpoch: "1784301778000"
+          lastUpdateTimeSinceEpoch: "1784301778000"
       runtimeMetadata:
         defaultArgs:
             - --transport
@@ -419,4 +419,4 @@ mcp_servers:
         supportTier:
             metadataType: MetadataStringValue
             string_value: "communitySupported"
-      lastUpdateTimeSinceEpoch: "1774027075000"
+      lastUpdateTimeSinceEpoch: "1784301778000"
