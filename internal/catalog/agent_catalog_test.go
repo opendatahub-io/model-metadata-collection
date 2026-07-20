@@ -33,6 +33,9 @@ func TestResolveReadmeLinks(t *testing.T) {
 		{"html img relative no alt", `<img src="/images/logo.png" width="100">`, ""},
 		{"html img absolute", `<img src="https://example.com/logo.png" alt="Logo">`, `<img src="https://example.com/logo.png" alt="Logo">`},
 		{"html img single quotes", `<img src='/images/logo.svg' alt='Logo'>`, "Logo"},
+		{"html img uppercase", `<IMG SRC="/images/logo.png" ALT="Logo">`, "Logo"},
+		{"html img spaced attrs", `<img src = "/images/logo.png" alt = "Logo">`, "Logo"},
+		{"html img data-src ignored", `<img data-src="/images/lazy.png" alt="Lazy">`, `<img data-src="/images/lazy.png" alt="Lazy">`},
 		{"mixed", "See [docs](docs/api.md) and [site](https://example.com).", "See [docs](https://github.com/org/repo/tree/main/agents/test/docs/api.md) and [site](https://example.com)."},
 		{"no links", "plain text", "plain text"},
 	}

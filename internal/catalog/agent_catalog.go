@@ -205,8 +205,8 @@ func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string
 }
 
 var mdLinkRe = regexp.MustCompile(`(!?)\[([^\]]+)\]\(([^)]+)\)`)
-var htmlImgRe = regexp.MustCompile(`<img\s[^>]*src=["']([^"']+)["'][^>]*>`)
-var htmlImgAltRe = regexp.MustCompile(`alt=["']([^"']*)["']`)
+var htmlImgRe = regexp.MustCompile(`(?i)<img\s+(?:[^>]*\s)?src\s*=\s*["']([^"']+)["'][^>]*>`)
+var htmlImgAltRe = regexp.MustCompile(`(?i)(?:\s|^)alt\s*=\s*["']([^"']*)["']`)
 
 // resolveReadmeLinks rewrites relative markdown links to absolute GitHub URLs,
 // removes relative markdown images, and replaces relative HTML <img> tags with
