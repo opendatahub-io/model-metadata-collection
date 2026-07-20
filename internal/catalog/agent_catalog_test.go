@@ -29,6 +29,10 @@ func TestResolveReadmeLinks(t *testing.T) {
 		{"whitespace trim", "[guide](  docs/setup.md  )", "[guide](https://github.com/org/repo/tree/main/agents/test/docs/setup.md)"},
 		{"image relative", "![logo](/images/logo.svg)", "logo"},
 		{"image absolute", "![logo](https://example.com/logo.svg)", "![logo](https://example.com/logo.svg)"},
+		{"html img relative", `<img src="/images/logo.png" alt="Logo" width="100">`, "Logo"},
+		{"html img relative no alt", `<img src="/images/logo.png" width="100">`, ""},
+		{"html img absolute", `<img src="https://example.com/logo.png" alt="Logo">`, `<img src="https://example.com/logo.png" alt="Logo">`},
+		{"html img single quotes", `<img src='/images/logo.svg' alt='Logo'>`, "Logo"},
 		{"mixed", "See [docs](docs/api.md) and [site](https://example.com).", "See [docs](https://github.com/org/repo/tree/main/agents/test/docs/api.md) and [site](https://example.com)."},
 		{"no links", "plain text", "plain text"},
 	}

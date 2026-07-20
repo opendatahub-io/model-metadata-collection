@@ -3235,7 +3235,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        <img src="/images/adk_logo.png" alt="Google ADK logo" width="100" height="100">
+        Google ADK logo
 
         # Google ADK 2.0 Agent
 
@@ -3938,7 +3938,7 @@ agents:
       readme: |
         <div style="text-align: center;">
 
-        <img src="/images/a2a-logo-black.svg" alt="A2A (Agent-to-Agent) protocol logo" width="100" height="100">
+        A2A (Agent-to-Agent) protocol logo
 
         # A2A: LangGraph ↔ CrewAI
 

@@ -205,12 +205,15 @@ func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string
 }
 
 var mdLinkRe = regexp.MustCompile(`(!?)\[([^\]]+)\]\(([^)]+)\)`)
+var htmlImgRe = regexp.MustCompile(`<img\s[^>]*src=["']([^"']+)["'][^>]*>`)
+var htmlImgAltRe = regexp.MustCompile(`alt=["']([^"']*)["']`)
 
-// resolveReadmeLinks rewrites relative markdown links to absolute GitHub URLs
-// and removes relative images. Absolute URLs are left unchanged.
+// resolveReadmeLinks rewrites relative markdown links to absolute GitHub URLs,
+// removes relative markdown images, and replaces relative HTML <img> tags with
+// their alt text. Absolute URLs are left unchanged.
 func resolveReadmeLinks(s, baseURL string) string {
 	base, _ := url.Parse(baseURL)
-	return mdLinkRe.ReplaceAllStringFunc(s, func(match string) string {
+	s = mdLinkRe.ReplaceAllStringFunc(s, func(match string) string {
 		parts := mdLinkRe.FindStringSubmatch(match)
 		isImage, text, href := parts[1] == "!", parts[2], strings.TrimSpace(parts[3])
 		lower := strings.ToLower(href)
@@ -228,6 +231,22 @@ func resolveReadmeLinks(s, baseURL string) string {
 		}
 		return fmt.Sprintf("[%s](%s)", text, base.ResolveReference(ref).String())
 	})
+	s = htmlImgRe.ReplaceAllStringFunc(s, func(match string) string {
+		srcParts := htmlImgRe.FindStringSubmatch(match)
+		src := srcParts[1]
+		lower := strings.ToLower(src)
+		if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") ||
+			strings.HasPrefix(lower, "ftp://") || strings.HasPrefix(lower, "mailto:") ||
+			strings.HasPrefix(src, "//") {
+			return match
+		}
+		altParts := htmlImgAltRe.FindStringSubmatch(match)
+		if len(altParts) > 1 && altParts[1] != "" {
+			return altParts[1]
+		}
+		return ""
+	})
+	return s
 }
 
 // buildTemplateArtifacts serializes the full upstream agent.yaml content as a
