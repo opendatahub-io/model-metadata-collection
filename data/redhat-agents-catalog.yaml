@@ -30,7 +30,7 @@ agents:
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ## Local Development
 
@@ -232,7 +232,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ## Tests
 
@@ -277,10 +277,10 @@ agents:
 
         ## Resources
 
-        - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
-        - [LangChain Documentation](https://python.langchain.com/)
-        - [OGX Documentation](https://ogx-ai.github.io/docs/)
-        - [Ollama Documentation](https://ollama.com/docs)
+        - [LangGraph Documentation](https://docs.langchain.com/oss/python/langgraph/overview)
+        - [LangChain Documentation](https://docs.langchain.com/oss/python/langchain/overview)
+        - [OGX Documentation](https://ogx-ai.github.io/docs)
+        - [Ollama Documentation](https://docs.ollama.com)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/react_agent
       framework: langgraph
       labels:
@@ -338,7 +338,7 @@ agents:
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ## Local Development
 
@@ -629,7 +629,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ## Tests
 
@@ -707,9 +707,9 @@ agents:
 
         ## Resources
 
-        - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
-        - [LangChain Documentation](https://python.langchain.com/)
-        - [OGX Documentation](https://ogx-ai.github.io/docs/)
+        - [LangGraph Documentation](https://docs.langchain.com/oss/python/langgraph/overview)
+        - [LangChain Documentation](https://docs.langchain.com/oss/python/langchain/overview)
+        - [OGX Documentation](https://ogx-ai.github.io/docs)
         - [Milvus Documentation](https://milvus.io/docs)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/agentic_rag
       framework: langgraph
@@ -783,7 +783,7 @@ agents:
         - [Helm](https://helm.sh/) -- for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell -- on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
         - **PostgreSQL 14+** -- managed service or local instance (see setup below)
 
         ## Local Development
@@ -1050,7 +1050,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ## Tests
 
@@ -1204,10 +1204,10 @@ agents:
 
         ## Resources
 
-        - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
-        - [LangGraph Checkpointers](https://langchain-ai.github.io/langgraph/concepts/persistence/)
-        - [LangChain Documentation](https://python.langchain.com/)
-        - [OGX Documentation](https://ogx-ai.github.io/docs/)
+        - [LangGraph Documentation](https://docs.langchain.com/oss/python/langgraph/overview)
+        - [LangGraph Checkpointers](https://docs.langchain.com/oss/python/langgraph/persistence)
+        - [LangChain Documentation](https://docs.langchain.com/oss/python/langchain/overview)
+        - [OGX Documentation](https://ogx-ai.github.io/docs)
         - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/react_with_database_memory
       framework: langgraph
@@ -1282,7 +1282,7 @@ agents:
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ## Local Development
 
@@ -1502,7 +1502,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ### Testing on OpenShift
 
@@ -1732,11 +1732,11 @@ agents:
 
         ## Resources
 
-        - [LangGraph Interrupts](https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/)
-        - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
-        - [LangChain Documentation](https://python.langchain.com/)
-        - [OGX Documentation](https://ogx-ai.github.io/docs/)
-        - [Ollama Documentation](https://ollama.com/docs)
+        - [LangGraph Interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts)
+        - [LangGraph Documentation](https://docs.langchain.com/oss/python/langgraph/overview)
+        - [LangChain Documentation](https://docs.langchain.com/oss/python/langchain/overview)
+        - [OGX Documentation](https://ogx-ai.github.io/docs)
+        - [Ollama Documentation](https://docs.ollama.com)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/langgraph/templates/human_in_the_loop
       framework: langgraph
       labels:
@@ -1789,7 +1789,7 @@ agents:
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ## Local Development
 
@@ -1804,7 +1804,7 @@ agents:
 
         Edit `.env` with your configuration, then:
 
-        See [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/local-development.md) for Ollama + OGX setup for local model serving.
+        See [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/local-development.md) for Ollama + OGX setup for local model serving.
 
         ### Pointing to a remotely hosted model
 
@@ -2034,7 +2034,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ## Tests
 
@@ -2146,7 +2146,7 @@ agents:
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ## Local Development
 
@@ -2361,7 +2361,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ## Tests
 
@@ -2429,10 +2429,10 @@ agents:
 
         ## Resources
 
-        - [LlamaIndex Documentation](https://docs.llamaindex.ai/)
-        - [LlamaIndex Workflows](https://docs.llamaindex.ai/en/stable/module_guides/workflow/)
-        - [OGX Documentation](https://ogx-ai.github.io/docs/)
-        - [Ollama Documentation](https://ollama.com/docs)
+        - [LlamaIndex Documentation](https://developers.llamaindex.ai/python/framework/)
+        - [LlamaIndex Workflows](https://developers.llamaindex.ai/python/llamaagents/workflows/)
+        - [OGX Documentation](https://ogx-ai.github.io/docs)
+        - [Ollama Documentation](https://docs.ollama.com)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/llamaindex/templates/websearch_agent
       framework: llamaindex
       labels:
@@ -2484,7 +2484,7 @@ agents:
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ## Local Development
 
@@ -2683,7 +2683,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ## Tests
 
@@ -2786,7 +2786,7 @@ agents:
         - [Podman](https://podman.io/) or [Docker](https://www.docker.com/) — for local container builds (Option A)
         - [oc](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html) — for OpenShift deployment
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
-        - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows, use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended) or [Git Bash](https://git-scm.com/downloads)
+        - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows, use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended) or [Git Bash](https://git-scm.com/install/)
         - **MCP Server** — this agent requires a running MCP server (included in `mcp_automl_template/`)
 
         ## Deploying Locally
@@ -2998,7 +2998,7 @@ agents:
         ## Deploying to OpenShift
 
         > **Before you begin:** Log in to OpenShift (`oc login`) and, if using local build + push, your container registry (`podman login`).
-        > See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for full prerequisites and step-by-step instructions.
+        > See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for full prerequisites and step-by-step instructions.
 
         ### Step 1: Deploy the MCP server
 
@@ -3204,8 +3204,8 @@ agents:
         ## Documentation and references
 
         - [AutoGen](https://microsoft.github.io/autogen/)
-        - [MCP (Model Context Protocol)](https://modelcontextprotocol.io/)
-        - [OGX Documentation](https://ogx-ai.github.io/docs/)
+        - [MCP (Model Context Protocol)](https://modelcontextprotocol.io/docs/getting-started/intro)
+        - [OGX Documentation](https://ogx-ai.github.io/docs)
         - MCP server in this repo: `mcp_automl_template/` (README, tool configuration, deploy)
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/autogen/templates/mcp_agent
       framework: autogen
@@ -3259,7 +3259,7 @@ agents:
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ## Local Development
 
@@ -3425,7 +3425,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ## Tests
 
@@ -3582,10 +3582,10 @@ agents:
 
         ### Additional Resources
 
-        - **Google ADK 2.0 Documentation**: <https://google.github.io/adk-docs/2.0/>
+        - **Google ADK 2.0 Documentation**: <https://adk.dev/2.0/>
         - **LiteLLM Documentation**: <https://docs.litellm.ai/>
-        - **OGX Documentation**: <https://ogx-ai.github.io/docs/>
-        - **Ollama Documentation**: <https://ollama.com/docs>
+        - **OGX Documentation**: <https://ogx-ai.github.io/docs>
+        - **Ollama Documentation**: <https://docs.ollama.com>
 
         ---
 
@@ -3654,7 +3654,7 @@ agents:
           stack
         - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows,
           use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
-          or [Git Bash](https://git-scm.com/downloads)
+          or [Git Bash](https://git-scm.com/install/)
 
         ### Installing Podman
 
@@ -3749,7 +3749,7 @@ agents:
 
         ### Pointing to a locally hosted model
 
-        See [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/local-development.md) for Ollama + OGX setup for local model serving.
+        See [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/local-development.md) for Ollama + OGX setup for local model serving.
 
         **Notes:**
 
@@ -3960,7 +3960,7 @@ agents:
         - [Podman](https://podman.io/) or [Docker](https://www.docker.com/) — for local container builds (`Makefile` uses whichever is on `PATH`)
         - [oc](https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html) — for OpenShift deployment
         - [Helm](https://helm.sh/) — for deploying to Kubernetes/OpenShift
-        - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows, use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended) or [Git Bash](https://git-scm.com/downloads)
+        - [GNU Make](https://www.gnu.org/software/make/) and a bash-compatible shell — on Windows, use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended) or [Git Bash](https://git-scm.com/install/)
 
         ---
 
@@ -3979,7 +3979,7 @@ agents:
 
         #### Creating environment
 
-        Install dependencies with `make env`, same idea as the Google ADK agent ([Creating environment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/a2a/google/adk/README.md#creating-environment)):
+        Install dependencies with `make env`, same idea as the Google ADK agent ([Creating environment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/google/templates/adk/README.md#creating-environment)):
 
         ```bash
         make env
@@ -4005,7 +4005,7 @@ agents:
         LANGGRAPH_A2A_PORT=9200
         ```
 
-        See [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/local-development.md) for Ollama + OGX setup for local model serving.
+        See [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/local-development.md) for Ollama + OGX setup for local model serving.
 
         #### OpenShift cluster (values for `make build` / `make push` / `make deploy`)
 
@@ -4233,7 +4233,7 @@ agents:
 
         #### Manage Agents using Kagenti (Optional)
 
-        Register agents with [Kagenti](https://github.com/kagenti/kagenti) for unified discovery and management.
+        Register agents with [Kagenti](https://github.com/rossoctl/rossoctl) for unified discovery and management.
 
         **Prerequisites:**
 
@@ -4273,7 +4273,7 @@ agents:
         make undeploy
         ```
 
-        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md) for more details.
+        See [OpenShift Deployment](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md) for more details.
 
         ---
 
@@ -4384,8 +4384,8 @@ agents:
         ## Resources
 
         - [A2A Python SDK](https://pypi.org/project/a2a-sdk/)
-        - [Deploying to OpenShift (generic)](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/openshift-deployment.md)
-        - [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/docs/local-development.md)
+        - [Deploying to OpenShift (generic)](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/openshift-deployment.md)
+        - [Local Development](https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/docs/local-development.md)
         - Related patterns: `agents/google/templates/adk/` (Helm + `make build` / `make push` / `make deploy`), `agents/llamaindex/templates/websearch_agent/`, `agents/langgraph/templates/react_agent/`
       repositoryUrl: https://github.com/red-hat-data-services/agentic-starter-kits/tree/main/agents/a2a/templates/langgraph_crewai_agent
       framework: a2a
@@ -4530,7 +4530,7 @@ agents:
 
         ## What this agent does
 
-        AI-powered terminal-based coding agent built on [OpenCode](https://github.com/sst/opencode). Provides code generation, multi-file editing, code review, and debugging capabilities. Deploys in web mode (OAuth-secured browser UI) or headless CLI mode for terminal sessions and CI pipelines.
+        AI-powered terminal-based coding agent built on [OpenCode](https://github.com/anomalyco/opencode). Provides code generation, multi-file editing, code review, and debugging capabilities. Deploys in web mode (OAuth-secured browser UI) or headless CLI mode for terminal sessions and CI pipelines.
 
         ## Supported backends
 

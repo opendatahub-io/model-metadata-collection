@@ -208,22 +208,22 @@ var mdLinkRe = regexp.MustCompile(`(!?)\[([^\]]+)\]\(([^)]+)\)`)
 var htmlImgRe = regexp.MustCompile(`(?i)<img\s+(?:[^>]*\s)?src\s*=\s*["']([^"']+)["'][^>]*>`)
 var htmlImgAltRe = regexp.MustCompile(`(?i)(?:\s|^)alt\s*=\s*["']([^"']*)["']`)
 
-// resolveReadmeLinks rewrites relative markdown links to absolute GitHub URLs,
-// removes relative markdown images, and replaces relative HTML <img> tags with
-// their alt text. Absolute URLs are left unchanged.
+// resolveReadmeLinks rewrites relative markdown links to absolute GitHub URLs
+// and strips all images (markdown and HTML) since they may break in disconnected
+// environments. Image tags are replaced with their alt text when available.
 func resolveReadmeLinks(s, baseURL string) string {
 	base, _ := url.Parse(baseURL)
 	s = mdLinkRe.ReplaceAllStringFunc(s, func(match string) string {
 		parts := mdLinkRe.FindStringSubmatch(match)
 		isImage, text, href := parts[1] == "!", parts[2], strings.TrimSpace(parts[3])
+		if isImage {
+			return text
+		}
 		lower := strings.ToLower(href)
 		if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") ||
 			strings.HasPrefix(lower, "ftp://") || strings.HasPrefix(lower, "mailto:") ||
 			strings.HasPrefix(href, "//") {
 			return match
-		}
-		if isImage {
-			return text
 		}
 		ref, err := url.Parse(href)
 		if err != nil {
@@ -232,14 +232,6 @@ func resolveReadmeLinks(s, baseURL string) string {
 		return fmt.Sprintf("[%s](%s)", text, base.ResolveReference(ref).String())
 	})
 	s = htmlImgRe.ReplaceAllStringFunc(s, func(match string) string {
-		srcParts := htmlImgRe.FindStringSubmatch(match)
-		src := srcParts[1]
-		lower := strings.ToLower(src)
-		if strings.HasPrefix(lower, "http://") || strings.HasPrefix(lower, "https://") ||
-			strings.HasPrefix(lower, "ftp://") || strings.HasPrefix(lower, "mailto:") ||
-			strings.HasPrefix(src, "//") {
-			return match
-		}
 		altParts := htmlImgAltRe.FindStringSubmatch(match)
 		if len(altParts) > 1 && altParts[1] != "" {
 			return altParts[1]
