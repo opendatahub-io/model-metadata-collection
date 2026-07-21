@@ -204,7 +204,7 @@ func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string
 	}
 }
 
-var mdLinkRe = regexp.MustCompile(`(!?)\[([^\]]+)\]\(([^)]+)\)`)
+var mdLinkRe = regexp.MustCompile(`(!?)\[([^\]]*)\]\(([^)]+)\)`)
 var htmlImgRe = regexp.MustCompile(`(?i)<img\s+(?:[^>]*\s)?src\s*=\s*["']([^"']+)["'][^>]*>`)
 var htmlImgAltRe = regexp.MustCompile(`(?i)(?:\s|^)alt\s*=\s*["']([^"']*)["']`)
 
