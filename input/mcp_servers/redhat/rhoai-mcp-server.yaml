@@ -1,0 +1,593 @@
+name: rhoai-mcp-server
+provider: Red Hat
+license: mit
+license_link: https://opensource.org/licenses/MIT
+description: MCP server for Red Hat OpenShift AI (RHOAI). Enables AI agents to manage Data Science Projects, Jupyter workbenches, model serving (KServe InferenceServices), Data Science Pipelines, S3 data connections, persistent storage, model training (Kubeflow Training Operator), and Model Registry. Includes cluster exploration composites and 18 workflow prompts for multi-step operations. Tools listed below reflect the default configuration with read-only mode disabled.
+readme: |-
+    # RHOAI MCP Server
+
+    **MCP Server Summary:**
+    Access Red Hat OpenShift AI environments through AI agents using the
+    Model Context Protocol. Replicates and extends OpenShift AI Dashboard
+    capabilities through programmatic tools.
+
+    ## Features
+    - Create, list, and manage Data Science Projects
+    - Create, start, stop, and delete Jupyter workbenches
+    - Deploy and manage InferenceServices with KServe
+    - Manage S3 data connections for data access
+    - Configure Data Science Pipelines infrastructure
+    - Create and manage persistent volume claims
+    - Fine-tune models with Kubeflow Training Operator
+    - Query Model Registry for registered models, versions, and artifacts
+    - Browse model catalog sources and benchmark data
+    - Cluster summary and resource exploration composites
+    - 18 MCP workflow prompts for guided multi-step operations
+
+    ## Prerequisites
+    - Access to an OpenShift cluster with OpenShift AI (RHOAI) installed
+    - ServiceAccount or kubeconfig with appropriate RBAC permissions
+
+    ## Configuration
+    Environment variables use `RHOAI_MCP_` prefix. Key settings:
+    - `AUTH_MODE`: auto | kubeconfig
+    - `TRANSPORT`: stdio | sse | streamable-http
+    - `ENABLE_DANGEROUS_OPERATIONS`: Enable delete operations (default: false)
+    - `READ_ONLY_MODE`: Disable all writes (default: false)
+
+    ## Architecture
+    The server uses a pluggy-based plugin architecture with two module types:
+    - **Domain modules**: CRUD operations for specific Kubernetes resource types
+      (projects, notebooks, inference, pipelines, connections, storage, training, model_registry)
+    - **Composite modules**: Cross-cutting tools that orchestrate multiple domains
+      (cluster summaries, training workflows, tool discovery)
+version: 0.1.1
+transports:
+    - stdio
+    - sse
+    - streamable-http
+documentationUrl: https://github.com/opendatahub-io/rhoai-mcp
+repositoryUrl: https://github.com/opendatahub-io/rhoai-mcp
+sourceCode: opendatahub-io/rhoai-mcp
+publishedDate: "2026-03-01T00:00:00Z"
+deploymentMode: local
+tools:
+    - name: list_data_science_projects
+      description: List Data Science Projects (namespaces with opendatahub.io/dashboard=true label) with pagination
+      accessType: read_only
+      parameters:
+        - name: limit
+          type: integer
+          description: Maximum number of items to return
+          required: false
+        - name: offset
+          type: integer
+          description: Starting offset for pagination
+          required: false
+        - name: verbosity
+          type: string
+          description: 'Response detail level: minimal, standard, or full'
+          required: false
+    - name: get_project_details
+      description: Get detailed information about a specific Data Science Project
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the Data Science Project (namespace)
+          required: true
+    - name: create_data_science_project
+      description: Create a new Data Science Project
+      accessType: write
+      parameters:
+        - name: name
+          type: string
+          description: Project name (Kubernetes namespace name)
+          required: true
+        - name: display_name
+          type: string
+          description: Human-readable display name
+          required: false
+    - name: delete_data_science_project
+      description: Delete a Data Science Project and all its resources
+      accessType: write
+      parameters:
+        - name: name
+          type: string
+          description: Name of the project to delete
+          required: true
+    - name: list_workbenches
+      description: List Jupyter workbenches in a project
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: get_workbench
+      description: Get detailed workbench information
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Workbench name
+          required: true
+    - name: create_workbench
+      description: Create a new Jupyter workbench
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Workbench name
+          required: true
+        - name: display_name
+          type: string
+          description: Human-readable display name
+          required: false
+    - name: start_workbench
+      description: Start a stopped workbench
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Workbench name
+          required: true
+    - name: stop_workbench
+      description: Stop a running workbench
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Workbench name
+          required: true
+    - name: delete_workbench
+      description: Delete a workbench
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Workbench name
+          required: true
+    - name: get_workbench_url
+      description: Get the access URL for a running workbench
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Workbench name
+          required: true
+    - name: list_notebook_images
+      description: List available notebook images for workbench creation
+      accessType: read_only
+      parameters: []
+    - name: list_inference_services
+      description: List InferenceServices in a project
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: get_inference_service
+      description: Get detailed InferenceService information
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: InferenceService name
+          required: true
+    - name: deploy_model
+      description: Deploy a model as a KServe InferenceService
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: InferenceService name
+          required: true
+        - name: display_name
+          type: string
+          description: Human-readable display name
+          required: false
+    - name: delete_inference_service
+      description: Delete an InferenceService
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: InferenceService name
+          required: true
+    - name: get_model_endpoint
+      description: Get the inference endpoint URL for a deployed model
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: InferenceService name
+          required: true
+    - name: list_serving_runtimes
+      description: List available serving runtimes
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: create_serving_runtime
+      description: Create a serving runtime for model serving
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: template_name
+          type: string
+          description: Name of the serving runtime template
+          required: true
+    - name: get_deployment_config
+      description: Get deployment configuration for an InferenceService
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: InferenceService name
+          required: true
+    - name: prepare_model_deployment
+      description: Validate prerequisites and prepare for model deployment
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: model_name
+          type: string
+          description: Model name to deploy
+          required: true
+    - name: list_data_connections
+      description: List S3 data connections in a project
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: get_data_connection
+      description: Get details of a specific data connection
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Data connection name
+          required: true
+    - name: create_s3_data_connection
+      description: Create an S3 data connection (secret)
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Connection name
+          required: true
+    - name: delete_data_connection
+      description: Delete a data connection
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: Connection name
+          required: true
+    - name: list_storage
+      description: List persistent volume claims in a project
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: create_storage
+      description: Create a persistent volume claim
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: PVC name
+          required: true
+        - name: display_name
+          type: string
+          description: Human-readable display name
+          required: false
+    - name: delete_storage
+      description: Delete a persistent volume claim
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+        - name: name
+          type: string
+          description: PVC name
+          required: true
+    - name: get_pipeline_server
+      description: Get pipeline server status in a project
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: create_pipeline_server
+      description: Create a Data Science Pipelines server
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: delete_pipeline_server
+      description: Delete a pipeline server
+      accessType: write
+      parameters:
+        - name: namespace
+          type: string
+          description: Project namespace
+          required: true
+    - name: list_registered_models
+      description: List models registered in the Model Registry
+      accessType: read_only
+      parameters:
+        - name: model_registry
+          type: string
+          description: Name of the model registry to query
+          required: false
+    - name: get_registered_model
+      description: Get details of a registered model
+      accessType: read_only
+      parameters:
+        - name: model_name
+          type: string
+          description: Name of the registered model
+          required: true
+        - name: model_registry
+          type: string
+          description: Name of the model registry
+          required: false
+    - name: list_model_versions
+      description: List versions of a registered model
+      accessType: read_only
+      parameters:
+        - name: model_name
+          type: string
+          description: Name of the registered model
+          required: true
+        - name: model_registry
+          type: string
+          description: Name of the model registry
+          required: false
+    - name: get_model_version
+      description: Get details of a specific model version
+      accessType: read_only
+      parameters:
+        - name: model_name
+          type: string
+          description: Name of the registered model
+          required: true
+        - name: version_name
+          type: string
+          description: Name of the model version
+          required: true
+        - name: model_registry
+          type: string
+          description: Name of the model registry
+          required: false
+    - name: get_model_artifacts
+      description: Get artifacts (storage URIs) for a model version
+      accessType: read_only
+      parameters:
+        - name: model_name
+          type: string
+          description: Name of the registered model
+          required: true
+        - name: version_name
+          type: string
+          description: Name of the model version
+          required: true
+        - name: model_registry
+          type: string
+          description: Name of the model registry
+          required: false
+    - name: get_model_benchmarks
+      description: Get performance benchmarks for a model
+      accessType: read_only
+      parameters:
+        - name: model_name
+          type: string
+          description: Name of the registered model
+          required: true
+        - name: model_registry
+          type: string
+          description: Name of the model registry
+          required: false
+    - name: find_benchmarks_by_gpu
+      description: Find benchmark results filtered by GPU type
+      accessType: read_only
+      parameters:
+        - name: gpu_type
+          type: string
+          description: GPU type to filter by
+          required: true
+        - name: model_registry
+          type: string
+          description: Name of the model registry
+          required: false
+    - name: get_validation_metrics
+      description: Get validation metrics for a model
+      accessType: read_only
+      parameters:
+        - name: model_name
+          type: string
+          description: Name of the registered model
+          required: true
+        - name: model_registry
+          type: string
+          description: Name of the model registry
+          required: false
+    - name: list_catalog_sources
+      description: List available model catalog sources
+      accessType: read_only
+      parameters: []
+    - name: get_catalog_model_artifacts
+      description: Get artifacts for a model from the catalog
+      accessType: read_only
+      parameters:
+        - name: model_name
+          type: string
+          description: Name of the catalog model
+          required: true
+        - name: source
+          type: string
+          description: Catalog source name
+          required: false
+    - name: cluster_summary
+      description: Get a comprehensive summary of RHOAI resources across all projects
+      accessType: read_only
+      parameters:
+        - name: verbosity
+          type: string
+          description: 'Response detail level: minimal, standard, or full'
+          required: false
+    - name: list_tool_categories
+      description: List available tool categories and their tools
+      accessType: read_only
+      parameters: []
+    - name: list_resources
+      description: List Kubernetes resources by type in a namespace
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Kubernetes namespace
+          required: true
+        - name: resource_type
+          type: string
+          description: Resource type to list
+          required: true
+    - name: list_resource_names
+      description: List names of resources of a given type
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Kubernetes namespace
+          required: true
+        - name: resource_type
+          type: string
+          description: Resource type
+          required: true
+    - name: get_resource
+      description: Get a specific Kubernetes resource by type, namespace, and name
+      accessType: read_only
+      parameters:
+        - name: namespace
+          type: string
+          description: Kubernetes namespace
+          required: true
+        - name: resource_type
+          type: string
+          description: Resource type
+          required: true
+        - name: name
+          type: string
+          description: Resource name
+          required: true
+artifacts:
+    - uri: quay.io/opendatahub/odh-rhoai-mcp:odh-stable
+      createTimeSinceEpoch: "1784190735000"
+      lastUpdateTimeSinceEpoch: "1784190737000"
+runtimeMetadata:
+    defaultArgs: []
+    defaultPort: 8080
+    prerequisites:
+        serviceAccount:
+            hint: >-
+                Requires a ClusterRole with read/write access to RHOAI resources.
+                See deploy/kustomize/base/clusterrole.yaml in the source repo for
+                the full RBAC policy. Key API groups: core (namespaces, secrets, PVCs,
+                pods), kubeflow.org (notebooks), trainer.kubeflow.org (trainjobs),
+                serving.kserve.io (inferenceservices, servingruntimes),
+                datasciencepipelinesapplications.opendatahub.io (DSPA),
+                storage.k8s.io (storageclasses). Use READ_ONLY_MODE=true to
+                restrict to read-only operations.
+            required: true
+            suggestedName: rhoai-mcp
+securityIndicators:
+    readOnlyTools: false
+    sast: true
+    secureEndpoint: true
+    verifiedSource: true
+customProperties:
+    architecture:
+        metadataType: MetadataStringValue
+        string_value: "[\"amd64\"]"
+createTimeSinceEpoch: "1772323200000"
+lastUpdateTimeSinceEpoch: "1784190737000"
