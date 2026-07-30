@@ -26,13 +26,16 @@ readme: |-
     ## Configuration
     The server can be configured via TOML file or command-line flags.
     Default toolsets: `core`, `config` (with `read_only: true`).
-    Additional toolsets: `helm`, `kubevirt`, `observability`, `ossm`, `netedge` (OCP).
+    Additional toolsets: `cluster-diagnostics`, `cni-diagnostics`, `helm`,
+    `kubevirt`, `netedge`, `netobserv`, `oadp`, `observability/metrics`,
+    `observability/logs`, `observability/otelcol`, `observability/traces`,
+    `openshift/mustgather` `ossm`, `ovn-kubernetes`, `tekton` (OCP).
 
     The tools listed below reflect the default configuration. The actual set of
     available tools depends on configuration — toolsets can be enabled or disabled,
     and individual tools within a toolset can be filtered using allow/deny lists.
-    See [Tool Filtering](https://github.com/openshift/openshift-mcp-server/blob/release-0.2.0/docs/configuration.md#tool-filtering) for details.
-version: latest
+    See [Tool Filtering](https://github.com/openshift/openshift-mcp-server/blob/release-0.4/docs/configuration.md#tool-filtering) for details.
+version: 0.4
 transports:
     - http
     - sse
@@ -236,9 +239,9 @@ tools:
       accessType: read_only
       parameters: []
 artifacts:
-    - uri: oci://registry.redhat.io/openshift-mcp-tech-preview/openshift-mcp-server-rhel9:0.3
-      createTimeSinceEpoch: "1777874265000"
-      lastUpdateTimeSinceEpoch: "1777874266000"
+    - uri: oci://registry.redhat.io/openshift-mcp-tech-preview/openshift-mcp-server-rhel9:0.4
+      createTimeSinceEpoch: "1785344615000"
+      lastUpdateTimeSinceEpoch: "1785344616000"
 runtimeMetadata:
     defaultArgs:
         - --config
@@ -286,4 +289,4 @@ customProperties:
         metadataType: MetadataStringValue
         string_value: ""
 createTimeSinceEpoch: "1753228800000"
-lastUpdateTimeSinceEpoch: "1777874266000"
+lastUpdateTimeSinceEpoch: "1785344616000"
