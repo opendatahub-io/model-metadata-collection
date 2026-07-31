@@ -1,4 +1,5 @@
-name: dynatrace-oss/dynatrace-mcp
+name: com.dynatrace/dynatrace-mcp
+display_name: Dynatrace MCP Server
 provider: Dynatrace
 license: MIT
 license_link: https://opensource.org/licenses/MIT

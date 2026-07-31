@@ -1,4 +1,5 @@
-name: openshift-mcp-server
+name: com.redhat/openshift-mcp-server
+display_name: OpenShift MCP Server
 provider: Red Hat
 license: apache-2.0
 license_link: https://www.apache.org/licenses/LICENSE-2.0
@@ -35,7 +36,7 @@ readme: |-
     available tools depends on configuration — toolsets can be enabled or disabled,
     and individual tools within a toolset can be filtered using allow/deny lists.
     See [Tool Filtering](https://github.com/openshift/openshift-mcp-server/blob/release-0.4/docs/configuration.md#tool-filtering) for details.
-version: 0.4
+version: 0.4.0
 transports:
     - http
     - sse

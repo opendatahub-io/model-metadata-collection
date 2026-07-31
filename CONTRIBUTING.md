@@ -105,6 +105,35 @@ Run with a custom input file:
 ./build/model-extractor --input path/to/index.yaml --output-dir output/custom
 ```
 
+### MCP Server Naming Conventions
+
+To map directly to the mlflow MCP Registry (`name -> server_json.name`,
+`version -> server_json.version`, `display_name -> display_name`), the `name`
+and `version` fields in every MCP server input YAML must follow these rules.
+Invalid values are rejected during catalog generation (`MCPServerMetadata.Validate()`
+in `pkg/types/mcpserver.go`), which halts the build.
+
+- **`name`**: Canonical `<reverse-dns-namespace>/<slug>` format. The namespace
+  must have at least two dot-separated DNS-style labels (e.g. `com.redhat`,
+  `io.confluent`), all lowercase. The slug is lowercase alphanumeric with
+  optional hyphens or dots (e.g. `openshift-mcp-server`). A short slug like
+  `redhat/my-server` is **not** valid — it needs a real reverse-DNS namespace,
+  e.g. `com.redhat/my-server`.
+- **`version`**: Must be valid [semver](https://semver.org/) (e.g. `1.5.0`).
+  Prerelease and build metadata are allowed (e.g. `1.5.0-alpha`,
+  `1.5.0-betaexp.sha.5114f85`). Values like `latest`, `0.4`, or `6.18` are
+  rejected — they must be padded/replaced with a full `major.minor.patch`.
+- **`display_name`** (optional): A human-facing label for the server, shown
+  in place of the canonical `name` in UIs.
+
+Example:
+
+```yaml
+name: com.redhat/openshift-mcp-server
+display_name: OpenShift MCP Server
+version: 0.4.0
+```
+
 ## Test
 
 Run the full test suite:

@@ -1,4 +1,5 @@
-name: enterprisedb/pg-airman-mcp
+name: com.enterprisedb/pg-airman-mcp
+display_name: EDB PG Airman MCP
 provider: EnterpriseDB
 license: Apache-2.0
 license_link: https://www.apache.org/licenses/LICENSE-2.0

@@ -23,11 +23,11 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		}
 
 		server1 := types.MCPServerMetadata{
-			Name:        "test-server-1",
+			Name:        "com.example/test-server-1",
 			Provider:    "Red Hat",
 			License:     "apache-2.0",
 			Description: "Test server 1",
-			Version:     "latest",
+			Version:     "1.0.0",
 			Tools: []types.MCPTool{
 				{Name: "list_items", Description: "List items", AccessType: "read_only", Parameters: []types.MCPParameter{}},
 			},
@@ -36,11 +36,11 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 			},
 		}
 		server2 := types.MCPServerMetadata{
-			Name:        "test-server-2",
+			Name:        "com.example/test-server-2",
 			Provider:    "Red Hat",
 			License:     "apache-2.0",
 			Description: "Test server 2",
-			Version:     "1.0",
+			Version:     "1.0.0",
 		}
 
 		writeYAML(t, filepath.Join(inputDir, "test-server-1.yaml"), server1)
@@ -50,8 +50,8 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		index := types.MCPServersIndex{
 			Source: "Red Hat MCP",
 			MCPServers: []types.MCPServerEntry{
-				{Name: "test-server-1", InputPath: filepath.Join(inputDir, "test-server-1.yaml")},
-				{Name: "test-server-2", InputPath: filepath.Join(inputDir, "test-server-2.yaml")},
+				{Name: "com.example/test-server-1", InputPath: filepath.Join(inputDir, "test-server-1.yaml")},
+				{Name: "com.example/test-server-2", InputPath: filepath.Join(inputDir, "test-server-2.yaml")},
 			},
 		}
 		indexPath := "index.yaml"
@@ -81,11 +81,11 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		if len(catalog.MCPServers) != 2 {
 			t.Fatalf("expected 2 servers, got %d", len(catalog.MCPServers))
 		}
-		if catalog.MCPServers[0].Name != "test-server-1" {
-			t.Errorf("expected first server 'test-server-1', got %q", catalog.MCPServers[0].Name)
+		if catalog.MCPServers[0].Name != "com.example/test-server-1" {
+			t.Errorf("expected first server 'com.example/test-server-1', got %q", catalog.MCPServers[0].Name)
 		}
-		if catalog.MCPServers[1].Name != "test-server-2" {
-			t.Errorf("expected second server 'test-server-2', got %q", catalog.MCPServers[1].Name)
+		if catalog.MCPServers[1].Name != "com.example/test-server-2" {
+			t.Errorf("expected second server 'com.example/test-server-2', got %q", catalog.MCPServers[1].Name)
 		}
 		if len(catalog.MCPServers[0].Tools) != 1 {
 			t.Errorf("expected 1 tool for server 1, got %d", len(catalog.MCPServers[0].Tools))
@@ -105,7 +105,7 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		}
 	})
 
-	t.Run("missing input file is skipped", func(t *testing.T) {
+	t.Run("missing input file halts catalog generation", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		t.Chdir(tmpDir)
 
@@ -116,10 +116,10 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		}
 
 		server := types.MCPServerMetadata{
-			Name:        "good-server",
+			Name:        "com.example/good-server",
 			Provider:    "Red Hat",
 			Description: "Good test server",
-			Version:     "latest",
+			Version:     "1.0.0",
 		}
 		writeYAML(t, filepath.Join(inputDir, "good-server.yaml"), server)
 
@@ -127,8 +127,8 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		index := types.MCPServersIndex{
 			Source: "Red Hat MCP",
 			MCPServers: []types.MCPServerEntry{
-				{Name: "good-server", InputPath: filepath.Join(inputDir, "good-server.yaml")},
-				{Name: "missing-server", InputPath: filepath.Join(inputDir, "missing-server.yaml")},
+				{Name: "com.example/good-server", InputPath: filepath.Join(inputDir, "good-server.yaml")},
+				{Name: "com.example/missing-server", InputPath: filepath.Join(inputDir, "missing-server.yaml")},
 			},
 		}
 		indexPath := "index.yaml"
@@ -136,29 +136,12 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 
 		catalogPath := "catalog.yaml"
 		err := CreateMCPServersCatalog(indexPath, catalogPath)
-		if err != nil {
-			t.Fatalf("CreateMCPServersCatalog should not fail on missing input: %v", err)
-		}
-
-		// Verify only the valid server is in the catalog
-		data, err := os.ReadFile(catalogPath)
-		if err != nil {
-			t.Fatalf("Failed to read catalog: %v", err)
-		}
-		var catalog types.MCPServersCatalog
-		if err := yaml.Unmarshal(data, &catalog); err != nil {
-			t.Fatalf("Failed to parse catalog: %v", err)
-		}
-
-		if len(catalog.MCPServers) != 1 {
-			t.Fatalf("expected 1 server (skipping missing), got %d", len(catalog.MCPServers))
-		}
-		if catalog.MCPServers[0].Name != "good-server" {
-			t.Errorf("expected 'good-server', got %q", catalog.MCPServers[0].Name)
+		if err == nil {
+			t.Fatal("expected CreateMCPServersCatalog to fail on missing input file")
 		}
 	})
 
-	t.Run("invalid YAML input is skipped", func(t *testing.T) {
+	t.Run("invalid YAML input halts catalog generation", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		t.Chdir(tmpDir)
 
@@ -182,21 +165,110 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 
 		catalogPath := "catalog.yaml"
 		err := CreateMCPServersCatalog(indexPath, catalogPath)
-		if err != nil {
-			t.Fatalf("CreateMCPServersCatalog should not fail on invalid input: %v", err)
+		if err == nil {
+			t.Fatal("expected CreateMCPServersCatalog to fail on invalid YAML input")
+		}
+	})
+
+	t.Run("invalid name format halts catalog generation", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Chdir(tmpDir)
+
+		inputDir := "input"
+		if err := os.MkdirAll(inputDir, 0755); err != nil {
+			t.Fatal(err)
 		}
 
-		data, err := os.ReadFile(catalogPath)
-		if err != nil {
-			t.Fatalf("Failed to read catalog: %v", err)
+		server := types.MCPServerMetadata{
+			Name:        "no-namespace-server",
+			Provider:    "Red Hat",
+			Description: "Server with invalid name format",
+			Version:     "1.0.0",
 		}
-		var catalog types.MCPServersCatalog
-		if err := yaml.Unmarshal(data, &catalog); err != nil {
-			t.Fatalf("Failed to parse catalog: %v", err)
+		writeYAML(t, filepath.Join(inputDir, "bad-name.yaml"), server)
+
+		index := types.MCPServersIndex{
+			Source: "Red Hat MCP",
+			MCPServers: []types.MCPServerEntry{
+				{Name: "no-namespace-server", InputPath: filepath.Join(inputDir, "bad-name.yaml")},
+			},
+		}
+		indexPath := "index.yaml"
+		writeYAML(t, indexPath, index)
+
+		catalogPath := "catalog.yaml"
+		err := CreateMCPServersCatalog(indexPath, catalogPath)
+		if err == nil {
+			t.Fatal("expected CreateMCPServersCatalog to fail on invalid name format")
+		}
+	})
+
+	t.Run("invalid version format halts catalog generation", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Chdir(tmpDir)
+
+		inputDir := "input"
+		if err := os.MkdirAll(inputDir, 0755); err != nil {
+			t.Fatal(err)
 		}
 
-		if len(catalog.MCPServers) != 0 {
-			t.Errorf("expected 0 servers (invalid skipped), got %d", len(catalog.MCPServers))
+		server := types.MCPServerMetadata{
+			Name:        "com.example/bad-version",
+			Provider:    "Red Hat",
+			Description: "Server with invalid version format",
+			Version:     "latest",
+		}
+		writeYAML(t, filepath.Join(inputDir, "bad-version.yaml"), server)
+
+		index := types.MCPServersIndex{
+			Source: "Red Hat MCP",
+			MCPServers: []types.MCPServerEntry{
+				{Name: "com.example/bad-version", InputPath: filepath.Join(inputDir, "bad-version.yaml")},
+			},
+		}
+		indexPath := "index.yaml"
+		writeYAML(t, indexPath, index)
+
+		catalogPath := "catalog.yaml"
+		err := CreateMCPServersCatalog(indexPath, catalogPath)
+		if err == nil {
+			t.Fatal("expected CreateMCPServersCatalog to fail on invalid version format")
+		}
+	})
+
+	t.Run("index name mismatch with manifest halts catalog generation", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Chdir(tmpDir)
+
+		inputDir := "input"
+		if err := os.MkdirAll(inputDir, 0755); err != nil {
+			t.Fatal(err)
+		}
+
+		server := types.MCPServerMetadata{
+			Name:        "com.example/manifest-name",
+			Provider:    "Red Hat",
+			Description: "Server whose manifest name differs from the index",
+			Version:     "1.0.0",
+		}
+		writeYAML(t, filepath.Join(inputDir, "mismatched.yaml"), server)
+
+		index := types.MCPServersIndex{
+			Source: "Red Hat MCP",
+			MCPServers: []types.MCPServerEntry{
+				{Name: "com.example/index-name", InputPath: filepath.Join(inputDir, "mismatched.yaml")},
+			},
+		}
+		indexPath := "index.yaml"
+		writeYAML(t, indexPath, index)
+
+		catalogPath := "catalog.yaml"
+		err := CreateMCPServersCatalog(indexPath, catalogPath)
+		if err == nil {
+			t.Fatal("expected CreateMCPServersCatalog to fail on index/manifest name mismatch")
+		}
+		if !strings.Contains(err.Error(), "name mismatch") {
+			t.Errorf("expected name mismatch error, got: %v", err)
 		}
 	})
 
@@ -274,30 +346,20 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 		writeYAML(t, indexPath, index)
 
 		catalogPath := filepath.Join(tmpDir, "catalog.yaml")
-		if err := CreateMCPServersCatalog(indexPath, catalogPath); err != nil {
-			t.Fatalf("CreateMCPServersCatalog should not fail on invalid input_path: %v", err)
+		err = CreateMCPServersCatalog(indexPath, catalogPath)
+		if err == nil {
+			t.Fatal("CreateMCPServersCatalog should fail on invalid input_path")
+		}
+		if !strings.Contains(err.Error(), "traversal") {
+			t.Errorf("expected traversal error, got: %v", err)
 		}
 
-		data, err := os.ReadFile(catalogPath)
-		if err != nil {
-			t.Fatalf("Failed to read catalog: %v", err)
-		}
-
-		// Sentinel content must not appear in the catalog output.
-		if strings.Contains(string(data), sentinelMarker) {
-			t.Error("catalog contains sentinel content — path traversal guard was bypassed")
-		}
-
-		var catalog types.MCPServersCatalog
-		if err := yaml.Unmarshal(data, &catalog); err != nil {
-			t.Fatalf("Failed to parse catalog: %v", err)
-		}
-		if len(catalog.MCPServers) != 0 {
-			t.Errorf("expected 0 servers (path traversal rejected), got %d", len(catalog.MCPServers))
+		if _, err := os.Stat(catalogPath); err == nil {
+			t.Error("catalog file should not have been written when input_path is rejected")
 		}
 	})
 
-	t.Run("input with missing required fields is skipped", func(t *testing.T) {
+	t.Run("input with missing required fields halts catalog generation", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		t.Chdir(tmpDir)
 
@@ -322,21 +384,8 @@ func TestCreateMCPServersCatalog(t *testing.T) {
 
 		catalogPath := "catalog.yaml"
 		err := CreateMCPServersCatalog(indexPath, catalogPath)
-		if err != nil {
-			t.Fatalf("CreateMCPServersCatalog should not fail on incomplete input: %v", err)
-		}
-
-		data, err := os.ReadFile(catalogPath)
-		if err != nil {
-			t.Fatalf("Failed to read catalog: %v", err)
-		}
-		var catalog types.MCPServersCatalog
-		if err := yaml.Unmarshal(data, &catalog); err != nil {
-			t.Fatalf("Failed to parse catalog: %v", err)
-		}
-
-		if len(catalog.MCPServers) != 0 {
-			t.Errorf("expected 0 servers (missing required fields rejected), got %d", len(catalog.MCPServers))
+		if err == nil {
+			t.Fatal("expected CreateMCPServersCatalog to fail on input missing required fields")
 		}
 	})
 }

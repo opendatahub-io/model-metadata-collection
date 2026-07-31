@@ -1,4 +1,5 @@
-name: insights-mcp-server
+name: com.redhat/insights-mcp-server
+display_name: Red Hat Lightspeed MCP Server
 provider: Red Hat
 license: apache-2.0
 license_link: https://www.apache.org/licenses/LICENSE-2.0
@@ -37,7 +38,7 @@ readme: |-
       --from-literal=client-secret=your-client-secret
     ```
     The server exposes an HTTP endpoint on port 8000 and SSE on port 9000.
-version: latest
+version: 0.1.0
 transports:
     - http
     - sse

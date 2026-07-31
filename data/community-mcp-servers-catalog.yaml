@@ -1,6 +1,7 @@
 source: Community MCP
 mcp_servers:
-    - name: mariadb/mcp
+    - name: org.mariadb/mcp
+      display_name: MariaDB MCP Server
       provider: MariaDB
       license: MIT
       license_link: https://opensource.org/licenses/MIT
@@ -211,7 +212,8 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: "communitySupported"
       lastUpdateTimeSinceEpoch: "1784302696000"
-    - name: mongodb-js/mongodb-mcp-server
+    - name: com.mongodb/mongodb-mcp-server
+      display_name: MongoDB MCP Server
       provider: MongoDB
       license: Apache-2.0
       license_link: https://www.apache.org/licenses/LICENSE-2.0

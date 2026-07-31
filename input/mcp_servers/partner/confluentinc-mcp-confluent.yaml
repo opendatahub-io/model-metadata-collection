@@ -1,4 +1,5 @@
-name: confluentinc/mcp-confluent
+name: io.confluent/mcp-confluent
+display_name: Confluent MCP Server
 provider: Confluent
 license: MIT
 license_link: https://opensource.org/licenses/MIT

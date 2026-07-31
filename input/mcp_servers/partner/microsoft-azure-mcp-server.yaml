@@ -1,4 +1,5 @@
-name: microsoft/azure-mcp-server
+name: com.microsoft/azure-mcp-server
+display_name: Azure MCP Server
 provider: Microsoft
 license: MIT
 license_link: https://opensource.org/licenses/MIT

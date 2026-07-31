@@ -13,7 +13,7 @@ import (
 
 func TestEnrichMCPServerArtifacts_EmptyURI(t *testing.T) {
 	server := &types.MCPServerMetadata{
-		Name:     "test-server",
+		Name:     "com.example/test-server",
 		Provider: "Test",
 		Artifacts: []types.MCPArtifact{
 			{URI: ""},
@@ -31,7 +31,7 @@ func TestEnrichMCPServerArtifacts_EmptyURI(t *testing.T) {
 
 func TestEnrichMCPServerArtifacts_NoArtifacts(t *testing.T) {
 	server := &types.MCPServerMetadata{
-		Name:     "test-server",
+		Name:     "com.example/test-server",
 		Provider: "Test",
 	}
 
@@ -46,7 +46,7 @@ func TestEnrichMCPServerArtifacts_NoArtifacts(t *testing.T) {
 
 func TestEnrichMCPServerArtifacts_PublishedDateDerivation(t *testing.T) {
 	server := &types.MCPServerMetadata{
-		Name:          "test-server",
+		Name:          "com.example/test-server",
 		Provider:      "Test",
 		PublishedDate: "2025-07-23T00:00:00Z",
 	}
@@ -73,7 +73,7 @@ func TestEnrichMCPServerArtifacts_PublishedDateDerivation(t *testing.T) {
 
 func TestEnrichMCPServerArtifacts_PublishedDateIdempotent(t *testing.T) {
 	server := &types.MCPServerMetadata{
-		Name:                 "test-server",
+		Name:                 "com.example/test-server",
 		Provider:             "Test",
 		PublishedDate:        "2025-07-23T00:00:00Z",
 		CreateTimeSinceEpoch: "1753228800000",
@@ -110,11 +110,11 @@ func TestWriteMCPServerInput(t *testing.T) {
 	outputPath := filepath.Join(tmpDir, "test-server.yaml")
 
 	server := &types.MCPServerMetadata{
-		Name:        "test-server",
+		Name:        "com.example/test-server",
 		Provider:    "Test Provider",
 		License:     "apache-2.0",
 		Description: "A test server",
-		Version:     "latest",
+		Version:     "1.0.0",
 		Logo:        "data:image/svg+xml;base64," + strings.Repeat("ABCD", 200),
 		CustomProperties: map[string]types.MetadataValue{
 			"architecture": {

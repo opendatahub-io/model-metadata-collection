@@ -1,4 +1,5 @@
-name: satellite-mcp-server
+name: com.redhat/satellite-mcp-server
+display_name: Red Hat Satellite MCP Server
 provider: Red Hat
 license: gpl-3.0
 license_link: https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -37,7 +38,7 @@ readme: |-
     --from-file=ca.pem=/path/to/satellite-ca-bundle.pem
   ```
   The server is configured with `--foreman-url https://satellite.example.com`.
-version: "6.18"
+version: "6.18.0"
 transports:
   - http
   - sse

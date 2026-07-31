@@ -1,5 +1,18 @@
 package types
 
+import (
+	"fmt"
+	"regexp"
+
+	"github.com/Masterminds/semver/v3"
+)
+
+// mcpNameRegex enforces the canonical <reverse-dns-namespace>/<slug> format
+// required by the mlflow MCP Registry, e.g. "com.redhat/openshift-mcp-server".
+// The namespace must have at least two dot-separated DNS-style labels; labels
+// may contain internal hyphens but not lead or trail with one (RFC 1035).
+var mcpNameRegex = regexp.MustCompile(`^[a-z]([a-z0-9-]*[a-z0-9])?(\.[a-z]([a-z0-9-]*[a-z0-9])?)+/[a-z][a-z0-9]*([.-][a-z0-9]+)*$`)
+
 // MCPServerEntry represents an entry in the MCP servers index file
 type MCPServerEntry struct {
 	Name      string `yaml:"name"`
@@ -15,6 +28,7 @@ type MCPServersIndex struct {
 // MCPServerMetadata represents the full metadata for a single MCP server
 type MCPServerMetadata struct {
 	Name                     string                   `yaml:"name"`
+	DisplayName              string                   `yaml:"display_name,omitempty"`
 	Provider                 string                   `yaml:"provider"`
 	License                  string                   `yaml:"license"`
 	LicenseLink              string                   `yaml:"license_link"`
@@ -36,6 +50,23 @@ type MCPServerMetadata struct {
 	CustomProperties         map[string]MetadataValue `yaml:"customProperties,omitempty"`
 	CreateTimeSinceEpoch     string                   `yaml:"createTimeSinceEpoch,omitempty"`
 	LastUpdateTimeSinceEpoch string                   `yaml:"lastUpdateTimeSinceEpoch,omitempty"`
+}
+
+// Validate checks that Name follows the canonical <reverse-dns-namespace>/<slug>
+// format and Version is valid semver, per the mlflow MCP Registry mapping
+// (name -> server_json.name, version -> server_json.version). A nil receiver
+// is considered valid (no-op).
+func (m *MCPServerMetadata) Validate() error {
+	if m == nil {
+		return nil
+	}
+	if !mcpNameRegex.MatchString(m.Name) {
+		return fmt.Errorf("mcp server: name %q must be <reverse-dns-namespace>/<slug> with at least two dot-separated namespace components (e.g. com.redhat/openshift-mcp-server)", m.Name)
+	}
+	if _, err := semver.StrictNewVersion(m.Version); err != nil {
+		return fmt.Errorf("mcp server: version %q is not valid semver: %v", m.Version, err)
+	}
+	return nil
 }
 
 // MCPTool represents a tool exposed by an MCP server

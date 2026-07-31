@@ -1,6 +1,7 @@
 source: Red Hat MCP
 mcp_servers:
-    - name: openshift-mcp-server
+    - name: com.redhat/openshift-mcp-server
+      display_name: OpenShift MCP Server
       provider: Red Hat
       license: apache-2.0
       license_link: https://www.apache.org/licenses/LICENSE-2.0
@@ -37,7 +38,7 @@ mcp_servers:
         available tools depends on configuration — toolsets can be enabled or disabled,
         and individual tools within a toolset can be filtered using allow/deny lists.
         See [Tool Filtering](https://github.com/openshift/openshift-mcp-server/blob/release-0.4/docs/configuration.md#tool-filtering) for details.
-      version: "0.4"
+      version: 0.4.0
       transports:
         - http
         - sse
@@ -295,7 +296,8 @@ mcp_servers:
             string_value: "redHatSupported"
       createTimeSinceEpoch: "1753228800000"
       lastUpdateTimeSinceEpoch: "1785344616000"
-    - name: aap-mcp-server
+    - name: com.redhat/aap-mcp-server
+      display_name: Ansible Automation Platform MCP Server
       provider: Red Hat
       license: apache-2.0
       license_link: https://www.apache.org/licenses/LICENSE-2.0
@@ -453,7 +455,8 @@ mcp_servers:
             string_value: "redHatSupported"
       createTimeSinceEpoch: "1769990400000"
       lastUpdateTimeSinceEpoch: "1783953395000"
-    - name: insights-mcp-server
+    - name: com.redhat/insights-mcp-server
+      display_name: Red Hat Lightspeed MCP Server
       provider: Red Hat
       license: apache-2.0
       license_link: https://www.apache.org/licenses/LICENSE-2.0
@@ -492,7 +495,7 @@ mcp_servers:
           --from-literal=client-secret=your-client-secret
         ```
         The server exposes an HTTP endpoint on port 8000 and SSE on port 9000.
-      version: latest
+      version: 0.1.0
       transports:
         - http
         - sse

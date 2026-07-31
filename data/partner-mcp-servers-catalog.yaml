@@ -1,6 +1,7 @@
 source: Partner MCP
 mcp_servers:
-    - name: confluentinc/mcp-confluent
+    - name: io.confluent/mcp-confluent
+      display_name: Confluent MCP Server
       provider: Confluent
       license: MIT
       license_link: https://opensource.org/licenses/MIT
@@ -171,7 +172,8 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
       lastUpdateTimeSinceEpoch: "1784301797000"
-    - name: dynatrace-oss/dynatrace-mcp
+    - name: com.dynatrace/dynatrace-mcp
+      display_name: Dynatrace MCP Server
       provider: Dynatrace
       license: MIT
       license_link: https://opensource.org/licenses/MIT
@@ -427,7 +429,8 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
       lastUpdateTimeSinceEpoch: "1784301820000"
-    - name: hashicorp/terraform-mcp-server
+    - name: com.hashicorp/terraform-mcp-server
+      display_name: Terraform MCP Server
       provider: IBM Terraform
       license: MPL-2.0
       license_link: https://www.mozilla.org/en-US/MPL/2.0/
@@ -650,7 +653,8 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
       lastUpdateTimeSinceEpoch: "1784301817000"
-    - name: microsoft/azure-mcp-server
+    - name: com.microsoft/azure-mcp-server
+      display_name: Azure MCP Server
       provider: Microsoft
       license: MIT
       license_link: https://opensource.org/licenses/MIT
@@ -1073,7 +1077,8 @@ mcp_servers:
             metadataType: MetadataStringValue
             string_value: "partnerSupported"
       lastUpdateTimeSinceEpoch: "1784302076000"
-    - name: enterprisedb/pg-airman-mcp
+    - name: com.enterprisedb/pg-airman-mcp
+      display_name: EDB PG Airman MCP
       provider: EnterpriseDB
       license: Apache-2.0
       license_link: https://www.apache.org/licenses/LICENSE-2.0

@@ -157,6 +157,14 @@ During `make process`, artifacts are enriched from OCI registries (architectures
 
 ### Adding a New MCP Server
 
+**Naming requirements**: `name` must be canonical `<reverse-dns-namespace>/<slug>`
+(e.g. `com.redhat/openshift-mcp-server`, not `redhat/openshift-mcp-server`) and
+`version` must be valid [semver](https://semver.org/) (e.g. `0.4.0`, not `0.4`
+or `latest`). `display_name` is an optional human-facing label. Invalid values
+are rejected by `MCPServerMetadata.Validate()` in `pkg/types/mcpserver.go` and
+halt catalog generation — see [CONTRIBUTING.md](CONTRIBUTING.md#mcp-server-naming-conventions)
+for details.
+
 **For Red Hat MCP servers:**
 1. Create `input/mcp_servers/redhat/<server-name>.yaml` (use an existing file as template)
 2. Add an entry to `data/redhat-mcp-servers-index.yaml`

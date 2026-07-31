@@ -36,13 +36,14 @@ func CreateMCPServersCatalog(indexPath, catalogPath string) error {
 	for _, entry := range index.MCPServers {
 		cleaned := filepath.Clean(entry.InputPath)
 		if filepath.IsAbs(cleaned) || strings.HasPrefix(cleaned, "..") {
-			log.Printf("Warning: skipping MCP server %q: invalid input_path %q (absolute or traversal path not allowed)", entry.Name, entry.InputPath)
-			continue
+			return fmt.Errorf("MCP server %q: invalid input_path %q (absolute or traversal path not allowed)", entry.Name, entry.InputPath)
 		}
 		server, err := loadMCPServerInput(cleaned)
 		if err != nil {
-			log.Printf("Warning: skipping MCP server %q: %v", entry.Name, err)
-			continue
+			return err
+		}
+		if server.Name != entry.Name {
+			return fmt.Errorf("MCP server name mismatch: index has %q but %s declares %q", entry.Name, cleaned, server.Name)
 		}
 		injectSupportTier(server, supportTier)
 		servers = append(servers, *server)
@@ -88,20 +89,18 @@ func loadMCPServerInput(inputPath string) (*types.MCPServerMetadata, error) {
 	}
 
 	var missing []string
-	if server.Name == "" {
-		missing = append(missing, "name")
-	}
 	if server.Provider == "" {
 		missing = append(missing, "provider")
 	}
 	if server.Description == "" {
 		missing = append(missing, "description")
 	}
-	if server.Version == "" {
-		missing = append(missing, "version")
-	}
 	if len(missing) > 0 {
 		return nil, fmt.Errorf("input file %s missing required field(s): %s", inputPath, strings.Join(missing, ", "))
+	}
+
+	if err := server.Validate(); err != nil {
+		return nil, fmt.Errorf("input file %s: %v", inputPath, err)
 	}
 
 	return &server, nil

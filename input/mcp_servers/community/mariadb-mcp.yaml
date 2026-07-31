@@ -1,4 +1,5 @@
-name: mariadb/mcp
+name: org.mariadb/mcp
+display_name: MariaDB MCP Server
 provider: MariaDB
 license: MIT
 license_link: https://opensource.org/licenses/MIT
