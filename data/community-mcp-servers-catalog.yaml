@@ -1,6 +1,6 @@
 source: Community MCP
 mcp_servers:
-    - name: org.mariadb/mcp
+    - name: org.mariadb/mariadb-mcp
       display_name: MariaDB MCP Server
       provider: MariaDB
       license: MIT
