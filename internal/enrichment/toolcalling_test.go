@@ -3,6 +3,7 @@ package enrichment
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -440,13 +441,7 @@ func TestToolCallingIntegration_WithValidatedTasks(t *testing.T) {
 	}
 
 	// Verify tasks includes tool-calling
-	hasToolCalling := false
-	for _, task := range updatedMetadata.Tasks {
-		if task == "tool-calling" {
-			hasToolCalling = true
-			break
-		}
-	}
+	hasToolCalling := slices.Contains(updatedMetadata.Tasks, "tool-calling")
 	if !hasToolCalling {
 		t.Errorf("Expected 'tool-calling' in tasks, got %v", updatedMetadata.Tasks)
 	}

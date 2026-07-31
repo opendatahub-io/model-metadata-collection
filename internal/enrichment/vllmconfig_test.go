@@ -337,7 +337,7 @@ func TestVLLMConfigIntegration_IdempotentReEnrichment(t *testing.T) {
 	}
 
 	// Run enrichment twice
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		err := UpdateModelMetadataFile(registryModel, enrichedData, tmpDir)
 		if err != nil {
 			t.Fatalf("UpdateModelMetadataFile() run %d failed: %v", i+1, err)

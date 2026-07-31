@@ -138,7 +138,7 @@ func convertMixedToStandard(mixed *types.MixedTypeExtractedMetadata) *types.Extr
 }
 
 // convertTimestamp converts interface{} timestamp to *int64
-func convertTimestamp(timestamp interface{}) *int64 {
+func convertTimestamp(timestamp any) *int64 {
 	if timestamp == nil {
 		return nil
 	}
@@ -168,7 +168,7 @@ func convertTimestamp(timestamp interface{}) *int64 {
 }
 
 // createMetadataSource creates a MetadataSource with value and source tracking
-func CreateMetadataSource(value interface{}, source string) types.MetadataSource {
+func CreateMetadataSource(value any, source string) types.MetadataSource {
 	if value == nil || (reflect.TypeOf(value).Kind() == reflect.String && value.(string) == "") {
 		return types.MetadataSource{Value: nil, Source: "null"}
 	}

@@ -242,7 +242,7 @@ func TestModelFamilyRegex_ConcurrentAccess(t *testing.T) {
 	results := make([]*regexp.Regexp, goroutines)
 	done := make(chan bool, goroutines)
 
-	for i := 0; i < goroutines; i++ {
+	for i := range goroutines {
 		go func(index int) {
 			results[index] = GetModelFamilyRegex()
 			done <- true
@@ -250,7 +250,7 @@ func TestModelFamilyRegex_ConcurrentAccess(t *testing.T) {
 	}
 
 	// Wait for all goroutines to complete
-	for i := 0; i < goroutines; i++ {
+	for range goroutines {
 		<-done
 	}
 

@@ -72,10 +72,10 @@ type VersionIndex struct {
 
 // OCIArtifact represents a structured OCI artifact with metadata
 type OCIArtifact struct {
-	URI                      string                 `yaml:"uri"`
-	CreateTimeSinceEpoch     *int64                 `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch *int64                 `yaml:"lastUpdateTimeSinceEpoch"`
-	CustomProperties         map[string]interface{} `yaml:"customProperties,omitempty"`
+	URI                      string         `yaml:"uri"`
+	CreateTimeSinceEpoch     *int64         `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch *int64         `yaml:"lastUpdateTimeSinceEpoch"`
+	CustomProperties         map[string]any `yaml:"customProperties,omitempty"`
 }
 
 // ExtractedMetadata represents the actual extracted values from the modelcard
@@ -126,16 +126,16 @@ type MixedTypeExtractedMetadata struct {
 	LicenseLink              *string       `yaml:"licenseLink"`
 	Tags                     []string      `yaml:"tags"`
 	Tasks                    []string      `yaml:"tasks"`
-	CreateTimeSinceEpoch     interface{}   `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch interface{}   `yaml:"lastUpdateTimeSinceEpoch"`
+	CreateTimeSinceEpoch     any           `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch any           `yaml:"lastUpdateTimeSinceEpoch"`
 	ValidatedOn              []string      `yaml:"validatedOn"`
 	Artifacts                []OCIArtifact `yaml:"artifacts"`
 }
 
 // MetadataSource represents where a piece of metadata came from
 type MetadataSource struct {
-	Value  interface{} `json:"value"`
-	Source string      `json:"source"`
+	Value  any    `json:"value"`
+	Source string `json:"source"`
 }
 
 // EnrichedMetadata contains metadata with source tracking
@@ -215,9 +215,9 @@ type MetadataValue struct {
 }
 
 // MarshalYAML implements yaml.Marshaler to force string values to be quoted
-func (mv MetadataValue) MarshalYAML() (interface{}, error) {
+func (mv MetadataValue) MarshalYAML() (any, error) {
 	// Create a map that will be marshaled with explicit string quoting for string_value
-	result := map[string]interface{}{
+	result := map[string]any{
 		"metadataType": mv.MetadataType,
 	}
 
@@ -238,10 +238,10 @@ func (mv MetadataValue) MarshalYAML() (interface{}, error) {
 
 // CatalogOCIArtifact represents an OCI artifact for catalog output with string timestamps
 type CatalogOCIArtifact struct {
-	URI                      string                 `yaml:"uri"`
-	CreateTimeSinceEpoch     *string                `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch *string                `yaml:"lastUpdateTimeSinceEpoch"`
-	CustomProperties         map[string]interface{} `yaml:"customProperties,omitempty"`
+	URI                      string         `yaml:"uri"`
+	CreateTimeSinceEpoch     *string        `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch *string        `yaml:"lastUpdateTimeSinceEpoch"`
+	CustomProperties         map[string]any `yaml:"customProperties,omitempty"`
 }
 
 // CatalogMetadata represents metadata for the catalog output without tags field

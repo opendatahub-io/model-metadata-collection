@@ -217,13 +217,13 @@ func FetchImageTimestamps(imageRef string) (createTime *int64, updateTime *int64
 
 // AddArchitectureToArtifactProps fetches architectures and adds them to artifact custom properties (exported)
 // Returns true if architecture was successfully added, false otherwise.
-func AddArchitectureToArtifactProps(imageRef string, customProps map[string]interface{}) bool {
+func AddArchitectureToArtifactProps(imageRef string, customProps map[string]any) bool {
 	return addArchitectureToCustomProps(imageRef, customProps)
 }
 
 // addArchitectureToCustomProps fetches architectures and adds them to custom properties
 // Returns true if architecture was successfully added, false otherwise.
-func addArchitectureToCustomProps(imageRef string, customProps map[string]interface{}) bool {
+func addArchitectureToCustomProps(imageRef string, customProps map[string]any) bool {
 	// Fetch architectures with retry logic to handle transient failures
 	architectures, err := utils.RetryWithExponentialBackoff(
 		utils.DefaultRetryConfig,
@@ -245,7 +245,7 @@ func addArchitectureToCustomProps(imageRef string, customProps map[string]interf
 	}
 
 	// Add architecture to custom properties in the required format
-	customProps["architecture"] = map[string]interface{}{
+	customProps["architecture"] = map[string]any{
 		"metadataType": "MetadataStringValue",
 		"string_value": string(archJSON),
 	}
@@ -271,11 +271,11 @@ func FetchRegistryMetadata(imageRef string) (*types.OCIArtifact, error) {
 		resp, err := httpClient.Get(manifestURL)
 		if err != nil {
 			// If we can't fetch from API, create artifact with nil timestamps
-			customProps := map[string]interface{}{
-				"source": map[string]interface{}{
+			customProps := map[string]any{
+				"source": map[string]any{
 					"string_value": "registry.redhat.io",
 				},
-				"type": map[string]interface{}{
+				"type": map[string]any{
 					"string_value": "modelcar",
 				},
 			}
@@ -309,18 +309,18 @@ func FetchRegistryMetadata(imageRef string) (*types.OCIArtifact, error) {
 						}
 					}
 
-					customProps := map[string]interface{}{
-						"source": map[string]interface{}{
+					customProps := map[string]any{
+						"source": map[string]any{
 							"string_value": "registry.redhat.io",
 						},
-						"type": map[string]interface{}{
+						"type": map[string]any{
 							"string_value": "modelcar",
 						},
 					}
 
 					// Add annotations as custom properties
 					for key, value := range manifest.Annotations {
-						customProps[key] = map[string]interface{}{
+						customProps[key] = map[string]any{
 							"string_value": value,
 						}
 					}
@@ -340,11 +340,11 @@ func FetchRegistryMetadata(imageRef string) (*types.OCIArtifact, error) {
 	}
 
 	// Fallback: create artifact with nil timestamps when registry data unavailable
-	customProps := map[string]interface{}{
-		"source": map[string]interface{}{
+	customProps := map[string]any{
+		"source": map[string]any{
 			"string_value": registry,
 		},
-		"type": map[string]interface{}{
+		"type": map[string]any{
 			"string_value": "modelcar",
 		},
 	}
@@ -376,11 +376,11 @@ func ExtractOCIArtifactsFromRegistry(manifestRef string) []types.OCIArtifact {
 				URI:                      ociURI,
 				CreateTimeSinceEpoch:     nil,
 				LastUpdateTimeSinceEpoch: nil,
-				CustomProperties: map[string]interface{}{
-					"source": map[string]interface{}{
+				CustomProperties: map[string]any{
+					"source": map[string]any{
 						"string_value": "unknown",
 					},
-					"error": map[string]interface{}{
+					"error": map[string]any{
 						"string_value": err.Error(),
 					},
 				},

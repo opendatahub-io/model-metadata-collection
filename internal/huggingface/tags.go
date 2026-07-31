@@ -2,6 +2,7 @@ package huggingface
 
 import (
 	"regexp"
+	"slices"
 	"strings"
 )
 
@@ -63,8 +64,8 @@ func ParseTagsForStructuredData(tags []string) (languages []string, license stri
 		tag = strings.TrimSpace(strings.ToLower(tag))
 
 		// Extract license from license: prefix
-		if strings.HasPrefix(tag, "license:") {
-			extractedLicense := strings.TrimPrefix(tag, "license:")
+		if after, ok := strings.CutPrefix(tag, "license:"); ok {
+			extractedLicense := after
 			// Only use it if it's not "other" - we'll try to find a better license below
 			if extractedLicense != "other" {
 				license = extractedLicense
@@ -90,13 +91,7 @@ func ParseTagsForStructuredData(tags []string) (languages []string, license stri
 		// Check if it's a task type and normalize it
 		if normalizedTask, exists := taskTypes[tag]; exists {
 			// Avoid duplicates
-			found := false
-			for _, existingTask := range tasks {
-				if existingTask == normalizedTask {
-					found = true
-					break
-				}
-			}
+			found := slices.Contains(tasks, normalizedTask)
 			if !found {
 				tasks = append(tasks, normalizedTask)
 			}

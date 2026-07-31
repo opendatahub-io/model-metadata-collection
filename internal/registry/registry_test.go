@@ -182,7 +182,7 @@ func TestFetchRegistryMetadata(t *testing.T) {
 
 			// Verify source property exists
 			if source, exists := result.CustomProperties["source"]; exists {
-				if sourceMap, ok := source.(map[string]interface{}); ok {
+				if sourceMap, ok := source.(map[string]any); ok {
 					if sourceValue, exists := sourceMap["string_value"]; exists {
 						if sourceStr, ok := sourceValue.(string); ok && sourceStr != "" {
 							t.Logf("Source: %s", sourceStr)
@@ -201,7 +201,7 @@ func TestFetchRegistryMetadata(t *testing.T) {
 
 			// Verify type property exists
 			if typeVal, exists := result.CustomProperties["type"]; exists {
-				if typeMap, ok := typeVal.(map[string]interface{}); ok {
+				if typeMap, ok := typeVal.(map[string]any); ok {
 					if typeValue, exists := typeMap["string_value"]; exists {
 						if typeStr, ok := typeValue.(string); ok && typeStr == "modelcar" {
 							t.Logf("Type: %s", typeStr)
@@ -311,7 +311,7 @@ func TestFetchRegistryMetadata_ErrorHandling(t *testing.T) {
 
 	// Should have source in custom properties
 	if source, exists := result.CustomProperties["source"]; exists {
-		if sourceMap, ok := source.(map[string]interface{}); ok {
+		if sourceMap, ok := source.(map[string]any); ok {
 			if sourceValue, exists := sourceMap["string_value"]; exists {
 				if sourceStr, ok := sourceValue.(string); ok {
 					if sourceStr != "nonexistent.registry.example.com" {
@@ -385,7 +385,7 @@ func TestExtractOCIArtifactsFromRegistry_Properties(t *testing.T) {
 	requiredProps := []string{"source", "type"}
 	for _, prop := range requiredProps {
 		if val, exists := artifact.CustomProperties[prop]; exists {
-			if propMap, ok := val.(map[string]interface{}); ok {
+			if propMap, ok := val.(map[string]any); ok {
 				if _, exists := propMap["string_value"]; !exists {
 					t.Errorf("Property %s should have string_value field", prop)
 				}
@@ -399,7 +399,7 @@ func TestExtractOCIArtifactsFromRegistry_Properties(t *testing.T) {
 
 	// Verify type is modelcar
 	if typeVal, exists := artifact.CustomProperties["type"]; exists {
-		if typeMap, ok := typeVal.(map[string]interface{}); ok {
+		if typeMap, ok := typeVal.(map[string]any); ok {
 			if stringVal, exists := typeMap["string_value"]; exists {
 				if stringVal != "modelcar" {
 					t.Errorf("Expected type 'modelcar', got %v", stringVal)
@@ -583,7 +583,7 @@ func TestAddArchitectureToCustomProps(t *testing.T) {
 				t.Skip("Skipping integration test that makes network calls")
 			}
 
-			customProps := make(map[string]interface{})
+			customProps := make(map[string]any)
 			addArchitectureToCustomProps(tt.imageRef, customProps)
 
 			archProp, exists := customProps["architecture"]
@@ -599,7 +599,7 @@ func TestAddArchitectureToCustomProps(t *testing.T) {
 
 			if exists {
 				// Verify structure
-				archMap, ok := archProp.(map[string]interface{})
+				archMap, ok := archProp.(map[string]any)
 				if !ok {
 					t.Error("Architecture property should be a map")
 					return
@@ -725,13 +725,13 @@ func TestAddArchitectureToArtifactProps(t *testing.T) {
 	t.Skip("Skipping integration test that makes network calls - should be run separately with -integration flag")
 
 	imageRef := "registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base:1.0"
-	customProps := make(map[string]interface{})
+	customProps := make(map[string]any)
 
 	// Add some existing properties to verify they're not overwritten
-	customProps["source"] = map[string]interface{}{
+	customProps["source"] = map[string]any{
 		"string_value": "registry.redhat.io",
 	}
-	customProps["type"] = map[string]interface{}{
+	customProps["type"] = map[string]any{
 		"string_value": "modelcar",
 	}
 
@@ -744,14 +744,14 @@ func TestAddArchitectureToArtifactProps(t *testing.T) {
 
 	// Verify existing properties were not modified
 	if source, exists := customProps["source"]; exists {
-		sourceMap := source.(map[string]interface{})
+		sourceMap := source.(map[string]any)
 		if sourceMap["string_value"] != "registry.redhat.io" {
 			t.Error("Existing source property was modified")
 		}
 	}
 
 	if typeVal, exists := customProps["type"]; exists {
-		typeMap := typeVal.(map[string]interface{})
+		typeMap := typeVal.(map[string]any)
 		if typeMap["string_value"] != "modelcar" {
 			t.Error("Existing type property was modified")
 		}

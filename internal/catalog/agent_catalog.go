@@ -177,7 +177,7 @@ func transformEnvVars(upstream *types.UpstreamAgentYAML) []types.AgentEnvVar {
 // forwardExtraAsCustomProperties takes unknown fields from the upstream agent.yaml
 // and adds them to the agent's customProperties as MetadataStringValue entries.
 // Arrays and objects are JSON-encoded; scalars are converted to strings.
-func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string]interface{}) {
+func forwardExtraAsCustomProperties(agent *types.AgentMetadata, extra map[string]any) {
 	if len(extra) == 0 {
 		return
 	}
@@ -243,7 +243,7 @@ func resolveReadmeLinks(s, baseURL string) string {
 
 // buildTemplateArtifacts serializes the full upstream agent.yaml content as a
 // JSON-encoded template artifact for the catalog output.
-func buildTemplateArtifacts(rawContent map[string]interface{}) []types.AgentTemplate {
+func buildTemplateArtifacts(rawContent map[string]any) []types.AgentTemplate {
 	if len(rawContent) == 0 {
 		return nil
 	}

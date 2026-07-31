@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -543,13 +544,7 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 
 					// Then add new tags, avoiding duplicates
 					for _, newTag := range filteredTags {
-						found := false
-						for _, existingTag := range allTags {
-							if existingTag == newTag {
-								found = true
-								break
-							}
-						}
+						found := slices.Contains(allTags, newTag)
 						if !found {
 							allTags = append(allTags, newTag)
 						}
@@ -668,7 +663,7 @@ func UpdateOCIArtifacts(registryModel, outputDir string) error {
 			// This is critical to avoid losing architecture and other metadata on re-enrichment
 			if existingMetadata.Artifacts[i].CustomProperties != nil {
 				if ociArtifacts[i].CustomProperties == nil {
-					ociArtifacts[i].CustomProperties = make(map[string]interface{})
+					ociArtifacts[i].CustomProperties = make(map[string]any)
 				}
 
 				// Preserve specific fields that should not be lost

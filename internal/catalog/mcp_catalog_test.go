@@ -474,7 +474,7 @@ func TestInjectSupportTier(t *testing.T) {
 	})
 }
 
-func writeYAML(t *testing.T, path string, v interface{}) {
+func writeYAML(t *testing.T, path string, v any) {
 	t.Helper()
 	data, err := yaml.Marshal(v)
 	if err != nil {

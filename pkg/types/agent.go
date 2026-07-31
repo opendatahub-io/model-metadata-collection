@@ -34,8 +34,8 @@ type UpstreamAgentYAML struct {
 		Required []string `yaml:"required"`
 		Optional []string `yaml:"optional"`
 	} `yaml:"env"`
-	Extra      map[string]interface{} `yaml:"-"`
-	RawContent map[string]interface{} `yaml:"-"`
+	Extra      map[string]any `yaml:"-"`
+	RawContent map[string]any `yaml:"-"`
 }
 
 // KnownUpstreamFields lists the agent.yaml keys that are handled explicitly

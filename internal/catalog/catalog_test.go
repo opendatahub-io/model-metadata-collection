@@ -35,11 +35,11 @@ func TestCreateModelsCatalog(t *testing.T) {
 				Artifacts: []types.OCIArtifact{
 					{
 						URI: "oci://registry.example.com/test-model:1.0",
-						CustomProperties: map[string]interface{}{
-							"source": map[string]interface{}{
+						CustomProperties: map[string]any{
+							"source": map[string]any{
 								"string_value": "registry.example.com",
 							},
-							"type": map[string]interface{}{
+							"type": map[string]any{
 								"string_value": "modelcar",
 							},
 							"simple_prop": "simple_value",
@@ -177,7 +177,7 @@ func TestCreateModelsCatalog(t *testing.T) {
 		if artifact.CustomProperties != nil {
 			// Check source property
 			if sourceVal, exists := artifact.CustomProperties["source"]; exists {
-				sourceMap, ok := sourceVal.(map[string]interface{})
+				sourceMap, ok := sourceVal.(map[string]any)
 				if !ok {
 					t.Error("Artifact source property should be a map")
 				} else {
@@ -192,7 +192,7 @@ func TestCreateModelsCatalog(t *testing.T) {
 
 			// Check simple_prop (should be converted from simple string to MetadataValue format)
 			if simplePropVal, exists := artifact.CustomProperties["simple_prop"]; exists {
-				simplePropMap, ok := simplePropVal.(map[string]interface{})
+				simplePropMap, ok := simplePropVal.(map[string]any)
 				if !ok {
 					t.Error("Artifact simple_prop property should be a map")
 				} else {
@@ -992,8 +992,8 @@ func TestValidateStaticCatalog(t *testing.T) {
 func TestConvertCustomPropertiesToMetadataValue(t *testing.T) {
 	testCases := []struct {
 		name     string
-		input    map[string]interface{}
-		expected map[string]interface{}
+		input    map[string]any
+		expected map[string]any
 	}{
 		{
 			name:     "nil input",
@@ -1002,25 +1002,25 @@ func TestConvertCustomPropertiesToMetadataValue(t *testing.T) {
 		},
 		{
 			name:     "empty input",
-			input:    map[string]interface{}{},
-			expected: map[string]interface{}{},
+			input:    map[string]any{},
+			expected: map[string]any{},
 		},
 		{
 			name: "properties without metadataType",
-			input: map[string]interface{}{
-				"source": map[string]interface{}{
+			input: map[string]any{
+				"source": map[string]any{
 					"string_value": "registry.redhat.io",
 				},
-				"type": map[string]interface{}{
+				"type": map[string]any{
 					"string_value": "modelcar",
 				},
 			},
-			expected: map[string]interface{}{
-				"source": map[string]interface{}{
+			expected: map[string]any{
+				"source": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "registry.redhat.io",
 				},
-				"type": map[string]interface{}{
+				"type": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "modelcar",
 				},
@@ -1028,14 +1028,14 @@ func TestConvertCustomPropertiesToMetadataValue(t *testing.T) {
 		},
 		{
 			name: "properties already with metadataType",
-			input: map[string]interface{}{
-				"source": map[string]interface{}{
+			input: map[string]any{
+				"source": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "registry.redhat.io",
 				},
 			},
-			expected: map[string]interface{}{
-				"source": map[string]interface{}{
+			expected: map[string]any{
+				"source": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "registry.redhat.io",
 				},
@@ -1043,11 +1043,11 @@ func TestConvertCustomPropertiesToMetadataValue(t *testing.T) {
 		},
 		{
 			name: "simple string values",
-			input: map[string]interface{}{
+			input: map[string]any{
 				"simple_key": "simple_value",
 			},
-			expected: map[string]interface{}{
-				"simple_key": map[string]interface{}{
+			expected: map[string]any{
+				"simple_key": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "simple_value",
 				},
@@ -1055,26 +1055,26 @@ func TestConvertCustomPropertiesToMetadataValue(t *testing.T) {
 		},
 		{
 			name: "mixed format properties",
-			input: map[string]interface{}{
-				"with_metadata": map[string]interface{}{
+			input: map[string]any{
+				"with_metadata": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "existing",
 				},
-				"without_metadata": map[string]interface{}{
+				"without_metadata": map[string]any{
 					"string_value": "needs_metadata",
 				},
 				"simple": "raw_string",
 			},
-			expected: map[string]interface{}{
-				"with_metadata": map[string]interface{}{
+			expected: map[string]any{
+				"with_metadata": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "existing",
 				},
-				"without_metadata": map[string]interface{}{
+				"without_metadata": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "needs_metadata",
 				},
-				"simple": map[string]interface{}{
+				"simple": map[string]any{
 					"metadataType": "MetadataStringValue",
 					"string_value": "raw_string",
 				},
@@ -1112,8 +1112,8 @@ func TestConvertCustomPropertiesToMetadataValue(t *testing.T) {
 				}
 
 				// Compare the nested map values
-				expectedMap, expectedIsMap := expectedValue.(map[string]interface{})
-				actualMap, actualIsMap := actualValue.(map[string]interface{})
+				expectedMap, expectedIsMap := expectedValue.(map[string]any)
+				actualMap, actualIsMap := actualValue.(map[string]any)
 
 				if expectedIsMap != actualIsMap {
 					t.Errorf("Key '%s': type mismatch - expected map: %v, actual map: %v", key, expectedIsMap, actualIsMap)

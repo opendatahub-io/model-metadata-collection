@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -237,13 +238,7 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 
 				// Then add new tags, avoiding duplicates
 				for _, newTag := range newTags {
-					found := false
-					for _, existingTag := range mergedTags {
-						if existingTag == newTag {
-							found = true
-							break
-						}
-					}
+					found := slices.Contains(mergedTags, newTag)
 					if !found {
 						mergedTags = append(mergedTags, newTag)
 					}

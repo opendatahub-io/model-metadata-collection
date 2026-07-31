@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -290,13 +291,7 @@ func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.Cata
 	// Ensure "tool-calling" is in tasks when servingConfig exists
 	catalogTasks := model.Tasks
 	if servingConfig != nil {
-		hasToolCalling := false
-		for _, t := range catalogTasks {
-			if t == "tool-calling" {
-				hasToolCalling = true
-				break
-			}
-		}
+		hasToolCalling := slices.Contains(catalogTasks, "tool-calling")
 		if !hasToolCalling {
 			catalogTasks = append(catalogTasks, "tool-calling")
 		}
@@ -352,12 +347,12 @@ func createMetadataValue(value string) types.MetadataValue {
 }
 
 // convertCustomPropertiesToMetadataValue converts CustomProperties from interface{} to MetadataValue format
-func convertCustomPropertiesToMetadataValue(customProps map[string]interface{}) map[string]interface{} {
+func convertCustomPropertiesToMetadataValue(customProps map[string]any) map[string]any {
 	if customProps == nil {
 		return nil
 	}
 
-	result := make(map[string]interface{})
+	result := make(map[string]any)
 	for key, value := range customProps {
 		result[key] = ensureMetadataValueFormat(value)
 	}
@@ -366,9 +361,9 @@ func convertCustomPropertiesToMetadataValue(customProps map[string]interface{}) 
 }
 
 // ensureMetadataValueFormat ensures a value is in the proper MetadataValue format with metadataType
-func ensureMetadataValueFormat(value interface{}) map[string]interface{} {
+func ensureMetadataValueFormat(value any) map[string]any {
 	// Check if value is already in the correct MetadataValue format
-	if valueMap, ok := value.(map[string]interface{}); ok {
+	if valueMap, ok := value.(map[string]any); ok {
 		// Check if it already has metadataType
 		if _, hasMetadataType := valueMap["metadataType"]; hasMetadataType {
 			return valueMap
@@ -380,7 +375,7 @@ func ensureMetadataValueFormat(value interface{}) map[string]interface{} {
 					stringValue = str
 				}
 			}
-			return map[string]interface{}{
+			return map[string]any{
 				"metadataType": "MetadataStringValue",
 				"string_value": stringValue,
 			}
@@ -391,7 +386,7 @@ func ensureMetadataValueFormat(value interface{}) map[string]interface{} {
 		if str, ok := value.(string); ok {
 			stringValue = str
 		}
-		return map[string]interface{}{
+		return map[string]any{
 			"metadataType": "MetadataStringValue",
 			"string_value": stringValue,
 		}
@@ -403,11 +398,8 @@ func determineLogo(tags []string) *string {
 	var svgPath string
 
 	// Check if the model has the "validated" label
-	for _, tag := range tags {
-		if tag == "validated" {
-			svgPath = "assets/catalog-validated_model.svg"
-			break
-		}
+	if slices.Contains(tags, "validated") {
+		svgPath = "assets/catalog-validated_model.svg"
 	}
 
 	// Default logo for non-validated models
@@ -695,7 +687,7 @@ func enrichStaticArtifactsWithArchitecture(model *types.CatalogMetadata) {
 
 		// Add architecture information to the artifact's custom properties
 		if artifact.CustomProperties == nil {
-			artifact.CustomProperties = make(map[string]interface{})
+			artifact.CustomProperties = make(map[string]any)
 		}
 
 		// Use the registry package function to add architecture

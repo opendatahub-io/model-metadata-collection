@@ -58,11 +58,11 @@ type SourceBreakdown struct {
 
 // FieldStatus indicates the source and status of a metadata field
 type FieldStatus struct {
-	Value           interface{} `yaml:"value,omitempty"`
-	Source          string      `yaml:"source"`
-	DetectionMethod string      `yaml:"detection_method"`
-	IsNull          bool        `yaml:"is_null"`
-	IsEmpty         bool        `yaml:"is_empty,omitempty"`
+	Value           any    `yaml:"value,omitempty"`
+	Source          string `yaml:"source"`
+	DetectionMethod string `yaml:"detection_method"`
+	IsNull          bool   `yaml:"is_null"`
+	IsEmpty         bool   `yaml:"is_empty,omitempty"`
 }
 
 // GenerateMetadataReport creates a comprehensive metadata report
@@ -625,7 +625,7 @@ func writeYAMLReport(report *MetadataReport, outputPath string) error {
 }
 
 // formatValue formats a value for display in the markdown table
-func formatValue(value interface{}) string {
+func formatValue(value any) string {
 	if value == nil {
 		return "—"
 	}

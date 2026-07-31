@@ -52,12 +52,12 @@ func TestResolveReadmeLinks(t *testing.T) {
 
 func TestBuildTemplateArtifacts(t *testing.T) {
 	t.Run("generates JSON template from raw content", func(t *testing.T) {
-		raw := map[string]interface{}{
+		raw := map[string]any{
 			"name":        "test-agent",
 			"displayName": "Test Agent",
 			"framework":   "langgraph",
 			"description": "A test agent.",
-			"labels":      []interface{}{"tool-calling", "react"},
+			"labels":      []any{"tool-calling", "react"},
 			"logo":        "data:image/svg+xml;base64,abc123",
 		}
 		templates := buildTemplateArtifacts(raw)
@@ -68,7 +68,7 @@ func TestBuildTemplateArtifacts(t *testing.T) {
 			t.Errorf("expected template name 'agent.yaml', got %q", templates[0].Name)
 		}
 		// Verify content is valid JSON containing the original fields
-		var parsed map[string]interface{}
+		var parsed map[string]any
 		if err := json.Unmarshal([]byte(templates[0].Content), &parsed); err != nil {
 			t.Fatalf("template content is not valid JSON: %v", err)
 		}
@@ -85,7 +85,7 @@ func TestBuildTemplateArtifacts(t *testing.T) {
 		if templates != nil {
 			t.Errorf("expected nil templates for nil input, got %v", templates)
 		}
-		templates = buildTemplateArtifacts(map[string]interface{}{})
+		templates = buildTemplateArtifacts(map[string]any{})
 		if templates != nil {
 			t.Errorf("expected nil templates for empty map, got %v", templates)
 		}
@@ -138,7 +138,7 @@ func TestLabelsLogoMapping(t *testing.T) {
 
 func TestLabelsLogoNotInCustomProperties(t *testing.T) {
 	upstream := &types.UpstreamAgentYAML{
-		Extra: map[string]interface{}{
+		Extra: map[string]any{
 			"deploymentModel": "flow-import",
 		},
 	}

@@ -69,7 +69,7 @@ func loadDotEnv(path string) {
 	if err != nil {
 		return // .env is optional; silently skip if absent
 	}
-	for _, line := range strings.Split(string(data), "\n") {
+	for line := range strings.SplitSeq(string(data), "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
 			continue
@@ -325,8 +325,8 @@ func getStaticCatalogPaths(staticCatalogFiles string, skipDefaultStaticCatalog b
 
 	// Add custom static catalog files if specified
 	if staticCatalogFiles != "" {
-		customPaths := strings.Split(staticCatalogFiles, ",")
-		for _, path := range customPaths {
+		customPaths := strings.SplitSeq(staticCatalogFiles, ",")
+		for path := range customPaths {
 			path = strings.TrimSpace(path)
 			if path != "" {
 				paths = append(paths, path)
