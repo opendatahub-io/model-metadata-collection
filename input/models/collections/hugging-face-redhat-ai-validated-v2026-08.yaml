@@ -1,0 +1,68 @@
+version: v2026.08
+models:
+    - name: RedHatAI/gemma-4-31B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-31B-it-NVFP4/README.md
+    - name: RedHatAI/gemma-4-31B-it-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-dynamic
+      readme_path: /RedHatAI/gemma-4-31B-it-FP8-dynamic/README.md
+    - name: RedHatAI/gemma-4-31B-it-FP8-block
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-block
+      readme_path: /RedHatAI/gemma-4-31B-it-FP8-block/README.md
+    - name: RedHatAI/gemma-4-31B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it
+      readme_path: /RedHatAI/gemma-4-31B-it/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it-NVFP4/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it/README.md
+    - name: RedHatAI/gemma-4-E4B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-E4B-it
+      readme_path: /RedHatAI/gemma-4-E4B-it/README.md
+    - name: RedHatAI/gemma-4-12B-it-FP8-Dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-12B-it-FP8-Dynamic
+      readme_path: /RedHatAI/gemma-4-12B-it-FP8-Dynamic/README.md
+    - name: RedHatAI/gemma-4-12B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-12B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-12B-it-NVFP4/README.md
+    - name: RedHatAI/GLM-5.2-FP8
+      url: https://huggingface.co/RedHatAI/GLM-5.2-FP8
+      readme_path: /RedHatAI/GLM-5.2-FP8/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-NVFP4
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-NVFP4
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-NVFP4/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-FP8
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-FP8
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-FP8/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3.6-35B-A3B
+      url: https://huggingface.co/RedHatAI/Qwen3.6-35B-A3B
+      readme_path: /RedHatAI/Qwen3.6-35B-A3B/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-dynamic
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-dynamic/README.md
+    - name: RedHatAI/Qwen3-VL-30B-A3B-Instruct
+      url: https://huggingface.co/RedHatAI/Qwen3-VL-30B-A3B-Instruct
+      readme_path: /RedHatAI/Qwen3-VL-30B-A3B-Instruct/README.md
+    - name: RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic
+      readme_path: /RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic/README.md
+    - name: RedHatAI/diffusiongemma-26B-A4B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/diffusiongemma-26B-A4B-it-NVFP4
+      readme_path: /RedHatAI/diffusiongemma-26B-A4B-it-NVFP4/README.md
+    - name: RedHatAI/Mistral-Medium-3.5-128B
+      url: https://huggingface.co/RedHatAI/Mistral-Medium-3.5-128B
+      readme_path: /RedHatAI/Mistral-Medium-3.5-128B/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-block
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-block
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-block/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16/README.md

@@ -1,4 +1,4 @@
-version: v2026.05
+version: v2026.08
 models:
     - name: RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic
       url: https://huggingface.co/RedHatAI/Apertus-8B-Instruct-2509-FP8-dynamic
@@ -9,6 +9,9 @@ models:
     - name: RedHatAI/Devstral-Small-2-24B-Instruct-2512
       url: https://huggingface.co/RedHatAI/Devstral-Small-2-24B-Instruct-2512
       readme_path: /RedHatAI/Devstral-Small-2-24B-Instruct-2512/README.md
+    - name: RedHatAI/GLM-5.2-FP8
+      url: https://huggingface.co/RedHatAI/GLM-5.2-FP8
+      readme_path: /RedHatAI/GLM-5.2-FP8/README.md
     - name: RedHatAI/Kimi-K2-Instruct-quantized.w4a16
       url: https://huggingface.co/RedHatAI/Kimi-K2-Instruct-quantized.w4a16
       readme_path: /RedHatAI/Kimi-K2-Instruct-quantized.w4a16/README.md
@@ -78,6 +81,9 @@ models:
     - name: RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4
       url: https://huggingface.co/RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4
       readme_path: /RedHatAI/Mistral-Large-3-675B-Instruct-2512-NVFP4/README.md
+    - name: RedHatAI/Mistral-Medium-3.5-128B
+      url: https://huggingface.co/RedHatAI/Mistral-Medium-3.5-128B
+      readme_path: /RedHatAI/Mistral-Medium-3.5-128B/README.md
     - name: RedHatAI/Mistral-Small-24B-Instruct-2501
       url: https://huggingface.co/RedHatAI/Mistral-Small-24B-Instruct-2501
       readme_path: /RedHatAI/Mistral-Small-24B-Instruct-2501/README.md
@@ -123,6 +129,15 @@ models:
     - name: RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
       url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
       readme_path: /RedHatAI/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-block
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-block
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-block/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-dynamic
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-FP8-dynamic/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16/README.md
     - name: RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic
       url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic
       readme_path: /RedHatAI/NVIDIA-Nemotron-Nano-9B-v2-FP8-dynamic/README.md
@@ -201,6 +216,12 @@ models:
     - name: RedHatAI/bge-m3
       url: https://huggingface.co/RedHatAI/bge-m3
       readme_path: /RedHatAI/bge-m3/README.md
+    - name: RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic
+      readme_path: /RedHatAI/diffusiongemma-26B-A4B-it-FP8-dynamic/README.md
+    - name: RedHatAI/diffusiongemma-26B-A4B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/diffusiongemma-26B-A4B-it-NVFP4
+      readme_path: /RedHatAI/diffusiongemma-26B-A4B-it-NVFP4/README.md
     - name: RedHatAI/embeddinggemma-300m
       url: https://huggingface.co/RedHatAI/embeddinggemma-300m
       readme_path: /RedHatAI/embeddinggemma-300m/README.md
@@ -213,21 +234,36 @@ models:
     - name: RedHatAI/gemma-3n-E4B-it-FP8-dynamic
       url: https://huggingface.co/RedHatAI/gemma-3n-E4B-it-FP8-dynamic
       readme_path: /RedHatAI/gemma-3n-E4B-it-FP8-dynamic/README.md
+    - name: RedHatAI/gemma-4-12B-it-FP8-Dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-12B-it-FP8-Dynamic
+      readme_path: /RedHatAI/gemma-4-12B-it-FP8-Dynamic/README.md
+    - name: RedHatAI/gemma-4-12B-it-NVFP4
+      url: https://huggingface.co/RedHatAI/gemma-4-12B-it-NVFP4
+      readme_path: /RedHatAI/gemma-4-12B-it-NVFP4/README.md
     - name: RedHatAI/gemma-4-26B-A4B-it
       url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it
       readme_path: /RedHatAI/gemma-4-26B-A4B-it/README.md
     - name: RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic
       url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic
       readme_path: /RedHatAI/gemma-4-26B-A4B-it-FP8-Dynamic/README.md
+    - name: RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic
+      readme_path: /RedHatAI/gemma-4-26B-A4B-it-FP8-dynamic/README.md
     - name: RedHatAI/gemma-4-26B-A4B-it-NVFP4
       url: https://huggingface.co/RedHatAI/gemma-4-26B-A4B-it-NVFP4
       readme_path: /RedHatAI/gemma-4-26B-A4B-it-NVFP4/README.md
+    - name: RedHatAI/gemma-4-31B-it
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it
+      readme_path: /RedHatAI/gemma-4-31B-it/README.md
     - name: RedHatAI/gemma-4-31B-it-FP8-Dynamic
       url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-Dynamic
       readme_path: /RedHatAI/gemma-4-31B-it-FP8-Dynamic/README.md
     - name: RedHatAI/gemma-4-31B-it-FP8-block
       url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-block
       readme_path: /RedHatAI/gemma-4-31B-it-FP8-block/README.md
+    - name: RedHatAI/gemma-4-31B-it-FP8-dynamic
+      url: https://huggingface.co/RedHatAI/gemma-4-31B-it-FP8-dynamic
+      readme_path: /RedHatAI/gemma-4-31B-it-FP8-dynamic/README.md
     - name: RedHatAI/gemma-4-31B-it-NVFP4
       url: https://huggingface.co/RedHatAI/gemma-4-31B-it-NVFP4
       readme_path: /RedHatAI/gemma-4-31B-it-NVFP4/README.md

@@ -24,7 +24,9 @@ var SupportedModelFamilies = []string{
 	"apertus",
 	"deepseek",
 	"devstral",
+	"diffusiongemma",
 	"gemma",
+	"glm",
 	"gpt",
 	"granite",
 	"kimi",
@@ -38,6 +40,7 @@ var SupportedModelFamilies = []string{
 	"phi",
 	"qwen",
 	"sarvam",
+	"trinity",
 	"voxtral",
 	"whisper",
 }

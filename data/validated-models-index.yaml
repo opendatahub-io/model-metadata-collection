@@ -265,3 +265,99 @@ models:
   uri: registry.redhat.io/rhai/modelcar-gpt-oss-120b-essential:3.0
   labels:
   - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it-fp8-block:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-26b-a4b-it-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-26b-a4b-it-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-26b-a4b-it:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-google-gemma-4-e4b-it:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b-fp8:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-35b-a3b:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-vl-30b-a3b-instruct:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-12b-it-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-12b-it-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-glm-5-2-fp8:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-ultra-550b-a55b-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nemotron-ultra-550b-bf16-fp8-block:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nemotron-ultra-550b-bf16-w4a16-g128:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-ultra-550b-a55b-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-diffusiongemma-26b-a4b-it-fp8-dynamic:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-diffusiongemma-26b-a4b-it-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-mistral-medium-3-5-128b:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-trinity-large-thinking-nvfp4:3.0
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it:3.0
+  labels:
+  - validated
