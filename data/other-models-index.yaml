@@ -21,3 +21,29 @@ models:
   uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-nvfp4:3.0
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-snowflake-arctic-embed-l-v2-0:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-gemma-3-12b-it:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-ibm-granite-granite-docling-258m:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-guardian-3-2-5b:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-llama-3-1-8b-instruct-essential:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-google-gemma-4-26b-a4b:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-google-gemma-4-31b:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-allenai-molmo2-4b:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-allenai-olmocr-2-7b-1025-fp8:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-mistralai-magistral-small-2509:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-nvidia-llama-3-1-nemotron-safety-guard-8b-v3:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-openai-whisper-large-v3:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-openai-gpt-oss-safeguard-20b:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-openai-gpt-oss-safeguard-120b:3.0
