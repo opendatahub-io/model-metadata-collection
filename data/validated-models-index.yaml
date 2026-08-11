@@ -290,7 +290,7 @@ models:
   labels:
   - validated
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-google-gemma-4-e4b-it:3.0
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-e4b-it:3.0
   labels:
   - validated
 - type: oci
