@@ -43,8 +43,6 @@ models:
   hf_model: google/gemma-4-26b-a4b
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-google-gemma-4-31b:3.0
-  # Base (non-instruction-tuned) model, distinct from the validated
-  # RedHatAI/gemma-4-31B-it. Pin to its real HuggingFace page.
   hf_model: google/gemma-4-31b
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-allenai-molmo2-4b:3.0

@@ -354,10 +354,6 @@ models:
   labels:
   - validated
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-trinity-large-thinking-nvfp4:3.0
-  labels:
-  - validated
-- type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it:3.0
   labels:
   - validated

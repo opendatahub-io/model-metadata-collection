@@ -66,3 +66,6 @@ models:
     - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16
       url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16
       readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-quantized.w4a16/README.md
+    - name: RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4
+      url: https://huggingface.co/RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4
+      readme_path: /RedHatAI/NVIDIA-Nemotron-3-Ultra-550B-A55B-NVFP4/README.md
