@@ -88,6 +88,49 @@ func TestCatalogNamesAreUniquePerType(t *testing.T) {
 	}
 }
 
+// TestCatalogNamesAreNotNull ensures every record in a data/*-catalog.yaml file has a
+// non-empty "name" field. A blank name typically means enrichment failed to resolve an
+// identity for the record (e.g. a pinned HuggingFace lookup that couldn't be fetched)
+// and the record was still written to the catalog.
+func TestCatalogNamesAreNotNull(t *testing.T) {
+	files, err := filepath.Glob("../../data/*-catalog.yaml")
+	if err != nil {
+		t.Fatalf("failed to glob catalog files: %v", err)
+	}
+	if len(files) == 0 {
+		t.Fatal("no catalog files found matching data/*-catalog.yaml")
+	}
+
+	for _, file := range files {
+		data, err := os.ReadFile(file)
+		if err != nil {
+			t.Fatalf("failed to read %s: %v", file, err)
+		}
+
+		var list catalogNameList
+		if err := yaml.Unmarshal(data, &list); err != nil {
+			t.Fatalf("failed to parse %s: %v", file, err)
+		}
+
+		base := filepath.Base(file)
+		for i, m := range list.Models {
+			if m.Name == "" {
+				t.Errorf("%s: models[%d] has a null/empty name", base, i)
+			}
+		}
+		for i, m := range list.MCPServers {
+			if m.Name == "" {
+				t.Errorf("%s: mcp_servers[%d] has a null/empty name", base, i)
+			}
+		}
+		for i, a := range list.Agents {
+			if a.Name == "" {
+				t.Errorf("%s: agents[%d] has a null/empty name", base, i)
+			}
+		}
+	}
+}
+
 func singularName(typeKey string) string {
 	switch typeKey {
 	case "models":

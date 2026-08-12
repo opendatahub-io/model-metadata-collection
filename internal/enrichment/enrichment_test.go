@@ -9,6 +9,7 @@ import (
 
 	"github.com/opendatahub-io/model-metadata-collection/internal/huggingface"
 	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
+	"github.com/opendatahub-io/model-metadata-collection/pkg/utils"
 )
 
 func TestEnrichMetadataFromHuggingFace_FilesNotExist(t *testing.T) {
@@ -205,6 +206,99 @@ func TestEnrichMetadataFromHuggingFace_EmptyFiles(t *testing.T) {
 	}
 }
 
+// TestEnrichMetadataFromHuggingFace_PinnedNameSkipsFuzzyMatch verifies that a
+// model index entry with a pinned `name` (and no `hf_model`) never adopts a
+// different model's identity via fuzzy matching, even when the HuggingFace
+// collection contains a near-perfect lookalike. This is the fix for models
+// like the "essential" Llama variant that have no correct HuggingFace page of
+// their own and were previously mislabeled with another cataloged model's name.
+func TestEnrichMetadataFromHuggingFace_PinnedNameSkipsFuzzyMatch(t *testing.T) {
+	originalDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get working directory: %v", err)
+	}
+	defer func() {
+		if err := os.Chdir(originalDir); err != nil {
+			t.Errorf("Failed to restore working directory: %v", err)
+		}
+	}()
+
+	tmpDir := t.TempDir()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatalf("Failed to change to temp directory: %v", err)
+	}
+
+	if err := os.MkdirAll(huggingface.CollectionsDir, 0755); err != nil {
+		t.Fatalf("Failed to create collections directory: %v", err)
+	}
+	if err := os.MkdirAll("data", 0755); err != nil {
+		t.Fatalf("Failed to create data directory: %v", err)
+	}
+
+	const registryModel = "registry.redhat.io/rhai/modelcar-llama-3-1-8b-instruct-essential:3.0"
+	const pinnedName = "RedHatAI/Llama-3.1-8B-Instruct-essential"
+
+	// A lookalike entry that would otherwise win the fuzzy match by a wide margin.
+	hfIndex := types.VersionIndex{
+		Version: "v1.0",
+		Models: []types.ModelIndex{
+			{
+				Name:       "RedHatAI/Llama-3.1-8B-Instruct",
+				URL:        "https://huggingface.co/RedHatAI/Llama-3.1-8B-Instruct",
+				ReadmePath: "/RedHatAI/Llama-3.1-8B-Instruct/README.md",
+			},
+		},
+	}
+	hfData, err := yaml.Marshal(hfIndex)
+	if err != nil {
+		t.Fatalf("Failed to marshal HF index: %v", err)
+	}
+	if err := os.WriteFile(huggingface.CollectionFilePath("v1-0"), hfData, 0644); err != nil {
+		t.Fatalf("Failed to create HF file: %v", err)
+	}
+
+	modelsConfig := types.ModelsConfig{
+		Models: []types.ModelEntry{
+			{Type: "oci", URI: registryModel, Name: pinnedName},
+		},
+	}
+	modelsData, err := yaml.Marshal(modelsConfig)
+	if err != nil {
+		t.Fatalf("Failed to marshal models config: %v", err)
+	}
+	if err := os.WriteFile("data/models-index.yaml", modelsData, 0644); err != nil {
+		t.Fatalf("Failed to create models file: %v", err)
+	}
+
+	// Pre-create the output directory the way container extraction normally would,
+	// so UpdateModelMetadataFile can write metadata.yaml.
+	sanitized := utils.SanitizeManifestRef(registryModel)
+	outputModelsDir := "output/" + sanitized + "/models"
+	if err := os.MkdirAll(outputModelsDir, 0755); err != nil {
+		t.Fatalf("Failed to create output directory: %v", err)
+	}
+
+	// This must not attempt any network calls: a pinned name with no hf_model
+	// skips HuggingFace matching entirely (bestScore never reaches the 0.5
+	// threshold), so FetchModelDetails/FetchReadme are never invoked.
+	if err := EnrichMetadataFromHuggingFace(huggingface.CollectionFilePath("v1-0"), "data/models-index.yaml", "output", ""); err != nil {
+		t.Fatalf("EnrichMetadataFromHuggingFace failed: %v", err)
+	}
+
+	metadataBytes, err := os.ReadFile(outputModelsDir + "/metadata.yaml")
+	if err != nil {
+		t.Fatalf("Failed to read written metadata.yaml: %v", err)
+	}
+	var written types.ExtractedMetadata
+	if err := yaml.Unmarshal(metadataBytes, &written); err != nil {
+		t.Fatalf("Failed to parse written metadata.yaml: %v", err)
+	}
+
+	if written.Name == nil || *written.Name != pinnedName {
+		t.Errorf("Expected pinned name %q, got %v", pinnedName, written.Name)
+	}
+}
+
 func TestUpdateModelMetadataFile_NoExistingFile(t *testing.T) {
 	// Test updating metadata file when it doesn't exist yet
 	originalDir, err := os.Getwd()
@@ -327,6 +421,75 @@ func TestUpdateModelMetadataFile_WithExistingFile(t *testing.T) {
 	// Verify metadata file still exists
 	if _, err := os.Stat(metadataPath); os.IsNotExist(err) {
 		t.Errorf("Metadata file should still exist")
+	}
+}
+
+// TestUpdateModelMetadataFile_IndexPinnedNameOverridesExisting verifies that a
+// name sourced from "index.pinned" (a hand-curated override in the model
+// index) always wins over an existing container-extracted name, the same way
+// "huggingface.yaml" already does. Without this, a pinned name would only take
+// effect on models that don't already have a name written to metadata.yaml.
+func TestUpdateModelMetadataFile_IndexPinnedNameOverridesExisting(t *testing.T) {
+	originalDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get working directory: %v", err)
+	}
+	defer func() {
+		if err := os.Chdir(originalDir); err != nil {
+			t.Errorf("Failed to restore working directory: %v", err)
+		}
+	}()
+
+	tmpDir := t.TempDir()
+	if err := os.Chdir(tmpDir); err != nil {
+		t.Fatalf("Failed to change to temp directory: %v", err)
+	}
+
+	registryModel := "registry.example.com/test/model:latest"
+	outputDir := "output/registry.example.com_test_model_latest/models"
+	if err := os.MkdirAll(outputDir, 0755); err != nil {
+		t.Fatalf("Failed to create output directory: %v", err)
+	}
+
+	existingName := "wrong-fuzzy-matched-name"
+	existingMetadata := types.ExtractedMetadata{Name: &existingName}
+	metadataData, err := yaml.Marshal(existingMetadata)
+	if err != nil {
+		t.Fatalf("Failed to marshal existing metadata: %v", err)
+	}
+	metadataPath := outputDir + "/metadata.yaml"
+	if err := os.WriteFile(metadataPath, metadataData, 0644); err != nil {
+		t.Fatalf("Failed to create existing metadata file: %v", err)
+	}
+
+	const pinnedName = "RedHatAI/correct-name"
+	enrichedData := &types.EnrichedModelMetadata{
+		RegistryModel:    registryModel,
+		EnrichmentStatus: "name_pinned",
+		Name:             types.MetadataSource{Value: pinnedName, Source: "index.pinned"},
+		// Every other field must be explicitly "null" (the zero value's empty-string
+		// Source is NOT "null" and would otherwise be misread as a real, unset value).
+		Provider:    types.MetadataSource{Source: "null"},
+		Description: types.MetadataSource{Source: "null"},
+		License:     types.MetadataSource{Source: "null"},
+		LicenseLink: types.MetadataSource{Source: "null"},
+	}
+
+	if err := UpdateModelMetadataFile(registryModel, enrichedData, "output"); err != nil {
+		t.Fatalf("UpdateModelMetadataFile failed: %v", err)
+	}
+
+	updatedBytes, err := os.ReadFile(metadataPath)
+	if err != nil {
+		t.Fatalf("Failed to read updated metadata.yaml: %v", err)
+	}
+	var updated types.ExtractedMetadata
+	if err := yaml.Unmarshal(updatedBytes, &updated); err != nil {
+		t.Fatalf("Failed to parse updated metadata.yaml: %v", err)
+	}
+
+	if updated.Name == nil || *updated.Name != pinnedName {
+		t.Errorf("Expected index.pinned name %q to override existing name %q, got %v", pinnedName, existingName, updated.Name)
 	}
 }
 

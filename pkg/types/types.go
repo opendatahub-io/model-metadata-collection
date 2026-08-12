@@ -20,6 +20,15 @@ type ModelEntry struct {
 	URI       string   `yaml:"uri"`        // OCI link or HuggingFace link
 	Labels    []string `yaml:"labels"`     // Labels for the model (e.g., "validated", "featured", "lab-teacher", "lab-base")
 	ModelType string   `yaml:"model_type"` // Model type: "generative", "predictive", or "unknown" (defaults to "generative" if omitted)
+	// Name pins the authoritative catalog name for this entry, overriding HuggingFace
+	// fuzzy-match results. Use it when the fuzzy matcher has no correct HuggingFace
+	// counterpart to match against (readme/license then fall back to the container
+	// modelcard, since there is no trustworthy HuggingFace source).
+	Name string `yaml:"name,omitempty"`
+	// HFModel pins the exact HuggingFace repo id to enrich from, bypassing fuzzy
+	// matching entirely. Readme, license, description, and tags are fetched from this
+	// repo. Combine with Name to also override the display name from that repo.
+	HFModel string `yaml:"hf_model,omitempty"`
 }
 
 // ModelsConfig represents the configuration of models to process

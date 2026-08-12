@@ -118,9 +118,12 @@ func UpdateModelMetadataFile(registryModel string, enrichedData *types.EnrichedM
 
 	// Update metadata with enriched values and track sources in enrichment file
 	if enrichedData.Name.Source != "null" {
-		// Always override with HuggingFace YAML data (highest priority)
-		// For other sources, use confidence-based logic
-		shouldOverrideName := existingMetadata.Name == nil || enrichedData.Name.Source == "huggingface.yaml"
+		// Always override with HuggingFace YAML data (highest priority), or with a
+		// name pinned explicitly in the model index (also highest priority - it is
+		// hand-curated specifically to correct a wrong or missing name).
+		shouldOverrideName := existingMetadata.Name == nil ||
+			enrichedData.Name.Source == "huggingface.yaml" ||
+			enrichedData.Name.Source == "index.pinned"
 
 		if !shouldOverrideName && existingMetadata.Name != nil {
 			// Override based on HuggingFace match confidence for non-YAML sources

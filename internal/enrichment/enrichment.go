@@ -69,8 +69,8 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 		return fmt.Errorf("failed to parse HuggingFace index: %v", err)
 	}
 
-	// Load registry models
-	regModels, err := config.LoadModelsFromYAML(modelsIndexPath)
+	// Load registry models, including any pinned name/hf_model overrides
+	regEntries, err := config.LoadModelsConfigFromYAML(modelsIndexPath)
 	if err != nil {
 		return fmt.Errorf("failed to load registry models: %v", err)
 	}
@@ -86,7 +86,8 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 	matchCount := 0
 
 	// For each registry model, find the best HuggingFace match and enrich metadata
-	for _, regModel := range regModels {
+	for _, regEntry := range regEntries {
+		regModel := regEntry.URI
 		log.Printf("Processing model: %s", regModel)
 
 		enriched := types.EnrichedModelMetadata{
@@ -282,16 +283,33 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 		bestMatch := types.ModelIndex{}
 		bestScore := 0.0
 
-		for _, hfModel := range hfIndex.Models {
-			// Skip cross-family matches to prevent llama containers from matching granite HF entries
-			if !isCompatibleModelFamily(regModel, hfModel.Name) {
-				continue
+		switch {
+		case regEntry.HFModel != "":
+			// Pinned to an exact HuggingFace repo in the index — bypass fuzzy matching
+			// so a lookalike model's name/readme/license can't be adopted by mistake.
+			bestMatch = types.ModelIndex{
+				Name: regEntry.HFModel,
+				URL:  fmt.Sprintf("https://huggingface.co/%s", regEntry.HFModel),
 			}
+			bestScore = 1.0
+			log.Printf("  Using pinned HuggingFace model: %s", regEntry.HFModel)
+		case regEntry.Name != "":
+			// Pinned name with no matching HuggingFace page (e.g. no correct entry
+			// exists in the collection index) — skip fuzzy matching entirely rather
+			// than risk adopting a different model's identity. Handled below.
+			log.Printf("  Using pinned name %q; skipping HuggingFace matching (no hf_model set)", regEntry.Name)
+		default:
+			for _, hfModel := range hfIndex.Models {
+				// Skip cross-family matches to prevent llama containers from matching granite HF entries
+				if !isCompatibleModelFamily(regModel, hfModel.Name) {
+					continue
+				}
 
-			score := utils.CalculateSimilarity(regModel, hfModel.Name)
-			if score > bestScore {
-				bestScore = score
-				bestMatch = hfModel
+				score := utils.CalculateSimilarity(regModel, hfModel.Name)
+				if score > bestScore {
+					bestScore = score
+					bestMatch = hfModel
+				}
 			}
 		}
 
@@ -563,23 +581,31 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 				}
 			}
 
-			// Update the model's metadata.yaml file with enriched data
-			err = UpdateModelMetadataFile(regModel, &enriched, outputDir)
-			if err != nil {
-				log.Printf("  Warning: Failed to update metadata file for %s: %v", regModel, err)
-			} else {
-				log.Printf("  Successfully updated metadata file for: %s", regModel)
-
-				// Also update artifacts with OCI metadata
-				log.Printf("  Updating OCI artifacts for: %s", regModel)
-				err = UpdateOCIArtifacts(regModel, outputDir)
-				if err != nil {
-					log.Printf("  Warning: Failed to update OCI artifacts for %s: %v", regModel, err)
-				} else {
-					log.Printf("  Successfully updated OCI artifacts for: %s", regModel)
-				}
+			// Fallback: we have a confident match but never resolved a name (e.g. the
+			// HF API and README fetches both failed). Use the matched repo id so the
+			// model doesn't land in the catalog with a null name. A pinned
+			// regEntry.Name still wins over this below.
+			if enriched.Name.Source == "null" && bestMatch.Name != "" {
+				enriched.Name = metadata.CreateMetadataSource(bestMatch.Name, "huggingface.api")
 			}
 
+			// A pinned name in the index is authoritative: it always wins over any name
+			// derived from HuggingFace fuzzy matching, the HF API, or README frontmatter.
+			if regEntry.Name != "" {
+				enriched.Name = metadata.CreateMetadataSource(regEntry.Name, "index.pinned")
+			}
+
+			// Update the model's metadata.yaml file with enriched data
+			persistEnrichedMetadata(regModel, &enriched, outputDir)
+			matchCount++
+		} else if regEntry.Name != "" {
+			// Pinned name with no trustworthy HuggingFace source (no hf_model set and
+			// nothing cleared the similarity threshold): keep whatever readme/license
+			// the container modelcard already provided, but force the pinned identity.
+			enriched.Name = metadata.CreateMetadataSource(regEntry.Name, "index.pinned")
+			enriched.EnrichmentStatus = "name_pinned"
+
+			persistEnrichedMetadata(regModel, &enriched, outputDir)
 			matchCount++
 		}
 
@@ -588,14 +614,31 @@ func EnrichMetadataFromHuggingFace(hfIndexPath, modelsIndexPath, outputDir, vllm
 	// Clean up the old enriched metadata file if it exists
 	_ = os.Remove("data/enriched-model-metadata.yaml")
 
-	enrichmentRate := float64(matchCount) / float64(len(regModels)) * 100
+	enrichmentRate := float64(matchCount) / float64(len(regEntries)) * 100
 
 	log.Printf("Metadata enrichment complete:")
-	log.Printf("- Total registry models: %d", len(regModels))
+	log.Printf("- Total registry models: %d", len(regEntries))
 	log.Printf("- Successfully enriched: %d (%.1f%%)", matchCount, enrichmentRate)
 	log.Printf("- Individual metadata.yaml files have been updated with enriched data")
 
 	return nil
+}
+
+// persistEnrichedMetadata writes the enriched metadata file and OCI artifacts for a
+// model, logging warnings on failure. Shared by the matched and name-pinned paths.
+func persistEnrichedMetadata(regModel string, enriched *types.EnrichedModelMetadata, outputDir string) {
+	if err := UpdateModelMetadataFile(regModel, enriched, outputDir); err != nil {
+		log.Printf("  Warning: Failed to update metadata file for %s: %v", regModel, err)
+		return
+	}
+	log.Printf("  Successfully updated metadata file for: %s", regModel)
+
+	log.Printf("  Updating OCI artifacts for: %s", regModel)
+	if err := UpdateOCIArtifacts(regModel, outputDir); err != nil {
+		log.Printf("  Warning: Failed to update OCI artifacts for %s: %v", regModel, err)
+		return
+	}
+	log.Printf("  Successfully updated OCI artifacts for: %s", regModel)
 }
 
 // UpdateAllModelsWithOCIArtifacts updates all existing models with OCI artifact metadata
