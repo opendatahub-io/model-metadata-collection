@@ -521,7 +521,7 @@ mcp_servers:
                   description: MongoDB Atlas Service Account client secret (from secret mongodb-atlas-credentials)
                   isRequired: false
                   isSecret: true
-    - name: feast/feast-mcp-server
+    - name: dev.feast/feast-mcp-server
       provider: Feast (LF AI & Data)
       license: apache-2.0
       license_link: https://www.apache.org/licenses/LICENSE-2.0
@@ -1084,4 +1084,100 @@ mcp_servers:
         architecture:
             metadataType: MetadataStringValue
             string_value: "[\"amd64\"]"
+        supportTier:
+            metadataType: MetadataStringValue
+            string_value: "communitySupported"
       lastUpdateTimeSinceEpoch: "1787723825000"
+      server_json:
+        $schema: https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json
+        name: dev.feast/feast-mcp-server
+        description: Feast MCP server — a standalone MCP gateway that proxies a running Feast feature server and registry. Exposes online feature retrieval, materialization, vector search, push ingestion, and full registry metadata management as MCP tools via the `feast mcp` CLI command.
+        version: 1.0.0
+        websiteUrl: https://docs.feast.dev
+        repository:
+            url: https://github.com/feast-dev/feast
+            source: github
+        packages:
+            - registryType: oci
+              identifier: quay.io/rh-ee-chpatel/feast-mcp:latest
+              transport:
+                type: streamable-http
+                url: http://localhost:8000/mcp
+              runtimeHint: docker
+              packageArguments:
+                - type: positional
+                  value: feast
+                - type: positional
+                  value: mcp
+                - type: named
+                  value: http
+                  name: --transport
+                - type: named
+                  value: 0.0.0.0
+                  name: --host
+                - type: named
+                  value: "8000"
+                  name: --port
+              environmentVariables:
+                - name: FEAST_URL
+                  description: URL of the Feast feature server to proxy
+                  isRequired: true
+                - name: REGISTRY_URL
+                  description: URL of the Feast REST registry server to proxy
+                  isRequired: false
+                - name: CONFIG
+                  description: Path to feast_mcp.yaml config file
+                  isRequired: false
+                - name: TIMEOUT
+                  description: 'HTTP timeout in seconds for upstream calls (default: 30)'
+                  isRequired: false
+                - name: TRANSPORT
+                  description: 'MCP transport to serve: stdio, http, streamable-http, sse (default: stdio)'
+                  isRequired: false
+                - name: HOST
+                  description: 'Bind address for HTTP transports (default: 0.0.0.0)'
+                  isRequired: false
+                - name: PORT
+                  description: 'Bind port for HTTP transports (default: 8000)'
+                  isRequired: false
+                - name: WORKERS
+                  description: Run under gunicorn with this many workers (not supported by sse)
+                  isRequired: false
+                - name: AUTH_MODE
+                  description: 'Auth mode: passthrough or oidc (default: passthrough)'
+                  isRequired: false
+                - name: OIDC_DISCOVERY_URL
+                  description: OIDC discovery document URL
+                  isRequired: false
+                - name: OIDC_CLIENT_ID
+                  description: OIDC client id
+                  isRequired: false
+                  isSecret: true
+                - name: OIDC_CLIENT_SECRET
+                  description: OIDC client secret
+                  isRequired: false
+                  isSecret: true
+                - name: OIDC_AUDIENCE
+                  description: Expected OIDC token audience
+                  isRequired: false
+                - name: BASE_URL
+                  description: Public base URL of this server, used to build OAuth redirect URIs
+                  isRequired: false
+                - name: SESSION_STORAGE_BACKEND
+                  description: Shared backend for OAuth state (redis, valkey, postgresql, mongodb, disk, memory). Required for OIDC auth with >1 replica.
+                  isRequired: false
+                - name: LOG_LEVEL
+                  description: 'Log level (default: INFO)'
+                  isRequired: false
+                - name: LOG_FORMAT
+                  description: 'Console log format: text or json (default: text)'
+                  isRequired: false
+                - name: OTEL_ENDPOINT
+                  description: OTLP endpoint for log and span export (e.g. http://localhost:4317)
+                  isRequired: false
+                - name: OTEL_PROTOCOL
+                  description: 'OTLP protocol: grpc or http (default: grpc)'
+                  isRequired: false
+                - name: OTEL_SERVICE_NAME
+                  description: 'service.name reported to OTEL (default: feast-mcp)'
+                  isRequired: false

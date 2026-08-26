@@ -1,4 +1,4 @@
-name: feast/feast-mcp-server
+name: dev.feast/feast-mcp-server
 provider: Feast (LF AI & Data)
 license: apache-2.0
 license_link: https://www.apache.org/licenses/LICENSE-2.0
