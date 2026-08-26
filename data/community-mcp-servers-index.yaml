@@ -4,3 +4,5 @@ mcp_servers:
     input_path: input/mcp_servers/community/mariadb-mcp.yaml
   - name: com.mongodb/mongodb-mcp-server
     input_path: input/mcp_servers/community/mongodb-js-mongodb-mcp-server.yaml
+  - name: feast-mcp-server
+    input_path: input/mcp_servers/community/feast-mcp-server.yaml
