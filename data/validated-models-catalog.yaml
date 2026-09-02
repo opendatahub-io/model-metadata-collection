@@ -4261,9 +4261,6 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
-        featured:
-            metadataType: MetadataStringValue
-            string_value: ""
         mistral:
             metadataType: MetadataStringValue
             string_value: ""
@@ -6462,9 +6459,6 @@ models:
             metadataType: MetadataStringValue
             string_value: ""
         conversational:
-            metadataType: MetadataStringValue
-            string_value: ""
-        featured:
             metadataType: MetadataStringValue
             string_value: ""
         int8:

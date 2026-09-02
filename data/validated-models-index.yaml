@@ -87,7 +87,6 @@ models:
   uri: registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct-quantized-w8a8:1.5
   labels:
   - validated
-  - featured
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct-fp8-dynamic:1.5
   labels:
@@ -100,7 +99,6 @@ models:
   uri: registry.redhat.io/rhelai1/modelcar-mixtral-8x7b-instruct-v0-1:1.4
   labels:
   - validated
-  - featured
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-nemotron-70b-instruct-hf-fp8-dynamic:1.5
   labels:
