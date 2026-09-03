@@ -3,7 +3,7 @@
 MCP server for Red Hat OpenShift AI (RHOAI). Enables AI agents to manage Data Science Projects, Jupyter workbenches, model serving, pipelines, data connections, storage, training, and Model Registry.
 
 - **Source**: https://github.com/opendatahub-io/rhoai-mcp
-- **Container**: `quay.io/opendatahub/odh-rhoai-mcp:odh-stable`
+- **Container**: `registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6-ea.2` (upstream image: `quay.io/opendatahub/odh-rhoai-mcp:odh-stable`)
 - **License**: MIT
 - **Transports**: stdio, sse, streamable-http
 
