@@ -2256,7 +2256,7 @@ mcp_servers:
               description: Confirm deletion for action=delete (requires ENABLE_DANGEROUS_OPERATIONS=true)
               required: false
       artifacts:
-        - uri: oci://quay.io/opendatahub/odh-rhoai-mcp:odh-stable
+        - uri: oci://registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6-ea.2
           createTimeSinceEpoch: "1784190735000"
           lastUpdateTimeSinceEpoch: "1784190737000"
       runtimeMetadata:
