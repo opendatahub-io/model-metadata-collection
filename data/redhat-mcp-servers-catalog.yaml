@@ -2282,3 +2282,19 @@ mcp_servers:
             string_value: "redHatSupported"
       createTimeSinceEpoch: "1772323200000"
       lastUpdateTimeSinceEpoch: "1784190737000"
+      server_json:
+        $schema: https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json
+        name: com.redhat/rhoai-mcp-server
+        description: MCP server for Red Hat OpenShift AI (RHOAI). Enables AI agents to manage Data Science Projects, Jupyter workbenches, model serving (KServe InferenceServices), Data Science Pipelines, S3 data connections, persistent storage, model training (Kubeflow Training Operator), and Model Registry. Integrates with llm-d Planner for LLM deployment recommendation and config generation. Includes cluster exploration composites and 18 workflow prompts for multi-step operations. Tools listed below reflect the default configuration with read-only mode disabled.
+        version: 0.1.1
+        websiteUrl: https://github.com/opendatahub-io/rhoai-mcp
+        repository:
+            url: https://github.com/opendatahub-io/rhoai-mcp
+            source: github
+        packages:
+            - registryType: oci
+              identifier: registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6-ea.2
+              transport:
+                type: streamable-http
+                url: http://localhost:8080/mcp
+              runtimeHint: docker
