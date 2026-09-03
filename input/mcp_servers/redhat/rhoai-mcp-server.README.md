@@ -19,13 +19,12 @@ This creates the namespace, ServiceAccount, ClusterRole, Deployment, Service, an
 
 ## Required RBAC
 
-The server authenticates users via OIDC/`TokenReview`, then impersonates them for all K8s API calls. The `ServiceAccount` has **no direct resource access** — resource access is evaluated against the authenticated user's own RBAC permissions. MCP tools are filtered per user via `SubjectAccessReview`.
+The server authenticates users via OIDC/`TokenReview`, then forwards the caller's bearer token for all K8s API calls. The `ServiceAccount` has **no direct resource access** — resource access is evaluated against the authenticated user's own RBAC permissions. MCP tools are filtered per user via `SubjectAccessReview`.
 
 ### ClusterRole rules
 
 | API Group | Resources | Verbs | Purpose |
 |-----------|-----------|-------|---------|
-| `""` (core) | users, groups, serviceaccounts | impersonate | Impersonate authenticated users for K8s API calls |
 | `authentication.k8s.io` | tokenreviews | create | Validate opaque bearer tokens via TokenReview API |
 | `authorization.k8s.io` | subjectaccessreviews | create | RBAC-filter MCP tools per user |
 | `user.openshift.io` | users | get | Fetch OCP group memberships for authenticated users |
@@ -36,10 +35,6 @@ kind: ClusterRole
 metadata:
   name: rhoai-mcp
 rules:
-  # Impersonate authenticated users for K8s API calls
-  - apiGroups: [""]
-    resources: ["users", "groups", "serviceaccounts"]
-    verbs: ["impersonate"]
   # Validate opaque bearer tokens via TokenReview API
   - apiGroups: ["authentication.k8s.io"]
     resources: ["tokenreviews"]
@@ -56,7 +51,7 @@ rules:
 
 Each user only sees the MCP tools they have permissions for. A user without `create` on `inferenceservices` will not see the model deployment tools.
 
-> **Security note:** The `impersonate` verb on `users`, `groups`, and `serviceaccounts` without `resourceNames` restrictions allows the ServiceAccount to assume any cluster identity. The security boundary relies on OIDC token validation at the server level. For high-security clusters, consider adding `resourceNames` to restrict impersonation targets, or explicitly exclude `system:masters` group membership.
+> **Note:** An alternative `impersonation` strategy is also supported via `OIDC_KUBE_AUTH_STRATEGY=impersonation`, which uses ServiceAccount credentials with `Impersonate-*` headers instead of forwarding the user's token. This requires adding an `impersonate` rule to the ClusterRole.
 
 ### Read-only mode
 
@@ -77,4 +72,4 @@ Environment variables (all prefixed with `RHOAI_MCP_`):
 
 ## Tools
 
-88 tools across 8 domains and 4 composites (57 read-only, 31 write). See `rhoai-mcp-server.yaml` for the full tool listing with parameters.
+88 tools across 8 domains and 4 composites (52 read-only, 36 read-write). See `rhoai-mcp-server.yaml` for the full tool listing with parameters.

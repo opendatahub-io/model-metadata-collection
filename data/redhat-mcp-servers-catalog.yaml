@@ -1395,11 +1395,7 @@ mcp_servers:
         - name: cluster_summary
           description: Get a comprehensive summary of RHOAI resources across all projects
           accessType: read_only
-          parameters:
-            - name: verbosity
-              type: string
-              description: 'Response detail level: minimal, standard, or full'
-              required: false
+          parameters: []
         - name: explore_cluster
           description: Complete cluster exploration in one call
           accessType: read_only
@@ -1536,9 +1532,9 @@ mcp_servers:
               type: integer
               description: Maximum end-to-end latency in milliseconds
               required: false
-            - name: min_accuracy
+            - name: min_quality
               type: integer
-              description: Minimum model accuracy score (0-100)
+              description: Minimum model quality score (0-100)
               required: false
             - name: max_cost_per_month
               type: number
@@ -1546,7 +1542,7 @@ mcp_servers:
               required: false
             - name: optimization_profile
               type: string
-              description: 'Scoring profile. Valid: balanced (default), optimize_latency, optimize_cost, optimize_accuracy'
+              description: 'Scoring profile. Valid: balanced (default), optimize_latency, optimize_cost, optimize_quality'
               required: false
             - name: percentile
               type: string
@@ -1604,9 +1600,9 @@ mcp_servers:
               type: array
               description: 'GPU type filter. Valid: L4, A100-40, A100-80, H100, H200, B200'
               required: false
-            - name: min_accuracy
+            - name: min_quality
               type: integer
-              description: Minimum accuracy score (0-100)
+              description: Minimum quality score (0-100)
               required: false
             - name: max_cost_per_month
               type: number
@@ -2262,11 +2258,11 @@ mcp_servers:
           lastUpdateTimeSinceEpoch: "1784190737000"
       runtimeMetadata:
         defaultArgs: []
-        defaultPort: 8080
+        defaultPort: 8000
         mcpPath: /mcp
         prerequisites:
             serviceAccount:
-                hint: Requires a ClusterRole with impersonate (users, groups, serviceaccounts), tokenreviews, subjectaccessreviews, and user.openshift.io/users get. The ServiceAccount has no direct resource access — it impersonates authenticated users, so resource access is evaluated against each user's own RBAC. See deploy/kustomize/base/clusterrole.yaml in the source repo. Use READ_ONLY_MODE=true to restrict to read-only operations.
+                hint: Requires a ClusterRole with tokenreviews create, subjectaccessreviews create, and user.openshift.io/users get. The ServiceAccount validates bearer tokens via TokenReview, filters MCP tools per user via SubjectAccessReview, and fetches OCP group memberships. It has no direct resource access — the caller's own bearer token is forwarded to the K8s API, so resource access is evaluated against each user's own RBAC. See deploy/kustomize/overlays/openshift-oidc/ in the source repo.
                 required: true
                 suggestedName: rhoai-mcp
       securityIndicators:
@@ -2298,5 +2294,5 @@ mcp_servers:
               identifier: registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6-ea.2
               transport:
                 type: streamable-http
-                url: http://localhost:8080/mcp
+                url: http://localhost:8000/mcp
               runtimeHint: docker
