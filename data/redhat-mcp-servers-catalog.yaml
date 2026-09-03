@@ -817,6 +817,7 @@ mcp_servers:
                   description: Override the default proxy endpoint
                   isRequired: false
     - name: com.redhat/rhoai-mcp-server
+      display_name: Red Hat OpenShift AI MCP Server
       provider: Red Hat
       license: mit
       license_link: https://opensource.org/licenses/MIT
@@ -2287,6 +2288,7 @@ mcp_servers:
         name: com.redhat/rhoai-mcp-server
         description: MCP server for Red Hat OpenShift AI (RHOAI). Enables AI agents to manage Data Science Projects, Jupyter workbenches, model serving (KServe InferenceServices), Data Science Pipelines, S3 data connections, persistent storage, model training (Kubeflow Training Operator), and Model Registry. Integrates with llm-d Planner for LLM deployment recommendation and config generation. Includes cluster exploration composites and 18 workflow prompts for multi-step operations. Tools listed below reflect the default configuration with read-only mode disabled.
         version: 0.1.1
+        title: Red Hat OpenShift AI MCP Server
         websiteUrl: https://github.com/opendatahub-io/rhoai-mcp
         repository:
             url: https://github.com/opendatahub-io/rhoai-mcp
