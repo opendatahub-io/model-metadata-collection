@@ -12,10 +12,10 @@ MCP server for Red Hat OpenShift AI (RHOAI). Enables AI agents to manage Data Sc
 Deploy using Kustomize:
 
 ```bash
-kubectl apply -k 'https://github.com/opendatahub-io/rhoai-mcp//deploy/kustomize/overlays/openshift-oidc?ref=main'
+kubectl apply -k 'https://github.com/opendatahub-io/rhoai-mcp//deploy/kustomize/overlays/openshift-oidc?ref=<version>'
 ```
 
-Replace `main` with a release tag or commit SHA (e.g. `?ref=v0.1.1`) to pin to a specific and reviewed version.
+Replace `<version>` with `main`, a release tag, or commit SHA (e.g. `?ref=v0.1.1`) to pin to a specific and reviewed version.
 
 This creates the namespace, ServiceAccount, ClusterRole, Deployment, Service, ConfigMaps, and Route with OIDC authentication enabled.
 
