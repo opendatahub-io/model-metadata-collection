@@ -1497,10 +1497,74 @@ runtimeMetadata:
             - name: rhoai-mcp-config
               description: >-
                   Runtime configuration for the RHOAI MCP server. All keys are
-                  injected as environment variables via envFrom. See the
-                  optionalEnvironmentVariables and requiredEnvironmentVariables
-                  sections for the expected keys.
+                  injected as environment variables. Create this ConfigMap with
+                  the keys listed below before deploying the MCPServer CR.
               mountAsFile: false
+              keys:
+                  - key: RHOAI_MCP_TRANSPORT
+                    envVarName: RHOAI_MCP_TRANSPORT
+                    description: MCP transport protocol
+                    required: false
+                    defaultContent: streamable-http
+                  - key: RHOAI_MCP_HOST
+                    envVarName: RHOAI_MCP_HOST
+                    description: Host address to bind to
+                    required: false
+                    defaultContent: "0.0.0.0"
+                  - key: RHOAI_MCP_PORT
+                    envVarName: RHOAI_MCP_PORT
+                    description: Port to listen on
+                    required: false
+                    defaultContent: "8000"
+                  - key: RHOAI_MCP_AUTH_MODE
+                    envVarName: RHOAI_MCP_AUTH_MODE
+                    description: "Authentication mode: auto or kubeconfig"
+                    required: false
+                    defaultContent: auto
+                  - key: RHOAI_MCP_LOG_LEVEL
+                    envVarName: RHOAI_MCP_LOG_LEVEL
+                    description: Logging level
+                    required: false
+                    defaultContent: INFO
+                  - key: RHOAI_MCP_READ_ONLY_MODE
+                    envVarName: RHOAI_MCP_READ_ONLY_MODE
+                    description: Disable all write operations
+                    required: false
+                    defaultContent: "false"
+                  - key: RHOAI_MCP_ENABLE_DANGEROUS_OPERATIONS
+                    envVarName: RHOAI_MCP_ENABLE_DANGEROUS_OPERATIONS
+                    description: Enable destructive operations (delete)
+                    required: false
+                    defaultContent: "false"
+                  - key: RHOAI_MCP_OIDC_ENABLED
+                    envVarName: RHOAI_MCP_OIDC_ENABLED
+                    description: Enable OIDC authentication for multi-user access
+                    required: true
+                    defaultContent: "true"
+                  - key: RHOAI_MCP_OIDC_TOKEN_MODE
+                    envVarName: RHOAI_MCP_OIDC_TOKEN_MODE
+                    description: >-
+                        Token validation mode. Use token-review for OpenShift
+                        clusters where the ServiceAccount validates bearer
+                        tokens via the TokenReview API.
+                    required: true
+                    defaultContent: token-review
+                  - key: RHOAI_MCP_OIDC_KUBE_AUTH_STRATEGY
+                    envVarName: RHOAI_MCP_OIDC_KUBE_AUTH_STRATEGY
+                    description: >-
+                        Kubernetes auth strategy. Use user-token to forward
+                        the caller's bearer token to the K8s API so resource
+                        access is evaluated against each user's own RBAC.
+                    required: true
+                    defaultContent: user-token
+                  - key: RHOAI_MCP_PLANNER_MODEL_CATALOG_URL
+                    envVarName: RHOAI_MCP_PLANNER_MODEL_CATALOG_URL
+                    description: >-
+                        URL of the Model Catalog service for llm-d Planner
+                        integration. Cluster-specific; typically
+                        https://model-catalog.rhoai-model-registries.svc:8443.
+                    required: true
+                    defaultContent: https://model-catalog.rhoai-model-registries.svc:8443
             - name: rhoai-mcp-service-ca
               description: >-
                   OpenShift service-serving CA bundle. Must have the annotation
@@ -1516,80 +1580,21 @@ runtimeMetadata:
                     required: true
         customResources:
             - "EmptyDir volume mounted at /tmp (required because readOnlyRootFilesystem is true)"
+    # Note: the BFF converter (mcpserver_converter.go) always renders
+    # required env vars as placeholders (<VAR_NAME>) and omits optional
+    # env vars from the CR template entirely. MODEL_CATALOG_CA_BUNDLE
+    # has a deterministic value but must be listed as required so it
+    # appears in the template — the user fills in the default shown in
+    # the description.
     requiredEnvironmentVariables:
-        - name: RHOAI_MCP_OIDC_ENABLED
-          description: Enable OIDC authentication for multi-user access
-          required: true
-          type: boolean
-          defaultValue: "true"
-        - name: RHOAI_MCP_OIDC_TOKEN_MODE
-          description: >-
-              Token validation mode. Use token-review for OpenShift clusters
-              where the ServiceAccount validates bearer tokens via the
-              TokenReview API.
-          required: true
-          type: string
-          defaultValue: token-review
-        - name: RHOAI_MCP_OIDC_KUBE_AUTH_STRATEGY
-          description: >-
-              Kubernetes auth strategy. Use user-token to forward the caller's
-              bearer token to the K8s API so resource access is evaluated
-              against each user's own RBAC.
-          required: true
-          type: string
-          defaultValue: user-token
-        - name: RHOAI_MCP_PLANNER_MODEL_CATALOG_URL
-          description: >-
-              URL of the Model Catalog service for llm-d Planner integration.
-              Cluster-specific; typically
-              https://model-catalog.<namespace>.svc:8443.
-          required: true
-          type: string
-          example: https://model-catalog.rhoai-model-registries.svc:8443
         - name: MODEL_CATALOG_CA_BUNDLE
           description: >-
               Path to the CA certificate bundle for verifying the Model Catalog
               TLS certificate. Must match the mountPath of the service-ca
-              ConfigMap.
+              ConfigMap (default: /etc/pki/service-ca/service-ca.crt).
           required: true
           type: string
           defaultValue: /etc/pki/service-ca/service-ca.crt
-    optionalEnvironmentVariables:
-        - name: RHOAI_MCP_TRANSPORT
-          description: MCP transport protocol
-          required: false
-          type: string
-          defaultValue: streamable-http
-        - name: RHOAI_MCP_HOST
-          description: Host address to bind to
-          required: false
-          type: string
-          defaultValue: "0.0.0.0"
-        - name: RHOAI_MCP_PORT
-          description: Port to listen on
-          required: false
-          type: int
-          defaultValue: "8000"
-        - name: RHOAI_MCP_AUTH_MODE
-          description: "Authentication mode: auto or kubeconfig"
-          required: false
-          type: string
-          defaultValue: auto
-        - name: RHOAI_MCP_LOG_LEVEL
-          description: Logging level
-          required: false
-          type: string
-          defaultValue: INFO
-        - name: RHOAI_MCP_READ_ONLY_MODE
-          description: Disable all write operations
-          required: false
-          type: boolean
-          defaultValue: "false"
-        - name: RHOAI_MCP_ENABLE_DANGEROUS_OPERATIONS
-          description: Enable destructive operations (delete)
-          required: false
-          type: boolean
-          defaultValue: "false"
 securityIndicators:
     readOnlyTools: false
     sast: true
