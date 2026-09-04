@@ -816,3 +816,1587 @@ mcp_servers:
                 - name: LIGHTSPEED_PROXY_URL
                   description: Override the default proxy endpoint
                   isRequired: false
+    - name: com.redhat/rhoai-mcp-server
+      display_name: Red Hat OpenShift AI MCP Server
+      provider: Red Hat
+      license: mit
+      license_link: https://opensource.org/licenses/MIT
+      description: MCP server for Red Hat OpenShift AI (RHOAI). Enables AI agents to manage Data Science Projects, Jupyter workbenches, model serving (KServe InferenceServices), Data Science Pipelines, S3 data connections, persistent storage, model training (Kubeflow Training Operator), and Model Registry. Integrates with llm-d Planner for LLM deployment recommendation and config generation. Includes cluster exploration composites and 18 workflow prompts for multi-step operations. Tools listed below reflect the default configuration with read-only mode disabled.
+      readme: |-
+        # RHOAI MCP Server
+
+        **MCP Server Summary:**
+        Access Red Hat OpenShift AI environments through AI agents using the
+        Model Context Protocol. Replicates and extends OpenShift AI Dashboard
+        capabilities through programmatic tools.
+
+        ## Features
+        - Create, list, and manage Data Science Projects
+        - Create, start, stop, and delete Jupyter workbenches
+        - Deploy and manage InferenceServices with KServe
+        - Manage S3 data connections for data access
+        - Configure Data Science Pipelines infrastructure
+        - Create and manage persistent volume claims
+        - Fine-tune models with Kubeflow Training Operator
+        - Query Model Registry for registered models, versions, and artifacts
+        - Browse model catalog sources and benchmark data
+        - Cluster summary and resource exploration composites
+        - LLM deployment recommendation and config generation via llm-d Planner integration
+        - 18 MCP workflow prompts for guided multi-step operations
+
+        ## Prerequisites
+        - Access to an OpenShift cluster with OpenShift AI (RHOAI) installed
+        - ServiceAccount or kubeconfig with appropriate RBAC permissions
+
+        ## Configuration
+        Environment variables use `RHOAI_MCP_` prefix. Key settings:
+        - `AUTH_MODE`: auto | kubeconfig
+        - `TRANSPORT`: stdio | sse | streamable-http
+        - `ENABLE_DANGEROUS_OPERATIONS`: Enable delete operations (default: false)
+        - `READ_ONLY_MODE`: Disable all writes (default: false)
+
+        ## Architecture
+        The server uses a pluggy-based plugin architecture with two module types:
+        - **Domain modules**: CRUD operations for specific Kubernetes resource types
+          (projects, notebooks, inference, pipelines, connections, storage, training, model_registry)
+        - **Composite modules**: Cross-cutting tools that orchestrate multiple domains
+          (cluster summaries, training workflows, tool discovery)
+      version: 0.1.1
+      transports:
+        - stdio
+        - sse
+        - streamable-http
+      logo: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIgogICB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIgogICB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c29kaXBvZGk9Imh0dHA6Ly9zb2RpcG9kaS5zb3VyY2Vmb3JnZS5uZXQvRFREL3NvZGlwb2RpLTAuZHRkIgogICB4bWxuczppbmtzY2FwZT0iaHR0cDovL3d3dy5pbmtzY2FwZS5vcmcvbmFtZXNwYWNlcy9pbmtzY2FwZSIKICAgaWQ9ImI2YmRkMmI0LTUyYWItNDg4YS05YTMwLTFlNmQxZDdkZDJkNCIKICAgZGF0YS1uYW1lPSJMYXllciAxIgogICB2aWV3Qm94PSIwIDAgMTkyLjMwMDAxIDE0NiIKICAgdmVyc2lvbj0iMS4xIgogICBzb2RpcG9kaTpkb2NuYW1lPSJsb2dvLnN2ZyIKICAgd2lkdGg9IjE5Mi4zIgogICBoZWlnaHQ9IjE0NiIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC45Mi41ICgyMDYwZWMxZjlmLCAyMDIwLTA0LTA4KSI+CiAgPG1ldGFkYXRhCiAgICAgaWQ9Im1ldGFkYXRhMTUiPgogICAgPHJkZjpSREY+CiAgICAgIDxjYzpXb3JrCiAgICAgICAgIHJkZjphYm91dD0iIj4KICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3N2Zyt4bWw8L2RjOmZvcm1hdD4KICAgICAgICA8ZGM6dHlwZQogICAgICAgICAgIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiIC8+CiAgICAgICAgPGRjOnRpdGxlPjwvZGM6dGl0bGU+CiAgICAgIDwvY2M6V29yaz4KICAgIDwvcmRmOlJERj4KICA8L21ldGFkYXRhPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMSIKICAgICBvYmplY3R0b2xlcmFuY2U9IjEwIgogICAgIGdyaWR0b2xlcmFuY2U9IjEwIgogICAgIGd1aWRldG9sZXJhbmNlPSIxMCIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMCIKICAgICBpbmtzY2FwZTpwYWdlc2hhZG93PSIyIgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSIxMDA3IgogICAgIGlkPSJuYW1lZHZpZXcxMyIKICAgICBzaG93Z3JpZD0iZmFsc2UiCiAgICAgZml0LW1hcmdpbi10b3A9IjEiCiAgICAgZml0LW1hcmdpbi1yaWdodD0iMSIKICAgICBmaXQtbWFyZ2luLWJvdHRvbT0iMSIKICAgICBmaXQtbWFyZ2luLWxlZnQ9IjEiCiAgICAgaW5rc2NhcGU6em9vbT0iMC40NTkzMDA0MyIKICAgICBpbmtzY2FwZTpjeD0iMzA2Ljg5OTk5IgogICAgIGlua3NjYXBlOmN5PSI3MyIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9ImI2YmRkMmI0LTUyYWItNDg4YS05YTMwLTFlNmQxZDdkZDJkNCIgLz4KICA8ZGVmcwogICAgIGlkPSJkZWZzNCI+CiAgICA8c3R5bGUKICAgICAgIGlkPSJzdHlsZTIiPi5hNzM3NDU5Yy1lOGM3LTRhZmEtODAwOC1mNmNmZDE1Y2NkYTJ7ZmlsbDojZTAwO308L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aAogICAgIGNsYXNzPSJhNzM3NDU5Yy1lOGM3LTRhZmEtODAwOC1mNmNmZDE1Y2NkYTIiCiAgICAgZD0ibSAxMjgsODQgYyAxMi41LDAgMzAuNiwtMi42IDMwLjYsLTE3LjUgYSAxOS41MywxOS41MyAwIDAgMCAtMC4zLC0zLjQgTCAxNTAuOSwzMC43IEMgMTQ5LjIsMjMuNiAxNDcuNywyMC4zIDEzNS4yLDE0LjEgMTI1LjUsOS4xIDEwNC40LDEgOTguMSwxIDkyLjIsMSA5MC41LDguNSA4My42LDguNSA3Ni45LDguNSA3MiwyLjkgNjUuNywyLjkgYyAtNiwwIC05LjksNC4xIC0xMi45LDEyLjUgMCwwIC04LjQsMjMuNyAtOS41LDI3LjIgYSA2LjE1LDYuMTUgMCAwIDAgLTAuMiwxLjkgQyA0Myw1My43IDc5LjMsODMuOSAxMjgsODQgbSAzMi41LC0xMS40IGMgMS43LDguMiAxLjcsOS4xIDEuNywxMC4xIDAsMTQgLTE1LjcsMjEuOCAtMzYuNCwyMS44IEMgNzksMTA0LjUgMzguMSw3Ny4xIDM4LjEsNTkgYSAxOC4zNSwxOC4zNSAwIDAgMSAxLjUsLTcuMyBDIDIyLjgsNTIuNSAxLDU1LjUgMSw3NC43IDEsMTA2LjIgNzUuNiwxNDUgMTM0LjYsMTQ1IGMgNDUuMywwIDU2LjcsLTIwLjUgNTYuNywtMzYuNyAwLC0xMi43IC0xMSwtMjcuMSAtMzAuOCwtMzUuNyIKICAgICBpZD0icGF0aDgiCiAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICBzdHlsZT0iZmlsbDojZWUwMDAwIiAvPgogIDxwYXRoCiAgICAgZD0ibSAxNjAuNSw3Mi42IGMgMS43LDguMiAxLjcsOS4xIDEuNywxMC4xIDAsMTQgLTE1LjcsMjEuOCAtMzYuNCwyMS44IEMgNzksMTA0LjUgMzguMSw3Ny4xIDM4LjEsNTkgYSAxOC4zNSwxOC4zNSAwIDAgMSAxLjUsLTcuMyBsIDMuNywtOS4xIGEgNi4xNSw2LjE1IDAgMCAwIC0wLjIsMS45IGMgMCw5LjIgMzYuMywzOS40IDg0LjksMzkuNCAxMi41LDAgMzAuNiwtMi42IDMwLjYsLTE3LjUgQSAxOS41MywxOS41MyAwIDAgMCAxNTguMyw2MyBaIgogICAgIGlkPSJwYXRoMTAiCiAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIgLz4KPC9zdmc+Cg==
+      documentationUrl: https://github.com/opendatahub-io/rhoai-mcp
+      repositoryUrl: https://github.com/opendatahub-io/rhoai-mcp
+      sourceCode: opendatahub-io/rhoai-mcp
+      publishedDate: "2026-03-01T00:00:00Z"
+      deploymentMode: local
+      tools:
+        - name: list_data_science_projects
+          description: List Data Science Projects (namespaces with opendatahub.io/dashboard=true label) with pagination
+          accessType: read_only
+          parameters:
+            - name: limit
+              type: integer
+              description: Maximum number of items to return
+              required: false
+            - name: offset
+              type: integer
+              description: Starting offset for pagination
+              required: false
+            - name: verbosity
+              type: string
+              description: 'Response detail level: minimal, standard, or full'
+              required: false
+        - name: get_project_details
+          description: Get detailed information about a specific Data Science Project
+          accessType: read_only
+          parameters:
+            - name: name
+              type: string
+              description: Name of the Data Science Project (namespace)
+              required: true
+        - name: create_data_science_project
+          description: Create a new Data Science Project
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Project name (Kubernetes namespace name)
+              required: true
+            - name: display_name
+              type: string
+              description: Human-readable display name
+              required: false
+        - name: delete_data_science_project
+          description: Delete a Data Science Project and all its resources
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Name of the project to delete
+              required: true
+        - name: set_model_serving_mode
+          description: Set the model serving mode for a project
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Project name
+              required: true
+            - name: enable_modelmesh
+              type: boolean
+              description: Enable ModelMesh serving mode
+              required: true
+        - name: list_workbenches
+          description: List Jupyter workbenches in a project
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: get_workbench
+          description: Get detailed workbench information
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Workbench name
+              required: true
+        - name: create_workbench
+          description: Create a new Jupyter workbench
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Workbench name
+              required: true
+            - name: display_name
+              type: string
+              description: Human-readable display name
+              required: false
+        - name: start_workbench
+          description: Start a stopped workbench
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Workbench name
+              required: true
+        - name: stop_workbench
+          description: Stop a running workbench
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Workbench name
+              required: true
+        - name: delete_workbench
+          description: Delete a workbench
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Workbench name
+              required: true
+        - name: get_workbench_url
+          description: Get the access URL for a running workbench
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Workbench name
+              required: true
+        - name: list_notebook_images
+          description: List available notebook images for workbench creation
+          accessType: read_only
+          parameters: []
+        - name: list_inference_services
+          description: List InferenceServices in a project
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: get_inference_service
+          description: Get detailed InferenceService information
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: InferenceService name
+              required: true
+        - name: deploy_model
+          description: Deploy a model as a KServe InferenceService
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: InferenceService name
+              required: true
+            - name: display_name
+              type: string
+              description: Human-readable display name
+              required: false
+        - name: delete_inference_service
+          description: Delete an InferenceService
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: InferenceService name
+              required: true
+        - name: get_model_endpoint
+          description: Get the inference endpoint URL for a deployed model
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: InferenceService name
+              required: true
+        - name: list_serving_runtimes
+          description: List available serving runtimes
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: create_serving_runtime
+          description: Create a serving runtime for model serving
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: template_name
+              type: string
+              description: Name of the serving runtime template
+              required: true
+        - name: check_deployment_prerequisites
+          description: Pre-flight checks before model deployment
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: model_format
+              type: string
+              description: Model format
+              required: true
+            - name: storage_uri
+              type: string
+              description: Model storage URI
+              required: true
+        - name: estimate_serving_resources
+          description: Estimate GPU/memory/CPU requirements for model serving
+          accessType: read_only
+          parameters:
+            - name: model_id
+              type: string
+              description: Model identifier
+              required: true
+            - name: target_throughput
+              type: integer
+              description: Target throughput (requests/sec)
+              required: false
+            - name: target_latency_ms
+              type: integer
+              description: Target latency in milliseconds
+              required: false
+        - name: recommend_serving_runtime
+          description: Recommend the best serving runtime for a model
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: model_format
+              type: string
+              description: Model format
+              required: true
+            - name: model_size_gb
+              type: number
+              description: Model size in GB
+              required: false
+        - name: test_model_endpoint
+          description: Test a deployed model's inference endpoint
+          accessType: read_only
+          parameters:
+            - name: name
+              type: string
+              description: InferenceService name
+              required: true
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: sample_input
+              type: object
+              description: Sample input for inference test
+              required: false
+        - name: prepare_model_deployment
+          description: Validate prerequisites and prepare for model deployment
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: model_name
+              type: string
+              description: Model name to deploy
+              required: true
+        - name: list_data_connections
+          description: List S3 data connections in a project
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: get_data_connection
+          description: Get details of a specific data connection
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Data connection name
+              required: true
+        - name: create_s3_data_connection
+          description: Create an S3 data connection (secret)
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Connection name
+              required: true
+        - name: delete_data_connection
+          description: Delete a data connection
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: Connection name
+              required: true
+        - name: list_storage
+          description: List persistent volume claims in a project
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: create_storage
+          description: Create a persistent volume claim
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: PVC name
+              required: true
+            - name: display_name
+              type: string
+              description: Human-readable display name
+              required: false
+        - name: delete_storage
+          description: Delete a persistent volume claim
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+            - name: name
+              type: string
+              description: PVC name
+              required: true
+        - name: get_pipeline_server
+          description: Get pipeline server status in a project
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: create_pipeline_server
+          description: Create a Data Science Pipelines server
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: delete_pipeline_server
+          description: Delete a pipeline server
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: list_registered_models
+          description: List models registered in the Model Registry
+          accessType: read_only
+          parameters:
+            - name: model_registry
+              type: string
+              description: Name of the model registry to query
+              required: false
+        - name: get_registered_model
+          description: Get details of a registered model
+          accessType: read_only
+          parameters:
+            - name: model_name
+              type: string
+              description: Name of the registered model
+              required: true
+            - name: model_registry
+              type: string
+              description: Name of the model registry
+              required: false
+        - name: list_model_versions
+          description: List versions of a registered model
+          accessType: read_only
+          parameters:
+            - name: model_name
+              type: string
+              description: Name of the registered model
+              required: true
+            - name: model_registry
+              type: string
+              description: Name of the model registry
+              required: false
+        - name: get_model_version
+          description: Get details of a specific model version
+          accessType: read_only
+          parameters:
+            - name: model_name
+              type: string
+              description: Name of the registered model
+              required: true
+            - name: version_name
+              type: string
+              description: Name of the model version
+              required: true
+            - name: model_registry
+              type: string
+              description: Name of the model registry
+              required: false
+        - name: get_model_artifacts
+          description: Get artifacts (storage URIs) for a model version
+          accessType: read_only
+          parameters:
+            - name: model_name
+              type: string
+              description: Name of the registered model
+              required: true
+            - name: version_name
+              type: string
+              description: Name of the model version
+              required: true
+            - name: model_registry
+              type: string
+              description: Name of the model registry
+              required: false
+        - name: get_model_benchmarks
+          description: Get performance benchmarks for a model
+          accessType: read_only
+          parameters:
+            - name: model_name
+              type: string
+              description: Name of the registered model
+              required: true
+            - name: model_registry
+              type: string
+              description: Name of the model registry
+              required: false
+        - name: find_benchmarks_by_gpu
+          description: Find benchmark results filtered by GPU type
+          accessType: read_only
+          parameters:
+            - name: gpu_type
+              type: string
+              description: GPU type to filter by
+              required: true
+            - name: model_registry
+              type: string
+              description: Name of the model registry
+              required: false
+        - name: get_validation_metrics
+          description: Get validation metrics for a model
+          accessType: read_only
+          parameters:
+            - name: model_name
+              type: string
+              description: Name of the registered model
+              required: true
+            - name: model_registry
+              type: string
+              description: Name of the model registry
+              required: false
+        - name: list_catalog_sources
+          description: List available model catalog sources
+          accessType: read_only
+          parameters: []
+        - name: get_catalog_model_artifacts
+          description: Get artifacts for a model from the catalog
+          accessType: read_only
+          parameters:
+            - name: model_name
+              type: string
+              description: Name of the catalog model
+              required: true
+            - name: source
+              type: string
+              description: Catalog source name
+              required: false
+        - name: cluster_summary
+          description: Get a comprehensive summary of RHOAI resources across all projects
+          accessType: read_only
+          parameters: []
+        - name: explore_cluster
+          description: Complete cluster exploration in one call
+          accessType: read_only
+          parameters:
+            - name: include_resources
+              type: boolean
+              description: Include resource details
+              required: false
+            - name: include_health
+              type: boolean
+              description: Include health status
+              required: false
+        - name: project_summary
+          description: Get a compact project status optimized for context windows
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Project namespace
+              required: true
+        - name: resource_status
+          description: Get quick status check for any resource
+          accessType: read_only
+          parameters:
+            - name: resource_type
+              type: string
+              description: Resource type
+              required: true
+            - name: name
+              type: string
+              description: Resource name
+              required: true
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+        - name: multi_resource_status
+          description: Get status for multiple resources in a single call
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: resources
+              type: array
+              description: List of resources to check (each with type and name)
+              required: true
+        - name: diagnose_resource
+          description: Comprehensive diagnostic for any resource in one call
+          accessType: read_only
+          parameters:
+            - name: resource_type
+              type: string
+              description: Resource type
+              required: true
+            - name: name
+              type: string
+              description: Resource name
+              required: true
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+        - name: manage_resource
+          description: Perform lifecycle actions on any resource type. Destructive actions (delete) require ENABLE_DANGEROUS_OPERATIONS=true and confirm=true
+          accessType: read_write
+          parameters:
+            - name: action
+              type: string
+              description: 'Action to perform. Valid: start, stop, suspend, resume, delete'
+              required: true
+            - name: resource_type
+              type: string
+              description: 'Resource type. Valid: workbench, model, training_job'
+              required: true
+            - name: name
+              type: string
+              description: Resource name
+              required: true
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: confirm
+              type: boolean
+              description: Confirm destructive action. Required for delete operations
+              required: false
+        - name: list_tool_categories
+          description: List available tool categories and their tools
+          accessType: read_only
+          parameters: []
+        - name: suggest_tools
+          description: Get recommended tools and workflow for a given intent
+          accessType: read_only
+          parameters:
+            - name: intent
+              type: string
+              description: Description of what the user wants to do
+              required: true
+            - name: context
+              type: object
+              description: Additional context for the suggestion
+              required: false
+        - name: recommend_model
+          description: Get LLM model recommendations from Planner. Runs the full recommendation flow - extracts intent from natural language, builds technical specifications, and returns three named recommendations (top_performance, top_cost, top_balanced)
+          accessType: read_only
+          parameters:
+            - name: text
+              type: string
+              description: Natural language description of the use case
+              required: true
+            - name: use_case
+              type: string
+              description: 'Override the extracted use case. Valid: chatbot_conversational, code_completion, code_generation_detailed, translation, content_generation, summarization_short, document_analysis_rag, long_document_summarization, research_legal_analysis'
+              required: false
+            - name: user_count
+              type: integer
+              description: Override the extracted user count
+              required: false
+            - name: preferred_gpu_types
+              type: array
+              description: 'Override GPU preferences. Valid: L4, A100-40, A100-80, H100, H200, B200'
+              required: false
+            - name: ttft_max_ms
+              type: integer
+              description: Maximum time-to-first-token in milliseconds
+              required: false
+            - name: itl_max_ms
+              type: integer
+              description: Maximum inter-token latency in milliseconds
+              required: false
+            - name: e2e_max_ms
+              type: integer
+              description: Maximum end-to-end latency in milliseconds
+              required: false
+            - name: min_quality
+              type: integer
+              description: Minimum model quality score (0-100)
+              required: false
+            - name: max_cost_per_month
+              type: number
+              description: Maximum monthly cost in USD
+              required: false
+            - name: optimization_profile
+              type: string
+              description: 'Scoring profile. Valid: balanced (default), optimize_latency, optimize_cost, optimize_quality'
+              required: false
+            - name: percentile
+              type: string
+              description: 'Percentile for SLO evaluation. Valid: mean, p90, p95 (default), p99'
+              required: false
+        - name: get_deployment_config
+          description: Generate Kubernetes deployment YAML configs for a recommended model. Takes specification values from recommend_model output plus a category name, and returns InferenceService, HPA, and ServiceMonitor YAML
+          accessType: read_only
+          parameters:
+            - name: category
+              type: string
+              description: 'Which recommendation to deploy. Valid: balanced, cost, performance'
+              required: true
+            - name: use_case
+              type: string
+              description: Use case from recommend_model specification
+              required: true
+            - name: user_count
+              type: integer
+              description: User count from recommend_model specification
+              required: true
+            - name: prompt_tokens
+              type: integer
+              description: Prompt tokens from recommend_model specification
+              required: true
+            - name: output_tokens
+              type: integer
+              description: Output tokens from recommend_model specification
+              required: true
+            - name: expected_qps
+              type: number
+              description: Expected QPS from recommend_model specification
+              required: true
+            - name: ttft_target_ms
+              type: integer
+              description: TTFT target (ms) from recommend_model specification
+              required: true
+            - name: itl_target_ms
+              type: integer
+              description: ITL target (ms) from recommend_model specification
+              required: true
+            - name: e2e_target_ms
+              type: integer
+              description: E2E target (ms) from recommend_model specification
+              required: true
+            - name: namespace
+              type: string
+              description: Kubernetes namespace for the generated config
+              required: false
+            - name: optimization_profile
+              type: string
+              description: 'Scoring profile. Valid: balanced, optimize_latency, optimize_cost, optimize_accuracy'
+              required: false
+            - name: preferred_gpu_types
+              type: array
+              description: 'GPU type filter. Valid: L4, A100-40, A100-80, H100, H200, B200'
+              required: false
+            - name: min_quality
+              type: integer
+              description: Minimum quality score (0-100)
+              required: false
+            - name: max_cost_per_month
+              type: number
+              description: Maximum monthly cost in USD
+              required: false
+            - name: percentile
+              type: string
+              description: 'Percentile for SLO evaluation. Valid: mean, p90, p95, p99'
+              required: false
+        - name: list_resources
+          description: List Kubernetes resources by type in a namespace
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: resource_type
+              type: string
+              description: Resource type to list
+              required: true
+        - name: list_resource_names
+          description: List names of resources of a given type
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: resource_type
+              type: string
+              description: Resource type
+              required: true
+        - name: get_resource
+          description: Get a specific Kubernetes resource by type, namespace, and name
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: resource_type
+              type: string
+              description: Resource type
+              required: true
+            - name: name
+              type: string
+              description: Resource name
+              required: true
+        - name: list_training_jobs
+          description: List training jobs in a namespace with optional filtering
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: limit
+              type: integer
+              description: Maximum number of jobs to return
+              required: false
+            - name: offset
+              type: integer
+              description: Number of jobs to skip (default 0)
+              required: false
+            - name: verbosity
+              type: string
+              description: 'Detail level: minimal, standard (default), or full'
+              required: false
+        - name: get_training_job
+          description: Get detailed information about a specific training job
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+            - name: verbosity
+              type: string
+              description: 'Detail level: minimal, standard, or full (default)'
+              required: false
+        - name: get_cluster_resources
+          description: Get cluster GPU and node resource summary for training capacity planning
+          accessType: read_only
+          parameters: []
+        - name: list_training_runtimes
+          description: List available ClusterTrainingRuntimes for training jobs
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Optional namespace filter
+              required: false
+        - name: suspend_training_job
+          description: Suspend a running training job to free GPU resources
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+        - name: resume_training_job
+          description: Resume a previously suspended training job
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+        - name: delete_training_job
+          description: Delete a training job and its associated resources
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+            - name: confirm
+              type: boolean
+              description: Must be true to confirm deletion
+              required: false
+        - name: wait_for_job_completion
+          description: Poll a training job until it reaches a target status or times out
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+            - name: target_status
+              type: string
+              description: 'Target status to wait for (default: Completed)'
+              required: false
+            - name: timeout_seconds
+              type: integer
+              description: 'Maximum wait time in seconds (default: 3600)'
+              required: false
+            - name: poll_interval
+              type: integer
+              description: 'Seconds between status checks (default: 10)'
+              required: false
+        - name: get_job_spec
+          description: Get the full Kubernetes spec of a training job
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+        - name: get_training_progress
+          description: Get real-time training metrics including epoch, loss, and throughput
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+        - name: get_training_logs
+          description: Get container logs from a training job
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+            - name: container
+              type: string
+              description: 'Container name (default: trainer)'
+              required: false
+            - name: tail_lines
+              type: integer
+              description: 'Number of lines to return (default: 100)'
+              required: false
+            - name: previous
+              type: boolean
+              description: Get logs from previous container instance
+              required: false
+        - name: get_job_events
+          description: Get Kubernetes events for a training job
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: name
+              type: string
+              description: Training job name
+              required: true
+        - name: manage_checkpoints
+          description: List saved model checkpoints for a training job
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: job_name
+              type: string
+              description: Training job name
+              required: true
+        - name: get_runtime_details
+          description: Get detailed information about a ClusterTrainingRuntime
+          accessType: read_only
+          parameters:
+            - name: runtime_name
+              type: string
+              description: Runtime name
+              required: true
+        - name: create_runtime
+          description: Create a custom ClusterTrainingRuntime with specified container images
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Runtime name
+              required: true
+            - name: trainer_image
+              type: string
+              description: Container image for the trainer
+              required: true
+            - name: framework
+              type: string
+              description: 'Training framework (default: transformers)'
+              required: false
+            - name: model_initializer_image
+              type: string
+              description: Optional model initializer image
+              required: false
+            - name: dataset_initializer_image
+              type: string
+              description: Optional dataset initializer image
+              required: false
+            - name: confirmed
+              type: boolean
+              description: Must be true to confirm creation
+              required: false
+        - name: setup_training_runtime
+          description: Set up a pre-configured ClusterTrainingRuntime for common frameworks
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: 'Runtime name (default: mcp-transformers-runtime)'
+              required: false
+            - name: framework
+              type: string
+              description: 'Training framework (default: transformers)'
+              required: false
+        - name: delete_runtime
+          description: Delete a ClusterTrainingRuntime
+          accessType: read_write
+          parameters:
+            - name: name
+              type: string
+              description: Runtime name to delete
+              required: true
+            - name: confirm
+              type: boolean
+              description: Must be true to confirm deletion
+              required: false
+        - name: train
+          description: Create a fine-tuning training job using a Kubeflow TrainJob
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: model_id
+              type: string
+              description: HuggingFace model identifier (e.g., meta-llama/Llama-2-7b-hf)
+              required: true
+            - name: dataset_id
+              type: string
+              description: HuggingFace dataset identifier (e.g., tatsu-lab/alpaca)
+              required: true
+            - name: runtime_name
+              type: string
+              description: ClusterTrainingRuntime to use
+              required: true
+            - name: job_name
+              type: string
+              description: Optional job name (auto-generated if omitted)
+              required: false
+            - name: method
+              type: string
+              description: 'Fine-tuning method: lora, qlora, dora, or full (default: lora)'
+              required: false
+            - name: epochs
+              type: integer
+              description: 'Number of training epochs (default: 3)'
+              required: false
+            - name: batch_size
+              type: integer
+              description: 'Per-device batch size (default: 32)'
+              required: false
+            - name: learning_rate
+              type: number
+              description: 'Training learning rate (default: 0.0001)'
+              required: false
+            - name: num_nodes
+              type: integer
+              description: 'Number of training nodes (default: 1)'
+              required: false
+            - name: gpus_per_node
+              type: integer
+              description: 'GPUs per node (default: 1)'
+              required: false
+            - name: checkpoint_dir
+              type: string
+              description: PVC mount path for checkpoints
+              required: false
+            - name: confirmed
+              type: boolean
+              description: Must be true to confirm job creation
+              required: false
+        - name: run_container_training_job
+          description: Run a custom container-based training job from a caller-supplied image and optional command. Executes arbitrary workloads on the cluster — returns a preview unless confirmed=true
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: image
+              type: string
+              description: Container image to run
+              required: true
+            - name: job_name
+              type: string
+              description: Optional job name (auto-generated if omitted)
+              required: false
+            - name: command
+              type: string
+              description: Container entrypoint command
+              required: false
+            - name: args
+              type: string
+              description: Container command arguments
+              required: false
+            - name: num_nodes
+              type: integer
+              description: 'Number of training nodes (default: 1)'
+              required: false
+            - name: gpus_per_node
+              type: integer
+              description: 'GPUs per node (default: 1)'
+              required: false
+            - name: memory_gb
+              type: integer
+              description: 'Memory limit in GB (default: 16)'
+              required: false
+            - name: env_vars
+              type: string
+              description: Environment variables as JSON object
+              required: false
+            - name: volume_mounts
+              type: string
+              description: Volume mounts as JSON object
+              required: false
+            - name: confirmed
+              type: boolean
+              description: Must be true to confirm job creation
+              required: false
+        - name: analyze_training_failure
+          description: Diagnose why a training job failed by analyzing logs and events
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: job_name
+              type: string
+              description: Training job name
+              required: true
+            - name: error_message
+              type: string
+              description: Optional error message to help narrow diagnosis
+              required: false
+        - name: estimate_resources
+          description: Estimate GPU and memory requirements for training a model
+          accessType: read_only
+          parameters:
+            - name: model_id
+              type: string
+              description: Model identifier (e.g., meta-llama/Llama-2-7b-hf)
+              required: true
+            - name: method
+              type: string
+              description: 'Fine-tuning method: lora, qlora, dora, or full (default: lora)'
+              required: false
+            - name: batch_size
+              type: integer
+              description: 'Per-device batch size (default: 32)'
+              required: false
+            - name: sequence_length
+              type: integer
+              description: 'Maximum sequence length (default: 512)'
+              required: false
+            - name: num_nodes
+              type: integer
+              description: 'Number of training nodes (default: 1)'
+              required: false
+            - name: gpus_per_node
+              type: integer
+              description: 'GPUs per node (default: 1)'
+              required: false
+        - name: check_training_prerequisites
+          description: Run pre-flight checks before starting a training job
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: model_id
+              type: string
+              description: Model identifier to train
+              required: true
+            - name: dataset_id
+              type: string
+              description: Dataset identifier to use
+              required: true
+            - name: checkpoint_storage
+              type: string
+              description: Optional PVC name for checkpoints
+              required: false
+        - name: validate_training_config
+          description: Validate a training configuration before job creation
+          accessType: read_only
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: model_id
+              type: string
+              description: Model identifier to validate
+              required: true
+            - name: dataset_id
+              type: string
+              description: Dataset identifier to validate
+              required: true
+            - name: runtime_name
+              type: string
+              description: Training runtime to use
+              required: true
+            - name: pvc_name
+              type: string
+              description: Optional PVC name to validate
+              required: false
+        - name: setup_hf_credentials
+          description: Create a Kubernetes secret with HuggingFace API token for gated model access
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Namespace to create the secret in
+              required: true
+            - name: token
+              type: string
+              description: 'HuggingFace API token (must start with hf_). SENSITIVE: value is written to a Kubernetes Secret — clients must redact it from logs, transcripts, and traces'
+              required: true
+            - name: secret_name
+              type: string
+              description: 'Secret name (default: hf-token)'
+              required: false
+        - name: prepare_training
+          description: Complete pre-flight setup — estimates resources, checks prerequisites, validates config, and optionally creates storage
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Kubernetes namespace
+              required: true
+            - name: model_id
+              type: string
+              description: Model identifier (e.g., meta-llama/Llama-2-7b-hf)
+              required: true
+            - name: dataset_id
+              type: string
+              description: Dataset identifier (e.g., tatsu-lab/alpaca)
+              required: true
+            - name: runtime_name
+              type: string
+              description: Training runtime (auto-selected if omitted)
+              required: false
+            - name: method
+              type: string
+              description: 'Fine-tuning method: lora, qlora, dora, or full (default: lora)'
+              required: false
+            - name: create_storage
+              type: boolean
+              description: 'Create checkpoint storage if needed (default: true)'
+              required: false
+            - name: storage_size_gb
+              type: integer
+              description: 'Checkpoint storage size in GB (default: 100)'
+              required: false
+        - name: setup_training_storage
+          description: Create a PVC for training checkpoints and data with RWX access for distributed training
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Namespace to create the PVC in
+              required: true
+            - name: pvc_name
+              type: string
+              description: PVC name
+              required: true
+            - name: size_gb
+              type: integer
+              description: 'Size in GB (default: 100)'
+              required: false
+            - name: storage_class
+              type: string
+              description: Storage class (auto-detected if omitted)
+              required: false
+            - name: access_mode
+              type: string
+              description: 'Access mode (default: ReadWriteMany)'
+              required: false
+        - name: setup_nfs_storage
+          description: Get guidance on setting up NFS storage for distributed training
+          accessType: read_write
+          parameters: []
+        - name: fix_pvc_permissions
+          description: Fix permissions on a PVC for training jobs by providing a remediation command
+          accessType: read_write
+          parameters:
+            - name: namespace
+              type: string
+              description: Namespace containing the PVC
+              required: true
+            - name: pvc_name
+              type: string
+              description: PVC name to fix
+              required: true
+        - name: training
+          description: 'Unified training operations via action parameter: list, get, status, progress, create, suspend, resume, delete, logs, events, checkpoints, estimate, validate, prerequisites. Destructive actions (delete) require ENABLE_DANGEROUS_OPERATIONS=true and confirm=true; create requires confirmed=true'
+          accessType: read_write
+          parameters:
+            - name: action
+              type: string
+              description: 'Operation to perform: list, get, status, progress, create, suspend, resume, delete, logs, events, checkpoints, estimate, validate, prerequisites'
+              required: true
+            - name: namespace
+              type: string
+              description: Kubernetes namespace (required for most actions)
+              required: false
+            - name: name
+              type: string
+              description: Job name (required for get, status, progress, suspend, resume, delete, logs, events, checkpoints)
+              required: false
+            - name: model_id
+              type: string
+              description: Model identifier (for create, estimate, validate, prerequisites)
+              required: false
+            - name: dataset_id
+              type: string
+              description: Dataset identifier (for create, validate, prerequisites)
+              required: false
+            - name: runtime_name
+              type: string
+              description: Training runtime (for create, validate)
+              required: false
+            - name: method
+              type: string
+              description: 'Fine-tuning method: lora, qlora, dora, or full (default: lora)'
+              required: false
+            - name: epochs
+              type: integer
+              description: 'Number of training epochs (default: 3)'
+              required: false
+            - name: batch_size
+              type: integer
+              description: 'Per-device batch size (default: 32)'
+              required: false
+            - name: learning_rate
+              type: number
+              description: 'Training learning rate (default: 0.0001)'
+              required: false
+            - name: num_nodes
+              type: integer
+              description: 'Number of training nodes (default: 1)'
+              required: false
+            - name: gpus_per_node
+              type: integer
+              description: 'GPUs per node (default: 1)'
+              required: false
+            - name: checkpoint_storage
+              type: string
+              description: PVC name for checkpoint storage
+              required: false
+            - name: confirmed
+              type: boolean
+              description: Confirm job creation for action=create (returns preview when false)
+              required: false
+            - name: tail_lines
+              type: integer
+              description: 'Number of log lines to return (default: 100)'
+              required: false
+            - name: container
+              type: string
+              description: 'Container name for logs (default: trainer)'
+              required: false
+            - name: previous
+              type: boolean
+              description: Get logs from previous container instance
+              required: false
+            - name: confirm
+              type: boolean
+              description: Confirm deletion for action=delete (requires ENABLE_DANGEROUS_OPERATIONS=true)
+              required: false
+      artifacts:
+        - uri: oci://registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6-ea.2
+          createTimeSinceEpoch: "1784190735000"
+          lastUpdateTimeSinceEpoch: "1784190737000"
+      runtimeMetadata:
+        capabilities:
+            requiresFileSystem: true
+            requiresGPU: false
+            requiresNetwork: true
+        defaultArgs:
+            - --transport
+            - streamable-http
+        defaultPort: 8000
+        healthEndpoints:
+            liveness: /health
+            readiness: /health
+        mcpPath: /mcp
+        prerequisites:
+            configMaps:
+                - description: Runtime configuration for the RHOAI MCP server. All keys are injected as environment variables. Create this ConfigMap with the keys listed below before deploying the MCPServer CR.
+                  keys:
+                    - defaultContent: streamable-http
+                      description: MCP transport protocol
+                      envVarName: RHOAI_MCP_TRANSPORT
+                      key: RHOAI_MCP_TRANSPORT
+                      required: false
+                    - defaultContent: 0.0.0.0
+                      description: Host address to bind to
+                      envVarName: RHOAI_MCP_HOST
+                      key: RHOAI_MCP_HOST
+                      required: false
+                    - defaultContent: "8000"
+                      description: Port to listen on
+                      envVarName: RHOAI_MCP_PORT
+                      key: RHOAI_MCP_PORT
+                      required: false
+                    - defaultContent: auto
+                      description: 'Authentication mode: auto or kubeconfig'
+                      envVarName: RHOAI_MCP_AUTH_MODE
+                      key: RHOAI_MCP_AUTH_MODE
+                      required: false
+                    - defaultContent: INFO
+                      description: Logging level
+                      envVarName: RHOAI_MCP_LOG_LEVEL
+                      key: RHOAI_MCP_LOG_LEVEL
+                      required: false
+                    - defaultContent: "false"
+                      description: Disable all write operations
+                      envVarName: RHOAI_MCP_READ_ONLY_MODE
+                      key: RHOAI_MCP_READ_ONLY_MODE
+                      required: false
+                    - defaultContent: "false"
+                      description: Enable destructive operations (delete)
+                      envVarName: RHOAI_MCP_ENABLE_DANGEROUS_OPERATIONS
+                      key: RHOAI_MCP_ENABLE_DANGEROUS_OPERATIONS
+                      required: false
+                    - defaultContent: "true"
+                      description: Enable OIDC authentication for multi-user access
+                      envVarName: RHOAI_MCP_OIDC_ENABLED
+                      key: RHOAI_MCP_OIDC_ENABLED
+                      required: true
+                    - defaultContent: token-review
+                      description: Token validation mode. Use token-review for OpenShift clusters where the ServiceAccount validates bearer tokens via the TokenReview API.
+                      envVarName: RHOAI_MCP_OIDC_TOKEN_MODE
+                      key: RHOAI_MCP_OIDC_TOKEN_MODE
+                      required: true
+                    - defaultContent: user-token
+                      description: Kubernetes auth strategy. Use user-token to forward the caller's bearer token to the K8s API so resource access is evaluated against each user's own RBAC.
+                      envVarName: RHOAI_MCP_OIDC_KUBE_AUTH_STRATEGY
+                      key: RHOAI_MCP_OIDC_KUBE_AUTH_STRATEGY
+                      required: true
+                    - defaultContent: https://model-catalog.rhoai-model-registries.svc:8443
+                      description: URL of the Model Catalog service for llm-d Planner integration. Cluster-specific; typically https://model-catalog.rhoai-model-registries.svc:8443.
+                      envVarName: RHOAI_MCP_PLANNER_MODEL_CATALOG_URL
+                      key: RHOAI_MCP_PLANNER_MODEL_CATALOG_URL
+                      required: true
+                  mountAsFile: false
+                  name: rhoai-mcp-config
+                - description: 'OpenShift service-serving CA bundle. Must have the annotation service.beta.openshift.io/inject-cabundle: "true" so that OpenShift automatically populates it with the service-serving signer CA certificate. Required for TLS verification of internal services (e.g. Model Catalog).'
+                  keys:
+                    - description: Service-serving CA certificate bundle (auto-injected by OpenShift)
+                      key: service-ca.crt
+                      required: true
+                  mountAsFile: true
+                  mountPath: /etc/pki/service-ca
+                  name: rhoai-mcp-service-ca
+            customResources:
+                - EmptyDir volume mounted at /tmp (required because readOnlyRootFilesystem is true)
+            serviceAccount:
+                hint: Requires a ClusterRole with tokenreviews create, subjectaccessreviews create, and user.openshift.io/users get. The ServiceAccount validates bearer tokens via TokenReview, filters MCP tools per user via SubjectAccessReview, and fetches OCP group memberships. It has no direct resource access — the caller's own bearer token is forwarded to the K8s API, so resource access is evaluated against each user's own RBAC. See deploy/kustomize/overlays/openshift-oidc/ in the source repo.
+                required: true
+                suggestedName: rhoai-mcp
+        recommendedResources:
+            high:
+                cpu: 500m
+                memory: 512Mi
+            minimal:
+                cpu: 100m
+                memory: 128Mi
+            recommended:
+                cpu: 100m
+                memory: 128Mi
+        requiredEnvironmentVariables:
+            - defaultValue: /etc/pki/service-ca/service-ca.crt
+              description: 'Path to the CA certificate bundle for verifying the Model Catalog TLS certificate. Must match the mountPath of the service-ca ConfigMap (default: /etc/pki/service-ca/service-ca.crt).'
+              name: MODEL_CATALOG_CA_BUNDLE
+              required: true
+              type: string
+      securityIndicators:
+        readOnlyTools: false
+        sast: true
+        secureEndpoint: true
+        verifiedSource: true
+      customProperties:
+        architecture:
+            metadataType: MetadataStringValue
+            string_value: "[\"amd64\"]"
+        supportTier:
+            metadataType: MetadataStringValue
+            string_value: "redHatSupported"
+      createTimeSinceEpoch: "1772323200000"
+      lastUpdateTimeSinceEpoch: "1784190737000"
+      server_json:
+        $schema: https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json
+        name: com.redhat/rhoai-mcp-server
+        description: MCP server for Red Hat OpenShift AI (RHOAI). Enables AI agents to manage Data Science Projects, Jupyter workbenches, model serving (KServe InferenceServices), Data Science Pipelines, S3 data connections, persistent storage, model training (Kubeflow Training Operator), and Model Registry. Integrates with llm-d Planner for LLM deployment recommendation and config generation. Includes cluster exploration composites and 18 workflow prompts for multi-step operations. Tools listed below reflect the default configuration with read-only mode disabled.
+        version: 0.1.1
+        title: Red Hat OpenShift AI MCP Server
+        websiteUrl: https://github.com/opendatahub-io/rhoai-mcp
+        repository:
+            url: https://github.com/opendatahub-io/rhoai-mcp
+            source: github
+        packages:
+            - registryType: oci
+              identifier: registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6-ea.2
+              transport:
+                type: streamable-http
+                url: http://localhost:8000/mcp
+              runtimeHint: docker
+              packageArguments:
+                - type: named
+                  value: streamable-http
+                  name: --transport
+              environmentVariables:
+                - name: MODEL_CATALOG_CA_BUNDLE
+                  description: 'Path to the CA certificate bundle for verifying the Model Catalog TLS certificate. Must match the mountPath of the service-ca ConfigMap (default: /etc/pki/service-ca/service-ca.crt).'
+                  isRequired: true
