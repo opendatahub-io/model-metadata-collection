@@ -2258,14 +2258,109 @@ mcp_servers:
           createTimeSinceEpoch: "1784190735000"
           lastUpdateTimeSinceEpoch: "1784190737000"
       runtimeMetadata:
-        defaultArgs: []
+        capabilities:
+            requiresFileSystem: true
+            requiresGPU: false
+            requiresNetwork: true
+        defaultArgs:
+            - --transport
+            - streamable-http
         defaultPort: 8000
+        healthEndpoints:
+            liveness: /health
+            readiness: /health
         mcpPath: /mcp
+        optionalEnvironmentVariables:
+            - defaultValue: streamable-http
+              description: MCP transport protocol
+              name: RHOAI_MCP_TRANSPORT
+              required: false
+              type: string
+            - defaultValue: 0.0.0.0
+              description: Host address to bind to
+              name: RHOAI_MCP_HOST
+              required: false
+              type: string
+            - defaultValue: "8000"
+              description: Port to listen on
+              name: RHOAI_MCP_PORT
+              required: false
+              type: int
+            - defaultValue: auto
+              description: 'Authentication mode: auto or kubeconfig'
+              name: RHOAI_MCP_AUTH_MODE
+              required: false
+              type: string
+            - defaultValue: INFO
+              description: Logging level
+              name: RHOAI_MCP_LOG_LEVEL
+              required: false
+              type: string
+            - defaultValue: "false"
+              description: Disable all write operations
+              name: RHOAI_MCP_READ_ONLY_MODE
+              required: false
+              type: boolean
+            - defaultValue: "false"
+              description: Enable destructive operations (delete)
+              name: RHOAI_MCP_ENABLE_DANGEROUS_OPERATIONS
+              required: false
+              type: boolean
         prerequisites:
+            configMaps:
+                - description: Runtime configuration for the RHOAI MCP server. All keys are injected as environment variables via envFrom. See the optionalEnvironmentVariables and requiredEnvironmentVariables sections for the expected keys.
+                  mountAsFile: false
+                  name: rhoai-mcp-config
+                - description: 'OpenShift service-serving CA bundle. Must have the annotation service.beta.openshift.io/inject-cabundle: "true" so that OpenShift automatically populates it with the service-serving signer CA certificate. Required for TLS verification of internal services (e.g. Model Catalog).'
+                  keys:
+                    - description: Service-serving CA certificate bundle (auto-injected by OpenShift)
+                      key: service-ca.crt
+                      required: true
+                  mountAsFile: true
+                  mountPath: /etc/pki/service-ca
+                  name: rhoai-mcp-service-ca
+            customResources:
+                - EmptyDir volume mounted at /tmp (required because readOnlyRootFilesystem is true)
             serviceAccount:
                 hint: Requires a ClusterRole with tokenreviews create, subjectaccessreviews create, and user.openshift.io/users get. The ServiceAccount validates bearer tokens via TokenReview, filters MCP tools per user via SubjectAccessReview, and fetches OCP group memberships. It has no direct resource access — the caller's own bearer token is forwarded to the K8s API, so resource access is evaluated against each user's own RBAC. See deploy/kustomize/overlays/openshift-oidc/ in the source repo.
                 required: true
                 suggestedName: rhoai-mcp
+        recommendedResources:
+            high:
+                cpu: 500m
+                memory: 512Mi
+            minimal:
+                cpu: 100m
+                memory: 128Mi
+            recommended:
+                cpu: 100m
+                memory: 128Mi
+        requiredEnvironmentVariables:
+            - defaultValue: "true"
+              description: Enable OIDC authentication for multi-user access
+              name: RHOAI_MCP_OIDC_ENABLED
+              required: true
+              type: boolean
+            - defaultValue: token-review
+              description: Token validation mode. Use token-review for OpenShift clusters where the ServiceAccount validates bearer tokens via the TokenReview API.
+              name: RHOAI_MCP_OIDC_TOKEN_MODE
+              required: true
+              type: string
+            - defaultValue: user-token
+              description: Kubernetes auth strategy. Use user-token to forward the caller's bearer token to the K8s API so resource access is evaluated against each user's own RBAC.
+              name: RHOAI_MCP_OIDC_KUBE_AUTH_STRATEGY
+              required: true
+              type: string
+            - description: URL of the Model Catalog service for llm-d Planner integration. Cluster-specific; typically https://model-catalog.<namespace>.svc:8443.
+              example: https://model-catalog.rhoai-model-registries.svc:8443
+              name: RHOAI_MCP_PLANNER_MODEL_CATALOG_URL
+              required: true
+              type: string
+            - defaultValue: /etc/pki/service-ca/service-ca.crt
+              description: Path to the CA certificate bundle for verifying the Model Catalog TLS certificate. Must match the mountPath of the service-ca ConfigMap.
+              name: MODEL_CATALOG_CA_BUNDLE
+              required: true
+              type: string
       securityIndicators:
         readOnlyTools: false
         sast: true
@@ -2297,3 +2392,44 @@ mcp_servers:
                 type: streamable-http
                 url: http://localhost:8000/mcp
               runtimeHint: docker
+              packageArguments:
+                - type: named
+                  value: streamable-http
+                  name: --transport
+              environmentVariables:
+                - name: RHOAI_MCP_OIDC_ENABLED
+                  description: Enable OIDC authentication for multi-user access
+                  isRequired: true
+                - name: RHOAI_MCP_OIDC_TOKEN_MODE
+                  description: Token validation mode. Use token-review for OpenShift clusters where the ServiceAccount validates bearer tokens via the TokenReview API.
+                  isRequired: true
+                - name: RHOAI_MCP_OIDC_KUBE_AUTH_STRATEGY
+                  description: Kubernetes auth strategy. Use user-token to forward the caller's bearer token to the K8s API so resource access is evaluated against each user's own RBAC.
+                  isRequired: true
+                - name: RHOAI_MCP_PLANNER_MODEL_CATALOG_URL
+                  description: URL of the Model Catalog service for llm-d Planner integration. Cluster-specific; typically https://model-catalog.<namespace>.svc:8443.
+                  isRequired: true
+                - name: MODEL_CATALOG_CA_BUNDLE
+                  description: Path to the CA certificate bundle for verifying the Model Catalog TLS certificate. Must match the mountPath of the service-ca ConfigMap.
+                  isRequired: true
+                - name: RHOAI_MCP_TRANSPORT
+                  description: MCP transport protocol
+                  isRequired: false
+                - name: RHOAI_MCP_HOST
+                  description: Host address to bind to
+                  isRequired: false
+                - name: RHOAI_MCP_PORT
+                  description: Port to listen on
+                  isRequired: false
+                - name: RHOAI_MCP_AUTH_MODE
+                  description: 'Authentication mode: auto or kubeconfig'
+                  isRequired: false
+                - name: RHOAI_MCP_LOG_LEVEL
+                  description: Logging level
+                  isRequired: false
+                - name: RHOAI_MCP_READ_ONLY_MODE
+                  description: Disable all write operations
+                  isRequired: false
+                - name: RHOAI_MCP_ENABLE_DANGEROUS_OPERATIONS
+                  description: Enable destructive operations (delete)
+                  isRequired: false
