@@ -7,7 +7,7 @@ The `catalog` package handles model catalog generation and management.
 - Loading static catalog files from YAML
 - Merging extracted model metadata into a unified catalog
 - Deduplicating catalog entries by model URI
-- Writing the final `models-catalog.yaml` output
+- Writing the validated and other model catalog outputs
 - Encoding/decoding base64 README content for catalog entries
 
 ## Key Functions

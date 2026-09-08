@@ -12,7 +12,7 @@ import (
 
 func main() {
 	var (
-		catalogPath = flag.String("catalog", "data/models-catalog.yaml", "Path to the models catalog YAML file")
+		catalogPath = flag.String("catalog", "data/validated-models-catalog.yaml", "Path to the models catalog YAML file")
 		outputDir   = flag.String("output-dir", "output", "Directory containing model extraction output")
 		reportDir   = flag.String("report-dir", "", "Directory to write reports (defaults to output-dir)")
 		help        = flag.Bool("help", false, "Show help message")

@@ -3,10 +3,12 @@ package catalog
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
 
+	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
 	"gopkg.in/yaml.v3"
 )
 
@@ -141,5 +143,30 @@ func singularName(typeKey string) string {
 		return "agent"
 	default:
 		return typeKey
+	}
+}
+
+// TestModelIndexIntegrity checks editorial index invariants without fixing model membership.
+func TestModelIndexIntegrity(t *testing.T) {
+	uris := map[string]string{}
+	for _, category := range []string{"validated", "other"} {
+		path := "../../data/" + category + "-models-index.yaml"
+		data, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var index types.ModelsConfig
+		if err := yaml.Unmarshal(data, &index); err != nil {
+			t.Fatal(err)
+		}
+		for _, entry := range index.Models {
+			if previous, ok := uris[entry.URI]; ok {
+				t.Errorf("URI %s repeated in %s and %s", entry.URI, previous, category)
+			}
+			uris[entry.URI] = category
+			if category == "validated" && !slices.Contains(entry.Labels, "validated") {
+				t.Errorf("missing validated label: %s", entry.URI)
+			}
+		}
 	}
 }

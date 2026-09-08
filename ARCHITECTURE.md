@@ -12,8 +12,9 @@ The system extracts model metadata from Red Hat AI ModelCar container images and
 flowchart TD
     A[HuggingFace Collections API] -->|Discover & fetch| B[Collection Index Files]
     B --> C[Merged Model Index]
-    D[Static Model Index Files] --> C
-    C --> E[Parallel Model Processing]
+    D[Curated validated / other indexes] --> E
+    C --> I
+    E[Parallel Model Processing]
     E -->|Per model| F[Fetch OCI Manifest & Layers]
     F --> G[Scan Layers for ModelCard]
     G --> H[Extract Metadata from ModelCard]
@@ -21,8 +22,9 @@ flowchart TD
     I --> J[Enrich from vLLM Config]
     J --> K[Write Metadata + ModelCard]
     K --> L[Catalog Generation]
-    M[Supplemental Static Catalog] --> L
-    L --> N[models-catalog.yaml]
+    M[Supplemental Static Catalog] -->|Other only, explicit inclusion| L
+    L --> N[validated-models-catalog.yaml]
+    L --> X[other-models-catalog.yaml]
 
     O[Red Hat MCP Index] --> P[Load MCP Input Files]
     P --> Q[redhat-mcp-servers-catalog.yaml]
@@ -67,7 +69,7 @@ Main CLI application. Orchestrates the full pipeline: HuggingFace collection pro
 
 ### `internal/catalog/`
 
-Catalog generation and management. Loads static catalogs, merges extracted metadata from processed models, deduplicates entries, and writes the final `models-catalog.yaml` output. Also handles MCP server catalog generation by aggregating individual server input files into `redhat-mcp-servers-catalog.yaml`, `partner-mcp-servers-catalog.yaml`, and `community-mcp-servers-catalog.yaml`.
+Catalog generation and management. Loads static catalogs, merges extracted metadata from processed models, deduplicates entries, and writes the `validated-models-catalog.yaml` and `other-models-catalog.yaml` outputs. Also handles MCP server catalog generation by aggregating individual server input files into `redhat-mcp-servers-catalog.yaml`, `partner-mcp-servers-catalog.yaml`, and `community-mcp-servers-catalog.yaml`.
 
 ### `internal/config/`
 
@@ -137,7 +139,7 @@ output/{sanitized-manifest-ref}/
     metadata.yaml     # Structured metadata (name, provider, dates, etc.)
 
 data/
-  models-catalog.yaml              # Final merged catalog
+  other-models-catalog.yaml        # Other models catalog
   validated-models-catalog.yaml    # Validated models catalog
   redhat-mcp-servers-catalog.yaml  # Red Hat MCP servers catalog
   partner-mcp-servers-catalog.yaml # Partner MCP servers catalog

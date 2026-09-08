@@ -35,16 +35,16 @@ import (
 
 // Command line flags
 var (
-	modelsIndexPath          = flag.String("input", "data/models-index.yaml", "Path to models index YAML file")
+	modelsIndexPath          = flag.String("input", "data/validated-models-index.yaml", "Path to models index YAML file")
 	inputDir                 = flag.String("input-dir", "input", "Base directory for supplemental input files (supplemental-catalog.yaml, models/vllm-config/)")
 	outputDir                = flag.String("output-dir", "output", "Output directory for extracted metadata")
-	catalogOutputPath        = flag.String("catalog-output", "data/models-catalog.yaml", "Path for the generated models catalog")
+	catalogOutputPath        = flag.String("catalog-output", "data/validated-models-catalog.yaml", "Path for the generated models catalog")
 	maxConcurrent            = flag.Int("max-concurrent", 5, "Maximum number of concurrent model processing jobs")
 	skipHuggingFace          = flag.Bool("skip-huggingface", false, "Skip HuggingFace collection processing and enrichment")
 	skipEnrichment           = flag.Bool("skip-enrichment", false, "Skip metadata enrichment from HuggingFace")
 	skipCatalog              = flag.Bool("skip-catalog", false, "Skip catalog generation")
 	staticCatalogFiles       = flag.String("static-catalog-files", "", "Comma-separated list of static catalog files to include")
-	skipDefaultStaticCatalog = flag.Bool("skip-default-static-catalog", false, "Skip processing the default supplemental-catalog.yaml from the input directory")
+	skipDefaultStaticCatalog = flag.Bool("skip-default-static-catalog", true, "Skip processing the default supplemental-catalog.yaml from the input directory")
 	mcpIndexPath             = flag.String("mcp-index", "", "Path to MCP servers index YAML file (if set, generates MCP catalog)")
 	mcpCatalogOutputPath     = flag.String("mcp-catalog-output", "data/redhat-mcp-servers-catalog.yaml", "Path for the generated MCP servers catalog")
 	skipMCPEnrichment        = flag.Bool("skip-mcp-enrichment", false, "Skip MCP server OCI image enrichment (architectures, timestamps)")
@@ -153,7 +153,7 @@ func main() {
 			err := huggingface.ProcessCollections()
 			if err != nil {
 				log.Printf("Warning: Failed to process HuggingFace collections: %v", err)
-				log.Println("Falling back to existing models-index.yaml")
+				log.Println("Using the configured curated model index")
 			}
 		}
 
@@ -303,8 +303,8 @@ func printHelp() {
 	fmt.Println("  # Include custom static catalog files")
 	fmt.Printf("  %s --static-catalog-files custom1.yaml,custom2.yaml\n", os.Args[0])
 	fmt.Println("")
-	fmt.Println("  # Skip default static catalog but include custom ones")
-	fmt.Printf("  %s --skip-default-static-catalog --static-catalog-files custom.yaml\n", os.Args[0])
+	fmt.Println("  # Opt in to the default supplemental catalog")
+	fmt.Printf("  %s --skip-default-static-catalog=false\n", os.Args[0])
 	fmt.Println("")
 	fmt.Println("  # Generate MCP servers catalog with OCI enrichment (no model processing)")
 	fmt.Printf("  %s --mcp-index data/redhat-mcp-servers-index.yaml --skip-huggingface --skip-enrichment --skip-catalog\n", os.Args[0])

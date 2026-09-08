@@ -92,3 +92,9 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-qwen2-5-1-5b-quantized-w8a8:3.0
   hf_model: RedHatAI/Qwen2.5-1.5B-quantized.w8a8
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-3-3-8b-instruct
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-small:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-tiny:3.0
