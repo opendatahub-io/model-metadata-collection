@@ -456,7 +456,7 @@ func scanLayersForModelCardWithTags(layers []containertypes.BlobInfo, src contai
 	return modelCardFound, metadata
 }
 
-// addModelLabelTags adds model labels as tags to the extracted metadata
+// addModelLabelTags applies index labels and explicit properties to extracted metadata.
 func addModelLabelTags(manifestRef string, entry types.ModelEntry) {
 	// Create sanitized directory name for the model
 	sanitizedName := utils.SanitizeManifestRef(manifestRef)
@@ -484,6 +484,15 @@ func addModelLabelTags(manifestRef string, entry types.ModelEntry) {
 
 	// Track if we made changes
 	changed := false
+	for key, value := range entry.CustomProperties {
+		if metadata.CustomProperties == nil {
+			metadata.CustomProperties = make(map[string]types.MetadataValue)
+		}
+		if existing, ok := metadata.CustomProperties[key]; !ok || existing != value {
+			metadata.CustomProperties[key] = value
+			changed = true
+		}
+	}
 
 	// Add each label from the model entry as a tag if not already present
 	for _, label := range entry.Labels {

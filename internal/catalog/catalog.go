@@ -101,6 +101,9 @@ func validateStaticCatalog(catalog *types.ModelsCatalog) error {
 // CreateModelsCatalogWithStaticFromResults creates a models catalog from specific model results and static models
 func CreateModelsCatalogWithStaticFromResults(outputDir, catalogPath string, modelRefs []string, staticModels []types.CatalogMetadata) error {
 	var allModels []types.ExtractedMetadata
+	// Preserve explicit overrides separately so generated properties on another
+	// artifact of the same model cannot win during deduplication.
+	explicitProperties := make(map[string]map[string]types.MetadataValue)
 
 	// Process only metadata files for models that were processed in the current run
 	for _, ref := range modelRefs {
@@ -133,6 +136,17 @@ func CreateModelsCatalogWithStaticFromResults(outputDir, catalogPath string, mod
 
 		// Add to collection
 		allModels = append(allModels, metadata)
+		if metadata.Name != nil && strings.TrimSpace(*metadata.Name) != "" {
+			name := strings.ToLower(strings.TrimSpace(*metadata.Name))
+			if explicitProperties[name] == nil {
+				explicitProperties[name] = make(map[string]types.MetadataValue)
+			}
+			for key, value := range metadata.CustomProperties {
+				if _, exists := explicitProperties[name][key]; !exists {
+					explicitProperties[name][key] = value
+				}
+			}
+		}
 	}
 
 	// Sort models by name for consistent output
@@ -157,6 +171,14 @@ func CreateModelsCatalogWithStaticFromResults(outputDir, catalogPath string, mod
 
 	// Deduplicate models by consolidating artifacts and merging metadata
 	catalogModels = deduplicateAndMergeModels(catalogModels)
+	for i := range catalogModels {
+		if catalogModels[i].Name != nil {
+			name := strings.ToLower(strings.TrimSpace(*catalogModels[i].Name))
+			for key, value := range explicitProperties[name] {
+				catalogModels[i].CustomProperties[key] = value
+			}
+		}
+	}
 
 	// Merge static models with dynamic models (static models are appended at the end)
 	catalogModels = append(catalogModels, staticModels...)
@@ -273,6 +295,9 @@ func convertExtractedToCatalogMetadata(model types.ExtractedMetadata) types.Cata
 	// Add model_type as customProperty (defaults to "generative")
 	// Note: In future, this could be extracted from modelcard metadata
 	customProps["model_type"] = createMetadataValue(types.GetDefaultModelType())
+	for key, value := range model.CustomProperties {
+		customProps[key] = value
+	}
 
 	// Build ServingConfig from ToolCallingConfig if present
 	var servingConfig *types.ServingConfig

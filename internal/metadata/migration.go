@@ -59,6 +59,7 @@ func LoadExistingMetadata(registryModel, outputDir string) (*types.ExtractedMeta
 func migrateFromLegacyFormat(legacy *types.LegacyExtractedMetadata) *types.ExtractedMetadata {
 	new := &types.ExtractedMetadata{
 		Name:                     legacy.Name,
+		CustomProperties:         legacy.CustomProperties,
 		Provider:                 legacy.Provider,
 		Description:              legacy.Description,
 		Readme:                   legacy.Readme,
@@ -111,6 +112,7 @@ func fixArtifactTimestamp(timestamp **int64) {
 func convertMixedToStandard(mixed *types.MixedTypeExtractedMetadata) *types.ExtractedMetadata {
 	standard := &types.ExtractedMetadata{
 		Name:                     mixed.Name,
+		CustomProperties:         mixed.CustomProperties,
 		Provider:                 mixed.Provider,
 		Description:              mixed.Description,
 		Readme:                   mixed.Readme,

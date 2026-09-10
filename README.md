@@ -260,6 +260,50 @@ Each model entry supports the following fields:
   - Validated during catalog generation
   - Appears in the generated catalog as a customProperty
 
+Model entries also accept optional **customProperties** using the catalog's typed
+value format. These properties are preserved through extraction and enrichment
+and appear on the model in the generated catalog:
+
+```yaml
+models:
+  - type: oci
+    uri: registry.example.com/model:latest
+    labels: [featured]
+    customProperties:
+      featured:
+        metadataType: MetadataBoolValue
+        bool_value: false
+      owner:
+        metadataType: MetadataStringValue
+        string_value: "team-a"
+      priority:
+        metadataType: MetadataIntValue
+        int_value: "10"
+      score:
+        metadataType: MetadataDoubleValue
+        double_value: 0.95
+```
+
+Each property requires `metadataType` and exactly its matching value field:
+
+| metadataType | Value field | Accepted value |
+| --- | --- | --- |
+| `MetadataStringValue` | `string_value` | String, including `""` |
+| `MetadataBoolValue` | `bool_value` | YAML boolean: `true` or `false` |
+| `MetadataIntValue` | `int_value` | Quoted signed 64-bit decimal integer |
+| `MetadataDoubleValue` | `double_value` | Finite number, including zero |
+
+Malformed properties cause index loading to fail with the model URI and property
+key in the error. Null values, shorthand scalar properties, and other metadata
+types are not supported.
+
+Explicit properties override matching label keys and generated properties,
+including `model_type`, `hardware_tag`, and `validated_on`. When entries merge into
+one catalog model, the first explicit value in model-reference input order wins.
+Labels without overrides retain their empty `MetadataStringValue` representation.
+Custom properties do not become tags, change label-based logo selection, or apply
+to artifacts.
+
 ### Version-Specific Index Files
 Generated automatically from HuggingFace collections.
 

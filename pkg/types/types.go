@@ -28,7 +28,8 @@ type ModelEntry struct {
 	// HFModel pins the exact HuggingFace repo id to enrich from, bypassing fuzzy
 	// matching entirely. Readme, license, description, and tags are fetched from this
 	// repo. Combine with Name to also override the display name from that repo.
-	HFModel string `yaml:"hf_model,omitempty"`
+	HFModel          string                   `yaml:"hf_model,omitempty"`
+	CustomProperties map[string]MetadataValue `yaml:"customProperties,omitempty"`
 }
 
 // ModelsConfig represents the configuration of models to process
@@ -89,56 +90,59 @@ type OCIArtifact struct {
 
 // ExtractedMetadata represents the actual extracted values from the modelcard
 type ExtractedMetadata struct {
-	Name                     *string            `yaml:"name"`
-	Provider                 *string            `yaml:"provider"`
-	Description              *string            `yaml:"description"`
-	Readme                   *string            `yaml:"readme"`
-	Language                 []string           `yaml:"language"`
-	License                  *string            `yaml:"license"`
-	LicenseLink              *string            `yaml:"licenseLink"`
-	Tags                     []string           `yaml:"tags"`
-	Tasks                    []string           `yaml:"tasks"`
-	CreateTimeSinceEpoch     *int64             `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch *int64             `yaml:"lastUpdateTimeSinceEpoch"`
-	ValidatedOn              []string           `yaml:"validatedOn"`
-	HardwareTag              []string           `yaml:"hardwareTag"`
-	ValidatedTasks           []string           `yaml:"validatedTasks,omitempty"`
-	ToolCallingConfig        *ToolCallingConfig `yaml:"toolCallingConfig,omitempty"`
-	Artifacts                []OCIArtifact      `yaml:"artifacts"`
+	Name                     *string                  `yaml:"name"`
+	Provider                 *string                  `yaml:"provider"`
+	Description              *string                  `yaml:"description"`
+	Readme                   *string                  `yaml:"readme"`
+	Language                 []string                 `yaml:"language"`
+	License                  *string                  `yaml:"license"`
+	LicenseLink              *string                  `yaml:"licenseLink"`
+	Tags                     []string                 `yaml:"tags"`
+	Tasks                    []string                 `yaml:"tasks"`
+	CreateTimeSinceEpoch     *int64                   `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch *int64                   `yaml:"lastUpdateTimeSinceEpoch"`
+	ValidatedOn              []string                 `yaml:"validatedOn"`
+	HardwareTag              []string                 `yaml:"hardwareTag"`
+	ValidatedTasks           []string                 `yaml:"validatedTasks,omitempty"`
+	ToolCallingConfig        *ToolCallingConfig       `yaml:"toolCallingConfig,omitempty"`
+	Artifacts                []OCIArtifact            `yaml:"artifacts"`
+	CustomProperties         map[string]MetadataValue `yaml:"customProperties,omitempty"`
 }
 
 // LegacyExtractedMetadata represents the old format with string artifacts
 type LegacyExtractedMetadata struct {
-	Name                     *string  `yaml:"name"`
-	Provider                 *string  `yaml:"provider"`
-	Description              *string  `yaml:"description"`
-	Readme                   *string  `yaml:"readme"`
-	Language                 []string `yaml:"language"`
-	License                  *string  `yaml:"license"`
-	LicenseLink              *string  `yaml:"licenseLink"`
-	Tags                     []string `yaml:"tags"`
-	Tasks                    []string `yaml:"tasks"`
-	CreateTimeSinceEpoch     *int64   `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch *int64   `yaml:"lastUpdateTimeSinceEpoch"`
-	ValidatedOn              []string `yaml:"validatedOn"`
-	Artifacts                []string `yaml:"artifacts"`
+	Name                     *string                  `yaml:"name"`
+	Provider                 *string                  `yaml:"provider"`
+	Description              *string                  `yaml:"description"`
+	Readme                   *string                  `yaml:"readme"`
+	Language                 []string                 `yaml:"language"`
+	License                  *string                  `yaml:"license"`
+	LicenseLink              *string                  `yaml:"licenseLink"`
+	Tags                     []string                 `yaml:"tags"`
+	Tasks                    []string                 `yaml:"tasks"`
+	CreateTimeSinceEpoch     *int64                   `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch *int64                   `yaml:"lastUpdateTimeSinceEpoch"`
+	ValidatedOn              []string                 `yaml:"validatedOn"`
+	Artifacts                []string                 `yaml:"artifacts"`
+	CustomProperties         map[string]MetadataValue `yaml:"customProperties,omitempty"`
 }
 
 // MixedTypeExtractedMetadata handles both string and int64 timestamps
 type MixedTypeExtractedMetadata struct {
-	Name                     *string       `yaml:"name"`
-	Provider                 *string       `yaml:"provider"`
-	Description              *string       `yaml:"description"`
-	Readme                   *string       `yaml:"readme"`
-	Language                 []string      `yaml:"language"`
-	License                  *string       `yaml:"license"`
-	LicenseLink              *string       `yaml:"licenseLink"`
-	Tags                     []string      `yaml:"tags"`
-	Tasks                    []string      `yaml:"tasks"`
-	CreateTimeSinceEpoch     any           `yaml:"createTimeSinceEpoch"`
-	LastUpdateTimeSinceEpoch any           `yaml:"lastUpdateTimeSinceEpoch"`
-	ValidatedOn              []string      `yaml:"validatedOn"`
-	Artifacts                []OCIArtifact `yaml:"artifacts"`
+	Name                     *string                  `yaml:"name"`
+	Provider                 *string                  `yaml:"provider"`
+	Description              *string                  `yaml:"description"`
+	Readme                   *string                  `yaml:"readme"`
+	Language                 []string                 `yaml:"language"`
+	License                  *string                  `yaml:"license"`
+	LicenseLink              *string                  `yaml:"licenseLink"`
+	Tags                     []string                 `yaml:"tags"`
+	Tasks                    []string                 `yaml:"tasks"`
+	CreateTimeSinceEpoch     any                      `yaml:"createTimeSinceEpoch"`
+	LastUpdateTimeSinceEpoch any                      `yaml:"lastUpdateTimeSinceEpoch"`
+	ValidatedOn              []string                 `yaml:"validatedOn"`
+	Artifacts                []OCIArtifact            `yaml:"artifacts"`
+	CustomProperties         map[string]MetadataValue `yaml:"customProperties,omitempty"`
 }
 
 // MetadataSource represents where a piece of metadata came from
@@ -219,15 +223,28 @@ type EnrichmentInfo struct {
 
 // MetadataValue represents a metadata value with type information
 type MetadataValue struct {
-	MetadataType string `yaml:"metadataType"`
-	StringValue  string `yaml:"string_value"`
+	MetadataType string  `yaml:"metadataType"`
+	StringValue  string  `yaml:"string_value"`
+	BoolValue    bool    `yaml:"bool_value"`
+	IntValue     string  `yaml:"int_value"`
+	DoubleValue  float64 `yaml:"double_value"`
 }
 
-// MarshalYAML implements yaml.Marshaler to force string values to be quoted
+// MarshalYAML emits the active value field, preserving zero values and quoting strings.
 func (mv MetadataValue) MarshalYAML() (any, error) {
-	// Create a map that will be marshaled with explicit string quoting for string_value
 	result := map[string]any{
 		"metadataType": mv.MetadataType,
+	}
+	switch mv.MetadataType {
+	case "MetadataBoolValue":
+		result["bool_value"] = mv.BoolValue
+		return result, nil
+	case "MetadataIntValue":
+		result["int_value"] = &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: mv.IntValue, Style: yaml.DoubleQuotedStyle}
+		return result, nil
+	case "MetadataDoubleValue":
+		result["double_value"] = mv.DoubleValue
+		return result, nil
 	}
 
 	// Force string_value to be quoted by using a yaml.Node with style set to DoubleQuotedStyle
