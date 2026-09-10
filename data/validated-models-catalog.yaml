@@ -246,6 +246,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -386,6 +389,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2644,6 +2650,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         vLLM:
             metadataType: MetadataStringValue
             string_value: ""
@@ -4874,6 +4883,9 @@ models:
         red hat:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -5236,6 +5248,9 @@ models:
         nvidia:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -5314,6 +5329,9 @@ models:
         pytorch:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -5679,6 +5697,9 @@ models:
         redhat:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -6837,6 +6858,9 @@ models:
         qwen3-vl:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7041,6 +7065,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7094,6 +7121,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7150,6 +7180,9 @@ models:
         qwen3_6_moe:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7209,6 +7242,9 @@ models:
         qwen:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7368,6 +7404,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7419,6 +7458,9 @@ models:
         nvfp4:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7585,6 +7627,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7645,6 +7690,9 @@ models:
         nvfp4:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -7700,6 +7748,9 @@ models:
         safetensors:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         transformers:
             metadataType: MetadataStringValue
             string_value: ""
@@ -8145,6 +8196,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -8605,6 +8659,9 @@ models:
         nvfp4:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -8649,6 +8706,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -9113,6 +9173,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -9557,6 +9620,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -10015,6 +10081,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -10066,6 +10135,9 @@ models:
         safetensors:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         transformers:
             metadataType: MetadataStringValue
             string_value: ""
@@ -10252,6 +10324,9 @@ models:
         mxfp4:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         text-generation-inference:
             metadataType: MetadataStringValue
             string_value: ""

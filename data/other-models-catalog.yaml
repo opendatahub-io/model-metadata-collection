@@ -265,6 +265,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
       artifacts:
         - uri: oci://registry.redhat.io/rhai/modelcar-granite-guardian-3-2-5b:3.0
           createTimeSinceEpoch: "1786322033000"
@@ -322,6 +325,9 @@ models:
         multilingual guard model:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         toxicity detection:
             metadataType: MetadataStringValue
             string_value: ""
@@ -381,6 +387,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         vllm:
             metadataType: MetadataStringValue
             string_value: ""
@@ -427,6 +436,9 @@ models:
         olmo:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
       artifacts:
         - uri: oci://registry.redhat.io/rhai/modelcar-allenai-molmo2-4b:3.0
           createTimeSinceEpoch: "1754345689000"
@@ -1436,6 +1448,9 @@ models:
         safetensors:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         transformers:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2011,6 +2026,9 @@ models:
         safetensors:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         transformers:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2053,6 +2071,9 @@ models:
         safetensors:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         transformers:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2120,6 +2141,9 @@ models:
         ocr:
             metadataType: MetadataStringValue
             string_value: ""
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         table:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2156,6 +2180,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
       artifacts:
         - uri: oci://registry.redhat.io/rhai/modelcar-allenai-olmocr-2-7b-1025-fp8:3.0
           createTimeSinceEpoch: "1786322033000"
@@ -2186,6 +2213,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         vllm:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2219,6 +2249,9 @@ models:
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
+        secured:
+            bool_value: true
+            metadataType: MetadataBoolValue
         vllm:
             metadataType: MetadataStringValue
             string_value: ""

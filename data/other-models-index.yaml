@@ -23,13 +23,25 @@ models:
   uri: registry.redhat.io/rhai/modelcar-redhatai-snowflake-arctic-embed-l-v2-0:3.0
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-gemma-3-12b-it:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
   # Distinct model from validated RedHatAI/gemma-2-9b-it; pin to its own
   # HuggingFace page so the fuzzy matcher can't collapse it onto the wrong one.
   hf_model: RedHatAI/gemma-3-12b-it
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-ibm-granite-granite-docling-258m:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-granite-guardian-3-2-5b:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-llama-3-1-8b-instruct-essential:3.0
   # No matching HuggingFace page exists for this "essential" variant, so pin a
@@ -38,20 +50,44 @@ models:
   name: RedHatAI/Llama-3.1-8B-Instruct-essential
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-google-gemma-4-26b-a4b:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
   # Base (non-instruction-tuned) model, distinct from the validated
   # RedHatAI/gemma-4-26B-A4B-it. Pin to its real HuggingFace page.
   hf_model: google/gemma-4-26b-a4b
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-google-gemma-4-31b:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
   hf_model: google/gemma-4-31b
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-allenai-molmo2-4b:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-allenai-olmocr-2-7b-1025-fp8:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-mistralai-magistral-small-2509:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-nvidia-llama-3-1-nemotron-safety-guard-8b-v3:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-openai-whisper-large-v3:3.0
   # Distinct model from models-catalog's RedHatAI/whisper-large-v3-turbo-quantized.w4a16;
@@ -59,10 +95,18 @@ models:
   hf_model: openai/whisper-large-v3
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-openai-gpt-oss-safeguard-20b:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
   # Distinct model from validated RedHatAI/gpt-oss-20b; pin to its own HuggingFace page.
   hf_model: openai/gpt-oss-safeguard-20b
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-openai-gpt-oss-safeguard-120b:3.0
+  customProperties:
+    secured:
+      metadataType: MetadataBoolValue
+      bool_value: true
   # Distinct model from validated RedHatAI/gpt-oss-120b; pin to its own HuggingFace page.
   hf_model: openai/gpt-oss-safeguard-120b
 - type: oci
