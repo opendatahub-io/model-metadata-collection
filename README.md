@@ -74,7 +74,7 @@ go install github.com/opendatahub-io/model-metadata-collection/cmd/metadata-repo
 
 ### Basic Usage
 
-Run with default settings (processes HuggingFace collections and falls back to `data/models-index.yaml`):
+Run with default settings (processes HuggingFace collections and falls back to `data/validated-models-index.yaml`):
 
 ```bash
 ./build/model-extractor
@@ -100,10 +100,18 @@ Generate metadata completeness reports:
 
 # Use custom catalog file
 ./build/metadata-report \
-  --catalog data/models-catalog.yaml \
+  --catalog data/validated-models-catalog.yaml \
   --output-dir output \
   --report-dir reports
 ```
+
+### Model catalogs
+
+`make process-models` generates **Red Hat Validated Models** from `data/validated-models-index.yaml` and **Other Models** from `data/other-models-index.yaml`. Other explicitly includes `input/supplemental-catalog.yaml`; validated generation excludes supplemental models by default. Both outputs retain the `source` and `models` schema.
+
+Index membership is curated. Validation metadata enrichment does not move models between catalogs. Promotions require an explicit index change and the `validated` label; model family and registry origin alone are not validation evidence.
+
+Coordinate the metadata image rollout with the operator configuration update. Remove the old Red Hat model source and category label referencing `/app/data/models-catalog.yaml`; retain the validated and other source IDs and their existing paths. Verify downstream that the categories display as **Red Hat Validated Models** followed by **Other Models** and that both catalogs load successfully.
 
 ### Skip Specific Processing Steps
 
@@ -117,8 +125,8 @@ Generate metadata completeness reports:
 # Include custom static catalog files
 ./build/model-extractor --static-catalog-files custom1.yaml,custom2.yaml
 
-# Skip default static catalog but include custom ones
-./build/model-extractor --skip-default-static-catalog --static-catalog-files custom.yaml
+# Opt in to the default supplemental catalog
+./build/model-extractor --skip-default-static-catalog=false
 
 # Generate Red Hat MCP servers catalog only (no model processing)
 ./build/model-extractor \
@@ -143,15 +151,15 @@ Generate metadata completeness reports:
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--input` | Path to models index YAML file | `data/models-index.yaml` |
+| `--input` | Path to models index YAML file | `data/validated-models-index.yaml` |
 | `--output-dir` | Output directory for extracted metadata | `output` |
-| `--catalog-output` | Path for the generated models catalog | `data/models-catalog.yaml` |
+| `--catalog-output` | Path for the generated models catalog | `data/validated-models-catalog.yaml` |
 | `--max-concurrent` | Maximum concurrent model processing jobs | `5` |
 | `--skip-huggingface` | Skip HuggingFace collection processing | `false` |
 | `--skip-enrichment` | Skip metadata enrichment | `false` |
 | `--skip-catalog` | Skip catalog generation | `false` |
 | `--static-catalog-files` | Comma-separated list of static catalog files | `""` |
-| `--skip-default-static-catalog` | Skip processing default input/supplemental-catalog.yaml | `false` |
+| `--skip-default-static-catalog` | Skip processing default input/supplemental-catalog.yaml | `true` |
 | `--mcp-index` | Path to MCP servers index YAML file (enables MCP catalog generation) | `""` |
 | `--mcp-catalog-output` | Path for the generated MCP servers catalog | `data/redhat-mcp-servers-catalog.yaml` |
 | `--skip-mcp-enrichment` | Skip MCP server OCI image enrichment (architectures, timestamps) | `false` |
@@ -161,7 +169,7 @@ Generate metadata completeness reports:
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--catalog` | Path to models catalog YAML file | `data/models-catalog.yaml` |
+| `--catalog` | Path to models catalog YAML file | `data/validated-models-catalog.yaml` |
 | `--output-dir` | Directory containing model metadata | `output` |
 | `--report-dir` | Directory for generated reports | `output` |
 | `--help` | Show help message | `false` |
@@ -187,7 +195,6 @@ The image exposes two volume mount points:
 docker run -d --name model-metadata-catalog model-metadata-collection:latest
 
 # Copy catalog files from container to host
-docker cp model-metadata-catalog:/app/data/models-catalog.yaml ./models-catalog.yaml
 docker cp model-metadata-catalog:/app/data/validated-models-catalog.yaml ./validated-models-catalog.yaml
 
 # Mount data directory for external access
@@ -215,7 +222,7 @@ The tool accepts multiple input sources:
 Discovers Red Hat AI validated model collections from HuggingFace and generates version-specific index files such as `input/models/collections/hugging-face-redhat-ai-validated-v1-0.yaml`.
 
 ### Static Model Catalogs
-The tool merges static model catalogs with dynamically extracted metadata. By default, it reads `input/supplemental-catalog.yaml` automatically:
+The tool merges static model catalogs with dynamically extracted metadata. `make process-other-models` explicitly includes `input/supplemental-catalog.yaml`. Direct extractor runs exclude it unless passed with `--static-catalog-files` or enabled with `--skip-default-static-catalog=false`:
 
 ```yaml
 source: Red Hat
@@ -411,9 +418,9 @@ language:
 license: apache-2.0
 licenseLink: https://www.apache.org/licenses/LICENSE-2.0
 tags:
-  - validated                    # From labels array in models-index.yaml
-  - featured                     # From labels array in models-index.yaml
-  - lab-teacher                  # Additional custom labels from models-index.yaml
+  - validated                    # From labels array in the curated model index
+  - featured                     # From labels array in the curated model index
+  - lab-teacher                  # Additional custom labels from the curated model index
   - granite                      # Tags from HuggingFace enrichment
   - language                     # Additional tags merged from various sources
 tasks:
@@ -584,7 +591,7 @@ The tool integrates with HuggingFace APIs to:
 When modelcard extraction fails, the tool creates a minimal metadata structure for enrichment.
 
 **Tag Management**: The tool merges tags from multiple sources:
-- Labels from `models-index.yaml` are added as tags
+- Labels from the curated model index are added as tags
 - Tags from modelcard.md and HuggingFace enrichment are merged and deduplicated
 
 ### Container Registry Integration

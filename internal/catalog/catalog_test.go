@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"bytes"
 	"encoding/base64"
 	"os"
 	"path/filepath"
@@ -1616,5 +1617,53 @@ func TestConvertExtractedToCatalogMetadata_ToolCallingInjectsTask(t *testing.T) 
 	}
 	if !hasToolCalling {
 		t.Errorf("Expected 'tool-calling' to be injected into tasks, got %v", result.Tasks)
+	}
+}
+
+func TestCreateModelsCatalogWithStaticFromResults_OrderIndependent(t *testing.T) {
+	dir := t.TempDir()
+	refs := []string{"z-model", "a-model"}
+	for _, ref := range refs {
+		path := filepath.Join(dir, ref, "models")
+		if err := os.MkdirAll(path, 0755); err != nil {
+			t.Fatal(err)
+		}
+		data, err := yaml.Marshal(types.ExtractedMetadata{Name: stringPtr(ref)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(path, "metadata.yaml"), data, 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	output := filepath.Join(dir, "catalog.yaml")
+	if err := CreateModelsCatalogWithStaticFromResults(dir, output, refs, nil); err != nil {
+		t.Fatal(err)
+	}
+	first, err := os.ReadFile(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := CreateModelsCatalogWithStaticFromResults(dir, output, []string{refs[1], refs[0]}, nil); err != nil {
+		t.Fatal(err)
+	}
+	second, err := os.ReadFile(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(first, second) {
+		t.Error("catalog output depends on input order")
+	}
+	var catalog types.ModelsCatalog
+	if err := yaml.Unmarshal(first, &catalog); err != nil {
+		t.Fatal(err)
+	}
+	if len(catalog.Models) != 2 {
+		t.Fatalf("expected 2 models, got %d", len(catalog.Models))
+	}
+	for i, expected := range []string{"a-model", "z-model"} {
+		if catalog.Models[i].Name == nil || *catalog.Models[i].Name != expected {
+			t.Errorf("expected model %d to be %s", i, expected)
+		}
 	}
 }

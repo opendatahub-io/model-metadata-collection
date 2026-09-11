@@ -1,13 +1,11 @@
 # Simplified Dockerfile for model metadata collection
-# Since models-catalog.yaml is now checked in by CI/CD, we only need to copy the files
+# Since model catalogs are checked in by CI/CD, we only need to copy the files
 FROM registry.access.redhat.com/ubi9-micro:latest
 
 # Create directories for mounting by other applications
 RUN mkdir -p /app/data /app/benchmarks
 
 # Copy the pre-generated catalog and index files from the codebase
-COPY data/models-catalog.yaml /app/data/
-COPY data/models-index.yaml /app/data/
 COPY data/validated-models-catalog.yaml /app/data/
 COPY data/validated-models-index.yaml /app/data/
 COPY data/other-models-catalog.yaml /app/data/
@@ -24,8 +22,7 @@ COPY data/redhat-agents-catalog.yaml /app/data/
 COPY sample-data/ /app/benchmarks/
 
 # Set proper permissions
-RUN chmod 644 /app/data/models-catalog.yaml /app/data/models-index.yaml && \
-    chmod 644 /app/data/validated-models-catalog.yaml /app/data/validated-models-index.yaml && \
+RUN chmod 644 /app/data/validated-models-catalog.yaml /app/data/validated-models-index.yaml && \
     chmod 644 /app/data/other-models-catalog.yaml /app/data/other-models-index.yaml && \
     chmod 644 /app/data/redhat-mcp-servers-catalog.yaml /app/data/redhat-mcp-servers-index.yaml && \
     chmod 644 /app/data/partner-mcp-servers-catalog.yaml /app/data/partner-mcp-servers-index.yaml && \

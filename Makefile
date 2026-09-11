@@ -16,10 +16,8 @@ BUILD_DIR=build
 MAIN_PATH=./cmd/model-extractor
 
 # Default data paths
-REDHAT_MODELS_INDEX_PATH=data/models-index.yaml
 VALIDATED_MODELS_INDEX_PATH=data/validated-models-index.yaml
 OTHER_MODELS_INDEX_PATH=data/other-models-index.yaml
-REDHAT_CATALOG_OUTPUT_PATH=data/models-catalog.yaml
 VALIDATED_CATALOG_OUTPUT_PATH=data/validated-models-catalog.yaml
 OTHER_CATALOG_OUTPUT_PATH=data/other-models-catalog.yaml
 REDHAT_MCP_SERVERS_INDEX_PATH=data/redhat-mcp-servers-index.yaml
@@ -37,7 +35,7 @@ DOCKER_IMAGE_NAME?=quay.io/opendatahub/odh-model-metadata-collection
 DOCKER_IMAGE_TAG?=latest
 DOCKER_FULL_IMAGE_NAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 
-.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-redhat-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents report run-with-report docker-build
+.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents report run-with-report docker-build
 
 # Default target
 all: check build
@@ -131,14 +129,6 @@ run: build
 	@echo "Running model extractor..."
 	./$(BUILD_DIR)/$(BINARY_NAME)
 
-# Process Red Hat models index
-process-redhat-models: build
-	@echo "Processing Red Hat models..."
-	./$(BUILD_DIR)/$(BINARY_NAME) \
-		--input $(REDHAT_MODELS_INDEX_PATH) \
-		--output-dir output/redhat \
-		--catalog-output $(REDHAT_CATALOG_OUTPUT_PATH)
-
 # Process validated models index
 process-validated-models: build
 	@echo "Processing validated models..."
@@ -155,10 +145,10 @@ process-other-models: build
 		--input $(OTHER_MODELS_INDEX_PATH) \
 		--output-dir output/other \
 		--catalog-output $(OTHER_CATALOG_OUTPUT_PATH) \
-		--skip-default-static-catalog
+		--static-catalog-files input/supplemental-catalog.yaml
 
-# Process all model indexes (redhat, validated, other)
-process-models: process-redhat-models process-validated-models process-other-models
+# Process all model indexes (validated, other)
+process-models: process-validated-models process-other-models
 
 # Process Red Hat MCP servers with input/output paths
 process-redhat-mcp: build
@@ -279,8 +269,7 @@ help:
 	@echo "  check        - Run all checks (fmt-check, vet, lint)"
 	@echo "  run          - Run with default settings"
 	@echo "  process      - Process all model indexes and MCP server catalogs"
-	@echo "  process-models          - Process all model indexes (redhat, validated, other)"
-	@echo "  process-redhat-models   - Process Red Hat models index only"
+	@echo "  process-models          - Process all model indexes (validated, other)"
 	@echo "  process-validated-models - Process validated models index only"
 	@echo "  process-other-models    - Process other models index only"
 	@echo "  process-redhat-mcp      - Process Red Hat MCP servers catalog"

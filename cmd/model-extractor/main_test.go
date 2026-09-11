@@ -157,3 +157,25 @@ func TestLoadDotEnv_MissingFile(t *testing.T) {
 	// Should not panic or error on missing file
 	loadDotEnv("/nonexistent/path/.env")
 }
+
+func TestStaticCatalogSelection(t *testing.T) {
+	previous := *inputDir
+	*inputDir = t.TempDir()
+	t.Cleanup(func() { *inputDir = previous })
+	supplemental := filepath.Join(*inputDir, "supplemental-catalog.yaml")
+	if err := os.WriteFile(supplemental, []byte("source: test\nmodels: []\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if !*skipDefaultStaticCatalog {
+		t.Fatal("supplemental catalogs must be excluded by default")
+	}
+	if paths := getStaticCatalogPaths("", *skipDefaultStaticCatalog); len(paths) != 0 {
+		t.Fatalf("default includes static catalogs: %v", paths)
+	}
+	if paths := getStaticCatalogPaths(supplemental, true); len(paths) != 1 || paths[0] != supplemental {
+		t.Fatalf("explicit inclusion failed: %v", paths)
+	}
+	if paths := getStaticCatalogPaths("", false); len(paths) != 1 || paths[0] != supplemental {
+		t.Fatalf("legacy opt-in failed: %v", paths)
+	}
+}
