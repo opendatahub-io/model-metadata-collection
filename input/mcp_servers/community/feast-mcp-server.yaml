@@ -1,0 +1,564 @@
+name: dev.feast/feast-mcp-server
+provider: Feast (LF AI & Data)
+license: apache-2.0
+license_link: https://www.apache.org/licenses/LICENSE-2.0
+description: Feast MCP server — a standalone MCP gateway that proxies a running Feast feature server and registry. Exposes online feature retrieval, materialization, vector search, push ingestion, and full registry metadata management as MCP tools via the `feast mcp` CLI command.
+readme: |-
+    # Feast MCP Server
+
+    **MCP Server Summary:**
+    The Feast MCP server is a standalone MCP gateway that proxies a running
+    Feast feature server and/or registry server. It exposes both feature
+    operations (online retrieval, materialization, push ingestion, vector search)
+    and registry management (entities, feature views, data sources, lineage,
+    permissions) to any MCP-compatible AI agent or assistant.
+
+    ## Features
+
+    ### Feature Server Tools (via --feast-url)
+    - **Online Feature Retrieval** — Fetch real-time features for inference
+    - **Feature Materialization** — Trigger full or incremental materialization
+    - **Push Ingestion** — Push feature data directly into the online/offline store
+    - **Vector & Document Search** — Search and retrieve documents using vector similarity
+    - **Health Monitoring** — Built-in health check endpoint
+
+    ### Registry Tools (via --registry-url)
+    - **Entity Management** — List, get, create, and delete entities
+    - **Feature View Management** — List, get, create, and delete feature views
+    - **Feature Service Management** — List, get, and inspect feature services
+    - **Data Source Management** — List, get, create, and delete data sources
+    - **Feature Inspection** — List features, get feature details
+    - **Project & Permission Management** — List and get projects and permissions
+    - **Lineage Tracking** — Explore registry lineage and object relationships
+    - **Search** — Search across all registry objects
+
+    ### Platform
+    - **Multiple Transports** — stdio, SSE, HTTP, and Streamable HTTP
+    - **Authentication** — Optional OIDC with passthrough mode default
+    - **Observability** — Optional OpenTelemetry log and span export
+    - **Scaling** — Gunicorn workers support for HTTP transports
+
+    ## Prerequisites
+    - A running Feast feature server accessible via URL
+    - (Optional) A running Feast REST registry server (`feast serve_registry --rest-api`). The registry must be running in REST API mode, not gRPC.
+    - Python 3.9+ with Feast installed: `pip install feast[mcp]`
+
+    ## Quick Start
+    ```bash
+    feast mcp --feast-url http://feast-feature-server:6566 \
+              --registry-url http://feast-registry:6572 \
+              --transport http --host 0.0.0.0 --port 8000
+    ```
+
+    ## Configuration Options
+    The `feast mcp` command accepts the following CLI flags:
+
+    **Server:**
+    - `--config` — Path to feast_mcp.yaml config file
+    - `--feast-url` — URL of the Feast feature server to proxy
+    - `--registry-url` — URL of the Feast REST registry server to proxy (must be REST API, not gRPC)
+    - `--timeout` — HTTP timeout in seconds for upstream calls (default: 30)
+    - `--transport` — MCP transport: stdio, http, streamable-http, sse (default: stdio)
+    - `--host` — Bind address for HTTP transports (default: 0.0.0.0)
+    - `--port` — Bind port for HTTP transports (default: 8000)
+    - `--workers` — Gunicorn workers for HTTP transports (not supported by sse)
+
+    **Authentication:**
+    - `--auth-mode` — Auth mode: passthrough or oidc (default: passthrough)
+    - `--oidc-discovery-url` — OIDC discovery document URL
+    - `--oidc-client-id` — OIDC client id
+    - `--oidc-client-secret` — OIDC client secret
+    - `--oidc-audience` — Expected OIDC token audience
+    - `--base-url` — Public base URL for OAuth redirect URIs
+    - `--session-storage-backend` — Shared backend for OAuth state (redis, valkey, postgresql, mongodb, disk, memory)
+
+    **Observability:**
+    - `--log-level` — Log level (default: INFO)
+    - `--log-format` — Console log format: text or json (default: text)
+    - `--otel-endpoint` — OTLP endpoint for log and span export
+    - `--otel-protocol` — OTLP protocol: grpc or http (default: grpc)
+    - `--otel-service-name` — service.name reported to OTEL (default: feast-mcp)
+
+    ## MCP Endpoint
+    MCP is served at `/mcp` by default. Connect your MCP client
+    to `http://<host>:<port>/mcp`.
+
+    ## Deployment on OpenShift AI
+    Deploy using the MCP Lifecycle Operator with the container image.
+    Set `--feast-url` and optionally `--registry-url` to point to your
+    running Feast services.
+version: 1.0.0
+transports:
+    - stdio
+    - http
+    - sse
+    - streamable-http
+documentationUrl: https://docs.feast.dev
+repositoryUrl: https://github.com/feast-dev/feast
+sourceCode: feast-dev/feast
+deploymentMode: container
+tags:
+    - feast
+    - feature-store
+    - registry
+    - mlops
+    - online-features
+    - vector-search
+    - materialization
+    - lineage
+tools:
+    - name: features_get_online_features
+      description: Retrieve online features from the Feast feature store for real-time model inference
+      accessType: read_only
+      parameters:
+        - name: features
+          type: array
+          description: List of feature references to retrieve (e.g. driver_hourly_stats:conv_rate)
+          required: false
+        - name: feature_service
+          type: string
+          description: Name of the feature service to retrieve features from
+          required: false
+        - name: entities
+          type: object
+          description: Entity key-value pairs to look up features for
+          required: true
+    - name: features_search
+      description: Search online documents using vector similarity
+      accessType: read_only
+      parameters:
+        - name: features
+          type: array
+          description: List of feature references to search
+          required: false
+        - name: feature_service
+          type: string
+          description: Name of the feature service to search
+          required: false
+        - name: entities
+          type: object
+          description: Entity key-value pairs for the search query
+          required: true
+    - name: features_retrieve_online_documents
+      description: Retrieve online documents from the feature store
+      accessType: read_only
+      parameters:
+        - name: features
+          type: array
+          description: List of feature references for document retrieval
+          required: false
+        - name: feature_service
+          type: string
+          description: Name of the feature service
+          required: false
+        - name: entities
+          type: object
+          description: Entity key-value pairs for document lookup
+          required: true
+    - name: features_vector_store_search
+      description: Perform vector store search for similar documents or features
+      accessType: read_only
+      parameters:
+        - name: features
+          type: array
+          description: List of feature references for vector search
+          required: false
+        - name: feature_service
+          type: string
+          description: Name of the feature service
+          required: false
+        - name: entities
+          type: object
+          description: Entity key-value pairs for the vector query
+          required: true
+    - name: features_push
+      description: Push feature data directly into the online and/or offline store
+      accessType: read_write
+      parameters:
+        - name: push_source_name
+          type: string
+          description: Name of the push source to push data to
+          required: true
+        - name: df
+          type: object
+          description: Feature data to push (dictionary of column name to values)
+          required: true
+        - name: to
+          type: string
+          description: Target store - online, offline, or both
+          required: false
+    - name: features_write_to_online_store
+      description: Write feature data directly to the online store
+      accessType: read_write
+      parameters:
+        - name: feature_view_name
+          type: string
+          description: Name of the feature view to write to
+          required: true
+        - name: df
+          type: object
+          description: Feature data to write (dictionary of column name to values)
+          required: true
+    - name: features_materialize
+      description: Materialize features from the offline store to the online store for a date range
+      accessType: read_write
+      parameters:
+        - name: start_ts
+          type: string
+          description: Start timestamp for materialization (ISO 8601 format)
+          required: true
+        - name: end_ts
+          type: string
+          description: End timestamp for materialization (ISO 8601 format)
+          required: true
+        - name: feature_views
+          type: array
+          description: List of feature view names to materialize (empty for all)
+          required: false
+    - name: features_materialize_incremental
+      description: Incrementally materialize features from the offline store to the online store
+      accessType: read_write
+      parameters:
+        - name: end_ts
+          type: string
+          description: End timestamp for incremental materialization (ISO 8601 format)
+          required: true
+        - name: feature_views
+          type: array
+          description: List of feature view names to materialize (empty for all)
+          required: false
+    - name: features_health
+      description: Check the health status of the Feast feature server
+      accessType: read_only
+      parameters: []
+    - name: registry_list_entities
+      description: List all entities in the feature store registry
+      accessType: read_only
+      parameters:
+        - name: project
+          type: string
+          description: Project name to filter entities
+          required: false
+    - name: registry_get_entity
+      description: Get detailed information about a specific entity by name
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the entity to retrieve
+          required: true
+    - name: registry_create_entity
+      description: Create or update an entity in the registry
+      accessType: read_write
+      parameters:
+        - name: name
+          type: string
+          description: Name of the entity
+          required: true
+    - name: registry_delete_entity
+      description: Delete an entity from the registry
+      accessType: read_write
+      parameters:
+        - name: name
+          type: string
+          description: Name of the entity to delete
+          required: true
+    - name: registry_list_feature_views
+      description: List all feature views in the registry
+      accessType: read_only
+      parameters:
+        - name: project
+          type: string
+          description: Project name to filter feature views
+          required: false
+    - name: registry_get_feature_view
+      description: Get detailed information about a specific feature view
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the feature view to retrieve
+          required: true
+    - name: registry_create_feature_view
+      description: Create or update a feature view in the registry
+      accessType: read_write
+      parameters:
+        - name: name
+          type: string
+          description: Name of the feature view
+          required: true
+    - name: registry_delete_feature_view
+      description: Delete a feature view from the registry
+      accessType: read_write
+      parameters:
+        - name: name
+          type: string
+          description: Name of the feature view to delete
+          required: true
+    - name: registry_list_feature_services
+      description: List all feature services in the registry
+      accessType: read_only
+      parameters:
+        - name: project
+          type: string
+          description: Project name to filter feature services
+          required: false
+    - name: registry_get_feature_service
+      description: Get detailed information about a specific feature service
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the feature service to retrieve
+          required: true
+    - name: registry_list_data_sources
+      description: List all data sources in the registry
+      accessType: read_only
+      parameters:
+        - name: project
+          type: string
+          description: Project name to filter data sources
+          required: false
+    - name: registry_get_data_source
+      description: Get detailed information about a specific data source
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the data source to retrieve
+          required: true
+    - name: registry_create_data_source
+      description: Create or update a data source in the registry
+      accessType: read_write
+      parameters:
+        - name: name
+          type: string
+          description: Name of the data source
+          required: true
+    - name: registry_delete_data_source
+      description: Delete a data source from the registry
+      accessType: read_write
+      parameters:
+        - name: name
+          type: string
+          description: Name of the data source to delete
+          required: true
+    - name: registry_list_features
+      description: List all features across feature views
+      accessType: read_only
+      parameters:
+        - name: project
+          type: string
+          description: Project name to filter features
+          required: false
+    - name: registry_get_feature
+      description: Get detailed information about a specific feature
+      accessType: read_only
+      parameters:
+        - name: feature_view
+          type: string
+          description: Name of the feature view containing the feature
+          required: true
+        - name: name
+          type: string
+          description: Name of the feature
+          required: true
+    - name: registry_list_projects
+      description: List all projects in the registry
+      accessType: read_only
+      parameters: []
+    - name: registry_get_project
+      description: Get detailed information about a specific project
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the project to retrieve
+          required: true
+    - name: registry_list_permissions
+      description: List all permissions in the registry
+      accessType: read_only
+      parameters: []
+    - name: registry_get_permission
+      description: Get detailed information about a specific permission
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the permission to retrieve
+          required: true
+    - name: registry_list_saved_datasets
+      description: List all saved datasets in the registry
+      accessType: read_only
+      parameters:
+        - name: project
+          type: string
+          description: Project name to filter saved datasets
+          required: false
+    - name: registry_get_saved_dataset
+      description: Get detailed information about a specific saved dataset
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the saved dataset to retrieve
+          required: true
+    - name: registry_list_label_views
+      description: List all label views in the registry
+      accessType: read_only
+      parameters:
+        - name: project
+          type: string
+          description: Project name to filter label views
+          required: false
+    - name: registry_get_label_view
+      description: Get detailed information about a specific label view
+      accessType: read_only
+      parameters:
+        - name: name
+          type: string
+          description: Name of the label view to retrieve
+          required: true
+    - name: registry_get_registry_lineage
+      description: Get the full lineage graph of the registry showing relationships between objects
+      accessType: read_only
+      parameters: []
+    - name: registry_get_object_lineage
+      description: Get lineage for a specific registry object showing its dependencies
+      accessType: read_only
+      parameters:
+        - name: object_type
+          type: string
+          description: Type of the registry object (entity, feature_view, data_source, etc.)
+          required: true
+        - name: object_name
+          type: string
+          description: Name of the object to get lineage for
+          required: true
+    - name: registry_search_registry
+      description: Search across all registry objects by name or type
+      accessType: read_only
+      parameters:
+        - name: query
+          type: string
+          description: Search query string
+          required: true
+artifacts:
+    - uri: oci://quay.io/rh-ee-chpatel/feast-mcp:latest
+      createTimeSinceEpoch: "1787723825000"
+      lastUpdateTimeSinceEpoch: "1787723825000"
+runtimeMetadata:
+    defaultArgs:
+        - feast
+        - mcp
+        - --transport
+        - http
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8000"
+    defaultPort: 8000
+    optionalEnvironmentVariables:
+        - description: URL of the Feast REST registry server to proxy (e.g. http://feast-registry:6572)
+          name: REGISTRY_URL
+          required: false
+          type: config
+        - description: Path to feast_mcp.yaml config file
+          name: CONFIG
+          required: false
+          type: config
+        - description: 'HTTP timeout in seconds for upstream calls (default: 30)'
+          name: TIMEOUT
+          required: false
+          type: config
+        - description: 'MCP transport to serve: stdio, http, streamable-http, sse (default: stdio)'
+          name: TRANSPORT
+          required: false
+          type: config
+        - description: 'Bind address for HTTP transports (default: 0.0.0.0)'
+          name: HOST
+          required: false
+          type: config
+        - description: 'Bind port for HTTP transports (default: 8000)'
+          name: PORT
+          required: false
+          type: config
+        - description: Run under gunicorn with this many workers (not supported by sse)
+          name: WORKERS
+          required: false
+          type: config
+        - description: 'Auth mode: passthrough or oidc (default: passthrough)'
+          name: AUTH_MODE
+          required: false
+          type: config
+        - description: OIDC discovery document URL
+          name: OIDC_DISCOVERY_URL
+          required: false
+          type: config
+        - description: OIDC client id
+          name: OIDC_CLIENT_ID
+          required: false
+          type: secret
+        - description: OIDC client secret
+          name: OIDC_CLIENT_SECRET
+          required: false
+          type: secret
+        - description: Expected OIDC token audience
+          name: OIDC_AUDIENCE
+          required: false
+          type: config
+        - description: Public base URL of this server, used to build OAuth redirect URIs
+          name: BASE_URL
+          required: false
+          type: config
+        - description: Shared backend for OAuth state (redis, valkey, postgresql, mongodb, disk, memory). Required for OIDC auth with >1 replica.
+          name: SESSION_STORAGE_BACKEND
+          required: false
+          type: config
+        - description: 'Log level (default: INFO)'
+          name: LOG_LEVEL
+          required: false
+          type: config
+        - description: 'Console log format: text or json (default: text)'
+          name: LOG_FORMAT
+          required: false
+          type: config
+        - description: OTLP endpoint for log and span export (e.g. http://localhost:4317)
+          name: OTEL_ENDPOINT
+          required: false
+          type: config
+        - description: 'OTLP protocol: grpc or http (default: grpc)'
+          name: OTEL_PROTOCOL
+          required: false
+          type: config
+        - description: 'service.name reported to OTEL (default: feast-mcp)'
+          name: OTEL_SERVICE_NAME
+          required: false
+          type: config
+    prerequisites:
+        environmentVariables:
+            - description: URL of the Feast feature server to proxy
+              name: FEAST_URL
+              required: true
+              type: string
+            - description: URL of the Feast REST registry server to proxy
+              name: REGISTRY_URL
+              required: false
+              type: string
+    recommendedResources:
+        minimal:
+            cpu: 100m
+            memory: 256Mi
+        recommended:
+            cpu: 250m
+            memory: 512Mi
+    requiredEnvironmentVariables:
+        - description: URL of the Feast feature server to proxy (e.g. http://feast-feature-server:6566)
+          name: FEAST_URL
+          required: true
+          type: config
+customProperties:
+    architecture:
+        metadataType: MetadataStringValue
+        string_value: "[\"amd64\"]"
+lastUpdateTimeSinceEpoch: "1787723825000"
