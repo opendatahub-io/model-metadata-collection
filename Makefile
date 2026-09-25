@@ -28,6 +28,8 @@ COMMUNITY_MCP_SERVERS_INDEX_PATH=data/community-mcp-servers-index.yaml
 COMMUNITY_MCP_SERVERS_CATALOG_OUTPUT_PATH=data/community-mcp-servers-catalog.yaml
 REDHAT_AGENTS_INDEX_PATH=data/redhat-agents-index.yaml
 REDHAT_AGENTS_CATALOG_OUTPUT_PATH=data/redhat-agents-catalog.yaml
+REDHAT_SERVING_RUNTIMES_INDEX_PATH=data/redhat-serving-runtimes-index.yaml
+REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH=data/redhat-serving-runtimes-catalog.yaml
 
 # Container parameters
 CONTAINER_RUNTIME?=$(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null || echo docker)
@@ -35,7 +37,7 @@ DOCKER_IMAGE_NAME?=quay.io/opendatahub/odh-model-metadata-collection
 DOCKER_IMAGE_TAG?=latest
 DOCKER_FULL_IMAGE_NAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 
-.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents report run-with-report docker-build
+.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents process-serving-runtimes check-serving-runtimes report run-with-report docker-build
 
 # Default target
 all: check build
@@ -183,6 +185,12 @@ process-agents: build
 	  	--agent-catalog-output "$(REDHAT_AGENTS_CATALOG_OUTPUT_PATH)" \
 	  	--skip-huggingface --skip-enrichment --skip-catalog \
 	  	$(if $(filter true,$(SKIP_AGENT_ENRICHMENT)),--skip-agent-enrichment)
+
+process-serving-runtimes:
+	$(GOCMD) run ./cmd/serving-runtime-catalog --input $(REDHAT_SERVING_RUNTIMES_INDEX_PATH) --output $(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)
+
+check-serving-runtimes:
+	$(GOCMD) run ./cmd/serving-runtime-catalog --input $(REDHAT_SERVING_RUNTIMES_INDEX_PATH) --output $(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH) --check
 
 # Process all model indexes, MCP server catalogs, and agent catalogs
 process: process-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents

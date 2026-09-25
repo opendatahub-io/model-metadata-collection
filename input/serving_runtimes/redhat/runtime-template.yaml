@@ -1,0 +1,14 @@
+# Template only; not referenced by the index and not a deployable runtime.
+# Copy this file for each approved runtime and replace all empty values.
+name: ""
+displayName: ""
+provider: ""
+description: ""
+supportedModelFormats: []
+versions:
+  - version: ""
+    image: ""
+    supportLevel: ""
+    protocolVersions: []
+    defaultArgs: []
+    env: []
