@@ -55,7 +55,7 @@ func TestGenerateServingRuntimeCatalog(t *testing.T) {
 	if err != nil || !bytes.Equal(first, second) {
 		t.Fatalf("generation not deterministic: %v", err)
 	}
-	if !bytes.Contains(first, []byte("serving_runtimes:")) || !bytes.Contains(first, []byte("supportLevel: supported")) || bytes.Contains(first, []byte("input_path")) {
+	if !bytes.Contains(first, []byte("serving_runtimes:")) || !bytes.Contains(first, []byte("supportLevel: redHatSupported")) || bytes.Contains(first, []byte("input_path")) {
 		t.Fatalf("unexpected loader output: %s", first)
 	}
 	files["input/serving_runtimes/redhat/other.yaml"] = &fstest.MapFile{Data: []byte(strings.Replace(validRuntimeInput, "name: vllm", "name: other", 1))}
@@ -84,8 +84,51 @@ func TestServingRuntimeValidation(t *testing.T) {
 	}
 	for name, input := range cases {
 		t.Run(name, func(t *testing.T) {
-			if _, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(input)); err == nil {
+			if _, err := GenerateServingRuntimeCatalog([]byte(strings.Replace(validRuntimeIndex, "Red Hat Serving Runtimes", "Other", 1)), runtimeFiles(input)); err == nil {
 				t.Fatal("expected validation error")
+			}
+		})
+	}
+}
+
+func TestServingRuntimeImageReferences(t *testing.T) {
+	digest := "sha256:" + strings.Repeat("a", 64)
+	cases := []struct {
+		name    string
+		image   string
+		wantErr bool
+	}{
+		{name: "specific tag", image: "quay.io/org/runtime:1.2.3"},
+		{name: "digest only", image: "quay.io/org/runtime@" + digest},
+		{name: "specific tag and digest", image: "quay.io/org/runtime:1.2.3@" + digest},
+		{name: "latest tag", image: "quay.io/org/runtime:latest", wantErr: true},
+		{name: "latest tag and digest", image: "quay.io/org/runtime:latest@" + digest, wantErr: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.Replace(validRuntimeInput, "registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", tc.image, 1)
+			_, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(input))
+			if tc.wantErr {
+				if err == nil || !strings.Contains(err.Error(), "must not use the latest tag") {
+					t.Fatalf("expected latest tag rejection, got %v", err)
+				}
+			} else if err != nil {
+				t.Fatalf("expected valid image reference, got %v", err)
+			}
+		})
+	}
+}
+
+func TestTokenizerParallelismDefault(t *testing.T) {
+	input := strings.Replace(validRuntimeInput, "name: HF_TOKEN\n        secret: true", "name: TOKENIZERS_PARALLELISM\n        defaultValue: 'false'", 1)
+	if _, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(input)); err != nil {
+		t.Fatalf("tokenizer setting should allow a default: %v", err)
+	}
+	for _, flag := range []string{"secret", "required"} {
+		t.Run(flag, func(t *testing.T) {
+			flagged := strings.Replace(input, "defaultValue: 'false'", "defaultValue: 'false'\n        "+flag+": true", 1)
+			if _, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(flagged)); err == nil || !strings.Contains(err.Error(), "unsafe defaultValue") {
+				t.Fatalf("expected unsafe default rejection, got %v", err)
 			}
 		})
 	}
@@ -110,5 +153,25 @@ func TestServingRuntimeIndexValidation(t *testing.T) {
 	}
 	if _, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(strings.Replace(validRuntimeInput, "name: vllm", "name: other", 1))); err == nil {
 		t.Fatal("expected name mismatch error")
+	}
+}
+
+func TestRuntimeSupportLevelFromSource(t *testing.T) {
+	for _, tc := range []struct{ source, inputLevel, want string }{
+		{"Red Hat Serving Runtimes", "community", "redHatSupported"},
+		{"  RED HAT SERVING RUNTIMES  ", "", "redHatSupported"},
+		{"Other", "community", "community"},
+	} {
+		t.Run(tc.source, func(t *testing.T) {
+			index := strings.Replace(validRuntimeIndex, "source: Red Hat Serving Runtimes", "source: '"+tc.source+"'", 1)
+			input := strings.Replace(validRuntimeInput, "supportLevel: supported", "supportLevel: '"+tc.inputLevel+"'", 1)
+			output, err := GenerateServingRuntimeCatalog([]byte(index), runtimeFiles(input))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Contains(output, []byte("supportLevel: "+tc.want)) {
+				t.Fatalf("expected %s: %s", tc.want, output)
+			}
+		})
 	}
 }

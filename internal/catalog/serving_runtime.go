@@ -64,12 +64,17 @@ func GenerateServingRuntimeCatalog(input []byte, inputFiles fs.FS) ([]byte, erro
 		if err != nil {
 			return nil, fmt.Errorf("runtime %q: read %s: %w", entry.Name, entry.InputPath, err)
 		}
-		var runtime types.ServingRuntime
-		if err := decodeRuntimeYAML(data, &runtime); err != nil {
+		runtime, err := decodeServingRuntimeInput(data, entry)
+		if err != nil {
 			return nil, fmt.Errorf("runtime %q (%s): %w", entry.Name, entry.InputPath, err)
 		}
 		if runtime.Name != entry.Name {
 			return nil, fmt.Errorf("runtime name mismatch: index has %q but %s declares %q", entry.Name, entry.InputPath, runtime.Name)
+		}
+		if level := runtimeSupportLevelFromSource(index.Source); level != "" {
+			for i := range runtime.Versions {
+				runtime.Versions[i].SupportLevel = level
+			}
 		}
 		result.ServingRuntimes = append(result.ServingRuntimes, runtime)
 	}
@@ -137,7 +142,10 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 	if err != nil || !strings.Contains(strings.Split(version.Image, "/")[0], ".") || reference.IsNameOnly(image) {
 		return fmt.Errorf("image %q must be a fully qualified pinned container reference", version.Image)
 	}
-	if !slices.Contains([]string{"supported", "techPreview", "developerPreview", "community"}, version.SupportLevel) {
+	if tagged, ok := image.(reference.Tagged); ok && tagged.Tag() == "latest" {
+		return fmt.Errorf("image %q must not use the latest tag", version.Image)
+	}
+	if !slices.Contains([]string{"redHatSupported", "supported", "techPreview", "developerPreview", "community"}, version.SupportLevel) {
 		return fmt.Errorf("invalid supportLevel %q", version.SupportLevel)
 	}
 	if err := validateFormats(version.SupportedModelFormats); err != nil {
@@ -159,7 +167,9 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 			return fmt.Errorf("invalid or duplicate environment variable %q", env.Name)
 		}
 		seen[env.Name] = true
-		if env.DefaultValue != nil && (env.Secret || env.Required || secretNamePattern.MatchString(env.Name)) {
+		// TOKENIZERS_PARALLELISM controls tokenizer threading, not a credential.
+		secretName := env.Name != "TOKENIZERS_PARALLELISM" && secretNamePattern.MatchString(env.Name)
+		if env.DefaultValue != nil && (env.Secret || env.Required || secretName) {
 			return fmt.Errorf("unsafe defaultValue for environment variable %q", env.Name)
 		}
 	}
@@ -182,4 +192,13 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 		}
 	}
 	return nil
+}
+
+// runtimeSupportLevelFromSource follows MCP's source-derived classification.
+// Unrecognized sources leave input support levels unchanged.
+func runtimeSupportLevelFromSource(source string) string {
+	if strings.ToLower(strings.TrimSpace(source)) == "red hat serving runtimes" {
+		return "redHatSupported"
+	}
+	return ""
 }

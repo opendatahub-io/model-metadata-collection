@@ -9,6 +9,7 @@ type ServingRuntimeIndex struct {
 type ServingRuntimeIndexEntry struct {
 	Name      string `yaml:"name"`
 	InputPath string `yaml:"input_path"`
+	Image     string `yaml:"image,omitempty"`
 }
 
 // ServingRuntimeCatalog is the YAML contract consumed by the serving_runtime loader.
