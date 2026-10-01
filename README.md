@@ -113,6 +113,19 @@ Index membership is curated. Validation metadata enrichment does not move models
 
 Coordinate the metadata image rollout with the operator configuration update. Remove the old Red Hat model source and category label referencing `/app/data/models-catalog.yaml`; retain the validated and other source IDs and their existing paths. Verify downstream that the categories display as **Red Hat Validated Models** followed by **Other Models** and that both catalogs load successfully.
 
+### Serving runtime catalog
+
+Serving runtimes follow the MCP index/input/catalog pattern. Maintain the
+`source` and `name`/`input_path` entries in `data/redhat-serving-runtimes-index.yaml`;
+each path points to a separate runtime YAML under `input/serving_runtimes/redhat/`.
+The unreferenced `runtime-template.yaml` shows the input shape. After product and
+model-serving review of versions, images, support levels, and deployment metadata,
+run `make process-serving-runtimes` to write
+`data/redhat-serving-runtimes-catalog.yaml`, then `make check-serving-runtimes`.
+Do not edit the generated catalog. 
+***The current empty index is a stub and
+intentionally fails generation; no serving runtime catalog is packaged yet.***
+
 ### Skip Specific Processing Steps
 
 ```bash

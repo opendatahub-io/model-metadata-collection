@@ -1,0 +1,69 @@
+# Template only; not referenced by the index and not a deployable runtime.
+# Required/optional below refer to this repository's catalog generator.
+# Fill required values and uncomment optional fields only when applicable.
+name: "" # required string; lowercase letters, digits, and hyphens
+displayName: "" # required string
+provider: "" # required string
+description: "" # required string
+# readme: "" # optional string; Markdown
+# logo: "" # optional string; data URL or HTTP(S) URL
+# tags: [] # optional list of strings
+# license: "" # optional string; SPDX identifier
+# licenseLink: "" # optional string; URL
+# documentationUrl: "" # optional string; URL
+# repositoryUrl: "" # optional string; URL
+# publishedDate: "" # optional string; date-time
+# lastUpdated: "" # optional string; date-time
+# externalId: "" # optional string
+# customProperties: {} # optional map of string keys to values; parsed but not persisted by the current loader
+supportedModelFormats: [] # optional list of model format objects
+# To provide model formats, replace the empty list above with:
+# supportedModelFormats:
+#   - name: "" # required string for each format
+#     version: "" # optional string
+#     autoSelect: false # optional boolean
+#     priority: 0 # optional 32-bit integer
+# capabilities: # optional object
+#   requiresGPU: false # optional boolean
+#   supportedAccelerators: [] # optional list of strings
+#   multiModel: false # optional boolean
+versions: # required nonempty list of version objects
+  - version: "" # required nonempty string
+    image: "" # required string; fully qualified image with a non-latest tag or digest
+    # minimumRHOAIVersion: "" # optional string; earliest compatible RHOAI release
+    supportLevel: "" # required enum: supported, techPreview, developerPreview, community
+    # supportedModelFormats: # optional list of model format objects
+    #   - name: "" # required string for each format
+    #     version: "" # optional string
+    #     autoSelect: false # optional boolean
+    #     priority: 0 # optional 32-bit integer
+    protocolVersions: [] # optional list of strings: v1, v2, grpc-v2
+    # recommendedResources: # optional object; include at least one tier
+    #   minimal: # optional resource tier object
+    #     cpu: "" # required resource quantity string when this tier is present
+    #     memory: "" # required resource quantity string when this tier is present
+    #     accelerator: # optional map of resource names to positive integer strings
+    #       "<resource-domain>/<resource-name>": ""
+    #   recommended: # optional resource tier object
+    #     cpu: "" # required resource quantity string when this tier is present
+    #     memory: "" # required resource quantity string when this tier is present
+    #     accelerator: # optional map of resource names to positive integer strings
+    #       "<resource-domain>/<resource-name>": ""
+    #   high: # optional resource tier object
+    #     cpu: "" # required resource quantity string when this tier is present
+    #     memory: "" # required resource quantity string when this tier is present
+    #     accelerator: # optional map of resource names to positive integer strings
+    #       "<resource-domain>/<resource-name>": ""
+    defaultArgs: [] # optional list of nonempty strings
+    env: [] # optional list of environment variable objects
+    # To provide environment variables, replace the empty list above with:
+    # env:
+    #   - name: "" # required string for each variable
+    #     description: "" # optional string
+    #     required: false # optional boolean; whether a value must be supplied
+    #     defaultValue: "" # optional string; only for optional, non-secret variables
+    #     secret: false # optional boolean
+    # template: "" # optional string; JSON-encoded full KServe ServingRuntime manifest
+    # deprecated: false # optional boolean
+    # publishedDate: "" # optional string; date-time
+    # externalId: "" # optional string
