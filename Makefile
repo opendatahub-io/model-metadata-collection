@@ -187,10 +187,10 @@ process-agents: build
 	  	$(if $(filter true,$(SKIP_AGENT_ENRICHMENT)),--skip-agent-enrichment)
 
 process-serving-runtimes:
-	$(GOCMD) run ./cmd/serving-runtime-catalog --input "$(REDHAT_SERVING_RUNTIMES_INDEX_PATH)" --output "$(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)"
+	$(GOCMD) run ./cmd/serving-runtime-catalog --input $(REDHAT_SERVING_RUNTIMES_INDEX_PATH) --output $(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)
 
 check-serving-runtimes:
-	$(GOCMD) run ./cmd/serving-runtime-catalog --input "$(REDHAT_SERVING_RUNTIMES_INDEX_PATH)" --output "$(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)" --check
+	$(GOCMD) run ./cmd/serving-runtime-catalog --input $(REDHAT_SERVING_RUNTIMES_INDEX_PATH) --output $(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH) --check
 
 # Process all model indexes, MCP server catalogs, and agent catalogs
 process: process-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents

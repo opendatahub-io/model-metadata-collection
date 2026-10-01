@@ -1,30 +1,8 @@
 # Add one name/input_path pair per approved runtime. Each path points to a
 # separate YAML under input/serving_runtimes/redhat/ and is relative to the
-# repository root. Upstream OpenShift Templates are mapped by the generator.
-# Set image per entry to resolve the upstream image placeholder before generation.
-source: Red Hat Serving Runtimes
+# repository root. See the unreferenced runtime-template.yaml for the shape.
+# Empty values are intentional; generation fails until this is filled in.
+source: ""
 serving_runtimes:
-  - name: vllm-cpu-runtime
-    input_path: input/serving_runtimes/redhat/vllm-cpu.yaml
-    # Dummy image for catalog examples only; not deployable.
-    image: example.invalid/serving-runtimes/vllm-cpu:0.0.0-example
-  - name: vllm-cpu-x86-runtime
-    input_path: input/serving_runtimes/redhat/vllm-cpu-x86.yaml
-    # Dummy image for catalog examples only; not deployable.
-    image: example.invalid/serving-runtimes/vllm-cpu-x86:0.0.0-example
-  - name: vllm-cuda-runtime
-    input_path: input/serving_runtimes/redhat/vllm-cuda.yaml
-    # Dummy image for catalog examples only; not deployable.
-    image: example.invalid/serving-runtimes/vllm-cuda:0.0.0-example
-  - name: vllm-gaudi-runtime
-    input_path: input/serving_runtimes/redhat/vllm-gaudi.yaml
-    # Dummy image for catalog examples only; not deployable.
-    image: example.invalid/serving-runtimes/vllm-gaudi:0.0.0-example
-  - name: vllm-rocm-runtime
-    input_path: input/serving_runtimes/redhat/vllm-rocm.yaml
-    # Dummy image for catalog examples only; not deployable.
-    image: example.invalid/serving-runtimes/vllm-rocm:0.0.0-example
-  - name: vllm-spyre-s390x-runtime
-    input_path: input/serving_runtimes/redhat/vllm-spyre-s390x.yaml
-    # Dummy image for catalog examples only; not deployable.
-    image: example.invalid/serving-runtimes/vllm-spyre-s390x:0.0.0-example
+  - name: ""
+    input_path: ""
