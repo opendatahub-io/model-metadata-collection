@@ -1,72 +1,68 @@
 # Template only; not referenced by the index and not a deployable runtime.
-# Copy this file for each approved runtime, fill the required empty values,
-# and uncomment optional fields only when their values have been reviewed.
-name: ""
-displayName: ""
-provider: ""
-description: ""
-# readme: |
-#   Markdown documentation for this runtime.
-# logo: "https://example.com/runtime-logo.svg" # Or a data URL.
-# tags: [llm, inference]
-# license: apache-2.0
-# licenseLink: "https://example.com/license"
-# documentationUrl: "https://example.com/docs"
-# repositoryUrl: "https://example.com/repository"
-# publishedDate: "2026-01-01T00:00:00Z"
-# lastUpdated: "2026-01-01T00:00:00Z"
-# externalId: ""
-# The merged loader parses customProperties but does not currently persist them.
-# customProperties:
-#   exampleKey: exampleValue
-supportedModelFormats: []
-# To add a format, replace the empty list above with entries like:
+# Required/optional below refer to this repository's catalog generator.
+# Fill required values and uncomment optional fields only when applicable.
+name: "" # required string; lowercase letters, digits, and hyphens
+displayName: "" # required string
+provider: "" # required string
+description: "" # required string
+# readme: "" # optional string; Markdown
+# logo: "" # optional string; data URL or HTTP(S) URL
+# tags: [] # optional list of strings
+# license: "" # optional string; SPDX identifier
+# licenseLink: "" # optional string; URL
+# documentationUrl: "" # optional string; URL
+# repositoryUrl: "" # optional string; URL
+# publishedDate: "" # optional string; date-time
+# lastUpdated: "" # optional string; date-time
+# externalId: "" # optional string
+# customProperties: {} # optional map of string keys to values; parsed but not persisted by the current loader
+supportedModelFormats: [] # optional list of model format objects
+# To provide model formats, replace the empty list above with:
 # supportedModelFormats:
-#   - name: safetensors
-#     version: "1"
-#     autoSelect: true
-#     priority: 10
-# capabilities:
-#   requiresGPU: true
-#   supportedAccelerators: [nvidia.com/gpu]
-#   multiModel: false
-versions:
-  - version: ""
-    image: ""
-    supportLevel: ""
-    # supportedModelFormats:
-    #   - name: safetensors
-    #     version: "1"
-    #     autoSelect: true
-    #     priority: 10
-    protocolVersions: []
-    # protocolVersions: [v2, grpc-v2]
-    # recommendedResources:
-    #   minimal:
-    #     cpu: "1"
-    #     memory: 2Gi
-    #     accelerator:
-    #       nvidia.com/gpu: "1"
-    #   recommended:
-    #     cpu: "4"
-    #     memory: 16Gi
-    #     accelerator:
-    #       nvidia.com/gpu: "1"
-    #   high:
-    #     cpu: "8"
-    #     memory: 32Gi
-    #     accelerator:
-    #       nvidia.com/gpu: "2"
-    defaultArgs: []
-    # defaultArgs: ["--max-model-len", "4096"]
-    env: []
+#   - name: "" # required string for each format
+#     version: "" # optional string
+#     autoSelect: false # optional boolean
+#     priority: 0 # optional 32-bit integer
+# capabilities: # optional object
+#   requiresGPU: false # optional boolean
+#   supportedAccelerators: [] # optional list of strings
+#   multiModel: false # optional boolean
+versions: # required nonempty list of version objects
+  - version: "" # required nonempty string
+    image: "" # required string; fully qualified image with a non-latest tag or digest
+    supportLevel: "" # required enum: supported, techPreview, developerPreview, community
+    # supportedModelFormats: # optional list of model format objects
+    #   - name: "" # required string for each format
+    #     version: "" # optional string
+    #     autoSelect: false # optional boolean
+    #     priority: 0 # optional 32-bit integer
+    protocolVersions: [] # optional list of strings: v1, v2, grpc-v2
+    # recommendedResources: # optional object; include at least one tier
+    #   minimal: # optional resource tier object
+    #     cpu: "" # required resource quantity string when this tier is present
+    #     memory: "" # required resource quantity string when this tier is present
+    #     accelerator: # optional map of resource names to positive integer strings
+    #       "<resource-domain>/<resource-name>": ""
+    #   recommended: # optional resource tier object
+    #     cpu: "" # required resource quantity string when this tier is present
+    #     memory: "" # required resource quantity string when this tier is present
+    #     accelerator: # optional map of resource names to positive integer strings
+    #       "<resource-domain>/<resource-name>": ""
+    #   high: # optional resource tier object
+    #     cpu: "" # required resource quantity string when this tier is present
+    #     memory: "" # required resource quantity string when this tier is present
+    #     accelerator: # optional map of resource names to positive integer strings
+    #       "<resource-domain>/<resource-name>": ""
+    defaultArgs: [] # optional list of nonempty strings
+    env: [] # optional list of environment variable objects
+    # To provide environment variables, replace the empty list above with:
     # env:
-    #   - name: LOG_LEVEL
-    #     description: Logging verbosity
-    #     required: false
-    #     defaultValue: INFO # Only for optional, non-secret variables.
-    #     secret: false
-    # template: "" # JSON-encoded full KServe ServingRuntime manifest.
-    # deprecated: false
-    # publishedDate: "2026-01-01T00:00:00Z"
-    # externalId: ""
+    #   - name: "" # required string for each variable
+    #     description: "" # optional string
+    #     required: false # optional boolean; whether a value must be supplied
+    #     defaultValue: "" # optional string; only for optional, non-secret variables
+    #     secret: false # optional boolean
+    # template: "" # optional string; JSON-encoded full KServe ServingRuntime manifest
+    # deprecated: false # optional boolean
+    # publishedDate: "" # optional string; date-time
+    # externalId: "" # optional string
