@@ -66,6 +66,89 @@ func TestGenerateServingRuntimeCatalog(t *testing.T) {
 	}
 }
 
+func TestGenerateServingRuntimeCatalogPreservesOptionalLoaderFields(t *testing.T) {
+	input := `name: vllm
+displayName: vLLM
+provider: Red Hat
+description: GPU inference runtime
+readme: "# vLLM"
+logo: https://example.com/logo.svg
+tags: [llm, gpu]
+license: apache-2.0
+licenseLink: https://example.com/license
+documentationUrl: https://example.com/docs
+repositoryUrl: https://example.com/repository
+supportedModelFormats:
+  - name: safetensors
+    version: "1"
+    autoSelect: true
+    priority: 10
+capabilities:
+  requiresGPU: true
+  supportedAccelerators: [nvidia.com/gpu]
+  multiModel: false
+publishedDate: "2026-01-01T00:00:00Z"
+lastUpdated: "2026-02-01T00:00:00Z"
+externalId: runtime-1
+customProperties:
+  owner: example
+versions:
+  - version: "3.4.0"
+    image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+    supportLevel: supported
+    supportedModelFormats:
+      - name: safetensors
+        version: "1"
+        autoSelect: true
+        priority: 10
+    protocolVersions: [v2]
+    recommendedResources:
+      minimal:
+        cpu: "1"
+        memory: 2Gi
+      recommended:
+        cpu: "4"
+        memory: 16Gi
+        accelerator:
+          nvidia.com/gpu: "1"
+      high:
+        cpu: "8"
+        memory: 32Gi
+    defaultArgs: ["--max-model-len", "4096"]
+    env:
+      - name: LOG_LEVEL
+        description: Logging verbosity
+        required: false
+        defaultValue: INFO
+        secret: false
+    template: '{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime"}'
+    deprecated: true
+    publishedDate: "2026-02-01T00:00:00Z"
+    externalId: version-1
+`
+	output, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(input))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, field := range []string{
+		"readme:", "logo:", "tags:", "license:", "licenseLink:",
+		"documentationUrl:", "repositoryUrl:", "autoSelect:", "priority:",
+		"capabilities:", "publishedDate:", "lastUpdated:", "externalId:",
+		"customProperties:", "protocolVersions:", "recommendedResources:",
+		"minimal:", "recommended:", "high:", "defaultArgs:", "env:",
+		"defaultValue:", "template:", "deprecated:",
+	} {
+		if !bytes.Contains(output, []byte(field)) {
+			t.Errorf("generated catalog lost %s: %s", field, output)
+		}
+	}
+	for _, field := range []string{"publishedDate:", "externalId:", "supportedModelFormats:"} {
+		if strings.Count(string(output), field) != 2 {
+			t.Errorf("expected runtime and version %s in output: %s", field, output)
+		}
+	}
+}
+
 func TestServingRuntimeValidation(t *testing.T) {
 	cases := map[string]string{
 		"missing name":        strings.Replace(validRuntimeInput, "name: vllm", "name: ''", 1),

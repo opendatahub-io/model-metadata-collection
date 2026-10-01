@@ -22,11 +22,19 @@ type ServingRuntime struct {
 	DisplayName           string                  `yaml:"displayName,omitempty" json:"displayName,omitempty"`
 	Provider              string                  `yaml:"provider,omitempty" json:"provider,omitempty"`
 	Description           string                  `yaml:"description,omitempty" json:"description,omitempty"`
+	Readme                string                  `yaml:"readme,omitempty" json:"readme,omitempty"`
+	Logo                  string                  `yaml:"logo,omitempty" json:"logo,omitempty"`
 	Tags                  []string                `yaml:"tags,omitempty" json:"tags,omitempty"`
+	License               string                  `yaml:"license,omitempty" json:"license,omitempty"`
+	LicenseLink           string                  `yaml:"licenseLink,omitempty" json:"licenseLink,omitempty"`
 	DocumentationURL      string                  `yaml:"documentationUrl,omitempty" json:"documentationUrl,omitempty"`
 	RepositoryURL         string                  `yaml:"repositoryUrl,omitempty" json:"repositoryUrl,omitempty"`
 	SupportedModelFormats []SupportedModelFormat  `yaml:"supportedModelFormats,omitempty" json:"supportedModelFormats,omitempty"`
 	Capabilities          *RuntimeCapabilities    `yaml:"capabilities,omitempty" json:"capabilities,omitempty"`
+	PublishedDate         string                  `yaml:"publishedDate,omitempty" json:"publishedDate,omitempty"`
+	LastUpdated           string                  `yaml:"lastUpdated,omitempty" json:"lastUpdated,omitempty"`
+	ExternalID            string                  `yaml:"externalId,omitempty" json:"externalId,omitempty"`
+	CustomProperties      map[string]any          `yaml:"customProperties,omitempty" json:"customProperties,omitempty"`
 	Versions              []ServingRuntimeVersion `yaml:"versions" json:"versions"`
 }
 
@@ -39,7 +47,10 @@ type ServingRuntimeVersion struct {
 	RecommendedResources  *RuntimeResourceRecommendation `yaml:"recommendedResources,omitempty" json:"recommendedResources,omitempty"`
 	DefaultArgs           []string                       `yaml:"defaultArgs,omitempty" json:"defaultArgs,omitempty"`
 	Env                   []RuntimeEnvVar                `yaml:"env,omitempty" json:"env,omitempty"`
+	Template              string                         `yaml:"template,omitempty" json:"template,omitempty"`
 	Deprecated            bool                           `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
+	PublishedDate         string                         `yaml:"publishedDate,omitempty" json:"publishedDate,omitempty"`
+	ExternalID            string                         `yaml:"externalId,omitempty" json:"externalId,omitempty"`
 }
 
 type SupportedModelFormat struct {
