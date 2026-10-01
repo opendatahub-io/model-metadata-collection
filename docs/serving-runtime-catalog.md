@@ -30,7 +30,7 @@ All pull requests modifying serving runtime data require:
 ### Image Requirements
 
 - Images must be fully qualified with registry domain (e.g., `registry.redhat.io/...`, `quay.io/...`)
-- Images must be pinned to a specific tag or digest (no `:latest`)
+- Images must be pinned to a specific tag or digest (`:latest` is prohibited even when a digest is also present)
 
 ## File Structure
 
@@ -167,6 +167,7 @@ The catalog generator enforces these rules (generation fails on violations):
 | Duplicate version within runtime | `missing or duplicate version` |
 | Unqualified image (no registry domain) | `must be a fully qualified pinned container reference` |
 | Unpinned image (no tag/digest) | `must be a fully qualified pinned container reference` |
+| `latest` tag, with or without a digest | `must not use the latest tag` |
 | Invalid support level | `invalid supportLevel` |
 | Invalid protocol version | `invalid protocol version` (allowed: `v1`, `v2`, `grpc-v2`) |
 | Invalid resource quantity | `resource tier requires valid cpu and memory quantities` |

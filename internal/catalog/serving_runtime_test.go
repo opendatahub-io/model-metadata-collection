@@ -91,6 +91,34 @@ func TestServingRuntimeValidation(t *testing.T) {
 	}
 }
 
+func TestServingRuntimeImageReferences(t *testing.T) {
+	digest := "sha256:" + strings.Repeat("a", 64)
+	cases := []struct {
+		name    string
+		image   string
+		wantErr bool
+	}{
+		{name: "specific tag", image: "quay.io/org/runtime:1.2.3"},
+		{name: "digest only", image: "quay.io/org/runtime@" + digest},
+		{name: "specific tag and digest", image: "quay.io/org/runtime:1.2.3@" + digest},
+		{name: "latest tag", image: "quay.io/org/runtime:latest", wantErr: true},
+		{name: "latest tag and digest", image: "quay.io/org/runtime:latest@" + digest, wantErr: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.Replace(validRuntimeInput, "registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", tc.image, 1)
+			_, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(input))
+			if tc.wantErr {
+				if err == nil || !strings.Contains(err.Error(), "must not use the latest tag") {
+					t.Fatalf("expected latest tag rejection, got %v", err)
+				}
+			} else if err != nil {
+				t.Fatalf("expected valid image reference, got %v", err)
+			}
+		})
+	}
+}
+
 func TestServingRuntimeIndexValidation(t *testing.T) {
 	cases := map[string]string{
 		"empty stub":        "source: \"\"\nserving_runtimes:\n  - name: \"\"\n    input_path: \"\"\n",

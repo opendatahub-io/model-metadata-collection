@@ -137,6 +137,9 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 	if err != nil || !strings.Contains(strings.Split(version.Image, "/")[0], ".") || reference.IsNameOnly(image) {
 		return fmt.Errorf("image %q must be a fully qualified pinned container reference", version.Image)
 	}
+	if tagged, ok := image.(reference.Tagged); ok && tagged.Tag() == "latest" {
+		return fmt.Errorf("image %q must not use the latest tag", version.Image)
+	}
 	if !slices.Contains([]string{"supported", "techPreview", "developerPreview", "community"}, version.SupportLevel) {
 		return fmt.Errorf("invalid supportLevel %q", version.SupportLevel)
 	}
