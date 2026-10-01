@@ -41,6 +41,7 @@ type ServingRuntime struct {
 type ServingRuntimeVersion struct {
 	Version               string                         `yaml:"version" json:"version"`
 	Image                 string                         `yaml:"image" json:"image"`
+	MinimumRHOAIVersion   string                         `yaml:"minimumRHOAIVersion,omitempty" json:"minimumRHOAIVersion,omitempty"`
 	SupportLevel          string                         `yaml:"supportLevel" json:"supportLevel"`
 	SupportedModelFormats []SupportedModelFormat         `yaml:"supportedModelFormats,omitempty" json:"supportedModelFormats,omitempty"`
 	ProtocolVersions      []string                       `yaml:"protocolVersions,omitempty" json:"protocolVersions,omitempty"`

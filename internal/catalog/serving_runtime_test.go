@@ -25,6 +25,7 @@ capabilities:
 versions:
   - version: "3.4.0"
     image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+    minimumRHOAIVersion: "3.0"
     supportLevel: supported
     protocolVersions: [v2]
     recommendedResources:
@@ -95,6 +96,7 @@ customProperties:
 versions:
   - version: "3.4.0"
     image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+    minimumRHOAIVersion: "3.0"
     supportLevel: supported
     supportedModelFormats:
       - name: safetensors
@@ -137,6 +139,7 @@ versions:
 		"customProperties:", "protocolVersions:", "recommendedResources:",
 		"minimal:", "recommended:", "high:", "defaultArgs:", "env:",
 		"defaultValue:", "template:", "deprecated:",
+		"minimumRHOAIVersion:",
 	} {
 		if !bytes.Contains(output, []byte(field)) {
 			t.Errorf("generated catalog lost %s: %s", field, output)

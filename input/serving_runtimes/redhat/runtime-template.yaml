@@ -30,6 +30,7 @@ supportedModelFormats: [] # optional list of model format objects
 versions: # required nonempty list of version objects
   - version: "" # required nonempty string
     image: "" # required string; fully qualified image with a non-latest tag or digest
+    # minimumRHOAIVersion: "" # optional string; earliest compatible RHOAI release
     supportLevel: "" # required enum: supported, techPreview, developerPreview, community
     # supportedModelFormats: # optional list of model format objects
     #   - name: "" # required string for each format
