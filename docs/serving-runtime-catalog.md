@@ -67,10 +67,12 @@ input/serving_runtimes/redhat/
    - `version` — Semantic version string
    - `image` — Fully qualified, pinned container image
    - `supportLevel` — One of: `supported`, `techPreview`, `developerPreview`, `community`
+   - `servingRuntimeTemplate` — YAML object for a complete ServingRuntime manifest
+   - `llmInferenceServiceTemplate` — YAML object for a complete LLMInferenceServiceConfig manifest
 
    Set `minimumRHOAIVersion` on a version when it requires a minimum Red Hat OpenShift AI release (for example, `"3.0"`). The field is optional and is preserved in the generated catalog.
 
-   For a version with a custom KServe manifest, set the optional `servingRuntimeTemplate` field to a YAML object containing the manifest fields (`apiVersion`, `kind`, `metadata`, and `spec`).
+   Both templates must include `apiVersion`, `kind`, `metadata`, and `spec`. The generator converts each YAML object to a JSON string in the catalog consumed by model-registry.
 
 2. **Add the index entry**
 
@@ -224,6 +226,16 @@ versions:
         containers:
           - name: kserve-container
             image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+    llmInferenceServiceTemplate:
+      apiVersion: serving.kserve.io/v1alpha1
+      kind: LLMInferenceServiceConfig
+      metadata:
+        name: vllm-config
+      spec:
+        template:
+          containers:
+            - name: main
+              image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
     protocolVersions:
       - v2
       - grpc-v2

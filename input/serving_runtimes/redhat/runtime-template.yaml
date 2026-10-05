@@ -63,15 +63,25 @@ versions: # required nonempty list of version objects
     #     required: false # optional boolean; whether a value must be supplied
     #     defaultValue: "" # optional string; only for optional, non-secret variables
     #     secret: false # optional boolean
-    # servingRuntimeTemplate: # optional object; full KServe ServingRuntime manifest
-    #   apiVersion: serving.kserve.io/v1alpha1
-    #   kind: ServingRuntime
-    #   metadata:
-    #     name: ""
-    #   spec:
-    #     containers:
-    #       - name: kserve-container
-    #         image: "" # use the pinned image above
+    servingRuntimeTemplate: # required YAML object; encoded as a JSON string in the generated catalog
+      apiVersion: serving.kserve.io/v1alpha1
+      kind: ServingRuntime
+      metadata:
+        name: "" # required; set the name of the ServingRuntime
+      spec:
+        containers:
+          - name: kserve-container
+            image: "" # required; use the pinned image above
+    llmInferenceServiceTemplate: # required YAML object; encoded as a JSON string in the generated catalog
+      apiVersion: serving.kserve.io/v1alpha1
+      kind: LLMInferenceServiceConfig
+      metadata:
+        name: "" # required; set the name of the LLMInferenceServiceConfig
+      spec:
+        template:
+          containers:
+            - name: main
+              image: "" # required; use the pinned image above
     # deprecated: false # optional boolean
     # publishedDate: "" # optional string; date-time
     # externalId: "" # optional string

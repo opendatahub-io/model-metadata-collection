@@ -67,15 +67,25 @@ versions:
     #     required: false
     #     defaultValue: INFO # Only for optional, non-secret variables.
     #     secret: false
-    # servingRuntimeTemplate: # Optional full KServe ServingRuntime manifest.
-    #   apiVersion: serving.kserve.io/v1alpha1
-    #   kind: ServingRuntime
-    #   metadata:
-    #     name: example-runtime
-    #   spec:
-    #     containers:
-    #       - name: kserve-container
-    #         image: registry.redhat.io/example/runtime:1.0.0
+    servingRuntimeTemplate: # Required YAML object; generated catalog stores a JSON string.
+      apiVersion: serving.kserve.io/v1alpha1
+      kind: ServingRuntime
+      metadata:
+        name: ""
+      spec:
+        containers:
+          - name: kserve-container
+            image: "" # Use the pinned image above.
+    llmInferenceServiceTemplate: # Required YAML object; generated catalog stores a JSON string.
+      apiVersion: serving.kserve.io/v1alpha1
+      kind: LLMInferenceServiceConfig
+      metadata:
+        name: ""
+      spec:
+        template:
+          containers:
+            - name: main
+              image: "" # Use the pinned image above.
     # deprecated: false
     # publishedDate: "2026-01-01T00:00:00Z"
     # externalId: ""

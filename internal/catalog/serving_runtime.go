@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -39,6 +40,55 @@ func decodeRuntimeYAML(input []byte, value any) error {
 	return nil
 }
 
+// decodeServingRuntimeInput accepts YAML objects for version templates and
+// converts them to the JSON strings required by the generated catalog.
+func decodeServingRuntimeInput(input []byte, runtime *types.ServingRuntime) error {
+	var document yaml.Node
+	if err := decodeRuntimeYAML(input, &document); err != nil {
+		return err
+	}
+	if len(document.Content) == 0 {
+		return fmt.Errorf("runtime input must be a YAML object")
+	}
+	root := document.Content[0]
+	if root.Kind == yaml.MappingNode {
+		for i := 0; i+1 < len(root.Content); i += 2 {
+			if root.Content[i].Value != "versions" || root.Content[i+1].Kind != yaml.SequenceNode {
+				continue
+			}
+			for _, version := range root.Content[i+1].Content {
+				if version.Kind != yaml.MappingNode {
+					continue
+				}
+				for j := 0; j+1 < len(version.Content); j += 2 {
+					field := version.Content[j].Value
+					if field != "servingRuntimeTemplate" && field != "llmInferenceServiceTemplate" {
+						continue
+					}
+					template := version.Content[j+1]
+					if template.Kind != yaml.MappingNode {
+						return fmt.Errorf("%s must be a YAML object", field)
+					}
+					var manifest map[string]any
+					if err := template.Decode(&manifest); err != nil {
+						return fmt.Errorf("decode %s: %w", field, err)
+					}
+					encoded, err := json.Marshal(manifest)
+					if err != nil {
+						return fmt.Errorf("encode %s as JSON: %w", field, err)
+					}
+					*template = yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: string(encoded)}
+				}
+			}
+		}
+	}
+	converted, err := yaml.Marshal(&document)
+	if err != nil {
+		return fmt.Errorf("marshal runtime input: %w", err)
+	}
+	return decodeRuntimeYAML(converted, runtime)
+}
+
 // GenerateServingRuntimeCatalog loads the index's individual input files and
 // emits deterministic YAML in the serving_runtime loader's catalog shape.
 // Input paths are relative to the supplied filesystem root, like MCP input_path.
@@ -65,7 +115,7 @@ func GenerateServingRuntimeCatalog(input []byte, inputFiles fs.FS) ([]byte, erro
 			return nil, fmt.Errorf("runtime %q: read %s: %w", entry.Name, entry.InputPath, err)
 		}
 		var runtime types.ServingRuntime
-		if err := decodeRuntimeYAML(data, &runtime); err != nil {
+		if err := decodeServingRuntimeInput(data, &runtime); err != nil {
 			return nil, fmt.Errorf("runtime %q (%s): %w", entry.Name, entry.InputPath, err)
 		}
 		if runtime.Name != entry.Name {
@@ -133,6 +183,12 @@ func validateFormats(formats []types.SupportedModelFormat) error {
 }
 
 func validateVersion(version types.ServingRuntimeVersion) error {
+	if err := validateRequiredRuntimeTemplate("servingRuntimeTemplate", "ServingRuntime", version.ServingRuntimeTemplate); err != nil {
+		return err
+	}
+	if err := validateRequiredRuntimeTemplate("llmInferenceServiceTemplate", "LLMInferenceServiceConfig", version.LLMInferenceServiceTemplate); err != nil {
+		return err
+	}
 	image, err := reference.ParseNormalizedNamed(version.Image)
 	if err != nil || !strings.Contains(strings.Split(version.Image, "/")[0], ".") || reference.IsNameOnly(image) {
 		return fmt.Errorf("image %q must be a fully qualified pinned container reference", version.Image)
@@ -183,6 +239,25 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 				}
 			}
 		}
+	}
+	return nil
+}
+
+func validateRequiredRuntimeTemplate(field, expectedKind, value string) error {
+	if strings.TrimSpace(value) == "" {
+		return fmt.Errorf("%s is required", field)
+	}
+	var manifest struct {
+		APIVersion string         `json:"apiVersion"`
+		Kind       string         `json:"kind"`
+		Metadata   map[string]any `json:"metadata"`
+		Spec       map[string]any `json:"spec"`
+	}
+	if err := json.Unmarshal([]byte(value), &manifest); err != nil {
+		return fmt.Errorf("%s must contain a manifest object: %w", field, err)
+	}
+	if manifest.APIVersion == "" || manifest.Kind != expectedKind || manifest.Metadata == nil || manifest.Spec == nil {
+		return fmt.Errorf("%s requires apiVersion, kind %q, metadata, and spec", field, expectedKind)
 	}
 	return nil
 }
