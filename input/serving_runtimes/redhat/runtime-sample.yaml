@@ -33,6 +33,7 @@ supportedModelFormats: []
 versions:
   - version: ""
     image: ""
+    # minimumRHOAIVersion: "3.0" # Earliest compatible RHOAI release.
     supportLevel: ""
     # supportedModelFormats:
     #   - name: safetensors
@@ -66,7 +67,15 @@ versions:
     #     required: false
     #     defaultValue: INFO # Only for optional, non-secret variables.
     #     secret: false
-    # template: "" # JSON-encoded full KServe ServingRuntime manifest.
+    # servingRuntimeTemplate: # Optional full KServe ServingRuntime manifest.
+    #   apiVersion: serving.kserve.io/v1alpha1
+    #   kind: ServingRuntime
+    #   metadata:
+    #     name: example-runtime
+    #   spec:
+    #     containers:
+    #       - name: kserve-container
+    #         image: registry.redhat.io/example/runtime:1.0.0
     # deprecated: false
     # publishedDate: "2026-01-01T00:00:00Z"
     # externalId: ""

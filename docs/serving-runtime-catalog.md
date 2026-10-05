@@ -68,6 +68,10 @@ input/serving_runtimes/redhat/
    - `image` — Fully qualified, pinned container image
    - `supportLevel` — One of: `supported`, `techPreview`, `developerPreview`, `community`
 
+   Set `minimumRHOAIVersion` on a version when it requires a minimum Red Hat OpenShift AI release (for example, `"3.0"`). The field is optional and is preserved in the generated catalog.
+
+   For a version with a custom KServe manifest, set the optional `servingRuntimeTemplate` field to a YAML object containing the manifest fields (`apiVersion`, `kind`, `metadata`, and `spec`).
+
 2. **Add the index entry**
 
    Edit `data/redhat-serving-runtimes-index.yaml`:
@@ -209,7 +213,17 @@ capabilities:
 versions:
   - version: "3.4.0"
     image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+    minimumRHOAIVersion: "3.0"
     supportLevel: supported
+    servingRuntimeTemplate:
+      apiVersion: serving.kserve.io/v1alpha1
+      kind: ServingRuntime
+      metadata:
+        name: vllm-runtime
+      spec:
+        containers:
+          - name: kserve-container
+            image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
     protocolVersions:
       - v2
       - grpc-v2

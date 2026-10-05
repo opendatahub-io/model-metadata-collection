@@ -2,9 +2,13 @@ package catalog
 
 import (
 	"bytes"
+	"reflect"
 	"strings"
 	"testing"
 	"testing/fstest"
+
+	"github.com/opendatahub-io/model-metadata-collection/pkg/types"
+	"gopkg.in/yaml.v3"
 )
 
 const validRuntimeIndex = `source: Red Hat Serving Runtimes
@@ -123,7 +127,15 @@ versions:
         required: false
         defaultValue: INFO
         secret: false
-    template: '{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime"}'
+    servingRuntimeTemplate:
+      apiVersion: serving.kserve.io/v1alpha1
+      kind: ServingRuntime
+      metadata:
+        name: vllm-runtime
+      spec:
+        containers:
+          - name: kserve-container
+            image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
     deprecated: true
     publishedDate: "2026-02-01T00:00:00Z"
     externalId: version-1
@@ -138,8 +150,8 @@ versions:
 		"capabilities:", "publishedDate:", "lastUpdated:", "externalId:",
 		"customProperties:", "protocolVersions:", "recommendedResources:",
 		"minimal:", "recommended:", "high:", "defaultArgs:", "env:",
-		"defaultValue:", "template:", "deprecated:",
-		"minimumRHOAIVersion:",
+		"defaultValue:", "servingRuntimeTemplate:", "kind: ServingRuntime", "containers:", "deprecated:",
+		"minimumRHOAIVersion: \"3.0\"",
 	} {
 		if !bytes.Contains(output, []byte(field)) {
 			t.Errorf("generated catalog lost %s: %s", field, output)
@@ -150,6 +162,25 @@ versions:
 			t.Errorf("expected runtime and version %s in output: %s", field, output)
 		}
 	}
+	var generated types.ServingRuntimeCatalog
+	if err := yaml.Unmarshal(output, &generated); err != nil {
+		t.Fatal(err)
+	}
+	got := generated.ServingRuntimes[0].Versions[0].ServingRuntimeTemplate
+	want := map[string]any{
+		"apiVersion": "serving.kserve.io/v1alpha1",
+		"kind":       "ServingRuntime",
+		"metadata":   map[string]any{"name": "vllm-runtime"},
+		"spec": map[string]any{
+			"containers": []any{map[string]any{
+				"name":  "kserve-container",
+				"image": "registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0",
+			}},
+		},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("servingRuntimeTemplate changed during generation: got %#v, want %#v", got, want)
+	}
 }
 
 func TestServingRuntimeValidation(t *testing.T) {
@@ -159,13 +190,14 @@ func TestServingRuntimeValidation(t *testing.T) {
 		"empty versions":      strings.Split(validRuntimeInput, "versions:\n")[0] + "versions: []\n",
 		"missing image":       strings.Replace(validRuntimeInput, "image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "image: ''", 1),
 		"unqualified image":   strings.Replace(validRuntimeInput, "registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "vllm:latest", 1),
-		"unpinned image":      strings.Replace(validRuntimeInput, ":3.4.0\n    supportLevel", "\n    supportLevel", 1),
+		"unpinned image":      strings.Replace(validRuntimeInput, "image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "image: registry.redhat.io/rhaii/vllm-cuda-rhel9", 1),
 		"invalid level":       strings.Replace(validRuntimeInput, "supportLevel: supported", "supportLevel: gold", 1),
 		"bad protocol":        strings.Replace(validRuntimeInput, "[v2]", "[v3]", 1),
 		"bad resource":        strings.Replace(validRuntimeInput, "memory: 16Gi", "memory: broken", 1),
 		"unsafe secret":       strings.Replace(validRuntimeInput, "secret: true", "secret: true\n        defaultValue: password", 1),
 		"secret by name":      strings.Replace(validRuntimeInput, "secret: true", "defaultValue: password", 1),
 		"unknown field":       strings.Replace(validRuntimeInput, "provider: Red Hat", "provider: Red Hat\nsurprise: true", 1),
+		"non-object template": strings.Replace(validRuntimeInput, "supportLevel: supported", "supportLevel: supported\n    servingRuntimeTemplate: '{}'", 1),
 		"duplicate version":   strings.Replace(validRuntimeInput, "  - version: \"3.4.0\"", "  - version: \"3.4.0\"\n    image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0\n    supportLevel: supported\n  - version: \"3.4.0\"", 1),
 	}
 	for name, input := range cases {
