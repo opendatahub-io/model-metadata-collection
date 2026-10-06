@@ -125,7 +125,8 @@ run `make process-serving-runtimes` to write
 Do not edit the generated catalog. The current index contains vLLM CUDA, vLLM-Omni
 CUDA, and vLLM ROCm examples with dummy image references; replace them with approved
 images and review their support levels before publishing.
-The Dockerfile does not yet copy the generated serving runtime catalog into the image.
+The Dockerfile copies the generated serving runtime catalog and its index into
+`/app/data/` in the image.
 
 ### Skip Specific Processing Steps
 

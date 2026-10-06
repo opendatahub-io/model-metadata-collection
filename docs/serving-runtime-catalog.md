@@ -7,7 +7,7 @@ This document describes the review process and lifecycle management for the serv
 The serving runtime catalog provides a curated list of supported inference runtimes. The catalog is consumed by the model-registry-operator's serving runtime loader.
 
 **Generated artifact**: `data/redhat-serving-runtimes-catalog.yaml`  
-**Planned packaged location**: `/app/data/redhat-serving-runtimes-catalog.yaml` in the container image
+**Packaged location**: `/app/data/redhat-serving-runtimes-catalog.yaml` in the container image
 
 ## Review Requirements
 
