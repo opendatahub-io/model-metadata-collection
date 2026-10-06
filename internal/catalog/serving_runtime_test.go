@@ -225,6 +225,8 @@ func TestServingRuntimeValidation(t *testing.T) {
 		"missing llm template":     strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "", 1),
 		"empty serving template":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: {}\n", 1),
 		"empty llm template":       strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "    llmInferenceServiceTemplate: {}\n", 1),
+		"openshift template":       strings.Replace(validRuntimeInput, "      kind: ServingRuntime", "      kind: Template", 1),
+		"missing serving spec":     strings.Replace(validRuntimeInput, "      spec:\n        containers:", "      other:\n        containers:", 1),
 		"string template":          strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: '{}'\n", 1),
 		"string llm template":      strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "    llmInferenceServiceTemplate: '{}'\n", 1),
 		"duplicate version":        strings.Replace(validRuntimeInput, "        secret: true\n", "        secret: true\n  - version: \"3.4.0\"\n", 1),

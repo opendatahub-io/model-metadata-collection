@@ -63,7 +63,7 @@ versions: # required nonempty list of version objects
     #     required: false # optional boolean; whether a value must be supplied
     #     defaultValue: "" # optional string; only for optional, non-secret variables
     #     secret: false # optional boolean
-    servingRuntimeTemplate: # required YAML object; encoded as a JSON string in the generated catalog
+    servingRuntimeTemplate: # required ServingRuntime manifest; encoded as a JSON string for model-registry
       apiVersion: serving.kserve.io/v1alpha1
       kind: ServingRuntime
       metadata:
@@ -72,7 +72,7 @@ versions: # required nonempty list of version objects
         containers:
           - name: kserve-container
             image: "" # required; use the pinned image above
-    llmInferenceServiceTemplate: # required YAML object; encoded as a JSON string in the generated catalog
+    llmInferenceServiceTemplate: # required LLMInferenceServiceConfig manifest; encoded as a JSON string for model-registry
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig
       metadata:
