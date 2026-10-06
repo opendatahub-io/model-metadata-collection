@@ -122,9 +122,9 @@ The unreferenced `runtime-template.yaml` shows the input shape. After product an
 model-serving review of versions, images, support levels, and deployment metadata,
 run `make process-serving-runtimes` to write
 `data/redhat-serving-runtimes-catalog.yaml`, then `make check-serving-runtimes`.
-Do not edit the generated catalog. 
-***The current empty index is a stub and
-intentionally fails generation; no serving runtime catalog is packaged yet.***
+Do not edit the generated catalog. The current index contains a vLLM CUDA example
+with a dummy image reference; replace it with an approved image before publishing.
+The Dockerfile does not yet copy the generated serving runtime catalog into the image.
 
 ### Skip Specific Processing Steps
 

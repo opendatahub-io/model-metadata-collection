@@ -1,8 +1,5 @@
-# Add one name/input_path pair per approved runtime. Each path points to a
-# separate YAML under input/serving_runtimes/redhat/ and is relative to the
-# repository root. See the unreferenced runtime-template.yaml for the shape.
-# Empty values are intentional; generation fails until this is filled in.
-source: ""
+# Each input_path is relative to the repository root.
+source: Red Hat Serving Runtimes
 serving_runtimes:
-  - name: ""
-    input_path: ""
+  - name: vllm-cuda
+    input_path: input/serving_runtimes/redhat/vllm-cuda.yaml
