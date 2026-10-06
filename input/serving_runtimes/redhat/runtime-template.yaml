@@ -77,7 +77,7 @@ versions: # required nonempty list of version objects
             containers:
               - name: kserve-container
                 image: "" # required; use the pinned image above
-    llmInferenceServiceTemplate: # required LLMInferenceServiceConfig manifest; encoded as a JSON string for model-registry
+    llmInferenceServiceConfig: # required LLMInferenceServiceConfig manifest; encoded as a JSON string for model-registry
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig
       metadata:

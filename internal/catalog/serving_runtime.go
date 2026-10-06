@@ -40,7 +40,7 @@ func decodeRuntimeYAML(input []byte, value any) error {
 	return nil
 }
 
-// decodeServingRuntimeInput accepts YAML objects for version templates and
+// decodeServingRuntimeInput accepts YAML objects for version manifests and
 // converts them to the JSON strings required by the generated catalog.
 func decodeServingRuntimeInput(input []byte, runtime *types.ServingRuntime) error {
 	var document yaml.Node
@@ -62,22 +62,22 @@ func decodeServingRuntimeInput(input []byte, runtime *types.ServingRuntime) erro
 				}
 				for j := 0; j+1 < len(version.Content); j += 2 {
 					field := version.Content[j].Value
-					if field != "servingRuntimeTemplate" && field != "llmInferenceServiceTemplate" {
+					if field != "servingRuntimeTemplate" && field != "llmInferenceServiceConfig" {
 						continue
 					}
-					template := version.Content[j+1]
-					if template.Kind != yaml.MappingNode {
+					manifestNode := version.Content[j+1]
+					if manifestNode.Kind != yaml.MappingNode {
 						return fmt.Errorf("%s must be a YAML object", field)
 					}
 					var manifest map[string]any
-					if err := template.Decode(&manifest); err != nil {
+					if err := manifestNode.Decode(&manifest); err != nil {
 						return fmt.Errorf("decode %s: %w", field, err)
 					}
 					encoded, err := json.Marshal(manifest)
 					if err != nil {
 						return fmt.Errorf("encode %s as JSON: %w", field, err)
 					}
-					*template = yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: string(encoded)}
+					*manifestNode = yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: string(encoded)}
 				}
 			}
 		}
@@ -186,7 +186,7 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 	if err := validateServingRuntimeTemplate(version.ServingRuntimeTemplate); err != nil {
 		return err
 	}
-	if err := validateRequiredRuntimeTemplate("llmInferenceServiceTemplate", "LLMInferenceServiceConfig", version.LLMInferenceServiceTemplate); err != nil {
+	if err := validateRequiredManifest("llmInferenceServiceConfig", "LLMInferenceServiceConfig", version.LLMInferenceServiceConfig); err != nil {
 		return err
 	}
 	image, err := reference.ParseNormalizedNamed(version.Image)
@@ -268,13 +268,13 @@ func validateServingRuntimeTemplate(value string) error {
 			return fmt.Errorf("%s objects must contain manifest objects: %w", field, err)
 		}
 		if resource.Kind == "ServingRuntime" {
-			return validateRequiredRuntimeTemplate(field+".objects[]", "ServingRuntime", string(object))
+			return validateRequiredManifest(field+".objects[]", "ServingRuntime", string(object))
 		}
 	}
 	return fmt.Errorf("%s objects must contain a ServingRuntime", field)
 }
 
-func validateRequiredRuntimeTemplate(field, expectedKind, value string) error {
+func validateRequiredManifest(field, expectedKind, value string) error {
 	if strings.TrimSpace(value) == "" {
 		return fmt.Errorf("%s is required", field)
 	}

@@ -81,7 +81,7 @@ versions:
             containers:
               - name: kserve-container
                 image: "" # Use the pinned image above.
-    llmInferenceServiceTemplate: # Required LLMInferenceServiceConfig manifest; encoded as a JSON string for model-registry.
+    llmInferenceServiceConfig: # Required LLMInferenceServiceConfig manifest; encoded as a JSON string for model-registry.
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig
       metadata:

@@ -32,7 +32,7 @@ const validServingRuntimeTemplateInput = `    servingRuntimeTemplate:
                 image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
 `
 
-const validLLMInferenceServiceTemplateInput = `    llmInferenceServiceTemplate:
+const validLLMInferenceServiceConfigInput = `    llmInferenceServiceConfig:
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig
       metadata:
@@ -58,7 +58,7 @@ versions:
     image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
     minimumRHOAIVersion: "3.0"
     supportLevel: supported
-` + validServingRuntimeTemplateInput + validLLMInferenceServiceTemplateInput + `    protocolVersions: [v2]
+` + validServingRuntimeTemplateInput + validLLMInferenceServiceConfigInput + `    protocolVersions: [v2]
     recommendedResources:
       recommended:
         cpu: "4"
@@ -168,7 +168,7 @@ versions:
             containers:
               - name: kserve-container
                 image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
-    llmInferenceServiceTemplate:
+    llmInferenceServiceConfig:
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig
       metadata:
@@ -192,7 +192,7 @@ versions:
 		"capabilities:", "publishedDate:", "lastUpdated:", "externalId:",
 		"customProperties:", "protocolVersions:", "recommendedResources:",
 		"minimal:", "recommended:", "high:", "defaultArgs:", "env:",
-		"defaultValue:", "servingRuntimeTemplate:", "llmInferenceServiceTemplate:", "deprecated:",
+		"defaultValue:", "servingRuntimeTemplate:", "llmInferenceServiceConfig:", "deprecated:",
 		"minimumRHOAIVersion: \"3.0\"",
 	} {
 		if !bytes.Contains(output, []byte(field)) {
@@ -212,8 +212,8 @@ versions:
 	if got, want := version.ServingRuntimeTemplate, `{"apiVersion":"template.openshift.io/v1","kind":"Template","metadata":{"name":"vllm-runtime-template"},"objects":[{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime","metadata":{"name":"vllm-runtime"},"spec":{"containers":[{"image":"registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0","name":"kserve-container"}]}}]}`; got != want {
 		t.Errorf("servingRuntimeTemplate changed during generation: got %q, want %q", got, want)
 	}
-	if got, want := version.LLMInferenceServiceTemplate, `{"apiVersion":"serving.kserve.io/v1alpha1","kind":"LLMInferenceServiceConfig","metadata":{"name":"vllm-config"},"spec":{"template":{"containers":[{"image":"registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0","name":"main"}]}}}`; got != want {
-		t.Errorf("llmInferenceServiceTemplate changed during generation: got %q, want %q", got, want)
+	if got, want := version.LLMInferenceServiceConfig, `{"apiVersion":"serving.kserve.io/v1alpha1","kind":"LLMInferenceServiceConfig","metadata":{"name":"vllm-config"},"spec":{"template":{"containers":[{"image":"registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0","name":"main"}]}}}`; got != want {
+		t.Errorf("llmInferenceServiceConfig changed during generation: got %q, want %q", got, want)
 	}
 }
 
@@ -232,15 +232,16 @@ func TestServingRuntimeValidation(t *testing.T) {
 		"secret by name":           strings.Replace(validRuntimeInput, "secret: true", "defaultValue: password", 1),
 		"unknown field":            strings.Replace(validRuntimeInput, "provider: Red Hat", "provider: Red Hat\nsurprise: true", 1),
 		"missing serving template": strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "", 1),
-		"missing llm template":     strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "", 1),
+		"missing llm config":       strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "", 1),
+		"old llm field":            strings.Replace(validRuntimeInput, "    llmInferenceServiceConfig:", "    llmInferenceServiceTemplate:", 1),
 		"empty serving template":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: {}\n", 1),
-		"empty llm template":       strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "    llmInferenceServiceTemplate: {}\n", 1),
+		"empty llm config":         strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "    llmInferenceServiceConfig: {}\n", 1),
 		"direct serving runtime":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: serving.kserve.io/v1alpha1\n      kind: ServingRuntime\n      metadata: {name: vllm-runtime}\n      spec: {containers: []}\n", 1),
 		"empty template objects":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: template.openshift.io/v1\n      kind: Template\n      metadata: {name: vllm-runtime-template}\n      objects: []\n", 1),
 		"missing serving object":   strings.Replace(validRuntimeInput, "          kind: ServingRuntime", "          kind: ConfigMap", 1),
 		"missing serving spec":     strings.Replace(validRuntimeInput, "          spec:\n            containers:", "          other:\n            containers:", 1),
 		"string template":          strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: '{}'\n", 1),
-		"string llm template":      strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "    llmInferenceServiceTemplate: '{}'\n", 1),
+		"string llm config":        strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "    llmInferenceServiceConfig: '{}'\n", 1),
 		"duplicate version":        strings.Replace(validRuntimeInput, "        secret: true\n", "        secret: true\n  - version: \"3.4.0\"\n", 1),
 	}
 	for name, input := range cases {

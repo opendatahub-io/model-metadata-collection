@@ -39,20 +39,20 @@ type ServingRuntime struct {
 }
 
 type ServingRuntimeVersion struct {
-	Version                     string                         `yaml:"version" json:"version"`
-	Image                       string                         `yaml:"image" json:"image"`
-	MinimumRHOAIVersion         string                         `yaml:"minimumRHOAIVersion,omitempty" json:"minimumRHOAIVersion,omitempty"`
-	SupportLevel                string                         `yaml:"supportLevel" json:"supportLevel"`
-	SupportedModelFormats       []SupportedModelFormat         `yaml:"supportedModelFormats,omitempty" json:"supportedModelFormats,omitempty"`
-	ProtocolVersions            []string                       `yaml:"protocolVersions,omitempty" json:"protocolVersions,omitempty"`
-	RecommendedResources        *RuntimeResourceRecommendation `yaml:"recommendedResources,omitempty" json:"recommendedResources,omitempty"`
-	DefaultArgs                 []string                       `yaml:"defaultArgs,omitempty" json:"defaultArgs,omitempty"`
-	Env                         []RuntimeEnvVar                `yaml:"env,omitempty" json:"env,omitempty"`
-	ServingRuntimeTemplate      string                         `yaml:"servingRuntimeTemplate" json:"servingRuntimeTemplate"`
-	LLMInferenceServiceTemplate string                         `yaml:"llmInferenceServiceTemplate" json:"llmInferenceServiceTemplate"`
-	Deprecated                  bool                           `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
-	PublishedDate               string                         `yaml:"publishedDate,omitempty" json:"publishedDate,omitempty"`
-	ExternalID                  string                         `yaml:"externalId,omitempty" json:"externalId,omitempty"`
+	Version                   string                         `yaml:"version" json:"version"`
+	Image                     string                         `yaml:"image" json:"image"`
+	MinimumRHOAIVersion       string                         `yaml:"minimumRHOAIVersion,omitempty" json:"minimumRHOAIVersion,omitempty"`
+	SupportLevel              string                         `yaml:"supportLevel" json:"supportLevel"`
+	SupportedModelFormats     []SupportedModelFormat         `yaml:"supportedModelFormats,omitempty" json:"supportedModelFormats,omitempty"`
+	ProtocolVersions          []string                       `yaml:"protocolVersions,omitempty" json:"protocolVersions,omitempty"`
+	RecommendedResources      *RuntimeResourceRecommendation `yaml:"recommendedResources,omitempty" json:"recommendedResources,omitempty"`
+	DefaultArgs               []string                       `yaml:"defaultArgs,omitempty" json:"defaultArgs,omitempty"`
+	Env                       []RuntimeEnvVar                `yaml:"env,omitempty" json:"env,omitempty"`
+	ServingRuntimeTemplate    string                         `yaml:"servingRuntimeTemplate" json:"servingRuntimeTemplate"`
+	LLMInferenceServiceConfig string                         `yaml:"llmInferenceServiceConfig" json:"llmInferenceServiceConfig"`
+	Deprecated                bool                           `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
+	PublishedDate             string                         `yaml:"publishedDate,omitempty" json:"publishedDate,omitempty"`
+	ExternalID                string                         `yaml:"externalId,omitempty" json:"externalId,omitempty"`
 }
 
 type SupportedModelFormat struct {

@@ -68,7 +68,7 @@ input/serving_runtimes/redhat/
    - `image` — Fully qualified, pinned container image
    - `supportLevel` — One of: `supported`, `techPreview`, `developerPreview`, `community`
    - `servingRuntimeTemplate` — YAML object for an OpenShift Template containing a ServingRuntime in `objects`
-   - `llmInferenceServiceTemplate` — YAML object for a complete LLMInferenceServiceConfig manifest
+   - `llmInferenceServiceConfig` — YAML object for a complete LLMInferenceServiceConfig manifest
 
    Set `minimumRHOAIVersion` on a version when it requires a minimum Red Hat OpenShift AI release (for example, `"3.0"`). The field is optional and is preserved in the generated catalog.
 
@@ -231,7 +231,7 @@ versions:
             containers:
               - name: kserve-container
                 image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
-    llmInferenceServiceTemplate:
+    llmInferenceServiceConfig:
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig
       metadata:
