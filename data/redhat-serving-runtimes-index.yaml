@@ -3,3 +3,7 @@ source: Red Hat Serving Runtimes
 serving_runtimes:
   - name: vllm-cuda
     input_path: input/serving_runtimes/redhat/vllm-cuda.yaml
+  - name: vllm-omni-cuda
+    input_path: input/serving_runtimes/redhat/vllm-omni-cuda.yaml
+  - name: vllm-rocm
+    input_path: input/serving_runtimes/redhat/vllm-rocm.yaml

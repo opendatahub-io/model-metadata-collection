@@ -23,3 +23,48 @@ serving_runtimes:
           supportLevel: community
           servingRuntimeTemplate: '{"apiVersion":"template.openshift.io/v1","kind":"Template","metadata":{"annotations":{"description":"vLLM ServingRuntime with CUDA support (for NVIDIA GPUs)","opendatahub.io/apiProtocol":"REST","opendatahub.io/model-type":"[\"generative\"]","opendatahub.io/modelServingSupport":"[\"single\"]","openshift.io/display-name":"vLLM NVIDIA GPU ServingRuntime for KServe","openshift.io/provider-display-name":"Red Hat, Inc.","tags":"rhods,rhoai,kserve,servingruntime","template.openshift.io/documentation-url":"https://github.com/opendatahub-io/vllm","template.openshift.io/long-description":"This template defines resources needed to deploy vLLM NVIDIA GPU ServingRuntime with KServe in Red Hat OpenShift AI"},"labels":{"opendatahub.io/dashboard":"true","opendatahub.io/ootb":"true"},"name":"vllm-cuda-runtime-template"},"objects":[{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime","metadata":{"annotations":{"opendatahub.io/recommended-accelerators":"[\"nvidia.com/gpu\"]","opendatahub.io/runtime-version":"v0.21.0","openshift.io/display-name":"vLLM NVIDIA GPU ServingRuntime for KServe"},"labels":{"opendatahub.io/dashboard":"true"},"name":"vllm-cuda-runtime"},"spec":{"annotations":{"opendatahub.io/kserve-runtime":"vllm","prometheus.io/path":"/metrics","prometheus.io/port":"8080"},"containers":[{"args":["--port=8080","--model=/mnt/models","--served-model-name={{.Name}}"],"command":["python","-m","vllm.entrypoints.openai.api_server"],"env":[{"name":"HF_HOME","value":"/tmp/hf_home"}],"image":"registry.example.com/example/vllm-cuda:v0.21.0","name":"kserve-container","ports":[{"containerPort":8080,"protocol":"TCP"}]}],"multiModel":false,"supportedModelFormats":[{"autoSelect":true,"name":"vLLM"}]}}]}'
           llmInferenceServiceConfig: '{"apiVersion":"serving.kserve.io/v1alpha2","kind":"LLMInferenceServiceConfig","metadata":{"annotations":{"description":"Standard single-node GPU deployment with intelligent scheduling. Suitable for models that fit in a single GPU."},"labels":{"opendatahub.io/config-type":"workload-single-node"},"name":"single-node-gpu"},"spec":{"template":{"containers":[{"name":"main","resources":{"limits":{"cpu":"4","memory":"32Gi","nvidia.com/gpu":"1"},"requests":{"cpu":"2","memory":"16Gi","nvidia.com/gpu":"1"}}}]}}}'
+    - name: vllm-omni-cuda
+      displayName: vLLM-Omni NVIDIA GPU ServingRuntime for KServe - Tech Preview
+      provider: Red Hat, Inc.
+      description: vLLM-Omni ServingRuntime with CUDA support for multimodal inference (audio, vision, diffusion) on NVIDIA GPUs
+      tags:
+        - rhods
+        - rhoai
+        - kserve
+        - servingruntime
+      documentationUrl: https://github.com/vllm-project/vllm-omni
+      supportedModelFormats:
+        - name: vLLM
+      capabilities:
+        requiresGPU: true
+        supportedAccelerators:
+            - nvidia.com/gpu
+      versions:
+        - version: v0.26.0
+          image: registry.example.com/example/vllm-omni-cuda:v0.26.0
+          supportLevel: community
+          servingRuntimeTemplate: '{"apiVersion":"template.openshift.io/v1","kind":"Template","metadata":{"annotations":{"description":"vLLM-Omni ServingRuntime with CUDA support for multimodal inference (audio, vision, diffusion) on NVIDIA GPUs","opendatahub.io/apiProtocol":"REST","opendatahub.io/model-type":"[\"generative\"]","opendatahub.io/modelServingSupport":"[\"single\"]","opendatahub.io/support-status":"unsupported","openshift.io/display-name":"vLLM-Omni NVIDIA GPU ServingRuntime for KServe - Tech Preview","openshift.io/provider-display-name":"Red Hat, Inc.","tags":"rhods,rhoai,kserve,servingruntime","template.openshift.io/documentation-url":"https://github.com/vllm-project/vllm-omni","template.openshift.io/long-description":"This template defines resources needed to deploy vLLM-Omni NVIDIA GPU ServingRuntime with KServe in Red Hat OpenShift AI for multimodal inference including omni, diffusion, and TTS models (Tech Preview)"},"labels":{"opendatahub.io/dashboard":"true","opendatahub.io/ootb":"true"},"name":"vllm-omni-cuda-runtime-template"},"objects":[{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime","metadata":{"annotations":{"opendatahub.io/recommended-accelerators":"[\"nvidia.com/gpu\"]","opendatahub.io/runtime-version":"v0.26.0","opendatahub.io/support-status":"unsupported","openshift.io/display-name":"vLLM-Omni NVIDIA GPU ServingRuntime for KServe - Tech Preview"},"labels":{"opendatahub.io/dashboard":"true"},"name":"vllm-omni-cuda-runtime"},"spec":{"annotations":{"monitoring.opendatahub.io/scrape":"true","opendatahub.io/kserve-runtime":"vllm-omni","prometheus.io/path":"/metrics","prometheus.io/port":"8080"},"containers":[{"args":["--port=8080","--model=/mnt/models","--omni","--log-stats","--served-model-name={{.Name}}"],"command":["vllm","serve"],"env":[{"name":"HF_HOME","value":"/tmp/hf_home"}],"image":"registry.example.com/example/vllm-omni-cuda:v0.26.0","livenessProbe":{"failureThreshold":3,"httpGet":{"path":"/health","port":8080},"periodSeconds":15},"name":"kserve-container","ports":[{"containerPort":8080,"protocol":"TCP"}],"readinessProbe":{"failureThreshold":3,"httpGet":{"path":"/health","port":8080},"periodSeconds":10},"securityContext":{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"privileged":false,"runAsNonRoot":true},"startupProbe":{"failureThreshold":40,"httpGet":{"path":"/health","port":8080},"periodSeconds":30}}],"multiModel":false,"supportedModelFormats":[{"autoSelect":false,"name":"vLLM"}]}}]}'
+          llmInferenceServiceConfig: '{"apiVersion":"serving.kserve.io/v1alpha2","kind":"LLMInferenceServiceConfig","metadata":{"annotations":{"description":"Standard single-node GPU deployment with intelligent scheduling. Suitable for models that fit in a single GPU."},"labels":{"opendatahub.io/config-type":"workload-single-node"},"name":"single-node-gpu"},"spec":{"template":{"containers":[{"name":"main","resources":{"limits":{"cpu":"4","memory":"32Gi","nvidia.com/gpu":"1"},"requests":{"cpu":"2","memory":"16Gi","nvidia.com/gpu":"1"}}}]}}}'
+    - name: vllm-rocm
+      displayName: vLLM AMD GPU ServingRuntime for KServe
+      provider: Red Hat, Inc.
+      description: vLLM ServingRuntime to support ROCm (for AMD GPUs)
+      tags:
+        - rhods
+        - rhoai
+        - kserve
+        - servingruntime
+      documentationUrl: https://github.com/opendatahub-io/vllm
+      supportedModelFormats:
+        - name: vLLM
+          autoSelect: true
+      capabilities:
+        requiresGPU: true
+        supportedAccelerators:
+            - amd.com/gpu
+      versions:
+        - version: v0.21.0
+          image: registry.example.com/example/vllm-rocm:v0.21.0
+          supportLevel: community
+          servingRuntimeTemplate: '{"apiVersion":"template.openshift.io/v1","kind":"Template","metadata":{"annotations":{"description":"vLLM ServingRuntime to support ROCm (for AMD GPUs)","opendatahub.io/apiProtocol":"REST","opendatahub.io/model-type":"[\"generative\"]","opendatahub.io/modelServingSupport":"[\"single\"]","openshift.io/display-name":"vLLM AMD GPU ServingRuntime for KServe","openshift.io/provider-display-name":"Red Hat, Inc.","tags":"rhods,rhoai,kserve,servingruntime","template.openshift.io/documentation-url":"https://github.com/opendatahub-io/vllm","template.openshift.io/long-description":"This template defines resources needed to deploy vLLM AMD GPU ServingRuntime with KServe in Red Hat OpenShift AI"},"labels":{"opendatahub.io/dashboard":"true","opendatahub.io/ootb":"true"},"name":"vllm-rocm-runtime-template"},"objects":[{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime","metadata":{"annotations":{"opendatahub.io/recommended-accelerators":"[\"amd.com/gpu\"]","opendatahub.io/runtime-version":"v0.21.0","openshift.io/display-name":"vLLM AMD GPU ServingRuntime for KServe"},"labels":{"opendatahub.io/dashboard":"true"},"name":"vllm-rocm-runtime"},"spec":{"annotations":{"opendatahub.io/kserve-runtime":"vllm","prometheus.io/path":"/metrics","prometheus.io/port":"8080"},"containers":[{"args":["--port=8080","--model=/mnt/models","--served-model-name={{.Name}}"],"command":["python","-m","vllm.entrypoints.openai.api_server"],"env":[{"name":"HF_HOME","value":"/tmp/hf_home"}],"image":"registry.example.com/example/vllm-rocm:v0.21.0","name":"kserve-container","ports":[{"containerPort":8080,"protocol":"TCP"}]}],"multiModel":false,"supportedModelFormats":[{"autoSelect":true,"name":"vLLM"}]}}]}'
+          llmInferenceServiceConfig: '{"apiVersion":"serving.kserve.io/v1alpha2","kind":"LLMInferenceServiceConfig","metadata":{"annotations":{"description":"Standard single-node GPU deployment with intelligent scheduling. Suitable for models that fit in a single GPU."},"labels":{"opendatahub.io/config-type":"workload-single-node"},"name":"single-node-amd-gpu"},"spec":{"template":{"containers":[{"name":"main","resources":{"limits":{"amd.com/gpu":"1","cpu":"4","memory":"32Gi"},"requests":{"amd.com/gpu":"1","cpu":"2","memory":"16Gi"}}}]}}}'

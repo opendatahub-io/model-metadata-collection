@@ -41,8 +41,9 @@ data/
 
 input/serving_runtimes/redhat/
   runtime-template.yaml                 # Template for new runtimes
-  runtime-sample.yaml                   # Unindexed example
   vllm-cuda.yaml                        # Indexed vLLM CUDA runtime
+  vllm-omni-cuda.yaml                   # Indexed vLLM-Omni CUDA runtime
+  vllm-rocm.yaml                        # Indexed vLLM ROCm runtime
 ```
 
 ## Adding a New Runtime
