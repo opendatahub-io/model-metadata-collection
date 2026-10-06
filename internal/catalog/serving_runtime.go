@@ -260,7 +260,8 @@ func validateServingRuntimeTemplate(value string) error {
 	if template.APIVersion != "template.openshift.io/v1" || template.Kind != "Template" || template.Metadata == nil || len(template.Objects) == 0 {
 		return fmt.Errorf("%s requires apiVersion template.openshift.io/v1, kind Template, metadata, and nonempty objects", field)
 	}
-	for _, object := range template.Objects {
+	foundServingRuntime := false
+	for i, object := range template.Objects {
 		var resource struct {
 			Kind string `json:"kind"`
 		}
@@ -268,10 +269,16 @@ func validateServingRuntimeTemplate(value string) error {
 			return fmt.Errorf("%s objects must contain manifest objects: %w", field, err)
 		}
 		if resource.Kind == "ServingRuntime" {
-			return validateRequiredManifest(field+".objects[]", "ServingRuntime", string(object))
+			foundServingRuntime = true
+			if err := validateRequiredManifest(fmt.Sprintf("%s.objects[%d]", field, i), "ServingRuntime", string(object)); err != nil {
+				return err
+			}
 		}
 	}
-	return fmt.Errorf("%s objects must contain a ServingRuntime", field)
+	if !foundServingRuntime {
+		return fmt.Errorf("%s objects must contain a ServingRuntime", field)
+	}
+	return nil
 }
 
 func validateRequiredManifest(field, expectedKind, value string) error {

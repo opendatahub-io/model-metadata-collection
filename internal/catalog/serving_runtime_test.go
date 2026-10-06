@@ -253,6 +253,35 @@ func TestServingRuntimeValidation(t *testing.T) {
 	}
 }
 
+func TestServingRuntimeTemplateValidatesEveryServingRuntime(t *testing.T) {
+	const secondObject = `        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            name: second-runtime
+`
+	for _, tc := range []struct {
+		name       string
+		secondSpec string
+		wantError  bool
+	}{
+		{name: "valid second runtime", secondSpec: "          spec: {containers: []}\n"},
+		{name: "missing second runtime spec", wantError: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput,
+				secondObject+tc.secondSpec+validLLMInferenceServiceConfigInput, 1)
+			_, err := GenerateServingRuntimeCatalog([]byte(validRuntimeIndex), runtimeFiles(input))
+			if tc.wantError {
+				if err == nil || !strings.Contains(err.Error(), "servingRuntimeTemplate.objects[1]") {
+					t.Fatalf("expected validation error for second ServingRuntime, got %v", err)
+				}
+			} else if err != nil {
+				t.Fatalf("expected both ServingRuntimes to pass validation: %v", err)
+			}
+		})
+	}
+}
+
 func TestServingRuntimeImageReferences(t *testing.T) {
 	digest := "sha256:" + strings.Repeat("a", 64)
 	cases := []struct {
