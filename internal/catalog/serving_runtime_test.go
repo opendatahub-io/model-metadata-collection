@@ -17,14 +17,19 @@ serving_runtimes:
 `
 
 const validServingRuntimeTemplateInput = `    servingRuntimeTemplate:
-      apiVersion: serving.kserve.io/v1alpha1
-      kind: ServingRuntime
+      apiVersion: template.openshift.io/v1
+      kind: Template
       metadata:
-        name: vllm-runtime
-      spec:
-        containers:
-          - name: kserve-container
-            image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+        name: vllm-runtime-template
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            name: vllm-runtime
+          spec:
+            containers:
+              - name: kserve-container
+                image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
 `
 
 const validLLMInferenceServiceTemplateInput = `    llmInferenceServiceTemplate:
@@ -150,14 +155,19 @@ versions:
         defaultValue: INFO
         secret: false
     servingRuntimeTemplate:
-      apiVersion: serving.kserve.io/v1alpha1
-      kind: ServingRuntime
+      apiVersion: template.openshift.io/v1
+      kind: Template
       metadata:
-        name: vllm-runtime
-      spec:
-        containers:
-          - name: kserve-container
-            image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+        name: vllm-runtime-template
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            name: vllm-runtime
+          spec:
+            containers:
+              - name: kserve-container
+                image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
     llmInferenceServiceTemplate:
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig
@@ -199,7 +209,7 @@ versions:
 		t.Fatal(err)
 	}
 	version := generated.ServingRuntimes[0].Versions[0]
-	if got, want := version.ServingRuntimeTemplate, `{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime","metadata":{"name":"vllm-runtime"},"spec":{"containers":[{"image":"registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0","name":"kserve-container"}]}}`; got != want {
+	if got, want := version.ServingRuntimeTemplate, `{"apiVersion":"template.openshift.io/v1","kind":"Template","metadata":{"name":"vllm-runtime-template"},"objects":[{"apiVersion":"serving.kserve.io/v1alpha1","kind":"ServingRuntime","metadata":{"name":"vllm-runtime"},"spec":{"containers":[{"image":"registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0","name":"kserve-container"}]}}]}`; got != want {
 		t.Errorf("servingRuntimeTemplate changed during generation: got %q, want %q", got, want)
 	}
 	if got, want := version.LLMInferenceServiceTemplate, `{"apiVersion":"serving.kserve.io/v1alpha1","kind":"LLMInferenceServiceConfig","metadata":{"name":"vllm-config"},"spec":{"template":{"containers":[{"image":"registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0","name":"main"}]}}}`; got != want {
@@ -225,8 +235,10 @@ func TestServingRuntimeValidation(t *testing.T) {
 		"missing llm template":     strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "", 1),
 		"empty serving template":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: {}\n", 1),
 		"empty llm template":       strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "    llmInferenceServiceTemplate: {}\n", 1),
-		"openshift template":       strings.Replace(validRuntimeInput, "      kind: ServingRuntime", "      kind: Template", 1),
-		"missing serving spec":     strings.Replace(validRuntimeInput, "      spec:\n        containers:", "      other:\n        containers:", 1),
+		"direct serving runtime":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: serving.kserve.io/v1alpha1\n      kind: ServingRuntime\n      metadata: {name: vllm-runtime}\n      spec: {containers: []}\n", 1),
+		"empty template objects":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: template.openshift.io/v1\n      kind: Template\n      metadata: {name: vllm-runtime-template}\n      objects: []\n", 1),
+		"missing serving object":   strings.Replace(validRuntimeInput, "          kind: ServingRuntime", "          kind: ConfigMap", 1),
+		"missing serving spec":     strings.Replace(validRuntimeInput, "          spec:\n            containers:", "          other:\n            containers:", 1),
 		"string template":          strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: '{}'\n", 1),
 		"string llm template":      strings.Replace(validRuntimeInput, validLLMInferenceServiceTemplateInput, "    llmInferenceServiceTemplate: '{}'\n", 1),
 		"duplicate version":        strings.Replace(validRuntimeInput, "        secret: true\n", "        secret: true\n  - version: \"3.4.0\"\n", 1),

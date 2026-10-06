@@ -67,15 +67,20 @@ versions:
     #     required: false
     #     defaultValue: INFO # Only for optional, non-secret variables.
     #     secret: false
-    servingRuntimeTemplate: # Required ServingRuntime manifest; encoded as a JSON string for model-registry.
-      apiVersion: serving.kserve.io/v1alpha1
-      kind: ServingRuntime
+    servingRuntimeTemplate: # Required OpenShift Template containing a ServingRuntime; encoded as JSON for model-registry.
+      apiVersion: template.openshift.io/v1
+      kind: Template
       metadata:
         name: ""
-      spec:
-        containers:
-          - name: kserve-container
-            image: "" # Use the pinned image above.
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            name: ""
+          spec:
+            containers:
+              - name: kserve-container
+                image: "" # Use the pinned image above.
     llmInferenceServiceTemplate: # Required LLMInferenceServiceConfig manifest; encoded as a JSON string for model-registry.
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig

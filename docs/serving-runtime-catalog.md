@@ -67,12 +67,12 @@ input/serving_runtimes/redhat/
    - `version` — Semantic version string
    - `image` — Fully qualified, pinned container image
    - `supportLevel` — One of: `supported`, `techPreview`, `developerPreview`, `community`
-   - `servingRuntimeTemplate` — YAML object for a complete ServingRuntime manifest
+   - `servingRuntimeTemplate` — YAML object for an OpenShift Template containing a ServingRuntime in `objects`
    - `llmInferenceServiceTemplate` — YAML object for a complete LLMInferenceServiceConfig manifest
 
    Set `minimumRHOAIVersion` on a version when it requires a minimum Red Hat OpenShift AI release (for example, `"3.0"`). The field is optional and is preserved in the generated catalog.
 
-   Both templates must include `apiVersion`, `kind`, `metadata`, and `spec`. The generator converts each YAML object to a JSON string in the catalog consumed by model-registry.
+   The OpenShift Template needs `apiVersion: template.openshift.io/v1`, `kind: Template`, `metadata`, and a nonempty `objects` list containing a ServingRuntime with `apiVersion`, `kind`, `metadata`, and `spec`. The LLMInferenceServiceConfig needs `apiVersion`, `kind`, `metadata`, and `spec`. The generator converts each YAML object to a JSON string in the catalog consumed by model-registry. A consumer must process the OpenShift Template before creating its ServingRuntime; the current model-registry API description specifies a direct ServingRuntime manifest.
 
 2. **Add the index entry**
 
@@ -218,14 +218,19 @@ versions:
     minimumRHOAIVersion: "3.0"
     supportLevel: supported
     servingRuntimeTemplate:
-      apiVersion: serving.kserve.io/v1alpha1
-      kind: ServingRuntime
+      apiVersion: template.openshift.io/v1
+      kind: Template
       metadata:
-        name: vllm-runtime
-      spec:
-        containers:
-          - name: kserve-container
-            image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
+        name: vllm-runtime-template
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            name: vllm-runtime
+          spec:
+            containers:
+              - name: kserve-container
+                image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0
     llmInferenceServiceTemplate:
       apiVersion: serving.kserve.io/v1alpha1
       kind: LLMInferenceServiceConfig

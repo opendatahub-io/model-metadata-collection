@@ -183,7 +183,7 @@ func validateFormats(formats []types.SupportedModelFormat) error {
 }
 
 func validateVersion(version types.ServingRuntimeVersion) error {
-	if err := validateRequiredRuntimeTemplate("servingRuntimeTemplate", "ServingRuntime", version.ServingRuntimeTemplate); err != nil {
+	if err := validateServingRuntimeTemplate(version.ServingRuntimeTemplate); err != nil {
 		return err
 	}
 	if err := validateRequiredRuntimeTemplate("llmInferenceServiceTemplate", "LLMInferenceServiceConfig", version.LLMInferenceServiceTemplate); err != nil {
@@ -241,6 +241,37 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 		}
 	}
 	return nil
+}
+
+func validateServingRuntimeTemplate(value string) error {
+	const field = "servingRuntimeTemplate"
+	if strings.TrimSpace(value) == "" {
+		return fmt.Errorf("%s is required", field)
+	}
+	var template struct {
+		APIVersion string            `json:"apiVersion"`
+		Kind       string            `json:"kind"`
+		Metadata   map[string]any    `json:"metadata"`
+		Objects    []json.RawMessage `json:"objects"`
+	}
+	if err := json.Unmarshal([]byte(value), &template); err != nil {
+		return fmt.Errorf("%s must contain an OpenShift Template object: %w", field, err)
+	}
+	if template.APIVersion != "template.openshift.io/v1" || template.Kind != "Template" || template.Metadata == nil || len(template.Objects) == 0 {
+		return fmt.Errorf("%s requires apiVersion template.openshift.io/v1, kind Template, metadata, and nonempty objects", field)
+	}
+	for _, object := range template.Objects {
+		var resource struct {
+			Kind string `json:"kind"`
+		}
+		if err := json.Unmarshal(object, &resource); err != nil {
+			return fmt.Errorf("%s objects must contain manifest objects: %w", field, err)
+		}
+		if resource.Kind == "ServingRuntime" {
+			return validateRequiredRuntimeTemplate(field+".objects[]", "ServingRuntime", string(object))
+		}
+	}
+	return fmt.Errorf("%s objects must contain a ServingRuntime", field)
 }
 
 func validateRequiredRuntimeTemplate(field, expectedKind, value string) error {
