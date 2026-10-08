@@ -8,6 +8,7 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
 GOFMT=gofmt
+YAMLLINT?=yamllint
 BINARY_NAME=model-extractor
 BINARY_UNIX=$(BINARY_NAME)_unix
 
@@ -30,6 +31,13 @@ REDHAT_AGENTS_INDEX_PATH=data/redhat-agents-index.yaml
 REDHAT_AGENTS_CATALOG_OUTPUT_PATH=data/redhat-agents-catalog.yaml
 REDHAT_SERVING_RUNTIMES_INDEX_PATH=data/redhat-serving-runtimes-index.yaml
 REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH=data/redhat-serving-runtimes-catalog.yaml
+SERVING_RUNTIME_GENERATOR_CONFIG_PATH?=input/serving_runtimes/generator-config.yaml
+SERVING_RUNTIME_AUTHFILE?=
+SERVING_RUNTIME_SKIP_UNAVAILABLE_IMAGES?=false
+SERVING_RUNTIME_TOOLS_BIN?=$(abspath $(BUILD_DIR))/serving-runtime-tools/bin
+SKOPEO_VERSION?=v1.22.0
+COSIGN_VERSION?=v3.0.5
+KUSTOMIZE_VERSION?=v5.8.1
 
 # Container parameters
 CONTAINER_RUNTIME?=$(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null || echo docker)
@@ -37,7 +45,7 @@ DOCKER_IMAGE_NAME?=quay.io/opendatahub/odh-model-metadata-collection
 DOCKER_IMAGE_TAG?=latest
 DOCKER_FULL_IMAGE_NAME=$(DOCKER_IMAGE_NAME):$(DOCKER_IMAGE_TAG)
 
-.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents process-serving-runtimes check-serving-runtimes report run-with-report docker-build
+.PHONY: all build build-report clean test test-coverage lint fmt vet deps check help run process process-models process-validated-models process-other-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents install-serving-runtime-tools generate-serving-runtimes process-serving-runtimes check-serving-runtimes validate-serving-runtimes lint-serving-runtimes report run-with-report docker-build
 
 # Default target
 all: check build
@@ -186,11 +194,41 @@ process-agents: build
 	  	--skip-huggingface --skip-enrichment --skip-catalog \
 	  	$(if $(filter true,$(SKIP_AGENT_ENRICHMENT)),--skip-agent-enrichment)
 
+# Reuse tools on PATH, then look in the local install directory. Only generation
+# needs these CLIs; offline catalog checks do not download or install them.
+generate-serving-runtimes install-serving-runtime-tools: export PATH := $(PATH):$(SERVING_RUNTIME_TOOLS_BIN)
+
+install-serving-runtime-tools:
+	@set -eu; \
+	for spec in \
+		"skopeo=github.com/containers/skopeo/cmd/skopeo@$(SKOPEO_VERSION)" \
+		"cosign=github.com/sigstore/cosign/v3/cmd/cosign@$(COSIGN_VERSION)" \
+		"kustomize=sigs.k8s.io/kustomize/kustomize/v5@$(KUSTOMIZE_VERSION)"; do \
+		tool=$${spec%%=*}; \
+		if ! command -v "$$tool" >/dev/null 2>&1; then \
+			echo "Installing $$tool ($${spec#*=})..."; \
+			if [ "$$tool" = skopeo ]; then \
+				CGO_ENABLED=0 GOBIN="$(SERVING_RUNTIME_TOOLS_BIN)" $(GOCMD) install -tags=containers_image_openpgp "$${spec#*=}"; \
+			else \
+				GOBIN="$(SERVING_RUNTIME_TOOLS_BIN)" $(GOCMD) install "$${spec#*=}"; \
+			fi; \
+		fi; \
+	done
+
+generate-serving-runtimes: install-serving-runtime-tools
+	$(GOCMD) run ./cmd/serving-runtime-catalog --config "$(SERVING_RUNTIME_GENERATOR_CONFIG_PATH)" --authfile "$(SERVING_RUNTIME_AUTHFILE)" --skip-unavailable-images="$(SERVING_RUNTIME_SKIP_UNAVAILABLE_IMAGES)" --index-output "$(REDHAT_SERVING_RUNTIMES_INDEX_PATH)" --output "$(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)"
+
 process-serving-runtimes:
 	$(GOCMD) run ./cmd/serving-runtime-catalog --input "$(REDHAT_SERVING_RUNTIMES_INDEX_PATH)" --output "$(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)"
 
-check-serving-runtimes:
+check-serving-runtimes: install-serving-runtime-tools validate-serving-runtimes
 	$(GOCMD) run ./cmd/serving-runtime-catalog --input "$(REDHAT_SERVING_RUNTIMES_INDEX_PATH)" --output "$(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)" --check
+
+validate-serving-runtimes:
+	$(GOCMD) run ./cmd/serving-runtime-validate --catalog "$(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)"
+
+lint-serving-runtimes:
+	$(YAMLLINT) --strict -c .yamllint-serving-runtimes.yaml "$(REDHAT_SERVING_RUNTIMES_CATALOG_OUTPUT_PATH)" "$(REDHAT_SERVING_RUNTIMES_INDEX_PATH)" input/serving_runtimes/generated/redhat/*.yaml
 
 # Process all model indexes, MCP server catalogs, and agent catalogs
 process: process-models process-redhat-mcp process-partner-mcp process-community-mcp process-agents
@@ -283,6 +321,12 @@ help:
 	@echo "  process-redhat-mcp      - Process Red Hat MCP servers catalog"
 	@echo "  process-partner-mcp     - Process Partner MCP servers catalog"
 	@echo "  process-community-mcp   - Process Community MCP servers catalog"
+	@echo "  install-serving-runtime-tools - Install missing Skopeo, Cosign, and Kustomize CLIs with Go"
+	@echo "  generate-serving-runtimes - Generate runtime index, inputs, and catalog from source config"
+	@echo "  process-serving-runtimes  - Regenerate runtime catalog from committed inputs"
+	@echo "  check-serving-runtimes    - Validate API schema and check catalog against committed inputs"
+	@echo "  validate-serving-runtimes - Validate runtime catalog against pinned model-registry schemas"
+	@echo "  lint-serving-runtimes     - Lint generated runtime index, inputs, and catalog YAML"
 	@echo "  report       - Generate metadata completeness report"
 	@echo "  run-with-report - Run extraction then generate report"
 	@echo "  dev          - Quick development iteration"

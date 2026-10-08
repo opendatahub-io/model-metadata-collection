@@ -1,0 +1,33 @@
+capabilities:
+  requiresGPU: true
+  supportedAccelerators:
+    - amd.com/gpu
+description: vLLM AMD ROCm GPU LLMInferenceServiceConfig for LLMInferenceService.
+displayName: vLLM AMD ROCm GPU LLMInferenceServiceConfig
+name: kserve-config-llm-template-amd-rocm
+provider: Red Hat, Inc.
+versions:
+  - image: registry.redhat.io/rhaii-fast/vllm-rocm-rhel9:3.6.0-fast.1@sha256:f131cb5f2dfac4ee5dc71b9dfc5e9a3d295191c5d4699b3e95505516e7e9d9e6
+    llmInferenceServiceConfig:
+      apiVersion: serving.kserve.io/v1alpha2
+      kind: LLMInferenceServiceConfig
+      metadata:
+        annotations:
+          opendatahub.io/recommended-accelerators: '["amd.com/gpu"]'
+          opendatahub.io/runtime-version: 0.26.0+rhaiv.7
+          opendatahub.io/supported-topologies: '["workload-single-node"]'
+          openshift.io/description: vLLM AMD ROCm GPU LLMInferenceServiceConfig for LLMInferenceService.
+          openshift.io/display-name: vLLM AMD ROCm GPU LLMInferenceServiceConfig
+          serving.kserve.io/well-known-config: "true"
+        labels:
+          opendatahub.io/config-type: accelerator
+        name: 0-26-0-config-llm-template-amd-rocm
+        namespace: opendatahub
+      spec:
+        template:
+          containers:
+            - image: registry.redhat.io/rhaii-fast/vllm-rocm-rhel9:3.6.0-fast.1@sha256:f131cb5f2dfac4ee5dc71b9dfc5e9a3d295191c5d4699b3e95505516e7e9d9e6
+              name: main
+    minimumRHOAIVersion: "3.6"
+    supportLevel: techPreview
+    version: 0.26.0+rhaiv.7

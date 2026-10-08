@@ -115,16 +115,45 @@ Coordinate the metadata image rollout with the operator configuration update. Re
 
 ### Serving runtime catalog
 
-Serving runtimes follow the MCP index/input/catalog pattern. Maintain the
-`source` and `name`/`input_path` entries in `data/redhat-serving-runtimes-index.yaml`;
-each path points to a separate runtime YAML under `input/serving_runtimes/redhat/`.
-The unreferenced `runtime-template.yaml` shows the input shape. After product and
-model-serving review of versions, images, support levels, and deployment metadata,
-run `make process-serving-runtimes` to write
-`data/redhat-serving-runtimes-catalog.yaml`, then `make check-serving-runtimes`.
-Do not edit the generated catalog. The current index contains vLLM CUDA, vLLM-Omni
-CUDA, and vLLM ROCm examples with dummy image references; replace them with approved
-images and review their support levels before publishing.
+Configure template sources and optional `params.env` image overrides in
+`input/serving_runtimes/generator-config.yaml`. Run
+`make generate-serving-runtimes` to generate both
+`data/redhat-serving-runtimes-index.yaml` and
+`data/redhat-serving-runtimes-catalog.yaml`, plus their individual runtime inputs.
+The generator resolves source containers from target images, recursively discovers
+templates, and uses the projects' kustomize overlays for image and annotation
+replacement. Names and metadata come from the templates; each ServingRuntime
+Template or LLMInferenceServiceConfig becomes an independent entry. Support levels
+are inferred from the target release and each template's runtime images.
+Each version's minimum RHOAI release defaults to the target tag's `major.minor`
+and can be overridden per template.
+
+`make process-serving-runtimes` and `make check-serving-runtimes` regenerate/check
+the catalog from the checked-in inputs without downloading images. The checked-in
+catalog is also checked against pinned model-registry OpenAPI schemas;
+`make validate-serving-runtimes` runs this check independently. The minimum RHOAI
+field is a catalog extension that the current upstream API/loader do not expose.
+The EA configuration uses floating `v3.6-ea.1` / `3.6.0-fast.1` aliases for images
+originally selected from the matching RHOAI operator bundle. The older CPU runtime
+has no 3.6 EA alias and keeps its bundle digest pin. Generation freezes available
+aliases to digests. These replace the controller source's `params.env`
+defaults before Kustomize renders the templates. Upstream vLLM versions are
+resolved automatically from SPDX SBOM attestations using Cosign and passed through
+upstream-version parameters, including for older controller sources.
+Additional GA sources use expected floating `3.6`/`v3.6` Red Hat tags. Generation
+checks parameter images, freezes published tags to digests, and skips only runtime
+versions using explicitly missing images. Registry authentication failures stop
+generation by default; `SERVING_RUNTIME_SKIP_UNAVAILABLE_IMAGES=true` on the Make
+generation command also skips unauthorized/not-found parameter images and entire
+sources whose controller/source-image lookups return these errors or registry
+absence. Controller availability is checked before parameter lookups. Controller
+lookups remain strict without this flag. Extracted source configuration is shared
+by immutable digest within one run and discarded afterward; parameter sets render
+separate copies. Registry HTTP 408/429/500/502/503/504 and transient network errors
+receive up to three retries with exponential backoff. Exhausted retries remain
+fatal; an entirely unavailable catalog leaves existing outputs intact.
+See [Serving Runtime Catalog](docs/serving-runtime-catalog.md) for configuration,
+source-image discovery, and review requirements.
 The Dockerfile copies the generated serving runtime catalog and its index into
 `/app/data/` in the image.
 

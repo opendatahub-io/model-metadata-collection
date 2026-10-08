@@ -1,0 +1,8 @@
+extends: default
+rules:
+  # Generated single-document files omit the optional YAML document marker.
+  document-start: disable
+  # The loader requires JSON manifests as strings; image pins are also long.
+  line-length: disable
+  indentation:
+    spaces: 2

@@ -1,0 +1,85 @@
+capabilities:
+  requiresGPU: true
+  supportedAccelerators:
+    - ibm.com/spyre_pf
+description: vLLM ServingRuntime to support IBM Spyre
+displayName: vLLM Spyre ppc64le ServingRuntime for KServe
+documentationUrl: https://github.com/vllm-project/vllm-spyre
+name: vllm-spyre-ppc64le
+provider: Red Hat, Inc.
+supportedModelFormats:
+  - autoSelect: true
+    name: vLLM
+tags:
+  - rhods
+  - rhoai
+  - kserve
+  - servingruntime
+versions:
+  - image: registry.redhat.io/rhaii-fast/vllm-spyre-rhel9:3.6.0-fast.1@sha256:904589b0e7c85da7bcc8cbd4c53330b7fe70bc1b60c8d695b9ea22e8d2d600b1
+    minimumRHOAIVersion: "3.6"
+    servingRuntimeTemplate:
+      apiVersion: template.openshift.io/v1
+      kind: Template
+      metadata:
+        annotations:
+          description: vLLM ServingRuntime to support IBM Spyre
+          opendatahub.io/apiProtocol: REST
+          opendatahub.io/model-type: '["generative"]'
+          opendatahub.io/modelServingSupport: '["single"]'
+          openshift.io/display-name: vLLM Spyre ppc64le ServingRuntime for KServe
+          openshift.io/provider-display-name: Red Hat, Inc.
+          tags: rhods,rhoai,kserve,servingruntime
+          template.openshift.io/documentation-url: https://github.com/vllm-project/vllm-spyre
+          template.openshift.io/long-description: This template defines resources needed to deploy vLLM Spyre AI Accelerator ServingRuntime with KServe in Red Hat OpenShift AI (ppc64le architecture only)
+        labels:
+          app: odh-dashboard
+          app.kubernetes.io/part-of: odh-dashboard
+          opendatahub.io/dashboard: "true"
+          opendatahub.io/ootb: "true"
+        name: 0-25-1-vllm-spyre-ppc64le-runtime-template
+        namespace: opendatahub
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            annotations:
+              opendatahub.io/recommended-accelerators: '["ibm.com/spyre_pf"]'
+              opendatahub.io/runtime-version: 0.25.1+rhaiv.1.spyre
+              openshift.io/display-name: vLLM Spyre ppc64le ServingRuntime for KServe
+            labels:
+              opendatahub.io/dashboard: "true"
+            name: 0-25-1-vllm-spyre-ppc64le-runtime
+          spec:
+            annotations:
+              opendatahub.io/kserve-runtime: vllm
+              prometheus.io/path: /metrics
+              prometheus.io/port: "8080"
+            containers:
+              - args:
+                  - --model=/mnt/models
+                  - --port=8000
+                  - --served-model-name={{.Name}}
+                env:
+                  - name: HF_HOME
+                    value: /tmp/hf_home
+                image: registry.redhat.io/rhaii-fast/vllm-spyre-rhel9:3.6.0-fast.1@sha256:904589b0e7c85da7bcc8cbd4c53330b7fe70bc1b60c8d695b9ea22e8d2d600b1
+                name: kserve-container
+                ports:
+                  - containerPort: 8000
+                    protocol: TCP
+                volumeMounts:
+                  - mountPath: /dev/shm
+                    name: shm
+            multiModel: false
+            schedulerName: spyre-scheduler
+            supportedModelFormats:
+              - autoSelect: true
+                name: vLLM
+            volumes:
+              - emptyDir:
+                  medium: Memory
+                  sizeLimit: 2Gi
+                name: shm
+    supportLevel: techPreview
+    version: 0.25.1+rhaiv.1.spyre

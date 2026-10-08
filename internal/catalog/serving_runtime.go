@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"regexp"
 	"slices"
 	"strings"
@@ -38,6 +39,20 @@ func decodeRuntimeYAML(input []byte, value any) error {
 		return fmt.Errorf("parse trailing YAML: %w", err)
 	}
 	return nil
+}
+
+// Use two-space indentation for both source generation and offline rebuilding.
+func marshalServingRuntimeYAML(value any) ([]byte, error) {
+	var output bytes.Buffer
+	encoder := yaml.NewEncoder(&output)
+	encoder.SetIndent(2)
+	if err := encoder.Encode(value); err != nil {
+		return nil, err
+	}
+	if err := encoder.Close(); err != nil {
+		return nil, err
+	}
+	return output.Bytes(), nil
 }
 
 // decodeServingRuntimeInput accepts YAML objects for version manifests and
@@ -134,7 +149,7 @@ func GenerateServingRuntimeCatalog(input []byte, inputFiles fs.FS) ([]byte, erro
 			return strings.Compare(left.Version, right.Version)
 		})
 	}
-	output, err := yaml.Marshal(&result)
+	output, err := marshalServingRuntimeYAML(&result)
 	if err != nil {
 		return nil, fmt.Errorf("marshal serving runtime catalog: %w", err)
 	}
@@ -183,18 +198,30 @@ func validateFormats(formats []types.SupportedModelFormat) error {
 }
 
 func validateVersion(version types.ServingRuntimeVersion) error {
-	if err := validateServingRuntimeTemplate(version.ServingRuntimeTemplate); err != nil {
+	if err := validateMinimumRHOAIVersion(version.MinimumRHOAIVersion); err != nil {
 		return err
 	}
-	if err := validateRequiredManifest("llmInferenceServiceConfig", "LLMInferenceServiceConfig", version.LLMInferenceServiceConfig); err != nil {
-		return err
+	if version.ServingRuntimeTemplate == "" && version.LLMInferenceServiceConfig == "" {
+		return fmt.Errorf("servingRuntimeTemplate or llmInferenceServiceConfig is required")
 	}
-	image, err := reference.ParseNormalizedNamed(version.Image)
-	if err != nil || !strings.Contains(strings.Split(version.Image, "/")[0], ".") || reference.IsNameOnly(image) {
-		return fmt.Errorf("image %q must be a fully qualified pinned container reference", version.Image)
+	if version.ServingRuntimeTemplate != "" {
+		if err := validateServingRuntimeTemplate(version.ServingRuntimeTemplate); err != nil {
+			return err
+		}
+		if err := validateRuntimeManifestImages("servingRuntimeTemplate", version.ServingRuntimeTemplate); err != nil {
+			return err
+		}
 	}
-	if tagged, ok := image.(reference.Tagged); ok && tagged.Tag() == "latest" {
-		return fmt.Errorf("image %q must not use the latest tag", version.Image)
+	if version.LLMInferenceServiceConfig != "" {
+		if err := validateRequiredManifest("llmInferenceServiceConfig", "LLMInferenceServiceConfig", version.LLMInferenceServiceConfig); err != nil {
+			return err
+		}
+		if err := validateRuntimeManifestImages("llmInferenceServiceConfig", version.LLMInferenceServiceConfig); err != nil {
+			return err
+		}
+	}
+	if err := validateCatalogRuntimeImage(version.Image); err != nil {
+		return fmt.Errorf("image: %w", err)
 	}
 	if !slices.Contains([]string{"supported", "techPreview", "developerPreview", "community"}, version.SupportLevel) {
 		return fmt.Errorf("invalid supportLevel %q", version.SupportLevel)
@@ -241,6 +268,78 @@ func validateVersion(version types.ServingRuntimeVersion) error {
 		}
 	}
 	return nil
+}
+
+func validateRuntimeImage(value string) error {
+	image, err := reference.ParseNormalizedNamed(value)
+	if err != nil || !strings.Contains(strings.Split(value, "/")[0], ".") || reference.IsNameOnly(image) {
+		return fmt.Errorf("image %q must be a fully qualified pinned container reference", value)
+	}
+	if tagged, ok := image.(reference.Tagged); ok && tagged.Tag() == "latest" {
+		if _, pinned := image.(reference.Digested); !pinned {
+			return fmt.Errorf("image %q must not use the latest tag without a digest", value)
+		}
+	}
+	return nil
+}
+
+// The catalog accepts deployment images only from these Red Hat namespaces.
+// Source images and intermediate placeholders can come from other registries;
+// the restriction applies after rendering and configured replacements.
+func validateCatalogRuntimeImage(value string) error {
+	if err := validateRuntimeImage(value); err != nil {
+		return err
+	}
+	prefixes := []string{
+		"registry.redhat.io/rhoai/",
+		"registry.redhat.io/rhaii/",
+		"registry.redhat.io/rhaii-early-access/",
+		"registry.redhat.io/rhaii-fast/",
+	}
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(value, prefix) {
+			return nil
+		}
+	}
+	return fmt.Errorf("image %q must start with one of: %s", value, strings.Join(prefixes, ", "))
+}
+
+// Walk the entire embedded manifest, including additional Template objects and
+// all worker, prefill, init, and sidecar containers. Paths make failures actionable.
+func validateRuntimeManifestImages(field, value string) error {
+	var manifest any
+	if err := json.Unmarshal([]byte(value), &manifest); err != nil {
+		return fmt.Errorf("%s: decode manifest images: %w", field, err)
+	}
+	var visit func(any, string) error
+	visit = func(value any, location string) error {
+		switch object := value.(type) {
+		case map[string]any:
+			for _, key := range slices.Sorted(maps.Keys(object)) {
+				child := object[key]
+				childLocation := location + "." + key
+				if key == "image" {
+					image, ok := child.(string)
+					if !ok {
+						return fmt.Errorf("%s: container image must be a string", childLocation)
+					}
+					if err := validateCatalogRuntimeImage(image); err != nil {
+						return fmt.Errorf("%s: %w", childLocation, err)
+					}
+				} else if err := visit(child, childLocation); err != nil {
+					return err
+				}
+			}
+		case []any:
+			for index, child := range object {
+				if err := visit(child, fmt.Sprintf("%s[%d]", location, index)); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+	return visit(manifest, field)
 }
 
 func validateServingRuntimeTemplate(value string) error {

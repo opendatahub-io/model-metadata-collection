@@ -48,8 +48,8 @@ type ServingRuntimeVersion struct {
 	RecommendedResources      *RuntimeResourceRecommendation `yaml:"recommendedResources,omitempty" json:"recommendedResources,omitempty"`
 	DefaultArgs               []string                       `yaml:"defaultArgs,omitempty" json:"defaultArgs,omitempty"`
 	Env                       []RuntimeEnvVar                `yaml:"env,omitempty" json:"env,omitempty"`
-	ServingRuntimeTemplate    string                         `yaml:"servingRuntimeTemplate" json:"servingRuntimeTemplate"`
-	LLMInferenceServiceConfig string                         `yaml:"llmInferenceServiceConfig" json:"llmInferenceServiceConfig"`
+	ServingRuntimeTemplate    string                         `yaml:"servingRuntimeTemplate,omitempty" json:"servingRuntimeTemplate,omitempty"`
+	LLMInferenceServiceConfig string                         `yaml:"llmInferenceServiceConfig,omitempty" json:"llmInferenceServiceConfig,omitempty"`
 	Deprecated                bool                           `yaml:"deprecated,omitempty" json:"deprecated,omitempty"`
 	PublishedDate             string                         `yaml:"publishedDate,omitempty" json:"publishedDate,omitempty"`
 	ExternalID                string                         `yaml:"externalId,omitempty" json:"externalId,omitempty"`

@@ -1,0 +1,76 @@
+capabilities: {}
+description: vLLM is a high-throughput and memory-efficient inference and serving engine for LLMs
+displayName: vLLM CPU (x86) ServingRuntime for KServe - Tech Preview
+documentationUrl: https://github.com/opendatahub-io/vllm
+name: vllm-cpu-x86
+provider: Red Hat, Inc.
+supportedModelFormats:
+  - autoSelect: true
+    name: vLLM
+tags:
+  - rhods
+  - rhoai
+  - kserve
+  - servingruntime
+versions:
+  - image: registry.redhat.io/rhaii-fast/vllm-cpu-rhel9:3.6.0-fast.1@sha256:46d1db34a6684c2714a4d13b8918c56e11f9e3572bcda2be1160a5bb4cc14492
+    minimumRHOAIVersion: "3.6"
+    servingRuntimeTemplate:
+      apiVersion: template.openshift.io/v1
+      kind: Template
+      metadata:
+        annotations:
+          description: vLLM is a high-throughput and memory-efficient inference and serving engine for LLMs
+          opendatahub.io/apiProtocol: REST
+          opendatahub.io/model-type: '["generative"]'
+          opendatahub.io/modelServingSupport: '["single"]'
+          openshift.io/display-name: vLLM CPU (x86) ServingRuntime for KServe - Tech Preview
+          openshift.io/provider-display-name: Red Hat, Inc.
+          tags: rhods,rhoai,kserve,servingruntime
+          template.openshift.io/documentation-url: https://github.com/opendatahub-io/vllm
+          template.openshift.io/long-description: This template defines resources needed to deploy vLLM CPU ServingRuntime with KServe in Red Hat OpenShift AI (x86 architectures only)
+        labels:
+          app: odh-dashboard
+          app.kubernetes.io/part-of: odh-dashboard
+          opendatahub.io/dashboard: "true"
+          opendatahub.io/ootb: "true"
+        name: 0-26-0-vllm-cpu-x86-runtime-template
+        namespace: opendatahub
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            annotations:
+              opendatahub.io/runtime-version: 0.26.0+rhaiv.5
+              openshift.io/display-name: vLLM CPU (x86) ServingRuntime for KServe
+            labels:
+              opendatahub.io/dashboard: "true"
+            name: 0-26-0-vllm-cpu-x86-runtime
+          spec:
+            annotations:
+              opendatahub.io/kserve-runtime: vllm
+              prometheus.io/path: /metrics
+              prometheus.io/port: "8080"
+            containers:
+              - args:
+                  - --port=8080
+                  - --model=/mnt/models
+                  - --served-model-name={{.Name}}
+                command:
+                  - python
+                  - -m
+                  - vllm.entrypoints.openai.api_server
+                env:
+                  - name: HF_HOME
+                    value: /tmp/hf_home
+                image: registry.redhat.io/rhaii-fast/vllm-cpu-rhel9:3.6.0-fast.1@sha256:46d1db34a6684c2714a4d13b8918c56e11f9e3572bcda2be1160a5bb4cc14492
+                name: kserve-container
+                ports:
+                  - containerPort: 8080
+                    protocol: TCP
+            multiModel: false
+            supportedModelFormats:
+              - autoSelect: true
+                name: vLLM
+    supportLevel: techPreview
+    version: 0.26.0+rhaiv.5
