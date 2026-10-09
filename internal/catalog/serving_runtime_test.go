@@ -219,30 +219,29 @@ versions:
 
 func TestServingRuntimeValidation(t *testing.T) {
 	cases := map[string]string{
-		"missing name":             strings.Replace(validRuntimeInput, "name: vllm", "name: ''", 1),
-		"missing description":      strings.Replace(validRuntimeInput, "description: GPU inference runtime", "description: ''", 1),
-		"empty versions":           strings.Split(validRuntimeInput, "versions:\n")[0] + "versions: []\n",
-		"missing image":            strings.Replace(validRuntimeInput, "image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "image: ''", 1),
-		"unqualified image":        strings.Replace(validRuntimeInput, "registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "vllm:latest", 1),
-		"unpinned image":           strings.Replace(validRuntimeInput, "image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "image: registry.redhat.io/rhaii/vllm-cuda-rhel9", 1),
-		"invalid level":            strings.Replace(validRuntimeInput, "supportLevel: supported", "supportLevel: gold", 1),
-		"bad protocol":             strings.Replace(validRuntimeInput, "[v2]", "[v3]", 1),
-		"bad resource":             strings.Replace(validRuntimeInput, "memory: 16Gi", "memory: broken", 1),
-		"unsafe secret":            strings.Replace(validRuntimeInput, "secret: true", "secret: true\n        defaultValue: password", 1),
-		"secret by name":           strings.Replace(validRuntimeInput, "secret: true", "defaultValue: password", 1),
-		"unknown field":            strings.Replace(validRuntimeInput, "provider: Red Hat", "provider: Red Hat\nsurprise: true", 1),
-		"missing serving template": strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "", 1),
-		"missing llm config":       strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "", 1),
-		"old llm field":            strings.Replace(validRuntimeInput, "    llmInferenceServiceConfig:", "    llmInferenceServiceTemplate:", 1),
-		"empty serving template":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: {}\n", 1),
-		"empty llm config":         strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "    llmInferenceServiceConfig: {}\n", 1),
-		"direct serving runtime":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: serving.kserve.io/v1alpha1\n      kind: ServingRuntime\n      metadata: {name: vllm-runtime}\n      spec: {containers: []}\n", 1),
-		"empty template objects":   strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: template.openshift.io/v1\n      kind: Template\n      metadata: {name: vllm-runtime-template}\n      objects: []\n", 1),
-		"missing serving object":   strings.Replace(validRuntimeInput, "          kind: ServingRuntime", "          kind: ConfigMap", 1),
-		"missing serving spec":     strings.Replace(validRuntimeInput, "          spec:\n            containers:", "          other:\n            containers:", 1),
-		"string template":          strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: '{}'\n", 1),
-		"string llm config":        strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "    llmInferenceServiceConfig: '{}'\n", 1),
-		"duplicate version":        strings.Replace(validRuntimeInput, "        secret: true\n", "        secret: true\n  - version: \"3.4.0\"\n", 1),
+		"missing name":           strings.Replace(validRuntimeInput, "name: vllm", "name: ''", 1),
+		"missing description":    strings.Replace(validRuntimeInput, "description: GPU inference runtime", "description: ''", 1),
+		"empty versions":         strings.Split(validRuntimeInput, "versions:\n")[0] + "versions: []\n",
+		"missing image":          strings.Replace(validRuntimeInput, "image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "image: ''", 1),
+		"unqualified image":      strings.Replace(validRuntimeInput, "registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "vllm:latest", 1),
+		"unpinned image":         strings.Replace(validRuntimeInput, "image: registry.redhat.io/rhaii/vllm-cuda-rhel9:3.4.0", "image: registry.redhat.io/rhaii/vllm-cuda-rhel9", 1),
+		"invalid level":          strings.Replace(validRuntimeInput, "supportLevel: supported", "supportLevel: gold", 1),
+		"bad protocol":           strings.Replace(validRuntimeInput, "[v2]", "[v3]", 1),
+		"bad resource":           strings.Replace(validRuntimeInput, "memory: 16Gi", "memory: broken", 1),
+		"unsafe secret":          strings.Replace(validRuntimeInput, "secret: true", "secret: true\n        defaultValue: password", 1),
+		"secret by name":         strings.Replace(validRuntimeInput, "secret: true", "defaultValue: password", 1),
+		"unknown field":          strings.Replace(validRuntimeInput, "provider: Red Hat", "provider: Red Hat\nsurprise: true", 1),
+		"missing both manifests": strings.Replace(strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "", 1), validLLMInferenceServiceConfigInput, "", 1),
+		"old llm field":          strings.Replace(validRuntimeInput, "    llmInferenceServiceConfig:", "    llmInferenceServiceTemplate:", 1),
+		"empty serving template": strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: {}\n", 1),
+		"empty llm config":       strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "    llmInferenceServiceConfig: {}\n", 1),
+		"direct serving runtime": strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: serving.kserve.io/v1alpha1\n      kind: ServingRuntime\n      metadata: {name: vllm-runtime}\n      spec: {containers: []}\n", 1),
+		"empty template objects": strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate:\n      apiVersion: template.openshift.io/v1\n      kind: Template\n      metadata: {name: vllm-runtime-template}\n      objects: []\n", 1),
+		"missing serving object": strings.Replace(validRuntimeInput, "          kind: ServingRuntime", "          kind: ConfigMap", 1),
+		"missing serving spec":   strings.Replace(validRuntimeInput, "          spec:\n            containers:", "          other:\n            containers:", 1),
+		"string template":        strings.Replace(validRuntimeInput, validServingRuntimeTemplateInput, "    servingRuntimeTemplate: '{}'\n", 1),
+		"string llm config":      strings.Replace(validRuntimeInput, validLLMInferenceServiceConfigInput, "    llmInferenceServiceConfig: '{}'\n", 1),
+		"duplicate version":      strings.Replace(validRuntimeInput, "        secret: true\n", "        secret: true\n  - version: \"3.4.0\"\n", 1),
 	}
 	for name, input := range cases {
 		t.Run(name, func(t *testing.T) {
@@ -289,11 +288,11 @@ func TestServingRuntimeImageReferences(t *testing.T) {
 		image   string
 		wantErr bool
 	}{
-		{name: "specific tag", image: "quay.io/org/runtime:1.2.3"},
-		{name: "digest only", image: "quay.io/org/runtime@" + digest},
-		{name: "specific tag and digest", image: "quay.io/org/runtime:1.2.3@" + digest},
-		{name: "latest tag", image: "quay.io/org/runtime:latest", wantErr: true},
-		{name: "latest tag and digest", image: "quay.io/org/runtime:latest@" + digest, wantErr: true},
+		{name: "specific tag", image: "registry.redhat.io/rhoai/runtime:1.2.3"},
+		{name: "digest only", image: "registry.redhat.io/rhoai/runtime@" + digest},
+		{name: "specific tag and digest", image: "registry.redhat.io/rhoai/runtime:1.2.3@" + digest},
+		{name: "latest tag", image: "registry.redhat.io/rhoai/runtime:latest", wantErr: true},
+		{name: "latest tag and digest", image: "registry.redhat.io/rhoai/runtime:latest@" + digest, wantErr: false},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

@@ -1,0 +1,440 @@
+components:
+  schemas:
+    BaseModel:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Human-readable description of the model.
+        readme:
+          type: string
+          description: Model documentation in Markdown.
+        maturity:
+          type: string
+          description: Maturity level of the model.
+          example: Generally Available
+        language:
+          type: array
+          description: List of supported languages (https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes).
+          items:
+            type: string
+          example:
+            - en
+            - es
+            - cz
+        tasks:
+          type: array
+          description: List of tasks the model is designed for.
+          items:
+            type: string
+          example:
+            - text-generation
+        provider:
+          type: string
+          description: Name of the organization or entity that provides the model.
+          example: IBM
+        logo:
+          type: string
+          format: uri
+          description: |-
+            URL to the model's logo. A [data
+            URL](https://developer.mozilla.org/en-US/docs/Web/URI/Schemes/data)
+            is recommended.
+        license:
+          type: string
+          description: Short name of the model's license.
+          example: apache-2.0
+        licenseLink:
+          type: string
+          format: uri
+          description: URL to the license text.
+        libraryName:
+          type: string
+          example: transformers
+        customProperties:
+          description: User provided custom properties which are not defined by its type.
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/MetadataValue"
+    BaseResourceDates:
+      description: Common timestamp fields for resources
+      type: object
+      properties:
+        createTimeSinceEpoch:
+          format: int64
+          description: Output only. Create time of the resource in millisecond since epoch.
+          type: string
+          readOnly: true
+        lastUpdateTimeSinceEpoch:
+          format: int64
+          description: Output only. Last update time of the resource since epoch in millisecond since epoch.
+          type: string
+          readOnly: true
+    BaseResource:
+      allOf:
+        - type: object
+          properties:
+            customProperties:
+              description: User provided custom properties which are not defined by its type.
+              type: object
+              additionalProperties:
+                $ref: "#/components/schemas/MetadataValue"
+            description:
+              description: |-
+                An optional description about the resource.
+              type: string
+            externalId:
+              description: |-
+                The external id that come from the clients’ system. This field is optional.
+                If set, it must be unique among all resources within a database instance.
+              type: string
+            name:
+              description: |-
+                The client provided name of the artifact. This field is optional. If set,
+                it must be unique among all the artifacts of the same artifact type within
+                a database instance and cannot be changed once set.
+              type: string
+              minLength: 1
+            id:
+              format: int64
+              description: The unique server generated id of the resource.
+              type: string
+        - $ref: "#/components/schemas/BaseResourceDates"
+    BaseResourceList:
+      required:
+        - nextPageToken
+        - pageSize
+        - size
+      type: object
+      properties:
+        nextPageToken:
+          description: Token to use to retrieve next page of results.
+          type: string
+        pageSize:
+          format: int32
+          description: Maximum number of resources to return in the result.
+          type: integer
+        size:
+          format: int32
+          description: Number of items in result list.
+          type: integer
+    Error:
+      description: Error code and message.
+      required:
+        - code
+        - message
+      type: object
+      properties:
+        code:
+          description: Error code
+          type: string
+        message:
+          description: Error message
+          type: string
+    MetadataBoolValue:
+      description: A bool property value.
+      type: object
+      additionalProperties: false
+      required:
+        - metadataType
+        - bool_value
+      properties:
+        bool_value:
+          type: boolean
+        metadataType:
+          type: string
+          enum:
+            - MetadataBoolValue
+          default: MetadataBoolValue
+    MetadataDoubleValue:
+      description: A double property value.
+      type: object
+      additionalProperties: false
+      required:
+        - metadataType
+        - double_value
+      properties:
+        double_value:
+          format: double
+          type: number
+        metadataType:
+          type: string
+          enum:
+            - MetadataDoubleValue
+          default: MetadataDoubleValue
+    MetadataIntValue:
+      description: An integer (int32) property value.
+      type: object
+      additionalProperties: false
+      required:
+        - metadataType
+        - int_value
+      properties:
+        int_value:
+          format: int32
+          type: string
+          pattern: "^-?([1-9][0-9]{0,8}|0)$"
+        metadataType:
+          type: string
+          enum:
+            - MetadataIntValue
+          default: MetadataIntValue
+    MetadataProtoValue:
+      description: A proto property value.
+      type: object
+      additionalProperties: false
+      required:
+        - metadataType
+        - type
+        - proto_value
+      properties:
+        type:
+          description: url describing proto value
+          type: string
+        proto_value:
+          description: Base64 encoded bytes for proto value
+          type: string
+          format: byte
+        metadataType:
+          type: string
+          enum:
+            - MetadataProtoValue
+          default: MetadataProtoValue
+    MetadataStringValue:
+      description: A string property value.
+      type: object
+      additionalProperties: false
+      required:
+        - metadataType
+        - string_value
+      properties:
+        string_value:
+          type: string
+        metadataType:
+          type: string
+          enum:
+            - MetadataStringValue
+          default: MetadataStringValue
+    MetadataStructValue:
+      description: A struct property value.
+      type: object
+      additionalProperties: false
+      required:
+        - metadataType
+        - struct_value
+      properties:
+        struct_value:
+          description: Base64 encoded bytes for struct value
+          type: string
+          format: byte
+        metadataType:
+          type: string
+          enum:
+            - MetadataStructValue
+          default: MetadataStructValue
+    MetadataValue:
+      oneOf:
+        - $ref: "#/components/schemas/MetadataIntValue"
+        - $ref: "#/components/schemas/MetadataDoubleValue"
+        - $ref: "#/components/schemas/MetadataStringValue"
+        - $ref: "#/components/schemas/MetadataStructValue"
+        - $ref: "#/components/schemas/MetadataProtoValue"
+        - $ref: "#/components/schemas/MetadataBoolValue"
+      discriminator:
+        propertyName: metadataType
+        mapping:
+          MetadataBoolValue: "#/components/schemas/MetadataBoolValue"
+          MetadataDoubleValue: "#/components/schemas/MetadataDoubleValue"
+          MetadataIntValue: "#/components/schemas/MetadataIntValue"
+          MetadataProtoValue: "#/components/schemas/MetadataProtoValue"
+          MetadataStringValue: "#/components/schemas/MetadataStringValue"
+          MetadataStructValue: "#/components/schemas/MetadataStructValue"
+      description: A value in properties.
+      example:
+        string_value: my_value
+        metadataType: MetadataStringValue
+    SortOrder:
+      description: Supported sort direction for ordering result entities.
+      enum:
+        - ASC
+        - DESC
+      type: string
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Bad Request parameters
+    Conflict:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Conflict with current state of target resource
+    InternalServerError:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Unexpected internal server error
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: The specified resource was not found
+    ServiceUnavailable:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Service is unavailable
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Unauthorized
+    UnprocessableEntity:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+      description: Unprocessable Entity error
+  parameters:
+    id:
+      name: id
+      description: The ID of resource.
+      schema:
+        type: string
+        format: int64
+        pattern: "^[1-9][0-9]{0,8}$"
+      in: path
+      required: true
+    name:
+      examples:
+        name:
+          value: entity-name
+      name: name
+      description: Name of entity to search.
+      schema:
+        type: string
+        pattern: "^[\\x20-\\x7E]+$"
+      in: query
+      required: false
+    externalId:
+      examples:
+        externalId:
+          value: "10"
+      name: externalId
+      description: External ID of entity to search.
+      schema:
+        type: string
+        pattern: "^[\\x20-\\x7E]+$"
+      in: query
+      required: false
+    parentResourceId:
+      examples:
+        parentResourceId:
+          value: "10"
+      name: parentResourceId
+      description: ID of the parent resource to use for search.
+      schema:
+        type: string
+        format: int64
+        pattern: "^[1-9][0-9]{0,8}$"
+      in: query
+      required: false
+    filterQuery:
+      examples:
+        filterQuery:
+          value: "name='my-model' AND state='LIVE'"
+      name: filterQuery
+      description: |
+        A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.
+
+        **Supported Operators:**
+        - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=`
+        - Pattern matching: `LIKE`, `ILIKE` (case-insensitive)
+        - Set membership: `IN`
+        - Logical: `AND`, `OR`
+        - Grouping: `()` for complex expressions
+
+        **Data Types:**
+        - Strings: `"value"` or `'value'`
+        - Numbers: `42`, `3.14`, `1e-5`
+        - Booleans: `true`, `false` (case-insensitive)
+
+        **Property Access:**
+        - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch`
+        - Custom properties: Any user-defined property name
+        - Escaped properties: Use backticks for special characters: `` `custom-property` ``
+        - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`
+
+        **Examples:**
+        - Basic: `name = "my-model"`
+        - Comparison: `accuracy > 0.95`
+        - Pattern: `name LIKE "%tensorflow%"`
+        - Complex: `(name = "model-a" OR name = "model-b") AND state = "LIVE"`
+        - Custom property: `framework.string_value = "pytorch"`
+        - Escaped property: `` `mlflow.source.type` = "notebook" ``
+      schema:
+        type: string
+        pattern: "^[\\x20-\\x7E]*$"
+      in: query
+      required: false
+    pageSize:
+      examples:
+        pageSize:
+          value: 100
+      name: pageSize
+      description: Number of entities in each page.
+      schema:
+        type: string
+        format: int32
+        pattern: "^[1-9][0-9]{0,8}$"
+      in: query
+      required: false
+    nextPageToken:
+      name: nextPageToken
+      description: >-
+        Opaque pagination token returned by a previous list call.
+        Do not construct manually; use the value from a prior response's nextPageToken field.
+      schema:
+        type: string
+      in: query
+      required: false
+    sortOrder:
+      style: form
+      explode: true
+      examples:
+        sortOrder:
+          value: DESC
+      name: sortOrder
+      description: "Specifies the sort order for listing entities, defaults to ASC."
+      schema:
+        $ref: "#/components/schemas/SortOrder"
+      in: query
+      required: false
+    stepIds:
+      style: form
+      explode: true
+      examples:
+        stepIds:
+          value: "1,2,3"
+      name: stepIds
+      description: "Comma-separated list of step IDs to filter metrics by."
+      schema:
+        type: string
+        pattern: "^[0-9]{1,9}(,[0-9]{1,9})*$"
+      in: query
+      required: false
+  securitySchemes:
+    Bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+      description: Bearer JWT scheme
+security:
+  - Bearer: []

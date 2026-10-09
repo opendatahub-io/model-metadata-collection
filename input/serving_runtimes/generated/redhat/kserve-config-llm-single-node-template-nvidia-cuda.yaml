@@ -1,0 +1,33 @@
+capabilities:
+  requiresGPU: true
+  supportedAccelerators:
+    - nvidia.com/gpu
+description: vLLM NVIDIA CUDA GPU LLMInferenceServiceConfig Single Node for LLMInferenceService.
+displayName: vLLM NVIDIA CUDA GPU LLMInferenceServiceConfig Single Node
+name: kserve-config-llm-single-node-template-nvidia-cuda
+provider: Red Hat, Inc.
+versions:
+  - image: registry.redhat.io/rhaii-fast/vllm-cuda-rhel9:3.6.0-fast.1@sha256:5f1fb3f23bee2031abffd2216fac5e6458836facc06dc97029aac9a03120195f
+    llmInferenceServiceConfig:
+      apiVersion: serving.kserve.io/v1alpha2
+      kind: LLMInferenceServiceConfig
+      metadata:
+        annotations:
+          opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
+          opendatahub.io/runtime-version: 0.26.0+rhaiv.8
+          opendatahub.io/supported-topologies: '["workload-single-node"]'
+          openshift.io/description: vLLM NVIDIA CUDA GPU LLMInferenceServiceConfig Single Node for LLMInferenceService.
+          openshift.io/display-name: vLLM NVIDIA CUDA GPU LLMInferenceServiceConfig Single Node
+          serving.kserve.io/well-known-config: "true"
+        labels:
+          opendatahub.io/config-type: accelerator
+        name: 0-26-0-config-llm-single-node-template-nvidia-cuda
+        namespace: opendatahub
+      spec:
+        template:
+          containers:
+            - image: registry.redhat.io/rhaii-fast/vllm-cuda-rhel9:3.6.0-fast.1@sha256:5f1fb3f23bee2031abffd2216fac5e6458836facc06dc97029aac9a03120195f
+              name: main
+    minimumRHOAIVersion: "3.6"
+    supportLevel: techPreview
+    version: 0.26.0+rhaiv.8

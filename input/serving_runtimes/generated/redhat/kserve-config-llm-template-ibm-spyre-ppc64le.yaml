@@ -1,0 +1,48 @@
+capabilities:
+  requiresGPU: true
+  supportedAccelerators:
+    - ibm.com/spyre_pf
+description: vLLM IBM Spyre ppc64le LLMInferenceServiceConfig for LLMInferenceService.
+displayName: vLLM IBM Spyre ppc64le LLMInferenceServiceConfig
+name: kserve-config-llm-template-ibm-spyre-ppc64le
+provider: Red Hat, Inc.
+versions:
+  - image: registry.redhat.io/rhaii-fast/vllm-spyre-rhel9:3.6.0-fast.1@sha256:904589b0e7c85da7bcc8cbd4c53330b7fe70bc1b60c8d695b9ea22e8d2d600b1
+    llmInferenceServiceConfig:
+      apiVersion: serving.kserve.io/v1alpha2
+      kind: LLMInferenceServiceConfig
+      metadata:
+        annotations:
+          opendatahub.io/recommended-accelerators: '["ibm.com/spyre_pf"]'
+          opendatahub.io/runtime-version: 0.25.1+rhaiv.1.spyre
+          opendatahub.io/supported-topologies: '["workload-single-node"]'
+          openshift.io/description: vLLM IBM Spyre ppc64le LLMInferenceServiceConfig for LLMInferenceService.
+          openshift.io/display-name: vLLM IBM Spyre ppc64le LLMInferenceServiceConfig
+          serving.kserve.io/well-known-config: "true"
+        labels:
+          opendatahub.io/config-type: accelerator
+        name: 0-25-1-config-llm-template-ibm-spyre-ppc64le
+        namespace: opendatahub
+      spec:
+        template:
+          containers:
+            - env:
+                - name: HF_HOME
+                  value: /tmp/hf_home
+                - name: FLEX_COMPUTE
+                  value: SENTIENT
+                - name: FLEX_DEVICE
+                  value: PF
+                - name: TOKENIZERS_PARALLELISM
+                  value: "false"
+                - name: DTLOG_LEVEL
+                  value: error
+                - name: TORCH_SENDNN_LOG
+                  value: CRITICAL
+                - name: VLLM_SPYRE_USE_CB
+                  value: "1"
+              image: registry.redhat.io/rhaii-fast/vllm-spyre-rhel9:3.6.0-fast.1@sha256:904589b0e7c85da7bcc8cbd4c53330b7fe70bc1b60c8d695b9ea22e8d2d600b1
+              name: main
+    minimumRHOAIVersion: "3.6"
+    supportLevel: techPreview
+    version: 0.25.1+rhaiv.1.spyre

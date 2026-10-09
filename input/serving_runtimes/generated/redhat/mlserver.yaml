@@ -1,0 +1,140 @@
+capabilities: {}
+description: MLServer is a lightweight, extensible inference server for serving machine learning models across multiple frameworks.
+displayName: MLServer ServingRuntime for KServe
+documentationUrl: https://github.com/opendatahub-io/MLServer
+name: mlserver
+provider: Red Hat, Inc.
+supportedModelFormats:
+  - name: sklearn
+    version: "0"
+  - name: sklearn
+    version: "1"
+  - name: xgboost
+    version: "1"
+  - name: xgboost
+    version: "2"
+  - name: lightgbm
+    version: "3"
+  - name: lightgbm
+    version: "4"
+  - name: onnx
+    version: "1"
+tags:
+  - rhods
+  - rhoai
+  - kserve
+  - servingruntime
+versions:
+  - image: registry.redhat.io/rhoai/odh-mlserver-rhel9:v3.6-ea.1@sha256:d2828977279d5a9ac526042361e47aed88d4e7c416970dc07867172cc6a95350
+    minimumRHOAIVersion: "3.6"
+    servingRuntimeTemplate:
+      apiVersion: template.openshift.io/v1
+      kind: Template
+      metadata:
+        annotations:
+          description: MLServer is a lightweight, extensible inference server for serving machine learning models across multiple frameworks.
+          opendatahub.io/apiProtocol: REST
+          opendatahub.io/model-type: '["predictive"]'
+          opendatahub.io/modelServingSupport: '["single"]'
+          openshift.io/display-name: MLServer ServingRuntime for KServe
+          openshift.io/provider-display-name: Red Hat, Inc.
+          tags: rhods,rhoai,kserve,servingruntime
+          template.openshift.io/documentation-url: https://github.com/opendatahub-io/MLServer
+          template.openshift.io/long-description: This template defines resources needed to deploy MLServer ServingRuntime with KServe in Red Hat OpenShift AI
+        labels:
+          app: odh-dashboard
+          app.kubernetes.io/part-of: odh-dashboard
+          opendatahub.io/dashboard: "true"
+          opendatahub.io/ootb: "true"
+        name: 1-7-1-mlserver-runtime-template
+        namespace: opendatahub
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            annotations:
+              opendatahub.io/runtime-version: 1.7.1
+              openshift.io/display-name: MLServer ServingRuntime for KServe
+              serving.kserve.io/server-type: mlserver
+            labels:
+              opendatahub.io/dashboard: "true"
+            name: 1-7-1-mlserver-runtime
+          spec:
+            annotations:
+              monitoring.opendatahub.io/scrape: "true"
+              opendatahub.io/kserve-runtime: mlserver
+              prometheus.io/path: /metrics
+              prometheus.io/port: "8082"
+            containers:
+              - env:
+                  - name: MLSERVER_MODEL_IMPLEMENTATION
+                    value: '{{.Labels.modelClass}}'
+                  - name: MLSERVER_HTTP_PORT
+                    value: "8080"
+                  - name: MLSERVER_MODELS_DIR
+                    value: /mnt/models
+                image: registry.redhat.io/rhoai/odh-mlserver-rhel9:v3.6-ea.1@sha256:d2828977279d5a9ac526042361e47aed88d4e7c416970dc07867172cc6a95350
+                livenessProbe:
+                  failureThreshold: 6
+                  httpGet:
+                    path: /v2/models/{{.Name}}/ready
+                    port: 8080
+                  initialDelaySeconds: 20
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                name: kserve-container
+                ports:
+                  - containerPort: 8080
+                    protocol: TCP
+                readinessProbe:
+                  failureThreshold: 3
+                  httpGet:
+                    path: /v2/models/{{.Name}}/ready
+                    port: 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 5
+                  timeoutSeconds: 5
+                resources:
+                  limits:
+                    cpu: "2"
+                    memory: 4Gi
+                  requests:
+                    cpu: "1"
+                    memory: 2Gi
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                      - ALL
+                  privileged: false
+                  runAsNonRoot: true
+                startupProbe:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - |
+                        [ -n "$(ls -A /mnt/models 2>/dev/null)" ]
+                  failureThreshold: 1
+                  initialDelaySeconds: 1
+                  periodSeconds: 1
+            multiModel: false
+            protocolVersions:
+              - v2
+            supportedModelFormats:
+              - name: sklearn
+                version: "0"
+              - name: sklearn
+                version: "1"
+              - name: xgboost
+                version: "1"
+              - name: xgboost
+                version: "2"
+              - name: lightgbm
+                version: "3"
+              - name: lightgbm
+                version: "4"
+              - name: onnx
+                version: "1"
+    supportLevel: techPreview
+    version: 1.7.1

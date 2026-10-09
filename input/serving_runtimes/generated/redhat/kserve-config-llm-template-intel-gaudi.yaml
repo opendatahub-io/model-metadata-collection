@@ -1,0 +1,33 @@
+capabilities:
+  requiresGPU: true
+  supportedAccelerators:
+    - habana.ai/gaudi
+description: vLLM Intel Gaudi LLMInferenceServiceConfig for LLMInferenceService.
+displayName: vLLM Intel Gaudi LLMInferenceServiceConfig
+name: kserve-config-llm-template-intel-gaudi
+provider: Red Hat, Inc.
+versions:
+  - image: registry.redhat.io/rhaii-fast/vllm-gaudi-rhel9:3.6.0-fast.1@sha256:e6e988c32b795cb9f74f752f3784c2c4f30ad256815b3c5d4caabff0e616696b
+    llmInferenceServiceConfig:
+      apiVersion: serving.kserve.io/v1alpha2
+      kind: LLMInferenceServiceConfig
+      metadata:
+        annotations:
+          opendatahub.io/recommended-accelerators: '["habana.ai/gaudi"]'
+          opendatahub.io/runtime-version: 0.26.0+rhaiv.7
+          opendatahub.io/supported-topologies: '["workload-single-node"]'
+          openshift.io/description: vLLM Intel Gaudi LLMInferenceServiceConfig for LLMInferenceService.
+          openshift.io/display-name: vLLM Intel Gaudi LLMInferenceServiceConfig
+          serving.kserve.io/well-known-config: "true"
+        labels:
+          opendatahub.io/config-type: accelerator
+        name: 0-26-0-config-llm-template-intel-gaudi
+        namespace: opendatahub
+      spec:
+        template:
+          containers:
+            - image: registry.redhat.io/rhaii-fast/vllm-gaudi-rhel9:3.6.0-fast.1@sha256:e6e988c32b795cb9f74f752f3784c2c4f30ad256815b3c5d4caabff0e616696b
+              name: main
+    minimumRHOAIVersion: "3.6"
+    supportLevel: techPreview
+    version: 0.26.0+rhaiv.7
