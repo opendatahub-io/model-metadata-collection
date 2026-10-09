@@ -1,9 +1,50 @@
-# Each input_path is relative to the repository root.
 source: Red Hat Serving Runtimes
 serving_runtimes:
+  - name: autogluon
+    input_path: input/serving_runtimes/generated/redhat/autogluon.yaml
+  - name: guardrails-detector-huggingface-serving-template
+    input_path: input/serving_runtimes/generated/redhat/guardrails-detector-huggingface-serving-template.yaml
+  - name: kserve-config-llm-multi-node-pd-template-nvidia-cuda
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-multi-node-pd-template-nvidia-cuda.yaml
+  - name: kserve-config-llm-multi-node-template-nvidia-cuda
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-multi-node-template-nvidia-cuda.yaml
+  - name: kserve-config-llm-single-node-pd-template-nvidia-cuda
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-single-node-pd-template-nvidia-cuda.yaml
+  - name: kserve-config-llm-single-node-template-nvidia-cuda
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-single-node-template-nvidia-cuda.yaml
+  - name: kserve-config-llm-template-amd-rocm
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-template-amd-rocm.yaml
+  - name: kserve-config-llm-template-ibm-spyre-ppc64le
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-template-ibm-spyre-ppc64le.yaml
+  - name: kserve-config-llm-template-ibm-spyre-s390x
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-template-ibm-spyre-s390x.yaml
+  - name: kserve-config-llm-template-ibm-spyre-x86
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-template-ibm-spyre-x86.yaml
+  - name: kserve-config-llm-template-intel-gaudi
+    input_path: input/serving_runtimes/generated/redhat/kserve-config-llm-template-intel-gaudi.yaml
+  - name: kserve-ovms
+    input_path: input/serving_runtimes/generated/redhat/kserve-ovms.yaml
+  - name: mlserver
+    input_path: input/serving_runtimes/generated/redhat/mlserver.yaml
+  - name: mlserver-cuda
+    input_path: input/serving_runtimes/generated/redhat/mlserver-cuda.yaml
+  - name: vllm-cpu
+    input_path: input/serving_runtimes/generated/redhat/vllm-cpu.yaml
+  - name: vllm-cpu-x86
+    input_path: input/serving_runtimes/generated/redhat/vllm-cpu-x86.yaml
   - name: vllm-cuda
-    input_path: input/serving_runtimes/redhat/vllm-cuda.yaml
+    input_path: input/serving_runtimes/generated/redhat/vllm-cuda.yaml
+  - name: vllm-gaudi
+    input_path: input/serving_runtimes/generated/redhat/vllm-gaudi.yaml
+  - name: vllm-multinode
+    input_path: input/serving_runtimes/generated/redhat/vllm-multinode.yaml
   - name: vllm-omni-cuda
-    input_path: input/serving_runtimes/redhat/vllm-omni-cuda.yaml
+    input_path: input/serving_runtimes/generated/redhat/vllm-omni-cuda.yaml
   - name: vllm-rocm
-    input_path: input/serving_runtimes/redhat/vllm-rocm.yaml
+    input_path: input/serving_runtimes/generated/redhat/vllm-rocm.yaml
+  - name: vllm-spyre-ppc64le
+    input_path: input/serving_runtimes/generated/redhat/vllm-spyre-ppc64le.yaml
+  - name: vllm-spyre-s390x
+    input_path: input/serving_runtimes/generated/redhat/vllm-spyre-s390x.yaml
+  - name: vllm-spyre-x86
+    input_path: input/serving_runtimes/generated/redhat/vllm-spyre-x86.yaml

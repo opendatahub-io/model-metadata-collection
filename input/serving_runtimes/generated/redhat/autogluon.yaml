@@ -1,0 +1,117 @@
+capabilities: {}
+description: AutoGluon ServingRuntime for tabular and time series inference
+displayName: AutoGluon ServingRuntime for KServe
+documentationUrl: https://github.com/opendatahub-io/kserve
+name: autogluon
+provider: Red Hat, Inc.
+supportedModelFormats:
+  - autoSelect: true
+    name: autogluon
+    version: "1"
+tags:
+  - rhods
+  - rhoai
+  - kserve
+  - servingruntime
+versions:
+  - image: registry.redhat.io/rhoai/odh-kserve-autogluon-server-rhel9:v3.6-ea.1@sha256:38e1f48e07d78c9a14754dae7dfcd8f5e87eeae61b9e13234cdda37a53999d84
+    minimumRHOAIVersion: "3.6"
+    servingRuntimeTemplate:
+      apiVersion: template.openshift.io/v1
+      kind: Template
+      metadata:
+        annotations:
+          description: AutoGluon ServingRuntime for tabular and time series inference
+          opendatahub.io/apiProtocol: REST
+          opendatahub.io/model-type: '["predictive"]'
+          opendatahub.io/modelServingSupport: '["single"]'
+          openshift.io/display-name: AutoGluon ServingRuntime for KServe
+          openshift.io/provider-display-name: Red Hat, Inc.
+          tags: rhods,rhoai,kserve,servingruntime
+          template.openshift.io/documentation-url: https://github.com/opendatahub-io/kserve
+          template.openshift.io/long-description: This template defines resources needed to deploy AutoGluon ServingRuntime with KServe in Red Hat OpenShift AI for tabular and time series model inference
+        labels:
+          app: odh-dashboard
+          app.kubernetes.io/part-of: odh-dashboard
+          opendatahub.io/dashboard: "true"
+          opendatahub.io/ootb: "true"
+        name: v0-1-0-autogluon-runtime-template
+        namespace: opendatahub
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            annotations:
+              opendatahub.io/runtime-version: v0.1.0
+              openshift.io/display-name: AutoGluon ServingRuntime for KServe
+            labels:
+              opendatahub.io/dashboard: "true"
+            name: v0-1-0-autogluon-runtime
+          spec:
+            annotations:
+              monitoring.opendatahub.io/scrape: "true"
+              opendatahub.io/kserve-runtime: autogluon
+              prometheus.io/path: /metrics
+              prometheus.io/port: "8080"
+            containers:
+              - args:
+                  - --model_name={{.Name}}
+                  - --model_dir=/mnt/models
+                  - --http_port=8080
+                image: registry.redhat.io/rhoai/odh-kserve-autogluon-server-rhel9:v3.6-ea.1@sha256:38e1f48e07d78c9a14754dae7dfcd8f5e87eeae61b9e13234cdda37a53999d84
+                livenessProbe:
+                  failureThreshold: 3
+                  httpGet:
+                    path: /v2/health/live
+                    port: 8080
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                name: kserve-container
+                ports:
+                  - containerPort: 8080
+                    protocol: TCP
+                readinessProbe:
+                  failureThreshold: 3
+                  httpGet:
+                    path: /v2/models/{{.Name}}/ready
+                    port: 8080
+                  periodSeconds: 5
+                  timeoutSeconds: 5
+                resources:
+                  limits:
+                    cpu: "4"
+                    memory: 8Gi
+                  requests:
+                    cpu: "1"
+                    memory: 4Gi
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                      - ALL
+                  privileged: false
+                  readOnlyRootFilesystem: true
+                  runAsNonRoot: true
+                startupProbe:
+                  failureThreshold: 60
+                  httpGet:
+                    path: /v2/models/{{.Name}}/ready
+                    port: 8080
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                volumeMounts:
+                  - mountPath: /tmp
+                    name: tmp
+            multiModel: false
+            protocolVersions:
+              - v1
+              - v2
+            supportedModelFormats:
+              - autoSelect: true
+                name: autogluon
+                version: "1"
+            volumes:
+              - emptyDir: {}
+                name: tmp
+    supportLevel: techPreview
+    version: v0.1.0

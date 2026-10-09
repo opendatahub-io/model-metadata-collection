@@ -1,0 +1,108 @@
+capabilities:
+  requiresGPU: true
+  supportedAccelerators:
+    - nvidia.com/gpu
+description: vLLM-Omni ServingRuntime with CUDA support for multimodal inference (audio, vision, diffusion) on NVIDIA GPUs
+displayName: vLLM-Omni NVIDIA GPU ServingRuntime for KServe - Tech Preview
+documentationUrl: https://github.com/vllm-project/vllm-omni
+name: vllm-omni-cuda
+provider: Red Hat, Inc.
+supportedModelFormats:
+  - name: vLLM
+tags:
+  - rhods
+  - rhoai
+  - kserve
+  - servingruntime
+versions:
+  - image: registry.redhat.io/rhaii-fast/vllm-omni-cuda-rhel9:3.6.0-fast.1@sha256:4d17c21a588539f6429fd1d24e81b8a3f36448f2f4e21f1f241089dfa5568a42
+    minimumRHOAIVersion: "3.6"
+    servingRuntimeTemplate:
+      apiVersion: template.openshift.io/v1
+      kind: Template
+      metadata:
+        annotations:
+          description: vLLM-Omni ServingRuntime with CUDA support for multimodal inference (audio, vision, diffusion) on NVIDIA GPUs
+          opendatahub.io/apiProtocol: REST
+          opendatahub.io/model-type: '["generative"]'
+          opendatahub.io/modelServingSupport: '["single"]'
+          opendatahub.io/support-status: unsupported
+          openshift.io/display-name: vLLM-Omni NVIDIA GPU ServingRuntime for KServe - Tech Preview
+          openshift.io/provider-display-name: Red Hat, Inc.
+          tags: rhods,rhoai,kserve,servingruntime
+          template.openshift.io/documentation-url: https://github.com/vllm-project/vllm-omni
+          template.openshift.io/long-description: This template defines resources needed to deploy vLLM-Omni NVIDIA GPU ServingRuntime with KServe in Red Hat OpenShift AI for multimodal inference including omni, diffusion, and TTS models (Tech Preview)
+        labels:
+          app: odh-dashboard
+          app.kubernetes.io/part-of: odh-dashboard
+          opendatahub.io/dashboard: "true"
+          opendatahub.io/ootb: "true"
+        name: 0-26-0-vllm-omni-cuda-runtime-template
+        namespace: opendatahub
+      objects:
+        - apiVersion: serving.kserve.io/v1alpha1
+          kind: ServingRuntime
+          metadata:
+            annotations:
+              opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
+              opendatahub.io/runtime-version: 0.26.0+rhaiv.5
+              opendatahub.io/support-status: unsupported
+              openshift.io/display-name: vLLM-Omni NVIDIA GPU ServingRuntime for KServe - Tech Preview
+            labels:
+              opendatahub.io/dashboard: "true"
+            name: 0-26-0-vllm-omni-cuda-runtime
+          spec:
+            annotations:
+              monitoring.opendatahub.io/scrape: "true"
+              opendatahub.io/kserve-runtime: vllm-omni
+              prometheus.io/path: /metrics
+              prometheus.io/port: "8080"
+            containers:
+              - args:
+                  - --port=8080
+                  - --model=/mnt/models
+                  - --omni
+                  - --log-stats
+                  - --served-model-name={{.Name}}
+                command:
+                  - vllm
+                  - serve
+                env:
+                  - name: HF_HOME
+                    value: /tmp/hf_home
+                image: registry.redhat.io/rhaii-fast/vllm-omni-cuda-rhel9:3.6.0-fast.1@sha256:4d17c21a588539f6429fd1d24e81b8a3f36448f2f4e21f1f241089dfa5568a42
+                livenessProbe:
+                  failureThreshold: 3
+                  httpGet:
+                    path: /health
+                    port: 8080
+                  periodSeconds: 15
+                name: kserve-container
+                ports:
+                  - containerPort: 8080
+                    protocol: TCP
+                readinessProbe:
+                  failureThreshold: 3
+                  httpGet:
+                    path: /health
+                    port: 8080
+                  periodSeconds: 10
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  capabilities:
+                    drop:
+                      - ALL
+                  privileged: false
+                  runAsNonRoot: true
+                startupProbe:
+                  failureThreshold: 40
+                  httpGet:
+                    path: /health
+                    port: 8080
+                  periodSeconds: 30
+            multiModel: false
+            supportedModelFormats:
+              - autoSelect: false
+                name: vLLM
+    supportLevel: techPreview
+    version: 0.26.0+rhaiv.5
