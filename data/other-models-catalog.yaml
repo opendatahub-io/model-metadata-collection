@@ -941,6 +941,9 @@ models:
       createTimeSinceEpoch: "1727222400000"
       lastUpdateTimeSinceEpoch: "1727222400000"
       customProperties:
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         llama:
             metadataType: MetadataStringValue
             string_value: ""
@@ -1181,6 +1184,9 @@ models:
         endpoints_compatible:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
@@ -1613,6 +1619,9 @@ models:
         granite-3.3:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         language:
             metadataType: MetadataStringValue
             string_value: ""

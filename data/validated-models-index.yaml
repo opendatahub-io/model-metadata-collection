@@ -21,6 +21,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-mistral-small-3-1-24b-instruct-2503:1.5
+  hf_model: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
@@ -53,7 +58,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-llama-3-1-8b-instruct:1.5
+  hf_model: RedHatAI/Llama-3.1-8B-Instruct
   customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
     secured:
       metadataType: MetadataBoolValue
       bool_value: true
@@ -65,14 +74,29 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-phi-4:1.5
+  hf_model: RedHatAI/phi-4
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-phi-4-quantized-w4a16:1.5
+  hf_model: RedHatAI/phi-4-quantized.w4a16
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-phi-4-quantized-w8a8:1.5
+  hf_model: RedHatAI/phi-4-quantized.w8a8
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
@@ -81,6 +105,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-qwen2-5-7b-instruct:1.5
+  hf_model: RedHatAI/Qwen2.5-7B-Instruct
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
@@ -97,6 +126,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-mistral-small-24b-instruct-2501:1.5
+  hf_model: RedHatAI/Mistral-Small-24B-Instruct-2501
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
@@ -129,6 +163,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct:1.5
+  hf_model: RedHatAI/granite-3.1-8b-instruct
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
@@ -137,10 +176,20 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-quantized-w4a16:1.5
+  hf_model: RedHatAI/granite-3.1-8b-instruct-quantized.w4a16
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct-quantized-w8a8:1.5
+  hf_model: RedHatAI/granite-3.1-8b-instruct-quantized.w8a8
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
@@ -289,7 +338,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b-it-fp8-block:3.0
+  hf_model: RedHatAI/gemma-4-31B-it-FP8-block
   customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
     secured:
       metadataType: MetadataBoolValue
       bool_value: true
@@ -313,7 +366,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-26b-a4b-it:3.0
+  hf_model: RedHatAI/gemma-4-26B-A4B-it
   customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
     secured:
       metadataType: MetadataBoolValue
       bool_value: true
@@ -457,6 +514,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-gemma-2-9b-it:1.5
+  hf_model: RedHatAI/gemma-2-9b-it
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci
@@ -465,6 +527,11 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-base-quantized-w4a16:1.5
+  hf_model: RedHatAI/granite-3.1-8b-base-quantized.w4a16
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
   labels:
   - validated
 - type: oci

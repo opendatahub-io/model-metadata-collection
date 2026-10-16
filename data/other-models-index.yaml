@@ -130,14 +130,27 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-8b:3.0
   hf_model: RedHatAI/Qwen3-8B
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-llama-3-2-3b-instruct-quantized-w8a8:3.0
   hf_model: RedHatAI/Llama-3.2-3B-Instruct-quantized.w8a8
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-qwen2-5-1-5b-quantized-w8a8:3.0
   hf_model: RedHatAI/Qwen2.5-1.5B-quantized.w8a8
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-granite-3-3-8b-instruct
+  hf_model: RedHatAI/granite-3.3-8b-instruct
+  customProperties:
+    hardware_tag:
+      metadataType: MetadataStringValue
+      string_value: Intel Xeon
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-small:3.0
 - type: oci

@@ -377,6 +377,9 @@ models:
         facebook:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         llama:
             metadataType: MetadataStringValue
             string_value: ""
@@ -2874,6 +2877,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         mistral:
             metadataType: MetadataStringValue
             string_value: ""
@@ -3393,6 +3399,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         mistral:
             metadataType: MetadataStringValue
             string_value: ""
@@ -6584,6 +6593,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
@@ -8180,6 +8192,9 @@ models:
       createTimeSinceEpoch: "1739776988000"
       lastUpdateTimeSinceEpoch: "1747669712000"
       customProperties:
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -8731,6 +8746,9 @@ models:
         gemma4:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         model_type:
             metadataType: MetadataStringValue
             string_value: "generative"
@@ -10156,6 +10174,9 @@ models:
         fp8:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         llm-compressor:
             metadataType: MetadataStringValue
             string_value: ""
@@ -11419,6 +11440,9 @@ models:
       createTimeSinceEpoch: "1736294400000"
       lastUpdateTimeSinceEpoch: "1736294400000"
       customProperties:
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         validated:
             metadataType: MetadataStringValue
             string_value: ""
@@ -11491,6 +11515,9 @@ models:
         granite-3.1:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         language:
             metadataType: MetadataStringValue
             string_value: ""
@@ -11606,6 +11633,9 @@ models:
         granite:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         int4:
             metadataType: MetadataStringValue
             string_value: ""
@@ -11655,6 +11685,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         int8:
             metadataType: MetadataStringValue
             string_value: ""
@@ -11818,6 +11851,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         llmcompressor:
             metadataType: MetadataStringValue
             string_value: ""
@@ -11971,6 +12007,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         llmcompressor:
             metadataType: MetadataStringValue
             string_value: ""
@@ -12050,6 +12089,9 @@ models:
         conversational:
             metadataType: MetadataStringValue
             string_value: ""
+        hardware_tag:
+            metadataType: MetadataStringValue
+            string_value: "Intel Xeon"
         llmcompressor:
             metadataType: MetadataStringValue
             string_value: ""

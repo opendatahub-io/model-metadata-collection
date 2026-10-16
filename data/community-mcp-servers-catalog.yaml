@@ -519,3 +519,589 @@ mcp_servers:
                   description: MongoDB Atlas Service Account client secret (from secret mongodb-atlas-credentials)
                   isRequired: false
                   isSecret: true
+    - name: dev.feast/feast-mcp-server
+      provider: Feast (LF AI & Data)
+      license: apache-2.0
+      license_link: https://www.apache.org/licenses/LICENSE-2.0
+      description: Feast MCP server — a standalone MCP gateway that proxies a running Feast feature server and/or REST registry server. Exposes online feature retrieval, vector search, push ingestion, and materialization, plus read-only registry discovery and lineage, as MCP tools via the `feast mcp` CLI command.
+      readme: |-
+        # Feast MCP Server
+
+        **MCP Server Summary:**
+        The Feast MCP server runs the Model Context Protocol in its own process,
+        separate from the feature server. It holds no registry or online store of
+        its own: it proxies to a running Feast deployment over HTTP and exposes its
+        APIs as MCP tools, so AI agents and MCP-capable clients can retrieve
+        features and browse the feature registry.
+
+        The server is made of two sub-servers behind a single MCP endpoint. Each is
+        mounted only when the URL of the Feast server it talks to is configured, and
+        at least one of the two must be set:
+
+        | Sub-server | Proxies | Mounted when |
+        | ---------- | ------- | ------------ |
+        | `features` | Python feature server (`feast serve`) | `--feast-url` / `FEAST_MCP_FEATURE_SERVER_URL` is set |
+        | `registry` | REST registry server (`feast serve_registry --rest-api`) | `--registry-url` / `FEAST_MCP_REGISTRY_URL` is set |
+
+        This is separate from `feast serve` with `mcp_enabled: true`, which mounts
+        an OpenAPI-derived MCP endpoint inside the feature server itself.
+
+        ## Features
+
+        ### Feature Server Tools (`features_*`, via --feast-url)
+        - **Online Feature Retrieval** — Fetch real-time feature values for a set of entities
+        - **Vector Search** — Similarity search over online document embeddings
+        - **Vector Stores** — List, inspect, and search vector stores (OpenAI-compatible API)
+        - **Push Ingestion** — Push feature data into the online and/or offline store
+        - **Materialization** — Trigger full or incremental materialization
+        - **Health** — Check the health of the upstream feature server
+
+        ### Registry Tools (`registry_*`, via --registry-url, read-only)
+        - **Projects** — List and get projects
+        - **Entities** — List and get entities
+        - **Feature Views** — List (with entity/feature/feature service/data source filters) and get feature views
+        - **Features** — List individual features across feature views
+        - **Feature Services** — List and get feature services
+        - **Data Sources** — List and get data sources
+        - **Search** — Full-text search across all registry objects
+        - **Lineage** — Complete project lineage graph, or relationships for a single object
+
+        ### Platform
+        - **Multiple Transports** — stdio, http, streamable-http, and sse
+        - **Authentication** — `passthrough` (default), `kubernetes` (Token Access Review), or `oidc`. The caller's bearer token is always forwarded upstream, and Feast applies its own permission model.
+        - **Logging** — Text or JSON console logs
+        - **Scaling** — Gunicorn workers for the http and streamable-http transports
+
+        ## Prerequisites
+        - A running Feast feature server (`feast serve`) and/or a Feast REST registry server (`feast serve_registry --rest-api`). The registry must be running in REST API mode, not gRPC.
+        - For local use: Python 3.10+ with `pip install 'feast[mcp-server]'`. The container image already includes it.
+
+        ## Quick Start
+        ```bash
+        feast mcp --feast-url http://feast-feature-server:6566 \
+                  --registry-url http://feast-registry:6572 \
+                  --transport http --host 0.0.0.0 --port 8000
+        ```
+
+        ## Configuration Options
+        Settings resolve in priority order: CLI options, then environment
+        variables, then `feast_mcp.yaml`, then defaults.
+
+        **Connection:**
+        - `--config` — Path to `feast_mcp.yaml` (defaults to `./feast_mcp.yaml` if present)
+        - `--feast-url` (`FEAST_MCP_FEATURE_SERVER_URL`) — URL of the Feast feature server to proxy; mounts the `features_*` tools
+        - `--registry-url` (`FEAST_MCP_REGISTRY_URL`) — URL of the Feast REST registry server to proxy; mounts the `registry_*` tools
+        - `--timeout` (`FEAST_MCP_TIMEOUT`) — HTTP timeout in seconds for upstream calls (default: 30)
+
+        **Server:**
+        - `--transport` (`FEAST_MCP_TRANSPORT`) — stdio, http, streamable-http, or sse (default: stdio)
+        - `--host` — Bind address for HTTP transports (default: 0.0.0.0). No environment variable.
+        - `--port` — Bind port for HTTP transports (default: 8000). No environment variable.
+        - `--workers` (`FEAST_MCP_WORKERS`) — Run under gunicorn with this many workers (not supported by sse)
+
+        **Authentication:**
+        - `--auth-mode` (`FEAST_MCP_AUTH_MODE`) — passthrough, kubernetes, or oidc (default: passthrough)
+        - `--oidc-discovery-url` (`FEAST_MCP_OIDC_DISCOVERY_URL`) — OIDC discovery document URL (required with oidc)
+        - `--oidc-client-id` (`FEAST_MCP_OIDC_CLIENT_ID`) — OIDC client id (required with oidc)
+        - `--oidc-client-secret` (`FEAST_MCP_OIDC_CLIENT_SECRET`) — OIDC client secret
+        - `--oidc-audience` (`FEAST_MCP_OIDC_AUDIENCE`) — Expected OIDC token audience
+        - `--base-url` (`FEAST_MCP_BASE_URL`) — Public base URL used to build OAuth redirect URIs (default: `http://localhost:<port>`)
+
+        **Logging:**
+        - `--log-level` (`FEAST_MCP_LOG_LEVEL`) — Log level (default: INFO)
+        - `--log-format` (`FEAST_MCP_LOG_FORMAT`) — Console log format: text or json (default: text)
+        - `FEAST_MCP_LOG_STDIO` — Also log to stderr (default: true)
+
+        ## Authentication Modes
+        - **passthrough** (default) — No check at the MCP layer; any token the client sends is forwarded to Feast as-is.
+        - **kubernetes** — Service Account and user tokens are validated with the Token Access Review API before any tool runs. Must run in-cluster; the pod's Service Account needs permission to create `tokenreviews` and read RoleBindings in its namespace.
+        - **oidc** — Fronts an OIDC provider so IDE clients (e.g. Cursor, VS Code) can complete a browser login. Assumes a single replica, since OAuth state is stored per node.
+
+        ## MCP Endpoint
+        - `/mcp` for the http and streamable-http transports
+        - `/sse` for the sse transport
+        - `GET /health` — unauthenticated health check
+
+        ## Deployment on OpenShift AI
+        Deploy using the MCP Lifecycle Operator with the container image. The image
+        entrypoint is `feast mcp`, and the default arguments are:
+
+        ```
+        --feast-url http://feast-feature-server:6566
+        --registry-url http://feast-registry:6572
+        --transport http --host 0.0.0.0 --port 8000
+        ```
+
+        Replace the `--feast-url` and `--registry-url` values with the addresses of
+        your running Feast services. Drop `--registry-url` (or `--feast-url`) to
+        serve only one tool set; at least one must remain. CLI flags take precedence
+        over `FEAST_MCP_*` environment variables, so set the URLs here rather than
+        in the environment.
+
+        If the Feast services use Kubernetes authentication (the Feast Operator
+        default), MCP clients must send a bearer token.
+      version: 1.0.0
+      transports:
+        - stdio
+        - http
+        - sse
+        - streamable-http
+      documentationUrl: https://docs.feast.dev/reference/feature-servers/mcp-server
+      repositoryUrl: https://github.com/feast-dev/feast
+      sourceCode: feast-dev/feast
+      deploymentMode: container
+      tags:
+        - feast
+        - feature-store
+        - registry
+        - mlops
+        - online-features
+        - vector-search
+        - materialization
+        - lineage
+      tools:
+        - name: features_get_online_features
+          description: Retrieve online feature values for a set of entities
+          accessType: read_only
+          parameters:
+            - name: features
+              type: array
+              description: Feature references in 'feature_view:feature' format
+              required: true
+            - name: entities
+              type: object
+              description: Entity key-value map; each key maps to a list of values
+              required: true
+            - name: feature_service
+              type: string
+              description: Optional feature service name (used instead of the features list)
+              required: false
+            - name: full_feature_names
+              type: boolean
+              description: If true, response keys include the feature view name
+              required: false
+        - name: features_search
+          description: Vector similarity search against online document embeddings
+          accessType: read_only
+          parameters:
+            - name: features
+              type: array
+              description: Feature references to retrieve
+              required: true
+            - name: top_k
+              type: integer
+              description: 'Number of nearest results to return (default: 5)'
+              required: false
+            - name: query
+              type: array
+              description: Query embedding vector (list of floats)
+              required: false
+            - name: query_string
+              type: string
+              description: Text query (used when the server handles embedding)
+              required: false
+            - name: feature_service
+              type: string
+              description: Optional feature service name
+              required: false
+            - name: distance_metric
+              type: string
+              description: Optional distance metric override
+              required: false
+            - name: full_feature_names
+              type: boolean
+              description: If true, response keys include the feature view name
+              required: false
+            - name: api_version
+              type: integer
+              description: 'API version for the search endpoint (default: 2)'
+              required: false
+        - name: features_list_vector_stores
+          description: List all available vector stores
+          accessType: read_only
+          parameters: []
+        - name: features_get_vector_store
+          description: Get details of a specific vector store
+          accessType: read_only
+          parameters:
+            - name: vector_store_id
+              type: string
+              description: Identifier of the vector store
+              required: true
+        - name: features_vector_store_search
+          description: OpenAI-compatible vector store search
+          accessType: read_only
+          parameters:
+            - name: vector_store_id
+              type: string
+              description: Identifier of the vector store to search
+              required: true
+            - name: query
+              type: string
+              description: Text query, or a list of text queries
+              required: true
+            - name: max_num_results
+              type: integer
+              description: 'Maximum number of results to return (default: 10)'
+              required: false
+        - name: features_push
+          description: Push features into the online or offline store
+          accessType: read_write
+          parameters:
+            - name: push_source_name
+              type: string
+              description: Name of the push source defined in the feature repo
+              required: true
+            - name: df
+              type: object
+              description: Column-oriented dict representing the DataFrame to push
+              required: true
+            - name: to
+              type: string
+              description: 'Target store: online, offline, or online_and_offline (default: online)'
+              required: false
+            - name: allow_registry_cache
+              type: boolean
+              description: 'Allow using the cached registry (default: true)'
+              required: false
+            - name: transform_on_write
+              type: boolean
+              description: 'Apply on-demand transforms before writing (default: true)'
+              required: false
+        - name: features_materialize
+          description: Materialize features from the offline store to the online store
+          accessType: read_write
+          parameters:
+            - name: start_ts
+              type: string
+              description: Start timestamp (ISO-8601)
+              required: false
+            - name: end_ts
+              type: string
+              description: End timestamp (ISO-8601)
+              required: false
+            - name: feature_views
+              type: array
+              description: Specific feature views to materialize (all if omitted)
+              required: false
+        - name: features_materialize_incremental
+          description: Run incremental materialization up to the given timestamp
+          accessType: read_write
+          parameters:
+            - name: end_ts
+              type: string
+              description: End timestamp (ISO-8601)
+              required: true
+            - name: feature_views
+              type: array
+              description: Specific feature views to materialize (all if omitted)
+              required: false
+        - name: features_health
+          description: Check the health of the Feast feature server
+          accessType: read_only
+          parameters: []
+        - name: registry_list_projects
+          description: List all Feast projects in the registry
+          accessType: read_only
+          parameters: []
+        - name: registry_get_project
+          description: Get details of a specific Feast project
+          accessType: read_only
+          parameters:
+            - name: name
+              type: string
+              description: Project name
+              required: true
+        - name: registry_list_entities
+          description: List all entities (join keys such as customer_id or driver_id) in a project
+          accessType: read_only
+          parameters:
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+        - name: registry_get_entity
+          description: Get details of a specific entity
+          accessType: read_only
+          parameters:
+            - name: name
+              type: string
+              description: Entity name
+              required: true
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+        - name: registry_list_feature_views
+          description: List all feature views (regular, stream, and on-demand) in a project
+          accessType: read_only
+          parameters:
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+            - name: entity
+              type: string
+              description: Filter by entity name
+              required: false
+            - name: feature
+              type: string
+              description: Filter by feature name
+              required: false
+            - name: feature_service
+              type: string
+              description: Filter by feature service name
+              required: false
+            - name: data_source
+              type: string
+              description: Filter by data source name
+              required: false
+        - name: registry_get_feature_view
+          description: Get details of a specific feature view, including its schema, entities, and data source
+          accessType: read_only
+          parameters:
+            - name: name
+              type: string
+              description: Feature view name
+              required: true
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+        - name: registry_list_features
+          description: List individual features (columns) across all feature views
+          accessType: read_only
+          parameters:
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+            - name: feature_view
+              type: string
+              description: Filter by feature view name
+              required: false
+        - name: registry_list_feature_services
+          description: List all feature services in a project
+          accessType: read_only
+          parameters:
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+            - name: feature_view
+              type: string
+              description: Filter by feature view name
+              required: false
+        - name: registry_get_feature_service
+          description: Get details of a specific feature service
+          accessType: read_only
+          parameters:
+            - name: name
+              type: string
+              description: Feature service name
+              required: true
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+        - name: registry_list_data_sources
+          description: List all data sources (e.g. BigQuery tables, Parquet files, Kafka topics) in a project
+          accessType: read_only
+          parameters:
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+        - name: registry_get_data_source
+          description: Get details of a specific data source
+          accessType: read_only
+          parameters:
+            - name: name
+              type: string
+              description: Data source name
+              required: true
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+        - name: registry_search_registry
+          description: Full-text search across all registry objects by name and metadata
+          accessType: read_only
+          parameters:
+            - name: query
+              type: string
+              description: Search query string
+              required: true
+            - name: project
+              type: string
+              description: Optionally scope the search to a project
+              required: false
+        - name: registry_get_lineage
+          description: Get lineage relationships between registry objects; returns the complete project graph, or a single object's relationships when object_type and object_name are given
+          accessType: read_only
+          parameters:
+            - name: project
+              type: string
+              description: Feast project name
+              required: true
+            - name: object_type
+              type: string
+              description: Filter by object type (e.g. feature_view, entity)
+              required: false
+            - name: object_name
+              type: string
+              description: Filter by object name
+              required: false
+      artifacts:
+        - uri: oci://quay.io/opendatahub/odh-feast-mcp:odh-stable
+          createTimeSinceEpoch: "1791983522000"
+          lastUpdateTimeSinceEpoch: "1791983526000"
+      runtimeMetadata:
+        defaultArgs:
+            - --feast-url
+            - http://feast-feature-server:6566
+            - --registry-url
+            - http://feast-registry:6572
+            - --transport
+            - http
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+        defaultPort: 8000
+        mcpPath: /mcp
+        optionalEnvironmentVariables:
+            - description: 'HTTP timeout in seconds for upstream calls (default: 30)'
+              name: FEAST_MCP_TIMEOUT
+              required: false
+              type: config
+            - description: 'MCP transport to serve: stdio, http, streamable-http, sse (overridden by --transport in defaultArgs)'
+              name: FEAST_MCP_TRANSPORT
+              required: false
+              type: config
+            - description: Run under gunicorn with this many workers (not supported by sse)
+              name: FEAST_MCP_WORKERS
+              required: false
+              type: config
+            - description: 'Auth mode: passthrough, kubernetes, or oidc (default: passthrough)'
+              name: FEAST_MCP_AUTH_MODE
+              required: false
+              type: config
+            - description: OIDC discovery document URL (required with oidc auth mode)
+              name: FEAST_MCP_OIDC_DISCOVERY_URL
+              required: false
+              type: config
+            - description: OIDC client id (required with oidc auth mode)
+              name: FEAST_MCP_OIDC_CLIENT_ID
+              required: false
+              type: secret
+            - description: OIDC client secret
+              name: FEAST_MCP_OIDC_CLIENT_SECRET
+              required: false
+              type: secret
+            - description: Expected OIDC token audience
+              name: FEAST_MCP_OIDC_AUDIENCE
+              required: false
+              type: config
+            - description: Public base URL of this server, used to build OAuth redirect URIs
+              name: FEAST_MCP_BASE_URL
+              required: false
+              type: config
+            - description: 'Log level (default: INFO)'
+              name: FEAST_MCP_LOG_LEVEL
+              required: false
+              type: config
+            - description: 'Console log format: text or json (default: text)'
+              name: FEAST_MCP_LOG_FORMAT
+              required: false
+              type: config
+            - description: 'Also log to stderr (default: true)'
+              name: FEAST_MCP_LOG_STDIO
+              required: false
+              type: config
+        recommendedResources:
+            minimal:
+                cpu: 100m
+                memory: 256Mi
+            recommended:
+                cpu: 250m
+                memory: 512Mi
+      customProperties:
+        architecture:
+            metadataType: MetadataStringValue
+            string_value: "[\"amd64\"]"
+        supportTier:
+            metadataType: MetadataStringValue
+            string_value: "communitySupported"
+      lastUpdateTimeSinceEpoch: "1791983526000"
+      server_json:
+        $schema: https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json
+        name: dev.feast/feast-mcp-server
+        description: Feast MCP server — a standalone MCP gateway that proxies a running Feast feature server and/or REST registry server. Exposes online feature retrieval, vector search, push ingestion, and materialization, plus read-only registry discovery and lineage, as MCP tools via the `feast mcp` CLI command.
+        version: 1.0.0
+        websiteUrl: https://docs.feast.dev/reference/feature-servers/mcp-server
+        repository:
+            url: https://github.com/feast-dev/feast
+            source: github
+        packages:
+            - registryType: oci
+              identifier: quay.io/opendatahub/odh-feast-mcp:odh-stable
+              transport:
+                type: streamable-http
+                url: http://localhost:8000/mcp
+              runtimeHint: docker
+              packageArguments:
+                - type: named
+                  value: http://feast-feature-server:6566
+                  name: --feast-url
+                - type: named
+                  value: http://feast-registry:6572
+                  name: --registry-url
+                - type: named
+                  value: http
+                  name: --transport
+                - type: named
+                  value: 0.0.0.0
+                  name: --host
+                - type: named
+                  value: "8000"
+                  name: --port
+              environmentVariables:
+                - name: FEAST_MCP_TIMEOUT
+                  description: 'HTTP timeout in seconds for upstream calls (default: 30)'
+                  isRequired: false
+                - name: FEAST_MCP_TRANSPORT
+                  description: 'MCP transport to serve: stdio, http, streamable-http, sse (overridden by --transport in defaultArgs)'
+                  isRequired: false
+                - name: FEAST_MCP_WORKERS
+                  description: Run under gunicorn with this many workers (not supported by sse)
+                  isRequired: false
+                - name: FEAST_MCP_AUTH_MODE
+                  description: 'Auth mode: passthrough, kubernetes, or oidc (default: passthrough)'
+                  isRequired: false
+                - name: FEAST_MCP_OIDC_DISCOVERY_URL
+                  description: OIDC discovery document URL (required with oidc auth mode)
+                  isRequired: false
+                - name: FEAST_MCP_OIDC_CLIENT_ID
+                  description: OIDC client id (required with oidc auth mode)
+                  isRequired: false
+                  isSecret: true
+                - name: FEAST_MCP_OIDC_CLIENT_SECRET
+                  description: OIDC client secret
+                  isRequired: false
+                  isSecret: true
+                - name: FEAST_MCP_OIDC_AUDIENCE
+                  description: Expected OIDC token audience
+                  isRequired: false
+                - name: FEAST_MCP_BASE_URL
+                  description: Public base URL of this server, used to build OAuth redirect URIs
+                  isRequired: false
+                - name: FEAST_MCP_LOG_LEVEL
+                  description: 'Log level (default: INFO)'
+                  isRequired: false
+                - name: FEAST_MCP_LOG_FORMAT
+                  description: 'Console log format: text or json (default: text)'
+                  isRequired: false
+                - name: FEAST_MCP_LOG_STDIO
+                  description: 'Also log to stderr (default: true)'
+                  isRequired: false
