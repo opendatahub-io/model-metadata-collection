@@ -66,6 +66,8 @@ models:
   hf_model: google/gemma-4-31b
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-allenai-molmo2-4b:3.0
+  hf_model: allenai/Molmo2-4B
+  name: Molmo2-4B
   customProperties:
     secured:
       metadataType: MetadataBoolValue
@@ -155,3 +157,6 @@ models:
   uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-small:3.0
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-granite-4-0-h-tiny:3.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-molmo2-4b:3.0
+  hf_model: RedHatAI/Molmo2-4B
