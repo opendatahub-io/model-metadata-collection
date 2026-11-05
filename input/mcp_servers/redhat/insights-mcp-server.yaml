@@ -214,6 +214,16 @@ runtimeMetadata:
               name: LIGHTSPEED_CLIENT_SECRET
               required: true
               type: string
+            - description: Bind the MCP server to all network interfaces
+              name: FASTMCP_HOST
+              required: true
+              type: string
+              default: "0.0.0.0"
+            - description: Serve the MCP endpoint over HTTP
+              name: FASTMCP_TRANSPORT
+              required: true
+              type: string
+              default: http
             - description: Override the default Lightspeed API endpoint
               name: LIGHTSPEED_BASE_URL
               required: false

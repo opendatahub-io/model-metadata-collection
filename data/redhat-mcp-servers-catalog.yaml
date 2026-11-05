@@ -733,6 +733,16 @@ mcp_servers:
                   name: LIGHTSPEED_CLIENT_SECRET
                   required: true
                   type: string
+                - default: 0.0.0.0
+                  description: Bind the MCP server to all network interfaces
+                  name: FASTMCP_HOST
+                  required: true
+                  type: string
+                - default: http
+                  description: Serve the MCP endpoint over HTTP
+                  name: FASTMCP_TRANSPORT
+                  required: true
+                  type: string
                 - description: Override the default Lightspeed API endpoint
                   name: LIGHTSPEED_BASE_URL
                   required: false
@@ -807,6 +817,14 @@ mcp_servers:
                   description: Service account client secret (from secret insights-credentials)
                   isRequired: true
                   isSecret: true
+                - name: FASTMCP_HOST
+                  description: Bind the MCP server to all network interfaces
+                  isRequired: true
+                  default: 0.0.0.0
+                - name: FASTMCP_TRANSPORT
+                  description: Serve the MCP endpoint over HTTP
+                  isRequired: true
+                  default: http
                 - name: LIGHTSPEED_BASE_URL
                   description: Override the default Lightspeed API endpoint
                   isRequired: false
