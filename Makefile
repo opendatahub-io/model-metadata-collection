@@ -15,6 +15,7 @@ BINARY_UNIX=$(BINARY_NAME)_unix
 # Build parameters
 BUILD_DIR=build
 MAIN_PATH=./cmd/model-extractor
+TEST_LOG?=$(BUILD_DIR)/test.log
 
 # Default data paths
 VALIDATED_MODELS_INDEX_PATH=data/validated-models-index.yaml
@@ -81,8 +82,17 @@ clean:
 
 # Run tests
 test:
-	@echo "Running tests..."
-	$(GOTEST) -v ./...
+	@mkdir -p "$(dir $(TEST_LOG))"
+	@echo "Running tests (full output: $(TEST_LOG))..."
+	@if $(GOTEST) ./... >"$(TEST_LOG)" 2>&1; then \
+		cat "$(TEST_LOG)"; \
+		echo "All tests passed."; \
+	else \
+		echo "Test failures:"; \
+		awk '/^[[:space:]]*--- FAIL:/ || /^[[:space:]]*[^[:space:]]+_test\.go:[0-9]+:/ || /^# / || /^panic:/ || /^fatal error:/ || /^FAIL[[:space:]]/ || /^[^[:space:]]+\.go:[0-9]+:[0-9]+:/ { print; found = 1 } END { if (!found) exit 1 }' "$(TEST_LOG)" || tail -n 40 "$(TEST_LOG)"; \
+		echo "Full test output: $(TEST_LOG)"; \
+		exit 1; \
+	fi
 
 # Run tests with coverage
 test-coverage:
