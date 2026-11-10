@@ -82,12 +82,16 @@ clean:
 
 # Run tests
 test:
-	@mkdir -p "$(dir $(TEST_LOG))"
+	@mkdir -p "$$(dirname "$(TEST_LOG)")"
 	@echo "Running tests (full output: $(TEST_LOG))..."
 	@if $(GOTEST) ./... >"$(TEST_LOG)" 2>&1; then \
 		cat "$(TEST_LOG)"; \
 		echo "All tests passed."; \
 	else \
+		if [ -n "$$CI" ]; then \
+			echo "Full test output:"; \
+			cat "$(TEST_LOG)"; \
+		fi; \
 		echo "Test failures:"; \
 		awk '/^[[:space:]]*--- FAIL:/ || /^[[:space:]]*[^[:space:]]+_test\.go:[0-9]+:/ || /^# / || /^panic:/ || /^fatal error:/ || /^FAIL[[:space:]]/ || /^[^[:space:]]+\.go:[0-9]+:[0-9]+:/ { print; found = 1 } END { if (!found) exit 1 }' "$(TEST_LOG)" || tail -n 40 "$(TEST_LOG)"; \
 		echo "Full test output: $(TEST_LOG)"; \
