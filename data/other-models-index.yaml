@@ -160,3 +160,12 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-molmo2-4b:3.0
   hf_model: RedHatAI/Molmo2-4B
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-ministral-3-14b-instruct-2512-bf16:3.0
+  name: RedHatAI/Ministral-3-14B-Instruct-2512-BF16
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-granite-4-1-8b-fp8:3.0
+  name: RedHatAI/granite-4.1-8b-fp8
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-granite-4-1-8b:3.0
+  name: RedHatAI/granite-4.1-8b

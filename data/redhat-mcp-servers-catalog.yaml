@@ -2272,7 +2272,7 @@ mcp_servers:
               description: Confirm deletion for action=delete (requires ENABLE_DANGEROUS_OPERATIONS=true)
               required: false
       artifacts:
-        - uri: oci://registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6
+        - uri: oci://registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:v3.7-ea.1
           createTimeSinceEpoch: "1784190735000"
           lastUpdateTimeSinceEpoch: "1784190737000"
       runtimeMetadata:
@@ -2405,7 +2405,7 @@ mcp_servers:
             source: github
         packages:
             - registryType: oci
-              identifier: registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:rhoai-3.6
+              identifier: registry.redhat.io/rhoai/odh-rhoai-mcp-rhel9:v3.7-ea.1
               transport:
                 type: streamable-http
                 url: http://localhost:8000/mcp
