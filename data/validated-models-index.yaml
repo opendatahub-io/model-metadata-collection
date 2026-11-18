@@ -580,11 +580,6 @@ models:
   labels:
   - validated
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-deepseek-v4-pro-0813:3.0
-  hf_model: RedHatAI/DeepSeek-V4-Pro-0813
-  labels:
-  - validated
-- type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-glm-5-3:3.0
   hf_model: RedHatAI/GLM-5.3
   labels:
@@ -592,11 +587,6 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-glm-5-3-mxfp4:3.0
   hf_model: RedHatAI/GLM-5.3-MXFP4
-  labels:
-  - validated
-- type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-inkling-small:3.0
-  hf_model: RedHatAI/Inkling-Small
   labels:
   - validated
 - type: oci
