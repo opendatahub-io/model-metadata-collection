@@ -16,10 +16,6 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-intfloat-multilingual-e5-large:3.0
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-fp8:3.0
-- type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-nvfp4:3.0
-- type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-snowflake-arctic-embed-l-v2-0:3.0
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-gemma-3-12b-it:3.0
