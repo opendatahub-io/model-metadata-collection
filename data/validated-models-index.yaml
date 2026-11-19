@@ -635,11 +635,6 @@ models:
   labels:
   - validated
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-north-mini-code-1-0:3.0
-  hf_model: RedHatAI/North-Mini-Code-1.0
-  labels:
-  - validated
-- type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-5-lightning-30b-a3b-bf16:3.0
   hf_model: RedHatAI/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16
   labels:
