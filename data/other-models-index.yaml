@@ -16,10 +16,6 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-intfloat-multilingual-e5-large:3.0
 - type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-fp8:3.0
-- type: oci
-  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-nvfp4:3.0
-- type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-snowflake-arctic-embed-l-v2-0:3.0
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-gemma-3-12b-it:3.0
@@ -162,10 +158,19 @@ models:
   hf_model: RedHatAI/Molmo2-4B
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-ministral-3-14b-instruct-2512-bf16:3.0
+  hf_model: RedHatAI/Ministral-3-14B-Instruct-2512-BF16
   name: RedHatAI/Ministral-3-14B-Instruct-2512-BF16
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-granite-4-1-8b-fp8:3.0
+  hf_model: RedHatAI/granite-4.1-8b-fp8
   name: RedHatAI/granite-4.1-8b-fp8
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-granite-4-1-8b:3.0
+  hf_model: RedHatAI/granite-4.1-8b
   name: RedHatAI/granite-4.1-8b
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-tinyllama-1-1b-chat-v1-0-pruned2-4:3.0
+  hf_model: RedHatAI/TinyLlama-1.1B-Chat-v1.0-pruned2.4
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-granite-3-2-2b-instruct:3.0
+  hf_model: RedHatAI/granite-3.2-2b-instruct

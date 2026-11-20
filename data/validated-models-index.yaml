@@ -498,6 +498,7 @@ models:
   - validated
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-mistral-medium-3-5-128b:3.0
+  hf_model: RedHatAI/Mistral-Medium-3.5-128B
   customProperties:
     secured:
       metadataType: MetadataBoolValue
@@ -566,5 +567,115 @@ models:
   uri: registry.redhat.io/rhai/modelcar-redhatai-gemma-4-31b:3.0
   hf_model: RedHatAI/gemma-4-31B
   name: RedHatAI/gemma-4-31B
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-deepseek-v4-flash-0731:3.0
+  hf_model: RedHatAI/DeepSeek-V4-Flash-0731
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-deepseek-v4-flash-0731-nvfp4:3.0
+  hf_model: RedHatAI/DeepSeek-V4-Flash-0731-NVFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-glm-5-3:3.0
+  hf_model: RedHatAI/GLM-5.3
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-glm-5-3-mxfp4:3.0
+  hf_model: RedHatAI/GLM-5.3-MXFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-s-2-1:3.0
+  hf_model: RedHatAI/Laguna-S-2.1
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-s-2-1-fp8:3.0-1791721032
+  hf_model: RedHatAI/Laguna-S-2.1-FP8
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-s-2-1-nvfp4:3.0-1791720592
+  hf_model: RedHatAI/Laguna-S-2.1-NVFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-fp8:3.0
+  hf_model: RedHatAI/Laguna-XS.2-FP8
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-laguna-xs-2-nvfp4:3.0
+  hf_model: RedHatAI/Laguna-XS.2-NVFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-muse-glimmer-30b:3.0
+  hf_model: RedHatAI/Muse-Glimmer-30B
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-muse-glimmer-30b-fp8-block:3.0
+  hf_model: RedHatAI/Muse-Glimmer-30B-FP8-block
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-muse-glimmer-30b-int4:3.0
+  hf_model: RedHatAI/Muse-Glimmer-30B-INT4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-muse-glimmer-30b-nvfp4:3.0
+  hf_model: RedHatAI/Muse-Glimmer-30B-NVFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-5-lightning-30b-a3b-bf16:3.0
+  hf_model: RedHatAI/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-5-lightning-30b-a3b-fp8:3.0
+  hf_model: RedHatAI/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-FP8
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-nvidia-nemotron-3-5-lightning-30b-a3b-nvfp4:3.0-1792496658
+  hf_model: RedHatAI/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-otel-2-0-llm-31b-it:3.0-1793797476
+  hf_model: RedHatAI/OTel-2.0-LLM-31B-IT
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-8-27b:3.0
+  hf_model: RedHatAI/Qwen3.8-27B
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-8-27b-int4:3.0
+  hf_model: RedHatAI/Qwen3.8-27B-INT4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-8-27b-mxfp4:3.0
+  hf_model: RedHatAI/Qwen3.8-27B-MXFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-8-27b-nvfp4:3.0
+  hf_model: RedHatAI/Qwen3.8-27B-NVFP4
+  labels:
+  - validated
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-8-flash-next-nvfp4:3.0
+  hf_model: RedHatAI/Qwen3.8-Flash-Next-NVFP4
   labels:
   - validated
