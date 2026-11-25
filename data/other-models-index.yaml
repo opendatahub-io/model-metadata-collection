@@ -174,3 +174,54 @@ models:
 - type: oci
   uri: registry.redhat.io/rhai/modelcar-redhatai-granite-3-2-2b-instruct:3.0
   hf_model: RedHatAI/granite-3.2-2b-instruct
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-deepseek-v4-flash-nvfp4-fp8:3.0-1794251071
+  hf_model: RedHatAI/DeepSeek-V4-Flash-NVFP4-FP8
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-deepseek-v4-flash:3.0
+  hf_model: RedHatAI/DeepSeek-V4-Flash
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-deepseek-v4-pro-0813:3.0-1791984713
+  hf_model: RedHatAI/DeepSeek-V4-Pro-0813
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-glm-5-3-flash-nvfp4:3.0-1793711283
+  hf_model: RedHatAI/GLM-5.3-Flash-NVFP4
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-glm-5-3-flash:3.0-1793702550
+  hf_model: RedHatAI/GLM-5.3-Flash
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-inkling-small:3.0-1791884355
+  hf_model: RedHatAI/Inkling-Small
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-5-2b:3.0-1795507514
+  hf_model: RedHatAI/Qwen3.5-2B
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-6-27b-fp8:3.0
+  hf_model: RedHatAI/Qwen3.6-27B-FP8
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-qwen3-8-27b-fp8:3.0-1794238006
+  hf_model: RedHatAI/Qwen3.8-27B-FP8
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-tinyllama-1-1b-chat-v1-0:3.0-1793275558
+  hf_model: RedHatAI/TinyLlama-1.1B-Chat-v1.0
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-bge-reranker-v2-m3:3.0-1792680097
+  hf_model: RedHatAI/bge-reranker-v2-m3
+  customProperties:
+    model_type:
+      metadataType: MetadataStringValue
+      string_value: predictive
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-gte-reranker-modernbert-base:3.0-1795441813
+  hf_model: RedHatAI/gte-reranker-modernbert-base
+  customProperties:
+    model_type:
+      metadataType: MetadataStringValue
+      string_value: predictive
+- type: oci
+  uri: registry.redhat.io/rhai/modelcar-redhatai-mxbai-rerank-base-v2:3.0-1792680093
+  hf_model: RedHatAI/mxbai-rerank-base-v2
+  customProperties:
+    model_type:
+      metadataType: MetadataStringValue
+      string_value: predictive
